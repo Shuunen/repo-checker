@@ -1,15 +1,20 @@
 {
   "author": "Romain Racamier-Lafon <romain.racamier@gmail.com>",
   "bugs": "https://github.com/Shuunen/repo-checker/issues",
-  "dependencies": {},
+  "config": {
+    "logFile": "debug.log"
+  },
   "description": "Repo cleaning made easy",
   "devDependencies": {
+    "chalk": "2.4.2",
+    "cross-var": "1.1.0",
     "eslint": "5.16.0",
     "eslint-config-standard": "12.0.0",
     "eslint-plugin-import": "2.17.3",
     "eslint-plugin-node": "9.1.0",
     "eslint-plugin-promise": "4.1.1",
-    "eslint-plugin-standard": "4.0.0"
+    "eslint-plugin-standard": "4.0.0",
+    "simple-git": "1.113.0"
   },
   "homepage": "https://github.com/Shuunen/repo-checker",
   "keywords": [
@@ -17,16 +22,18 @@
     "checker"
   ],
   "license": "GPL-3.0",
+  "main": "src/index.js",
   "name": "@shuunen/repo-checker",
   "repository": {
     "type": "git",
     "url": "https://github.com/Shuunen/repo-checker.git"
   },
   "scripts": {
-    "dev": "nodemon src/process",
+    "dev": "cross-var nodemon $npm_package_main \"..\"",
     "lint": "eslint --fix src/**/*.js",
+    "start": "cross-var node $npm_package_main",
     "test": "npm run lint",
     "update": "npx npm-check-updates -u"
   },
-  "version": "0.0.0"
+  "version": "0.0.1"
 }
