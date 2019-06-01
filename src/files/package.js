@@ -1,8 +1,8 @@
 const Test = require('../test')
 
 class CheckPackage extends Test {
-  constructor (folderPath) {
-    super(folderPath)
+  constructor (...args) {
+    super(...args)
     return this.hasFile('package.json')
   }
 }

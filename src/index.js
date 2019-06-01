@@ -1,17 +1,19 @@
 
-const path = require('path')
+const arg = require('arg')
 
 const check = require('./check')
 const log = require('./logger')
 
 function init () {
-  if (process.argv.length <= 2) {
-    log.info(`use me via : node ${path.basename(__filename)} path/to/directory`)
+  const args = arg({ '--target': String, '--fix': Boolean }, { argv: process.argv.slice(2) })
+  const target = args['--target']
+  const doFix = args['--fix']
+  if (!target) {
+    log.info(`please specify a target with : --target=path/to/directory`)
     return process.exit(-1)
   }
-  const workingPath = process.argv[2].replace('\\', '//')
   log.start()
-    .then(() => check(workingPath))
+    .then(() => check(target, doFix))
     .catch(err => log.error(err))
     .then(() => log.end())
 }

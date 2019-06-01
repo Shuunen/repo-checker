@@ -36,6 +36,11 @@ class Logger {
     console.error(ok ? chalk.green(str) : chalk.redBright(str))
     return this._write(str)
   }
+  fix (msg) {
+    const str = this.indent + '⬜' + '  ' + msg
+    console.log(chalk.blueBright(str))
+    return this._write(str)
+  }
   line () {
     console.log('')
     return this._write('')

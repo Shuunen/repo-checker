@@ -1,8 +1,8 @@
 const Test = require('../test')
 
 class CheckReadme extends Test {
-  constructor (folderPath) {
-    super(folderPath)
+  constructor (...args) {
+    super(...args)
     return this.hasFile('readme.md')
   }
 }

@@ -52,4 +52,8 @@ function folderContainsFile (folderPath, fileName) {
   })
 }
 
-module.exports = { log, getGitFolders, folderContainsFile }
+function createFile (folderPath, fileName) {
+  fs.closeSync(fs.openSync(path.join(folderPath, fileName), 'w'))
+}
+
+module.exports = { log, getGitFolders, folderContainsFile, createFile }
