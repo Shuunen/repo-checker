@@ -1,9 +1,11 @@
 const Test = require('../test')
 
 class CheckReadme extends Test {
-  constructor (...args) {
-    super(...args)
-    return this.hasFile('README.md')
+  async init () {
+    await this.checkFile('README.md')
+    this.shouldContains('a title', /^#\s\w+/)
+    this.shouldContains('a badge with licence', /master\/LICENSE/)
+    this.couldContains('a thanks section', /## Thanks\n/)
   }
 }
 

@@ -31,9 +31,9 @@ class Logger {
     console.error(chalk.red(this.indent, 'error :', ...args))
     return this._write(this.indent, '🔸', ...args)
   }
-  test (ok, msg) {
-    const str = this.indent + (ok ? '✔️' : '❌') + '  ' + msg
-    console.error(ok ? chalk.green(str) : chalk.redBright(str))
+  test (ok, msg, justWarn) {
+    const str = this.indent + (ok ? '✔️' : justWarn ? '⚠️' : '❌') + '  ' + msg
+    console.error(ok ? chalk.green(str) : justWarn ? chalk.yellowBright(str) : chalk.redBright(str))
     return this._write(str)
   }
   fix (msg) {

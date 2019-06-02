@@ -100,18 +100,14 @@ function fillTemplate (template, data) {
   if (!tokens) {
     return str
   }
-  return tokens.reduce(
-    (acc, token) => {
-      const key = token.replace(/[{\s}]/g, '')
-      let value = data && data[key]
-      if (!value) {
-        log.error(`please provide variable "${key}"`)
-      }
-      acc = acc.replace(token, value || '')
-      return acc
-    },
-    str
-  )
+  return tokens.reduce((acc, token) => {
+    const key = token.replace(/[{\s}]/g, '')
+    let value = data && data[key]
+    if (!value) {
+      log.error(`please provide variable "${key}"`)
+    }
+    return acc.replace(token, value || '')
+  }, str)
 }
 
 module.exports = { log, getGitFolders, fillTemplate, folderContainsFile, createFile, readFile, augmentData }
