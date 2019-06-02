@@ -1,0 +1,19 @@
+{
+  "author": "{{ user_name }} <{{ user_mail }}>",
+  "bugs": "https://github.com/{{ user_id }}/{{ repo_id }}/issues",
+  "description": "",
+  "homepage": "https://github.com/{{ user_id }}/{{ repo_id }}",
+  "keywords": [],
+  "license": "",
+  "name": "@{{ user_id_lowercase }}/{{ repo_id }}",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/{{ user_id }}/{{ repo_id }}.git"
+  },
+  "scripts": {
+    "lint": "",
+    "start": "",
+    "test": ""
+  },
+  "version": ""
+}

@@ -1,18 +1,23 @@
 const log = require('./logger')
-const { folderContainsFile, createFile } = require('./utils')
+const { folderContainsFile, createFile, fillTemplate, readFile } = require('./utils')
 
 class Test {
-  constructor (folderPath, doFix) {
+  constructor (folderPath, data, doFix) {
     this.folderPath = folderPath
+    this.data = data
     this.doFix = doFix
   }
-  async hasFile (file) {
-    const ok = await folderContainsFile(this.folderPath, file)
+  async hasFile (fileName) {
+    const ok = await folderContainsFile(this.folderPath, fileName)
     if (!ok && this.doFix) {
-      createFile(this.folderPath, file)
-      log.fix(`created a ${file} file`)
+      const template = await readFile('src/templates', fileName, true)
+      const fileContent = fillTemplate(template, this.data)
+      const fileCreated = await createFile(this.folderPath, fileName, fileContent)
+      if (fileCreated) {
+        log.fix(`created a ${fileName} file`)
+      }
     } else {
-      log.test(ok, `contains a ${file} file`)
+      log.test(ok, `contains a ${fileName} file`)
     }
   }
 }

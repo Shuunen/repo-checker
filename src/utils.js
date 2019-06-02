@@ -38,6 +38,19 @@ async function getGitFolders (folderPath) {
   })
 }
 
+function augmentData (folderPath, dataSource) {
+  const data = Object.assign({}, dataSource)
+  return Git(folderPath).getRemotes(true).then(remotes => {
+    const matches = JSON.stringify(remotes).match(/([\w-]+)\/([\w-]+)\.git/)
+    if (matches.length === 3) {
+      data.user_id = matches[1]
+      data.user_id_lowercase = data.user_id.toLowerCase()
+      data.repo_id = matches[2]
+    }
+    return data
+  })
+}
+
 function folderContainsFile (folderPath, fileName) {
   if (!folderPath || !fileName) {
     return log.error('folderContainsFile miss arguments')
@@ -52,8 +65,53 @@ function folderContainsFile (folderPath, fileName) {
   })
 }
 
-function createFile (folderPath, fileName) {
-  fs.closeSync(fs.openSync(path.join(folderPath, fileName), 'w'))
+function createFile (folderPath, fileName, fileContent) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(path.join(folderPath, fileName), fileContent, 'utf8', (err) => {
+      if (err) {
+        log.error(err)
+        resolve(false)
+      }
+      resolve(true)
+    })
+  })
 }
 
-module.exports = { log, getGitFolders, folderContainsFile, createFile }
+function readFile (folderPath, fileName, returnEmptyIfNotExists) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path.join(folderPath, fileName), 'utf8', (err, content) => {
+      if (err) {
+        if (returnEmptyIfNotExists) {
+          resolve('')
+        }
+        reject(err)
+      }
+      resolve(content)
+    })
+  })
+}
+
+function fillTemplate (template, data) {
+  let str = (typeof template === 'object' ? JSON.stringify(template, null, 2) : template) || ''
+  if (!str) {
+    return str
+  }
+  const tokens = str.match(/\{{\s?([^}\s]+)\s?}\}/g)
+  if (!tokens) {
+    return str
+  }
+  return tokens.reduce(
+    (acc, token) => {
+      const key = token.replace(/[{\s}]/g, '')
+      let value = data && data[key]
+      if (!value) {
+        log.error(`please provide variable "${key}"`)
+      }
+      acc = acc.replace(token, value || '')
+      return acc
+    },
+    str
+  )
+}
+
+module.exports = { log, getGitFolders, fillTemplate, folderContainsFile, createFile, readFile, augmentData }
