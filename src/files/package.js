@@ -34,6 +34,8 @@ class CheckPackage extends Test {
     if (hasDependencies || hasDevDependencies) {
       this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
     }
+    /* annoying deps */
+    this.shouldContains('no sass dependency', /sass"/, 0)
   }
   regexForStringProp (name) {
     return new RegExp(`"${name}":\\s".+"`)
