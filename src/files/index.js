@@ -1,4 +1,5 @@
+const CheckConfigs = require('./configs')
 const CheckReadme = require('./readme')
 const CheckPackage = require('./package')
 
-module.exports = [CheckReadme, CheckPackage]
+module.exports = [CheckConfigs, CheckReadme, CheckPackage]
