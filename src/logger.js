@@ -28,24 +28,29 @@ class Logger {
     return this._write(this.indent, '🔹', ...args)
   }
   error (...args) {
-    console.error(chalk.red(this.indent, 'error :', ...args))
-    return this._write(this.indent, '🔸', ...args)
+    console.error(chalk.redBright(this.indent, '❌ ', ...args))
+    return this._write(this.indent, '❌', ...args)
+  }
+  warn (...args) {
+    console.log(chalk.yellowBright(this.indent, '⚠️ ', ...args))
+    return this._write(this.indent, '⚠️', ...args)
+  }
+  success (...args) {
+    console.log(chalk.green(this.indent, '✔️ ', ...args))
+    return this._write(this.indent, '✔️', ...args)
   }
   test (ok, msg, justWarn) {
-    const str = this.indent + (ok ? '✔️' : justWarn ? '⚠️' : '❌') + '  ' + msg
     if (ok) {
-      console.log(chalk.green(str))
+      this.success(msg)
     } else if (justWarn) {
-      console.log(chalk.yellowBright(str))
+      this.warn(msg)
     } else {
-      console.error(chalk.redBright(str))
+      this.error(msg)
     }
-    return this._write(str)
   }
-  fix (msg) {
-    const str = this.indent + '⬜' + '  ' + msg
-    console.log(chalk.blueBright(str))
-    return this._write(str)
+  fix (...args) {
+    console.log(chalk.blueBright(this.indent, '⬜ ', ...args))
+    return this._write(this.indent, '⬜', ...args)
   }
   line () {
     console.log('')
@@ -53,7 +58,7 @@ class Logger {
   }
   start () {
     this._write(`\n⬇️--- Entry from ${this.date} ---⬇️\n`)
-    return this.info(pkg.name, 'is starting', '\n')
+    return this.info('\n', pkg.name, 'is starting', '\n')
   }
   end () {
     return this.info('\n', pkg.name, 'has finished', '\n')

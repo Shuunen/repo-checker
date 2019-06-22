@@ -1,8 +1,11 @@
 {
   "author": "Romain Racamier-Lafon <romain.racamier@gmail.com>",
+  "bin": {
+    "repo-checker": "src/index.js"
+  },
   "bugs": "https://github.com/Shuunen/repo-checker/issues",
   "config": {
-    "logFile": "debug.log"
+    "logFile": "repo-checker.log"
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {

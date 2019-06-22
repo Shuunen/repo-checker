@@ -1,3 +1,5 @@
+const path = require('path')
+
 const log = require('./logger')
 const { createFile, fillTemplate, readFile } = require('./utils')
 
@@ -27,10 +29,14 @@ class Test {
     }
   }
   async createFile () {
-    const template = await readFile('src/templates', this.fileName, true)
+    const template = await readFile(path.join(__dirname, 'templates'), this.fileName, true)
     const fileContent = fillTemplate(template, this.data)
-    await createFile(this.folderPath, this.fileName, fileContent)
-    log.fix(`created or updated ${this.fileName} file`)
+    if (fileContent.length) {
+      await createFile(this.folderPath, this.fileName, fileContent)
+      log.fix(this.hasIssues ? 'updated' : 'created', this.fileName)
+    } else {
+      log.warn('please provide data to be able to fix this file')
+    }
     return fileContent
   }
   async checkIssues () {
