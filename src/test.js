@@ -21,16 +21,17 @@ class Test {
     this.fileContent = await readFile(this.folderPath, fileName, true)
     const fileExists = this.fileContent !== ''
     if (!fileExists && this.doFix) {
-      await this.createFile()
+      this.fileContent = await this.createFile()
     } else {
       log.test(fileExists, `has a ${fileName} file`)
     }
   }
   async createFile () {
     const template = await readFile('src/templates', this.fileName, true)
-    this.fileContent = fillTemplate(template, this.data)
-    await createFile(this.folderPath, this.fileName, this.fileContent)
-    log.fix(`created a ${this.fileName} file`)
+    const fileContent = fillTemplate(template, this.data)
+    await createFile(this.folderPath, this.fileName, fileContent)
+    log.fix(`created or updated ${this.fileName} file`)
+    return fileContent
   }
   async checkIssues () {
     if (this.hasIssues && this.doFix) {

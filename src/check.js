@@ -20,6 +20,10 @@ function check (folderPath, data, doFix) {
         log.setIndentLevel(0)
       }
     })
+    .catch(err => {
+      log.setIndentLevel(0)
+      throw err
+    })
 }
 
 module.exports = check

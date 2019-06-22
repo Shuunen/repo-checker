@@ -56,7 +56,7 @@ class Logger {
     return this.info(pkg.name, 'is starting', '\n')
   }
   end () {
-    return this.info(pkg.name, 'has finished', '\n')
+    return this.info('\n', pkg.name, 'has finished', '\n')
   }
 }
 
