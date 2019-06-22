@@ -33,7 +33,13 @@ class Logger {
   }
   test (ok, msg, justWarn) {
     const str = this.indent + (ok ? '✔️' : justWarn ? '⚠️' : '❌') + '  ' + msg
-    console.error(ok ? chalk.green(str) : justWarn ? chalk.yellowBright(str) : chalk.redBright(str))
+    if (ok) {
+      console.log(chalk.green(str))
+    } else if (justWarn) {
+      console.log(chalk.yellowBright(str))
+    } else {
+      console.error(chalk.redBright(str))
+    }
     return this._write(str)
   }
   fix (msg) {
