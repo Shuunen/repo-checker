@@ -12,7 +12,9 @@ function check (folderPath, data, doFix) {
         log.setIndentLevel(1)
         const dataFolder = await augmentData(folder, data)
         for (const Checker of Checkers) {
-          await new Checker(folder, dataFolder, doFix).init()
+          const instance = new Checker(folder, dataFolder, doFix)
+          await instance.start()
+          await instance.end()
         }
         log.line()
         log.setIndentLevel(0)

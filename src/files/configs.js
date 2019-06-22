@@ -1,7 +1,7 @@
 const Test = require('../test')
 
 class CheckConfigs extends Test {
-  async init () {
+  async start () {
     await this.checkFile('.editorconfig')
     await this.checkFile('.gitignore')
     await this.checkFile('.nvmrc')

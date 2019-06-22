@@ -1,7 +1,7 @@
 const Test = require('../test')
 
 class CheckReadme extends Test {
-  async init () {
+  async start () {
     await this.checkFile('README.md')
     this.shouldContains('a title', /^#\s\w+/)
 

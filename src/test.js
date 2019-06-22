@@ -10,6 +10,12 @@ class Test {
     this.fileName = ''
     this.hasIssues = false
   }
+  async start () {
+    log.error('start is not implemented in child class', this.constructor.name)
+  }
+  async end () {
+    return this.checkIssues()
+  }
   async checkFile (fileName) {
     this.fileName = fileName
     this.fileContent = await readFile(this.folderPath, fileName, true)

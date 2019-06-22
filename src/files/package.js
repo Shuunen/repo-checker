@@ -7,7 +7,7 @@ const optionalProps = ['bugs', 'keywords']
 const optionalScripts = ['lint']
 
 class CheckPackage extends Test {
-  async init () {
+  async start () {
     await this.checkFile('package.json')
     /* properties */
     requiredProps.forEach(prop => {
