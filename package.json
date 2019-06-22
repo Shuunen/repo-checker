@@ -36,5 +36,5 @@
     "test": "npm run lint",
     "update": "npx npm-check-updates -u"
   },
-  "version": "0.0.3"
+  "version": "1.0.0"
 }
