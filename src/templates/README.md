@@ -4,7 +4,9 @@
 
 [![Build Status](https://travis-ci.org/{{ user_id }}/{{ repo_id }}.svg?branch=master)](https://travis-ci.org/{{ user_id }}/{{ repo_id }})
 [![David](https://img.shields.io/david/{{ user_id_lowercase }}/{{ repo_id }}.svg)](https://david-dm.org/{{ user_id_lowercase }}/{{ repo_id }})
-[![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/{{ user_id }}/{{ repo_id }}.svg)](https://lgtm.com/projects/g/{{ user_id }}/{{ repo_id }}/)
+[![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/{{ user_id }}/{{ repo_id }}.svg)](https://lgtm.com/projects/g/{{ user_id }}/{{ repo_id }})
+
+> {{ repo_id }} is a great project !
 
 ## Thanks
 
