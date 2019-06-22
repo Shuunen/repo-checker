@@ -55,8 +55,12 @@ function folderContainsFile (folderPath, fileName) {
   if (!folderPath || !fileName) {
     return log.error('folderContainsFile miss arguments')
   }
+  return checkFileExists(path.join(folderPath, fileName))
+}
+
+function checkFileExists (filePath) {
   return new Promise((resolve, reject) => {
-    fs.access(path.join(folderPath, fileName), fs.F_OK, (err) => {
+    fs.access(filePath, fs.F_OK, (err) => {
       if (err) {
         resolve(false)
       }
@@ -113,4 +117,4 @@ function fillTemplate (template, data) {
   return str
 }
 
-module.exports = { log, getGitFolders, fillTemplate, folderContainsFile, createFile, readFile, augmentData }
+module.exports = { log, getGitFolders, fillTemplate, checkFileExists, folderContainsFile, createFile, readFile, augmentData }
