@@ -43,5 +43,5 @@
     "test": "npm run lint && cross-var node $npm_package_main --target=.",
     "update": "npx npm-check-updates -u"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }
