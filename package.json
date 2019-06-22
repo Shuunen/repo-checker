@@ -17,6 +17,9 @@
     "eslint-plugin-standard": "4.0.0",
     "simple-git": "1.113.0"
   },
+  "files": [
+    "/src"
+  ],
   "homepage": "https://github.com/Shuunen/repo-checker",
   "keywords": [
     "repository",
@@ -25,6 +28,7 @@
   "license": "GPL-3.0",
   "main": "src/index.js",
   "name": "@shuunen/repo-checker",
+  "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/Shuunen/repo-checker.git"
@@ -33,7 +37,7 @@
     "dev": "cross-var nodemon $npm_package_main --target=.. --fix",
     "lint": "eslint --fix src/**/*.js",
     "start": "cross-var node $npm_package_main",
-    "test": "npm run lint",
+    "test": "npm run lint && cross-var node $npm_package_main --target=.",
     "update": "npx npm-check-updates -u"
   },
   "version": "1.0.0"
