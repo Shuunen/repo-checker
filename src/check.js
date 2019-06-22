@@ -4,7 +4,7 @@ const log = require('./logger')
 
 const Checkers = [].concat(files)
 
-function check (folderPath, data, doFix) {
+function check (folderPath, data, doFix, doForce) {
   return getGitFolders(folderPath)
     .then(async (folders) => {
       for (const folder of folders) {
@@ -12,7 +12,7 @@ function check (folderPath, data, doFix) {
         log.setIndentLevel(1)
         const dataFolder = await augmentData(folder, data)
         for (const Checker of Checkers) {
-          const instance = new Checker(folder, dataFolder, doFix)
+          const instance = new Checker(folder, dataFolder, doFix, doForce)
           await instance.start()
           await instance.end()
         }

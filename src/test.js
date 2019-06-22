@@ -4,10 +4,11 @@ const log = require('./logger')
 const { createFile, fillTemplate, readFile } = require('./utils')
 
 class Test {
-  constructor (folderPath, data, doFix) {
+  constructor (folderPath, data, doFix, doForce) {
     this.folderPath = folderPath
     this.data = data
     this.doFix = doFix
+    this.doForce = doForce
     this.fileContent = ''
     this.fileName = ''
     this.hasIssues = false
@@ -35,13 +36,16 @@ class Test {
       await createFile(this.folderPath, this.fileName, fileContent)
       log.fix(this.hasIssues ? 'updated' : 'created', this.fileName)
     } else {
-      log.warn('please provide data to be able to fix this file')
+      log.warn('please provide a data file to be able to fix this file')
     }
     return fileContent
   }
   async checkIssues () {
     if (this.hasIssues && this.doFix) {
-      return this.createFile()
+      if (this.doForce) {
+        return this.createFile()
+      }
+      log.info('this file has at least one issue, if you want repo-checker to overwrite this file use --force')
     }
   }
   /**

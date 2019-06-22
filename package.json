@@ -21,7 +21,7 @@
     "simple-git": "1.113.0"
   },
   "files": [
-    "/src"
+    "src"
   ],
   "homepage": "https://github.com/Shuunen/repo-checker",
   "keywords": [

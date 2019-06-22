@@ -24,8 +24,8 @@ class Logger {
     return this._write(this.indent, '🔹', ...args)
   }
   info (...args) {
-    console.log(this.indent, ...args)
-    return this._write(this.indent, '🔹', ...args)
+    console.log(this.indent, '⬜ ', ...args)
+    return this._write(this.indent, '⬜', ...args)
   }
   error (...args) {
     console.error(chalk.redBright(this.indent, '❌ ', ...args))
@@ -57,11 +57,15 @@ class Logger {
     return this._write('')
   }
   start () {
-    this._write(`\n⬇️--- Entry from ${this.date} ---⬇️\n`)
-    return this.info('\n', pkg.name, 'is starting', '\n')
+    this.line()
+    this._write(`⬇️--- Entry from ${this.date} ---⬇️`)
+    this.info(pkg.name, 'is starting')
+    return this.line()
   }
   end () {
-    return this.info('\n', pkg.name, 'has finished', '\n')
+    this.line()
+    this.info(pkg.name, 'has finished')
+    return this.line()
   }
 }
 
