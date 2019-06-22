@@ -6,6 +6,7 @@
   "keywords": [],
   "license": "",
   "name": "@{{ user_id_lowercase }}/{{ repo_id }}",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/{{ user_id }}/{{ repo_id }}.git"
