@@ -82,6 +82,7 @@ function readFile (folderPath, fileName, returnEmptyIfNotExists) {
     fs.readFile(path.join(folderPath, fileName), 'utf8', (err, content) => {
       if (err) {
         if (returnEmptyIfNotExists) {
+          log.debug(path.join(folderPath, fileName), 'does not exists, returning empty')
           resolve('')
         }
         reject(err)
@@ -100,14 +101,16 @@ function fillTemplate (template, data) {
   if (!tokens) {
     return str
   }
-  return tokens.reduce((acc, token) => {
+  for (let token of tokens) {
     const key = token.replace(/[{\s}]/g, '')
     let value = data && data[key]
-    if (!value) {
-      log.error(`please provide variable "${key}"`)
+    if (!value || !value.length) {
+      log.warn(`cannot fill variable "${key}"`)
+      return ''
     }
-    return acc.replace(token, value || '')
-  }, str)
+    str = str.replace(token, value)
+  }
+  return str
 }
 
 module.exports = { log, getGitFolders, fillTemplate, folderContainsFile, createFile, readFile, augmentData }
