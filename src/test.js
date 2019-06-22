@@ -8,18 +8,27 @@ class Test {
     this.doFix = doFix
     this.fileContent = ''
     this.fileName = ''
+    this.hasIssues = false
   }
   async checkFile (fileName) {
     this.fileName = fileName
     this.fileContent = await readFile(this.folderPath, fileName, true)
     const fileExists = this.fileContent !== ''
     if (!fileExists && this.doFix) {
-      const template = await readFile('src/templates', fileName, true)
-      this.fileContent = fillTemplate(template, this.data)
-      await createFile(this.folderPath, fileName, this.fileContent)
-      log.fix(`created a ${fileName} file`)
+      await this.createFile()
     } else {
       log.test(fileExists, `has a ${fileName} file`)
+    }
+  }
+  async createFile () {
+    const template = await readFile('src/templates', this.fileName, true)
+    this.fileContent = fillTemplate(template, this.data)
+    await createFile(this.folderPath, this.fileName, this.fileContent)
+    log.fix(`created a ${this.fileName} file`)
+  }
+  async checkIssues () {
+    if (this.hasIssues && this.doFix) {
+      return this.createFile()
     }
   }
   /**
@@ -33,6 +42,9 @@ class Test {
   shouldContains (name, regex, nbMatchExpected, justWarn) {
     const contentExists = this.checkContains(regex, nbMatchExpected)
     log.test(contentExists, `${this.fileName} ${!contentExists ? justWarn ? 'could have' : 'does not have' : 'has'} ${name} `, justWarn)
+    if (!contentExists && !justWarn) {
+      this.hasIssues = true
+    }
     return contentExists
   }
   couldContains (name, regex, nbMatchExpected) {
@@ -42,6 +54,9 @@ class Test {
     nbMatchExpected = nbMatchExpected === undefined ? 1 : nbMatchExpected
     const matches = this.fileContent.match(regex)
     const nbMatch = (matches && matches.length) || 0
+    if (nbMatch !== nbMatchExpected) {
+      log.debug(regex.toString().replace('\n', ''), 'matched', nbMatch, 'instead of', nbMatchExpected)
+    }
     return (nbMatch === nbMatchExpected)
   }
 }
