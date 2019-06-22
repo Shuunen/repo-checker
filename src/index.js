@@ -16,10 +16,10 @@ function init () {
   let data = {}
   if (args['--data']) {
     const p = path.join(__dirname, '..', args['--data'])
-    log.info('loading data from', p)
+    log.info('loading data from', p, '\n')
     data = require(p)
   } else if (doFix) {
-    log.info('you should provide data to enhance fix')
+    log.info('you should provide data to enhance fix\n')
   }
   log.start()
     .then(() => check(target, data, doFix))
