@@ -40,10 +40,11 @@
   "scripts": {
     "dev": "cross-var nodemon $npm_package_main --target=.. --fix",
     "lint": "eslint --fix src/**/*.js",
-    "start": "cross-var node $npm_package_main",
-    "test": "npm run lint && cross-var node $npm_package_main --target=.",
-    "update": "npx npm-check-updates -u",
-    "postversion": "git push && git push --tags && npm publish"
+    "postversion": "git push && git push --tags && npm publish",
+    "repo-check": "cross-var node $npm_package_main",
+    "start": "npm run repo-check",
+    "test": "npm run lint && npm run repo-check",
+    "update": "npx npm-check-updates -u"
   },
   "version": "1.1.1"
 }
