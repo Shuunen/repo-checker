@@ -7,18 +7,20 @@
   "config": {
     "logFile": "repo-check.log"
   },
-  "description": "Repo cleaning made easy",
-  "devDependencies": {
+  "dependencies": {
     "arg": "4.1.0",
     "chalk": "2.4.2",
     "cross-var": "1.1.0",
+    "simple-git": "1.116.0"
+  },
+  "description": "Repo cleaning made easy",
+  "devDependencies": {
     "eslint": "6.0.0",
     "eslint-config-standard": "12.0.0",
     "eslint-plugin-import": "2.17.3",
     "eslint-plugin-node": "9.1.0",
     "eslint-plugin-promise": "4.1.1",
-    "eslint-plugin-standard": "4.0.0",
-    "simple-git": "1.116.0"
+    "eslint-plugin-standard": "4.0.0"
   },
   "files": [
     "src"
