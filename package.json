@@ -45,5 +45,5 @@
     "update": "npx npm-check-updates -u",
     "postversion": "git push && git push --tags && npm publish"
   },
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
