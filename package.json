@@ -40,12 +40,12 @@
     "url": "https://github.com/Shuunen/repo-checker.git"
   },
   "scripts": {
+    "check": "cross-var node $npm_package_main",
     "dev": "cross-var nodemon $npm_package_main --target=.. --fix",
     "lint": "eslint --fix src/**/*.js",
     "postversion": "git push && git push --tags && npm publish",
-    "repo-check": "cross-var node $npm_package_main",
-    "start": "npm run repo-check",
-    "test": "npm run lint && npm run repo-check",
+    "start": "npm run check",
+    "test": "npm run lint && npm run check",
     "update": "npx npm-check-updates -u"
   },
   "version": "1.1.3"

@@ -12,9 +12,10 @@
     "url": "https://github.com/{{ user_id }}/{{ repo_id }}.git"
   },
   "scripts": {
+    "check": "npx repo-check",
     "lint": "",
     "start": "",
-    "test": "npm run lint"
+    "test": "npm run check && npm run lint"
   },
   "version": "0.0.1"
 }
