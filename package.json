@@ -48,5 +48,5 @@
     "test": "npm run lint && npm run repo-check",
     "update": "npx npm-check-updates -u"
   },
-  "version": "1.1.2"
+  "version": "1.1.3"
 }
