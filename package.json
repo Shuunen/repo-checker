@@ -15,7 +15,7 @@
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {
-    "eslint": "6.2.2",
+    "eslint": "6.3.0",
     "eslint-config-standard": "12.0.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-node": "9.2.0",
