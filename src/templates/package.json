@@ -2,6 +2,9 @@
   "author": "{{ user_name }} <{{ user_mail }}>",
   "bugs": "https://github.com/{{ user_id }}/{{ repo_id }}/issues",
   "description": "",
+  "files": [
+    "src"
+  ],
   "homepage": "https://github.com/{{ user_id }}/{{ repo_id }}",
   "keywords": [],
   "license": "",
