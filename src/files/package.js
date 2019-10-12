@@ -62,7 +62,9 @@ class CheckPackage extends Test {
     if (hasDependencies || hasDevDependencies) {
       this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
       /* annoying deps */
-      this.shouldContains('no sass dependency', /sass"/, 0)
+      if (!this.data.sass || this.data.sass !== 'ignore') {
+        this.shouldContains('no sass dependency', /sass"/, 0)
+      }
     }
   }
   regexForProp (type, name) {
