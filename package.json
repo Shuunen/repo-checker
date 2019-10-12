@@ -49,5 +49,5 @@
     "test": "npm run lint && npm run check",
     "update": "npx npm-check-updates -u"
   },
-  "version": "1.1.4"
+  "version": "1.2.0"
 }
