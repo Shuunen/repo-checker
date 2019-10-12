@@ -41,6 +41,7 @@
   },
   "scripts": {
     "check": "cross-var node $npm_package_main",
+    "ci": "npm run test",
     "dev": "cross-var nodemon $npm_package_main --target=.. --fix",
     "lint": "eslint --fix src/**/*.js",
     "postversion": "git push && git push --tags && npm publish",

@@ -5,7 +5,6 @@ class CheckConfigs extends Test {
     await this.checkFile('.editorconfig')
     await this.checkFile('.gitignore')
     await this.checkFile('.nvmrc')
-    await this.checkFile('.travis.yml')
     await this.checkFile('renovate.json')
   }
 }

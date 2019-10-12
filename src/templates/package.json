@@ -16,6 +16,7 @@
   },
   "scripts": {
     "check": "npx repo-check",
+    "ci": "npm run test",
     "lint": "",
     "start": "",
     "test": "npm run check && npm run lint"

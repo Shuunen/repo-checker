@@ -22,7 +22,7 @@ class CheckPackage extends Test {
   }
   get scripts () {
     return {
-      required: ['start', 'test'],
+      required: ['ci', 'start', 'test'],
       optional: ['check', 'lint', 'dev', 'update'],
     }
   }
