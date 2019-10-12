@@ -7,7 +7,7 @@
   ],
   "homepage": "https://github.com/{{ user_id }}/{{ repo_id }}",
   "keywords": [],
-  "license": "",
+  "license": "{{ license }}",
   "name": "@{{ user_id_lowercase }}/{{ repo_id }}",
   "private": true,
   "repository": {
