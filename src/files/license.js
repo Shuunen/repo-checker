@@ -2,7 +2,8 @@ const Test = require('../test')
 
 class CheckLicense extends Test {
   async start () {
-    await this.checkFile('LICENSE')
+    await this.checkFileExists('LICENSE')
+    await this.inspectFile('LICENSE')
     const { license } = this.data
     if (license === 'GPL-3.0') {
       this.shouldContains('a GPL title', /GNU GENERAL PUBLIC LICENSE/)

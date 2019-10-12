@@ -1,7 +1,7 @@
 const path = require('path')
 
 const log = require('./logger')
-const { createFile, fillTemplate, readFile } = require('./utils')
+const { createFile, fillTemplate, readFile, folderContainsFile } = require('./utils')
 
 class Test {
   constructor (folderPath, data, doFix, doForce) {
@@ -19,22 +19,27 @@ class Test {
   async end () {
     return this.checkIssues()
   }
-  async checkFile (fileName) {
+  async inspectFile (fileName) {
     this.fileName = fileName
     this.fileContent = await readFile(this.folderPath, fileName, true)
-    const fileExists = this.fileContent !== ''
-    if (!fileExists && this.doFix) {
-      this.fileContent = await this.createFile()
-    } else {
-      log.test(fileExists, `has a ${fileName} file`)
-    }
   }
-  async createFile () {
-    const template = await readFile(path.join(__dirname, 'templates'), this.fileName, true)
+  async checkFileExists (fileName) {
+    const fileExists = await folderContainsFile(this.folderPath, fileName)
+    if (!fileExists && this.doFix) {
+      await this.createFile(fileName)
+    }
+    log.test(fileExists, `has a ${fileName} file`)
+  }
+  async checkNoFileExists (fileName) {
+    const fileExists = await folderContainsFile(this.folderPath, fileName)
+    log.test(!fileExists, `has no ${fileName} file`)
+  }
+  async createFile (fileName) {
+    const template = await readFile(path.join(__dirname, 'templates'), fileName, true)
     const fileContent = fillTemplate(template, this.data)
     if (fileContent.length) {
-      await createFile(this.folderPath, this.fileName, fileContent)
-      log.fix(this.hasIssues ? 'updated' : 'created', this.fileName)
+      await createFile(this.folderPath, fileName, fileContent)
+      log.fix(this.hasIssues ? 'updated' : 'created', fileName)
     } else {
       log.warn('please provide a data file to be able to fix this file')
     }

@@ -27,7 +27,10 @@ class CheckPackage extends Test {
     }
   }
   async start () {
-    await this.checkFile('package.json')
+    await this.checkFileExists('package.json')
+    await this.checkFileExists('package-lock.json')
+    await this.checkNoFileExists('yarn.lock')
+    await this.inspectFile('package.json')
     this.checkProperties()
     this.checkScripts()
     this.checkDependencies()
