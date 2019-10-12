@@ -4,7 +4,7 @@ module.exports = {
     'standard',
   ],
   rules: {
-    'no-console': 'off',
+    'no-console': 'error',
     'comma-dangle': ['error', 'always-multiline'],
   },
   parserOptions: {

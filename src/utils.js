@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const log = require('./logger')
 const Git = require('simple-git/promise')
+const { dataFileName } = require('./constants')
 
 async function isGitFolder (folderPath) {
   if (!fs.statSync(folderPath).isDirectory()) {
@@ -38,17 +39,19 @@ async function getGitFolders (folderPath) {
   })
 }
 
-function augmentData (folderPath, dataSource) {
-  const data = Object.assign({}, dataSource)
-  return Git(folderPath).getRemotes(true).then(remotes => {
-    const matches = JSON.stringify(remotes).match(/([\w-]+)\/([\w-]+)\.git/)
-    if (matches.length === 3) {
-      data.user_id = matches[1]
-      data.user_id_lowercase = data.user_id.toLowerCase()
-      data.repo_id = matches[2]
-    }
-    return data
-  })
+async function augmentData (folderPath, dataSource) {
+  const hasFolderData = await folderContainsFile(folderPath, dataFileName)
+  const folderDataPath = path.join(__dirname, '..', folderPath, dataFileName)
+  const folderData = hasFolderData ? require(folderDataPath) : {}
+  const data = Object.assign({}, dataSource, folderData)
+  const remotes = await Git(folderPath).getRemotes(true)
+  const matches = JSON.stringify(remotes).match(/([\w-]+)\/([\w-]+)\.git/)
+  if (matches.length === 3) {
+    data.user_id = matches[1]
+    data.user_id_lowercase = data.user_id.toLowerCase()
+    data.repo_id = matches[2]
+  }
+  return data
 }
 
 function folderContainsFile (folderPath, fileName) {

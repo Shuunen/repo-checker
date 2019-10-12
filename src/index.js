@@ -6,25 +6,22 @@ const path = require('path')
 const check = require('./check')
 const log = require('./logger')
 const { createFile, readFile, checkFileExists } = require('./utils')
-
-const home = process.env.HOME
-const dataFileName = '.repo-checker.js'
-const dataFileHomePath = path.join(home, dataFileName)
+const { dataFileName, home, dataFileHomePath } = require('./constants')
 
 async function initDataFile (doForce) {
   log.line()
   const fileExists = await checkFileExists(dataFileHomePath)
   if (fileExists && !doForce) {
-    log.warn('repo-checker data file already init :', path.join(home, dataFileName))
+    log.warn('repo-checker data file already init :', dataFileHomePath)
     log.info('use --force to overwrite it')
     return
   }
   const fileContent = await readFile(path.join(__dirname, '..'), 'data.sample.js')
   const fileCreated = await createFile(home, dataFileName, fileContent)
   if (fileCreated) {
-    log.info('repo-checker data file successfully init, you should edit :', path.join(home, dataFileName))
+    log.info('repo-checker data file successfully init, you should edit :', dataFileHomePath)
   } else {
-    log.error('repo-checker failed at creating this file :', path.join(home, dataFileName))
+    log.error('repo-checker failed at creating this file :', dataFileHomePath)
   }
 }
 
