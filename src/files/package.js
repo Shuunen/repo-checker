@@ -43,6 +43,7 @@ class CheckPackage extends Test {
         this[testFunc](message, regex)
       }
     }
+    this.shouldContains(`a ${this.data.license} license`, this.regexForStringValueProp('license', this.data.license))
   }
   checkScripts () {
     const hasScripts = this.shouldContains('a script section', this.regexForObjectProp('scripts'))
@@ -80,6 +81,9 @@ class CheckPackage extends Test {
   }
   regexForStringProp (name) {
     return new RegExp(`"${name}":\\s".+"`)
+  }
+  regexForStringValueProp (name, value) {
+    return new RegExp(`"${name}":\\s"${value}"`)
   }
   regexForObjectProp (name) {
     return new RegExp(`"${name}":\\s{\n`)

@@ -45,17 +45,15 @@ async function start () {
     target = '.'
   }
   let data = {}
-  if (doFix) {
-    log.line()
-    const fileExists = await checkFileExists(dataPath)
-    if (fileExists) {
-      log.info('loading data from', dataPath)
-      data = require(dataPath)
-    } else if (dataPath === dataFileHomePath) {
-      log.warn('you should use --init to prepare a data file to enhance fix')
-    } else {
-      log.warn('cannot access data file at :', dataPath)
-    }
+  log.line()
+  const fileExists = await checkFileExists(dataPath)
+  if (fileExists) {
+    log.info('loading data from', dataPath)
+    data = require(dataPath)
+  } else if (dataPath === dataFileHomePath) {
+    log.warn('you should use --init to prepare a data file to enhance fix')
+  } else {
+    log.warn('cannot access data file at :', dataPath)
   }
   log.start()
     .then(() => check(target, data, doFix, doForce))
