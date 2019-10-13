@@ -35,20 +35,21 @@ class Test {
     log.test(!fileExists, `has no ${fileName} file`)
   }
   async createFile (fileName) {
-    const template = await readFile(path.join(__dirname, 'templates'), fileName, true)
+    const templatePath = path.join(__dirname, 'templates')
+    const template = await readFile(templatePath, fileName, true)
     const fileContent = fillTemplate(template, this.data)
     if (fileContent.length) {
       await createFile(this.folderPath, fileName, fileContent)
       log.fix(this.hasIssues ? 'updated' : 'created', fileName)
     } else {
-      log.warn('please provide a data file to be able to fix this file')
+      log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
     }
     return fileContent
   }
   async checkIssues () {
     if (this.hasIssues && this.doFix) {
       if (this.doForce) {
-        return this.createFile()
+        return this.createFile(this.fileName)
       }
       log.info('this file has at least one issue, if you want repo-checker to overwrite this file use --force')
     }
