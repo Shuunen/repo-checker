@@ -6,7 +6,7 @@ const path = require('path')
 const check = require('./check')
 const log = require('./logger')
 const { createFile, readFile, checkFileExists } = require('./utils')
-const { dataFileName, home, dataFileHomePath } = require('./constants')
+const { dataFileName, home, dataFileHomePath, repoCheckerPath, defaultDataFileName, defaultDataFilePath } = require('./constants')
 
 async function initDataFile (doForce) {
   log.line()
@@ -16,7 +16,7 @@ async function initDataFile (doForce) {
     log.info('use --force to overwrite it')
     return
   }
-  const fileContent = await readFile(path.join(__dirname, '..'), 'data.sample.js')
+  const fileContent = await readFile(repoCheckerPath, defaultDataFileName)
   const fileCreated = await createFile(home, dataFileName, fileContent)
   if (fileCreated) {
     log.info('repo-checker data file successfully init, you should edit :', dataFileHomePath)
@@ -43,12 +43,15 @@ async function start () {
   }
   let data = {}
   log.line()
-  const fileExists = await checkFileExists(dataPath)
+  let fileExists = await checkFileExists(dataPath)
+  if (!fileExists) {
+    log.warn('you should use --init to prepare a data file to enhance fix\n')
+    dataPath = defaultDataFilePath
+    fileExists = await checkFileExists(dataPath)
+  }
   if (fileExists) {
     log.info('loading data from', dataPath)
     data = require(dataPath)
-  } else if (dataPath === dataFileHomePath) {
-    log.warn('you should use --init to prepare a data file to enhance fix')
   } else {
     log.warn('cannot access data file at :', dataPath)
   }

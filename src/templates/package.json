@@ -19,6 +19,7 @@
     "ci": "npm run test",
     "dev": "npm start",
     "lint": "",
+    "postversion": "git push && git push --tags",
     "start": "",
     "test": "npm run lint && npm run check",
     "update": "npx npm-check-updates -u"
