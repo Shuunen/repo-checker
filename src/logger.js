@@ -60,7 +60,7 @@ class Logger {
   start () {
     this.line()
     this._write(`⬇️--- Entry from ${this.date} ---⬇️`)
-    this.info(pkg.name, 'is starting')
+    this.info(`${pkg.name} v${pkg.version} is starting`)
     return this.line()
   }
   end () {
