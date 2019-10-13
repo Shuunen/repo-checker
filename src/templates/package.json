@@ -17,9 +17,11 @@
   "scripts": {
     "check": "npx repo-check",
     "ci": "npm run test",
+    "dev": "npm start",
     "lint": "",
     "start": "",
-    "test": "npm run check && npm run lint"
+    "test": "npm run lint && npm run check",
+    "update": "npx npm-check-updates -u"
   },
   "version": "0.0.1"
 }
