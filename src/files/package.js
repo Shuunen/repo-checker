@@ -20,12 +20,14 @@ class CheckPackage extends Test {
       },
     }
   }
+
   get scripts () {
     return {
       required: ['ci', 'start', 'test'],
       optional: ['check', 'lint', 'dev', 'update'],
     }
   }
+
   async start () {
     await this.checkFileExists('package.json')
     await this.checkFileExists('package-lock.json')
@@ -35,11 +37,12 @@ class CheckPackage extends Test {
     this.checkScripts()
     this.checkDependencies()
   }
+
   checkProperties () {
-    for (let flag in this.props) {
+    for (const flag in this.props) {
       const isRequired = flag === 'required'
       const testFunc = isRequired ? 'shouldContains' : 'couldContains'
-      for (let [prop, type] of Object.entries(this.props[flag])) {
+      for (const [prop, type] of Object.entries(this.props[flag])) {
         const message = `a property ${prop}`
         const regex = this.regexForProp(type.name, prop)
         // generic equivalent of : this.shouldContains(`a property ${prop}`, this.regexForStringProp(prop))
@@ -48,6 +51,7 @@ class CheckPackage extends Test {
     }
     this.shouldContains(`a ${this.data.license} license`, this.regexForStringValueProp('license', this.data.license))
   }
+
   checkScripts () {
     const hasScripts = this.shouldContains('a script section', this.regexForObjectProp('scripts'))
     if (hasScripts) {
@@ -59,6 +63,7 @@ class CheckPackage extends Test {
       })
     }
   }
+
   checkDependencies () {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
     const hasDevDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
@@ -70,6 +75,7 @@ class CheckPackage extends Test {
       }
     }
   }
+
   regexForProp (type, name) {
     switch (type) {
       case 'String':
@@ -84,18 +90,23 @@ class CheckPackage extends Test {
         throw new Error('missing regex constructor for type : ' + type)
     }
   }
+
   regexForStringProp (name) {
     return new RegExp(`"${name}":\\s".+"`)
   }
+
   regexForStringValueProp (name, value) {
     return new RegExp(`"${name}":\\s"${value}"`)
   }
+
   regexForObjectProp (name) {
     return new RegExp(`"${name}":\\s{\n`)
   }
+
   regexForArrayProp (name) {
     return new RegExp(`"${name}":\\s\\[\n`)
   }
+
   regexForBooleanProp (name) {
     return new RegExp(`"${name}":\\s(?:false|true),\n`)
   }

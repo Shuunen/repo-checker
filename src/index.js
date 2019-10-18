@@ -37,9 +37,9 @@ async function start () {
   }
   if (!target) {
     log.line()
-    log.info(`no target specified via : --target=path/to/directory`)
-    log.info(`targeting current directory...`)
-    target = '.'
+    log.info('no target specified via : --target=path/to/directory')
+    log.info('targeting current directory...')
+    target = process.cwd()
   }
   let data = {}
   log.line()

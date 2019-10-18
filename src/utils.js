@@ -27,7 +27,7 @@ async function getGitFolders (folderPath) {
         log.error(`failed at reading dir : ${folderPath}`, err)
         reject(err)
       }
-      let gitDirectories = []
+      const gitDirectories = []
       for (const filePath of filePaths) {
         const p = path.join(folderPath, filePath)
         if (await isGitFolder(p)) {
@@ -41,7 +41,7 @@ async function getGitFolders (folderPath) {
 
 async function augmentData (folderPath, dataSource) {
   const hasFolderData = await folderContainsFile(folderPath, dataFileName)
-  const folderDataPath = path.join(__dirname, '..', folderPath, dataFileName)
+  const folderDataPath = path.join(folderPath, dataFileName)
   const folderData = hasFolderData ? require(folderDataPath) : {}
   const data = Object.assign({}, dataSource, folderData)
   const remotes = await Git(folderPath).getRemotes(true)
@@ -108,9 +108,9 @@ function fillTemplate (template, data) {
   if (!tokens) {
     return str
   }
-  for (let token of tokens) {
+  for (const token of tokens) {
     const key = token.replace(/[{\s}]/g, '')
-    let value = data && data[key]
+    const value = data && data[key]
     if (!value || !value.length) {
       log.warn(`cannot fill variable "${key}"`)
       return ''
