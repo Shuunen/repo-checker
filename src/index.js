@@ -40,6 +40,8 @@ async function start () {
     log.info('no target specified via : --target=path/to/directory')
     log.info('targeting current directory...')
     target = process.cwd()
+  } else {
+    target = path.resolve(target)
   }
   let data = {}
   log.line()
