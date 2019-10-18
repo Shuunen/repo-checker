@@ -5,7 +5,6 @@ class CheckConfigs extends Test {
     await this.checkFileExists('.editorconfig')
     await this.checkFileExists('.gitignore')
     await this.checkFileExists('.nvmrc')
-    await this.checkFileExists('renovate.json')
   }
 }
 
