@@ -27,12 +27,12 @@ class Test {
     this.fileContent = await readFile(this.folderPath, fileName, true)
   }
 
-  async checkFileExists (fileName) {
+  async checkFileExists (fileName, justWarn) {
     const fileExists = await folderContainsFile(this.folderPath, fileName)
     if (!fileExists && this.doFix) {
       await this.createFile(fileName)
     }
-    log.test(fileExists, `has a ${fileName} file`)
+    log.test(fileExists, `has a ${fileName} file`, justWarn)
   }
 
   async checkNoFileExists (fileName) {

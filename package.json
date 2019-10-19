@@ -44,7 +44,7 @@
     "check": "cross-var node $npm_package_main",
     "ci": "npm run test",
     "dev": "cross-var nodemon $npm_package_main --target=.. --fix",
-    "lint": "eslint **/*.js --fix",
+    "lint": "eslint **/*.js --fix --ignore-path .gitignore",
     "preversion": "npm run ci",
     "postversion": "git push && git push --tags && npm publish",
     "start": "npm run check",
