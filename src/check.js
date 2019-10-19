@@ -4,10 +4,23 @@ const log = require('./logger')
 
 const Checkers = [].concat(files)
 
+function report (nbPassed, nbFailed) {
+  log.info('Report :')
+  log.setIndentLevel(1)
+  log.test(nbPassed > 0, `${nbPassed} test(s) passed successfully`, false, true)
+  log.test(nbFailed === 0, `${nbFailed} test(s) failed`, false, true)
+  log.line()
+  log.setIndentLevel(0)
+  if (nbFailed > 0) {
+    throw new Error('failed at validating at least one rule in one folder')
+  }
+}
+
 function check (folderPath, data, doFix, doForce) {
   return getGitFolders(folderPath)
     .then(async (folders) => {
-      let hasIssues = false
+      let nbPassed = 0
+      let nbFailed = 0
       for (const folder of folders) {
         log.info('Checking folder :', folder)
         log.setIndentLevel(1)
@@ -16,15 +29,13 @@ function check (folderPath, data, doFix, doForce) {
           const instance = new Checker(folder, dataFolder, doFix, doForce)
           await instance.start()
           await instance.end()
-          // if only one checker fail at some point at validating things, hasIssues will stay at true
-          hasIssues = hasIssues || instance.hasIssues
+          nbPassed += instance.nbPassed
+          nbFailed += instance.nbFailed
         }
         log.line()
         log.setIndentLevel(0)
       }
-      if (hasIssues) {
-        throw new Error('failed at validating at least one rule in one folder')
-      }
+      report(nbPassed, nbFailed)
     })
     .catch(err => {
       log.setIndentLevel(0)

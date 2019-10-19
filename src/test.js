@@ -11,7 +11,8 @@ class Test {
     this.doForce = doForce
     this.fileContent = ''
     this.fileName = ''
-    this.hasIssues = false
+    this.nbPassed = 0
+    this.nbFailed = 0
   }
 
   async start () {
@@ -28,16 +29,17 @@ class Test {
   }
 
   async checkFileExists (fileName, justWarn) {
-    const fileExists = await folderContainsFile(this.folderPath, fileName)
+    let fileExists = await folderContainsFile(this.folderPath, fileName)
     if (!fileExists && this.doFix) {
-      await this.createFile(fileName)
+      const fileContent = await this.createFile(fileName)
+      fileExists = fileContent.length > 0
     }
-    log.test(fileExists, `has a ${fileName} file`, justWarn)
+    this.test(fileExists, `has a ${fileName} file`, justWarn)
   }
 
-  async checkNoFileExists (fileName) {
+  async checkNoFileExists (fileName, justWarn) {
     const fileExists = await folderContainsFile(this.folderPath, fileName)
-    log.test(!fileExists, `has no ${fileName} file`)
+    this.test(!fileExists, `has no ${fileName} file`, justWarn)
   }
 
   async createFile (fileName) {
@@ -46,7 +48,7 @@ class Test {
     const fileContent = fillTemplate(template, this.data)
     if (fileContent.length) {
       await createFile(this.folderPath, fileName, fileContent)
-      log.fix(this.hasIssues ? 'updated' : 'created', fileName)
+      log.fix('created', fileName)
     } else {
       log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
     }
@@ -54,7 +56,7 @@ class Test {
   }
 
   async checkIssues () {
-    if (this.hasIssues && this.doFix) {
+    if (this.nbFailed > 0 && this.doFix) {
       if (this.doForce) {
         return this.createFile(this.fileName)
       }
@@ -72,10 +74,8 @@ class Test {
    */
   shouldContains (name, regex, nbMatchExpected, justWarn) {
     const contentExists = this.checkContains(regex, nbMatchExpected)
-    log.test(contentExists, `${this.fileName} ${!contentExists ? justWarn ? 'could have' : 'does not have' : 'has'} ${name} `, justWarn)
-    if (!contentExists && !justWarn) {
-      this.hasIssues = true
-    }
+    const message = `${this.fileName} ${!contentExists ? justWarn ? 'could have' : 'does not have' : 'has'} ${name} `
+    this.test(contentExists, message, justWarn)
     return contentExists
   }
 
@@ -91,6 +91,15 @@ class Test {
       log.debug(regex.toString().replace('\n', ''), 'matched', nbMatch, 'instead of', nbMatchExpected)
     }
     return (nbMatch === nbMatchExpected)
+  }
+
+  test (isValid, message, justWarn) {
+    if (!isValid && !justWarn) {
+      this.nbFailed++
+    } else {
+      this.nbPassed++
+    }
+    log.test(isValid, message, justWarn)
   }
 }
 

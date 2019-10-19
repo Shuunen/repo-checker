@@ -45,14 +45,16 @@ class Logger {
     return this._write(this.indent, '⚠️', ...args)
   }
 
-  success (...args) {
-    console.log(chalk.green(this.indent, '✔️ ', ...args))
+  success (outputToConsole, ...args) {
+    if (outputToConsole) {
+      console.log(chalk.green(this.indent, '✔️ ', ...args))
+    }
     return this._write(this.indent, '✔️', ...args)
   }
 
-  test (ok, msg, justWarn) {
+  test (ok, msg, justWarn, outputToConsole) {
     if (ok) {
-      this.success(msg)
+      this.success(outputToConsole, msg)
     } else if (justWarn) {
       this.warn(msg)
     } else {

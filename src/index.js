@@ -61,6 +61,7 @@ async function start () {
     .then(() => check(target, data, doFix, doForce))
     .catch(err => {
       log.error(err)
+      log.line()
       log.end()
       process.exit(1)
     })
