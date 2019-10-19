@@ -18,7 +18,7 @@
     "check": "npx repo-check",
     "ci": "npm run test",
     "dev": "npm start",
-    "lint": "eslint **/*.js --fix --ignore-path .gitignore",
+    "lint": "eslint \"**/*.js\" --fix --ignore-path .gitignore",
     "postversion": "git push && git push --tags",
     "start": "",
     "test": "npm run lint && npm run check",
