@@ -78,7 +78,6 @@ class Logger {
   }
 
   end () {
-    this.line()
     this.info(pkg.name, 'has finished')
     return this.line()
   }
