@@ -3,7 +3,8 @@
   "bugs": "https://github.com/{{ user_id }}/{{ repo_id }}/issues",
   "description": "",
   "files": [
-    "src"
+    "src",
+    "*"
   ],
   "homepage": "https://github.com/{{ user_id }}/{{ repo_id }}",
   "keywords": [],
