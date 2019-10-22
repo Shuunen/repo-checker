@@ -62,7 +62,9 @@ class CheckPackage extends Test {
         this.couldContains(`a ${name} script`, this.regexForStringProp(name))
       })
     }
-    this.couldContains('eslint linter with ignore rule', /"lint": "eslint \\"\*\*\/\*\.js\\" --fix --ignore-path \.gitignore",/)
+    if (!this.fileContent.includes('vue-cli-service lint')) {
+      this.couldContains('eslint linter with ignore rule', /"lint": "eslint \\"\*\*\/\*\.js\\" --fix --ignore-path \.gitignore",/)
+    }
   }
 
   checkDependencies () {
