@@ -63,7 +63,7 @@ class CheckPackage extends Test {
       })
     }
     if (!this.fileContent.includes('vue-cli-service lint')) {
-      this.couldContains('eslint linter with ignore rule', /"lint": "eslint \\"\*\*\/\*\.js\\" --fix --ignore-path \.gitignore",/)
+      this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
     }
   }
 
