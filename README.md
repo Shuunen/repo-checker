@@ -9,14 +9,15 @@
 
 > Maintain order in repositories chaos
 
-- [Repo Checker](#Repo-Checker)
-  - [Usage](#Usage)
-  - [Parameters](#Parameters)
+- [Repo Checker](#repo-checker)
+  - [Usage](#usage)
+  - [Parameters](#parameters)
     - [target](#target)
     - [fix](#fix)
     - [init](#init)
     - [data](#data)
-  - [Thanks](#Thanks)
+  - [Thanks](#thanks)
+  - [License](#license)
 
 ## Usage
 
@@ -61,6 +62,6 @@ If you don't give this parameter, repo-checker will try to load data from `~/.re
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
 - [Travis-ci.org](https://travis-ci.org) : for providing free continuous deployments
 
-
 ## License
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FShuunen%2Frepo-checker.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FShuunen%2Frepo-checker?ref=badge_large)
