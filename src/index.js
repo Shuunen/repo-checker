@@ -3,6 +3,7 @@
 const arg = require('arg')
 const path = require('path')
 
+const pkg = require('../package.json')
 const check = require('./check')
 const log = require('./logger')
 const { createFile, readFile, checkFileExists } = require('./utils')
@@ -26,7 +27,12 @@ async function initDataFile (doForce) {
 }
 
 async function start () {
-  const args = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--data': String, '--fix': Boolean }, { argv: process.argv.slice(2) })
+  const args = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--data': String, '--fix': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
+  if (args['--version'] || args['-v']) {
+    // eslint-disable-next-line no-console
+    console.log(pkg.version)
+    process.exit(0)
+  }
   let target = args['--target']
   let dataPath = args['--data'] ? path.join(__dirname, '..', args['--data']) : dataFileHomePath
   const doFix = args['--fix']
