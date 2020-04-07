@@ -5,6 +5,7 @@ class CheckConfigs extends Test {
     await this.checkFileExists('.gitignore')
     await this.checkFileExists('.nvmrc')
     await this.checkFileExists('.eslintrc.rules.js', true)
+    await this.checkFileExists('.csscomb.json', true)
   }
 }
 
