@@ -11,7 +11,7 @@ class CheckEditorConfig extends Test {
     this.couldContains('whitespace trailing', /trim_trailing_whitespace = true/)
     this.couldContains('final new line rule', /insert_final_newline = true/)
     this.couldContains('specific markdown trailing rule', /\[\*\.md\]\ntrim_trailing_whitespace = false/)
-    this.couldContains('specific html indent rule', /\[\*\.html\]\nindent_size = 4/)
+    this.couldContains('no specific html indent rule', /\[\*\.html\]\nindent_size = 4/, 0)
   }
 }
 
