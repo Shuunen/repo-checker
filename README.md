@@ -24,9 +24,8 @@
 Choose your favorite method :
 
 1. Via npx : `npx repo-check`
-2. Via npm globally : `npm install repo-check --global` then just run `repo-check`
-3. Via npm locally : `npm install repo-check` then run `npx repo-check` or use it in your `package.json` scripts
-4. Via local installation : clone this repository, cd into the folder and use `node .`
+2. Via npm locally : `npm install repo-check` then run `npx repo-check` or use it in your `package.json` scripts
+3. Via local installation : clone this repository, cd into the folder and use `node .`
 
 Pro tip : [init](#init) repo-checker before [fixing](#fix) files.
 
