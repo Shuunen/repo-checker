@@ -57,9 +57,7 @@ class Test {
 
   async checkIssues () {
     if (this.nbFailed > 0 && this.doFix) {
-      if (this.doForce) {
-        return this.createFile(this.fileName)
-      }
+      if (this.doForce) return this.createFile(this.fileName)
       log.info('this file has at least one issue, if you want repo-checker to overwrite this file use --force')
     }
   }
@@ -74,6 +72,7 @@ class Test {
    */
   shouldContains (name, regex, nbMatchExpected, justWarn) {
     const contentExists = this.checkContains(regex, nbMatchExpected)
+    name += contentExists ? '' : ` -- ${regex}`
     const message = `${this.fileName} ${!contentExists ? justWarn ? 'could have' : 'does not have' : 'has'} ${name} `
     this.test(contentExists, message, justWarn)
     return contentExists
@@ -83,8 +82,7 @@ class Test {
     return this.shouldContains(name, regex, nbMatchExpected, true)
   }
 
-  checkContains (regex, nbMatchExpected) {
-    nbMatchExpected = nbMatchExpected === undefined ? 1 : nbMatchExpected
+  checkContains (regex, nbMatchExpected = 1) {
     const matches = this.fileContent.match(regex)
     const nbMatch = (matches && matches.length) || 0
     if (nbMatch !== nbMatchExpected) {
