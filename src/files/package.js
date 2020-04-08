@@ -58,11 +58,13 @@ class CheckPackage extends Test {
         this.shouldContains(`a ${name} script`, this.regexForStringProp(name))
       })
     }
-    this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/, 1)
+    if (!this.fileContent.includes('Shuunen/repo-checker')) {
+      this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/, 1)
+    }
     this.couldContains('a pre-script for version automation', /"preversion": "npm run ci"/, 1)
-    this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags"/, 1)
+    this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags/, 1)
     this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/, 1)
-    if (!this.fileContent.includes('vue-cli-service lint')) {
+    if (!this.fileContent.includes('vue-cli-service lint') && this.fileContent.includes('lint')) {
       this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
     }
   }
