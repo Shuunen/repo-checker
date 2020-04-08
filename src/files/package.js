@@ -24,7 +24,6 @@ class CheckPackage extends Test {
   get scripts () {
     return {
       required: ['ci', 'start', 'test'],
-      optional: ['check', 'lint', 'dev', 'update'],
     }
   }
 
@@ -58,10 +57,11 @@ class CheckPackage extends Test {
       this.scripts.required.forEach(name => {
         this.shouldContains(`a ${name} script`, this.regexForStringProp(name))
       })
-      this.scripts.optional.forEach(name => {
-        this.couldContains(`a ${name} script`, this.regexForStringProp(name))
-      })
     }
+    this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/, 1)
+    this.couldContains('a pre-script for version automation', /"preversion": "npm run ci"/, 1)
+    this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags"/, 1)
+    this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/, 1)
     if (!this.fileContent.includes('vue-cli-service lint')) {
       this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
     }
@@ -72,10 +72,15 @@ class CheckPackage extends Test {
     const hasDevDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
     if (hasDependencies || hasDevDependencies) {
       this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
+      if (!this.fileContent.includes('Shuunen/repo-checker')) {
+        this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/, 1)
+      }
       /* annoying deps */
       if (!this.data.sass || this.data.sass !== 'ignore') {
-        this.shouldContains('no sass dependency', /sass"/, 0)
+        this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
       }
+      this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
+      this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
     }
   }
 
