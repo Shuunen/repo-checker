@@ -45,7 +45,7 @@ async function augmentData (folderPath, dataSource) {
   const folderData = hasFolderData ? require(folderDataPath) : {}
   const data = Object.assign({}, dataSource, folderData)
   const remotes = await Git(folderPath).getRemotes(true)
-  const matches = JSON.stringify(remotes).match(/([\w-]+)\/([\w-]+)\.git/)
+  const matches = JSON.stringify(remotes).match(/([\w-]+)\/([\w-]+)\.git/) || []
   if (matches.length === 3) {
     data.user_id = matches[1]
     data.user_id_lowercase = data.user_id.toLowerCase()
