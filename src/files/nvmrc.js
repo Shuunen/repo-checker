@@ -1,8 +1,9 @@
-const Test = require('../test')
+import { Test } from '../test'
 
-class CheckNvmRc extends Test {
+export class CheckNvmRc extends Test {
   async start () {
-    await this.checkFileExists('.nvmrc')
+    const exists = await this.checkFileExists('.nvmrc')
+    if (!exists) return
     await this.inspectFile('.nvmrc')
     if (!this.fileContent.includes('v12.')) {
       const ok = this.shouldContains('at least last lts node version', /10\.\d+\.\d+/)
@@ -10,5 +11,3 @@ class CheckNvmRc extends Test {
     }
   }
 }
-
-module.exports = CheckNvmRc
