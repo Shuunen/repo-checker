@@ -1,29 +1,34 @@
 {
   "author": "Romain Racamier-Lafon <romain.racamier@gmail.com>",
   "bin": {
-    "repo-check": "src/index.js"
+    "repo-check": "dist/cli.js"
   },
   "bugs": "https://github.com/Shuunen/repo-checker/issues",
   "config": {
     "logFile": "repo-check.log"
   },
-  "dependencies": {
-    "arg": "4.1.3",
-    "chalk": "4.0.0",
-    "simple-git": "1.132.0"
-  },
   "description": "Repo cleaning made easy",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "11.1.0",
+    "@rollup/plugin-json": "4.0.2",
+    "@rollup/plugin-node-resolve": "7.1.3",
+    "arg": "4.1.3",
+    "chalk": "4.0.0",
     "eslint": "6.8.0",
     "eslint-config-standard": "14.1.1",
     "eslint-plugin-import": "2.20.2",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "4.2.1",
-    "eslint-plugin-standard": "4.0.1"
+    "eslint-plugin-standard": "4.0.1",
+    "require-from-string": "2.0.2",
+    "rollup": "2.6.1",
+    "rollup-plugin-add-shebang": "0.3.1",
+    "shuutils": "4.0.0",
+    "simple-git": "1.132.0"
   },
   "files": [
-    "src",
-    "data.sample.js"
+    "dist",
+    "templates"
   ],
   "homepage": "https://github.com/Shuunen/repo-checker",
   "keywords": [
@@ -32,7 +37,7 @@
     "checker"
   ],
   "license": "GPL-3.0",
-  "main": "src/index.js",
+  "main": "dist/cli.js",
   "name": "repo-check",
   "private": false,
   "repository": {
@@ -40,15 +45,17 @@
     "url": "https://github.com/Shuunen/repo-checker.git"
   },
   "scripts": {
-    "check": "node src/index.js",
+    "build": "rollup -c",
+    "check": "node .",
     "ci": "npm run test",
-    "dev": "npm start",
+    "dev": "rollup -c -w",
     "lint": "eslint --fix --ignore-path .gitignore --ext .js .",
-    "preversion": "npm run ci",
     "postversion": "git push && git push --tags && npm publish",
+    "precheck": "npm run build",
+    "preversion": "npm run ci",
     "start": "npm run check",
     "test": "npm run lint && npm run check",
     "update": "npx npm-check-updates -u"
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

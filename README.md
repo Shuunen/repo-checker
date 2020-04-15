@@ -40,21 +40,21 @@ Target can be a relative or absolute path, can contain one project or more.
 ### fix
 
 `--fix` kindly ask repo-checker to try to create missing files or update problematic ones.
-For example, repo-checker will check for a `README.md`, if it does not exists, the file will be created and filled with data accordingly to the README.md template (`src/templates/README.md`).
+For example, repo-checker will check for a `README.md`, if it does not exists, the file will be created and filled with data accordingly to the README.md template (`templates/README.md`).
 Repo-checker will try to grab as much info as possible from the project folder to create this file.
 If it's not enough, you'll be prompt to [init](#init) or provide [data](#data).
 If you want to fix already existing files, use `--force` to overwrite it.
 
 ### init
 
-`--init` ask repo-checker to initialize a data file in the current user directory (`~/.repo-checker.js`).
+`--init` ask repo-checker to initialize a data file in the current user directory (`~/repo-checker.config.js`).
 It's a simple copy of `data.sample.js` at the root of this project.
 If file already exists, use `--force` to overwrite it.
 
 ### data
 
-`--data=path/to/my/data` gives repo-checker data to fill templates files in this repo (`src/templates`)
-If you don't give this parameter, repo-checker will try to load data from `~/.repo-checker.js`.
+`--data=path/to/my/data` gives repo-checker data to fill templates files in this repo (`templates/**`)
+If you don't give this parameter, repo-checker will try to load data from `~/repo-checker.config.js`.
 
 ## Thanks
 
