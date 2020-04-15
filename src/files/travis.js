@@ -1,8 +1,9 @@
-const Test = require('../test')
+import { Test } from '../test'
 
-class CheckTravis extends Test {
+export class CheckTravis extends Test {
   async start () {
-    await this.checkFileExists('.travis.yml')
+    const exists = await this.checkFileExists('.travis.yml')
+    if (!exists) return
     await this.inspectFile('.travis.yml')
     this.shouldContains('a language', /language: node_js/)
     this.couldContains('a production flag', /env: NODE_ENV=production/)
@@ -10,5 +11,3 @@ class CheckTravis extends Test {
     this.shouldContains('a "run ci" task', /npm run ci/)
   }
 }
-
-module.exports = CheckTravis

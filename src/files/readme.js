@@ -1,8 +1,9 @@
-const Test = require('../test')
+import { Test } from '../test'
 
-class CheckReadme extends Test {
+export class CheckReadme extends Test {
   async start () {
-    await this.checkFileExists('README.md')
+    const exists = await this.checkFileExists('README.md')
+    if (!exists) return
     await this.inspectFile('README.md')
     this.shouldContains('a title', /^#\s\w+/)
     this.shouldContains('a badge with licence', /master\/LICENSE/)
@@ -10,5 +11,3 @@ class CheckReadme extends Test {
     this.couldContains('a thanks section', /## Thanks\n/)
   }
 }
-
-module.exports = CheckReadme

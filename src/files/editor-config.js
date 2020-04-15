@@ -1,8 +1,9 @@
-const Test = require('../test')
+import { Test } from '../test'
 
-class CheckEditorConfig extends Test {
+export class CheckEditorConfig extends Test {
   async start () {
-    await this.checkFileExists('.editorconfig')
+    const exists = await this.checkFileExists('.editorconfig')
+    if (!exists) return
     await this.inspectFile('.editorconfig')
     this.shouldContains('space indent', /indent_style = space/)
     this.shouldContains('indent size of 2', /indent_size = 2/)
@@ -14,5 +15,3 @@ class CheckEditorConfig extends Test {
     this.couldContains('no specific html indent rule', /\[\*\.html\]\nindent_size = 4/, 0)
   }
 }
-
-module.exports = CheckEditorConfig

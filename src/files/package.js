@@ -1,6 +1,6 @@
-const Test = require('../test')
+import { Test } from '../test'
 
-class CheckPackage extends Test {
+export class CheckPackage extends Test {
   get props () {
     return {
       required: {
@@ -28,9 +28,10 @@ class CheckPackage extends Test {
   }
 
   async start () {
-    await this.checkFileExists('package.json')
+    const exists = await this.checkFileExists('package.json')
     await this.checkFileExists('package-lock.json')
     await this.checkNoFileExists('yarn.lock')
+    if (!exists) return
     await this.inspectFile('package.json')
     this.checkProperties()
     this.checkScripts()
@@ -124,5 +125,3 @@ class CheckPackage extends Test {
     return new RegExp(`"${name}":\\s(?:false|true),\n`)
   }
 }
-
-module.exports = CheckPackage

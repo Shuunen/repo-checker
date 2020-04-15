@@ -1,8 +1,9 @@
-const Test = require('../test')
+import { Test } from '../test'
 
-class CheckLicense extends Test {
+export class CheckLicense extends Test {
   async start () {
-    await this.checkFileExists('LICENSE')
+    const exists = await this.checkFileExists('LICENSE')
+    if (!exists) return
     await this.inspectFile('LICENSE')
     const { license } = this.data
     if (license === 'GPL-3.0') {
@@ -15,5 +16,3 @@ class CheckLicense extends Test {
     }
   }
 }
-
-module.exports = CheckLicense

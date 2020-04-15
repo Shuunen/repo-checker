@@ -1,13 +1,8 @@
-const path = require('path')
+import { join } from 'path'
 
-const constants = {
-  home: process.env.HOME,
-  dataFileName: '.repo-checker.js',
-  defaultDataFileName: 'data.sample.js',
-  repoCheckerPath: path.join(__dirname, '..'),
-}
-
-constants.defaultDataFilePath = path.join(constants.repoCheckerPath, constants.defaultDataFileName)
-constants.dataFileHomePath = path.join(constants.home, constants.dataFileName)
-
-module.exports = constants
+export const home = process.env.HOME
+export const dataFileName = 'repo-checker.config.js'
+export const defaultDataFileName = 'data.sample.js'
+export const repoCheckerPath = join(__dirname, '..')
+export const defaultDataFilePath = join(repoCheckerPath, defaultDataFileName)
+export const dataFileHomePath = join(home, dataFileName)

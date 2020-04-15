@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
-const fs = require('fs')
-const chalk = require('chalk')
-
-const pkg = require('../package.json')
+import chalk from 'chalk'
+import { createWriteStream } from 'fs'
+import pkg from '../package.json'
 
 class Logger {
   get indent () {
@@ -14,7 +13,7 @@ class Logger {
   }
 
   constructor (filePath) {
-    this.file = fs.createWriteStream(filePath, { flags: 'a' })
+    this.file = createWriteStream(filePath, { flags: 'a' })
     this.indentLevel = 0
   }
 
@@ -72,10 +71,10 @@ class Logger {
     return this._write('')
   }
 
-  start () {
+  start (doFix = false) {
     this.line()
     this._write(`⬇️--- Entry from ${this.date} ---⬇️`)
-    this.info(`${pkg.name} v${pkg.version} is starting`)
+    this.info(`${pkg.name} v${pkg.version} is starting ${doFix ? '(fix enabled)' : ''}`)
     return this.line()
   }
 
@@ -85,6 +84,4 @@ class Logger {
   }
 }
 
-const log = new Logger(pkg.config.logFile)
-
-module.exports = log
+export const log = new Logger(pkg.config.logFile)

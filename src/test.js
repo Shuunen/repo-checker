@@ -1,9 +1,8 @@
-const path = require('path')
+import { join } from 'path'
+import { log } from './logger'
+import { createFile, fillTemplate, folderContainsFile, readFile } from './utils'
 
-const log = require('./logger')
-const { createFile, fillTemplate, readFile, folderContainsFile } = require('./utils')
-
-class Test {
+export class Test {
   constructor (folderPath, data, doFix, doForce) {
     this.folderPath = folderPath
     this.data = data
@@ -35,6 +34,7 @@ class Test {
       fileExists = fileContent.length > 0
     }
     this.test(fileExists, `has a ${fileName} file`, justWarn)
+    return fileExists
   }
 
   async checkNoFileExists (fileName, justWarn) {
@@ -43,7 +43,7 @@ class Test {
   }
 
   async createFile (fileName) {
-    const templatePath = path.join(__dirname, 'templates')
+    const templatePath = join(__dirname, '../templates')
     const template = await readFile(templatePath, fileName, true)
     const fileContent = fillTemplate(template, this.data)
     if (fileContent.length) {
@@ -100,5 +100,3 @@ class Test {
     log.test(isValid, message, justWarn)
   }
 }
-
-module.exports = Test
