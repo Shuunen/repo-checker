@@ -1,4 +1,6 @@
+import { log } from '../logger'
 import { Test } from '../test'
+import { checkFileExists, getFileSizeInKo } from '../utils'
 
 export class CheckPackage extends Test {
   get props () {
@@ -33,6 +35,7 @@ export class CheckPackage extends Test {
     await this.checkNoFileExists('yarn.lock')
     if (!exists) return
     await this.inspectFile('package.json')
+    await this.checkMainFile()
     this.checkProperties()
     this.checkScripts()
     this.checkDependencies()
@@ -51,6 +54,20 @@ export class CheckPackage extends Test {
     }
     this.shouldContains(`a ${this.data.license} license`, this.regexForStringValueProp('license', this.data.license))
     this.couldContains('no engines section', /"engines"/, 0)
+  }
+
+  async checkMainFile () {
+    const mainFilePath = (this.fileContent.match(/"main": "(.*)"/) || [])[1] || ''
+    if (!mainFilePath.length) return log.debug('no main file specified in package.json')
+    const maxSizeKo = this.data.max_size_ko
+    this.test(maxSizeKo, 'main file maximum size is specified in data file (ex: maxSizeKo: 100)')
+    if (!maxSizeKo) return
+    const exists = await checkFileExists(mainFilePath)
+    this.test(exists, `main file specified in package.json (${mainFilePath}) exists on disk (be sure to build before run repo-check)`)
+    if (!exists) return
+    const sizeKo = await getFileSizeInKo(mainFilePath)
+    const sizeOk = sizeKo < maxSizeKo
+    this.test(sizeOk, `main file size (${sizeKo}Ko) should be less or equal to max size allowed (${this.data.maxSizeKo}Ko)`)
   }
 
   checkScripts () {
