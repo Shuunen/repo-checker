@@ -57,5 +57,5 @@
     "test": "npm run lint && npm run check",
     "update": "npx npm-check-updates -u"
   },
-  "version": "1.6.0"
+  "version": "1.7.0"
 }
