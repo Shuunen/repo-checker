@@ -6,6 +6,7 @@ import { promisify } from 'util'
 import { log } from './logger'
 
 const readFileAsync = promisify(fs.readFile)
+const statAsync = promisify(fs.stat)
 // const accessAsync = promisify(fs.access)
 
 export async function isGitFolder (folderPath) {
@@ -85,6 +86,13 @@ export async function readFile (folderPath, fileName, returnEmptyIfNotExists) {
   const content = await readFileAsync(filePath, 'utf8')
   if (!content && returnEmptyIfNotExists) return ''
   return content
+}
+
+export async function getFileSizeInKo (filePath) {
+  const stat = await statAsync(filePath)
+  const size = Math.round(stat.size / 1024)
+  log.debug('found that file', filePath, 'has a size of :', size, 'Ko')
+  return size
 }
 
 export function fillTemplate (template, data) {
