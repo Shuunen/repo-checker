@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import chalk from 'chalk'
+import { blueBright, green, redBright, yellowBright } from 'colorette'
 import { createWriteStream } from 'fs'
 import pkg from '../package.json'
 
@@ -35,18 +35,18 @@ class Logger {
   }
 
   error (...args) {
-    console.error(chalk.redBright(this.indent, '❌ ', ...args))
+    console.error(redBright([this.indent, '❌ ', ...args].join(' ')))
     return this._write(this.indent, '❌', ...args)
   }
 
   warn (...args) {
-    console.log(chalk.yellowBright(this.indent, '⚠️ ', ...args))
+    console.log(yellowBright([this.indent, '⚠️ ', ...args].join(' ')))
     return this._write(this.indent, '⚠️', ...args)
   }
 
   success (outputToConsole, ...args) {
     if (outputToConsole) {
-      console.log(chalk.green(this.indent, '✔️ ', ...args))
+      console.log(green([this.indent, '✔️ ', ...args].join(' ')))
     }
     return this._write(this.indent, '✔️', ...args)
   }
@@ -62,7 +62,7 @@ class Logger {
   }
 
   fix (...args) {
-    console.log(chalk.blueBright(this.indent, '⬜ ', ...args))
+    console.log(blueBright([this.indent, '⬜ ', ...args].join(' ')))
     return this._write(this.indent, '⬜', ...args)
   }
 
