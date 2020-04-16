@@ -1,68 +1,57 @@
-import fs from 'fs'
-import path from 'path'
+import { access, F_OK, readdir, readFile, stat, writeFile } from 'fs'
+import { join } from 'path'
 import { copy } from 'shuutils/dist/objects'
-import git from 'simple-git/promise'
 import { promisify } from 'util'
 import { log } from './logger'
 
-const readFileAsync = promisify(fs.readFile)
-const statAsync = promisify(fs.stat)
-// const accessAsync = promisify(fs.access)
+const readFileAsync = promisify(readFile)
+const statAsync = promisify(stat)
+const readDirAsync = promisify(readdir)
 
 export async function isGitFolder (folderPath) {
-  if (!fs.statSync(folderPath).isDirectory()) {
-    return false
-  }
-  return git(folderPath).checkIsRepo().then(isRepo => {
-    log.debug(`${isRepo ? 'is' : 'NOT'} a git repo : ${folderPath}`)
-    return isRepo
-  }).catch(err => {
-    log.error(`failed at testing git repo : ${folderPath}`, err)
-    throw err
-  })
+  const stat = await statAsync(folderPath)
+  if (!stat.isDirectory()) return false
+  return checkFileExists(join(folderPath, '.git', 'config'))
 }
 
 export async function getGitFolders (folderPath) {
-  if (await isGitFolder(folderPath)) {
-    return [folderPath]
+  if (await isGitFolder(folderPath)) return [folderPath]
+  const filePaths = await readDirAsync(folderPath)
+  const gitDirectories = []
+  for (const filePath of filePaths) {
+    const p = join(folderPath, filePath)
+    if (await isGitFolder(p)) gitDirectories.push(p)
   }
-  return new Promise((resolve, reject) => {
-    fs.readdir(folderPath, async (err, filePaths) => {
-      if (err) {
-        log.error(`failed at reading dir : ${folderPath}`, err)
-        reject(err)
-      }
-      const gitDirectories = []
-      for (const filePath of filePaths) {
-        const p = path.join(folderPath, filePath)
-        if (await isGitFolder(p)) {
-          gitDirectories.push(p)
-        }
-      }
-      resolve(gitDirectories)
-    })
-  })
+  return gitDirectories
 }
 
-export async function augmentData (folderPath, dataSource) {
-  const data = copy(dataSource)
-  const remotes = await git(folderPath).getRemotes(true)
-  const matches = JSON.stringify(remotes).match(/([\w-]+)\/([\w-]+)\.git/) || []
+async function augmentDataWithGit (folderPath, data) {
+  const gitConfigContent = await readFileInFolder(join(folderPath, '.git'), 'config', true)
+  if (gitConfigContent === '') return log.debug('did not found git config file')
+  const matches = gitConfigContent.match(/([\w-]+)\/([\w-]+)\.git/) || []
   if (matches.length !== 3) return data
   data.user_id = matches[1]
   data.user_id_lowercase = data.user_id.toLowerCase()
   data.repo_id = matches[2]
+  log.debug('found user_id in git config :', data.user_id)
+  log.debug('found repo_id in git config :', data.repo_id)
+  return data
+}
+
+export async function augmentData (folderPath, dataSource) {
+  let data = copy(dataSource)
+  data = await augmentDataWithGit(folderPath, data)
   return data
 }
 
 export function folderContainsFile (folderPath, fileName) {
   if (!folderPath || !fileName) return log.error('folderContainsFile miss arguments')
-  return checkFileExists(path.join(folderPath, fileName))
+  return checkFileExists(join(folderPath, fileName))
 }
 
 export function checkFileExists (filePath) {
   return new Promise(resolve => {
-    fs.access(filePath, fs.F_OK, (err) => {
+    access(filePath, F_OK, (err) => {
       if (err) return resolve(false)
       resolve(true)
     })
@@ -71,7 +60,7 @@ export function checkFileExists (filePath) {
 
 export function createFile (folderPath, fileName, fileContent) {
   return new Promise(resolve => {
-    fs.writeFile(path.join(folderPath, fileName), fileContent, 'utf8', (err) => {
+    writeFile(join(folderPath, fileName), fileContent, 'utf8', (err) => {
       if (err) {
         log.error(err)
         resolve(false)
@@ -81,8 +70,14 @@ export function createFile (folderPath, fileName, fileContent) {
   })
 }
 
-export async function readFile (folderPath, fileName, returnEmptyIfNotExists) {
-  const filePath = path.join(folderPath, fileName)
+/**
+ * Read a file content inside a folder
+ * @param {string} folderPath
+ * @param {string} fileName
+ * @param {boolean} returnEmptyIfNotExists if set to true & file does not exists, will return an empty string ''
+ */
+export async function readFileInFolder (folderPath, fileName, returnEmptyIfNotExists = false) {
+  const filePath = join(folderPath, fileName)
   const content = await readFileAsync(filePath, 'utf8')
   if (!content && returnEmptyIfNotExists) return ''
   return content

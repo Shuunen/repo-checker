@@ -5,7 +5,7 @@ import pkg from '../package.json'
 import { check } from './check'
 import { dataFileHomePath, dataFileName, defaultDataFileName, defaultDataFilePath, home, repoCheckerPath } from './constants'
 import { log } from './logger'
-import { checkFileExists, createFile, readFile } from './utils'
+import { checkFileExists, createFile, readFileInFolder } from './utils'
 
 async function initDataFile (doForce) {
   log.line()
@@ -15,7 +15,7 @@ async function initDataFile (doForce) {
     log.info('use --force to overwrite it')
     return
   }
-  const fileContent = await readFile(repoCheckerPath, defaultDataFileName)
+  const fileContent = await readFileInFolder(repoCheckerPath, defaultDataFileName)
   const fileCreated = await createFile(home, dataFileName, fileContent)
   if (fileCreated) {
     log.info('repo-checker data file successfully init, you should edit :', dataFileHomePath)
@@ -26,7 +26,7 @@ async function initDataFile (doForce) {
 async function getData (arg, target) {
   const dataPath = await getDataPath(arg, target)
   log.info('loading data from', dataPath)
-  return requireFromString(await readFile(dataPath, ''))
+  return requireFromString(await readFileInFolder(dataPath, ''))
 }
 async function getDataPath (arg = '', target) {
   if (arg && await checkFileExists(join(__dirname, '..', arg))) return join(__dirname, '..', arg)

@@ -66,8 +66,8 @@ export class CheckPackage extends Test {
     this.test(exists, `main file specified in package.json (${mainFilePath}) exists on disk (be sure to build before run repo-check)`)
     if (!exists) return
     const sizeKo = await getFileSizeInKo(mainFilePath)
-    const sizeOk = sizeKo < maxSizeKo
-    this.test(sizeOk, `main file size (${sizeKo}Ko) should be less or equal to max size allowed (${this.data.maxSizeKo}Ko)`)
+    const sizeOk = sizeKo <= maxSizeKo
+    this.test(sizeOk, `main file size (${sizeKo}Ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
   }
 
   checkScripts () {
