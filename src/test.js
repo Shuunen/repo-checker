@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { log } from './logger'
-import { createFile, fillTemplate, folderContainsFile, readFile } from './utils'
+import { createFile, fillTemplate, folderContainsFile, readFileInFolder } from './utils'
 
 export class Test {
   constructor (folderPath, data, doFix, doForce) {
@@ -24,7 +24,7 @@ export class Test {
 
   async inspectFile (fileName) {
     this.fileName = fileName
-    this.fileContent = await readFile(this.folderPath, fileName, true)
+    this.fileContent = await readFileInFolder(this.folderPath, fileName, true)
   }
 
   async checkFileExists (fileName, justWarn) {
@@ -44,7 +44,7 @@ export class Test {
 
   async createFile (fileName) {
     const templatePath = join(__dirname, '../templates')
-    const template = await readFile(templatePath, fileName, true)
+    const template = await readFileInFolder(templatePath, fileName, true)
     const fileContent = fillTemplate(template, this.data)
     if (fileContent.length) {
       await createFile(this.folderPath, fileName, fileContent)
