@@ -60,7 +60,7 @@ export class CheckPackage extends Test {
     const mainFilePath = (this.fileContent.match(/"main": "(.*)"/) || [])[1] || ''
     if (!mainFilePath.length) return log.debug('no main file specified in package.json')
     const maxSizeKo = this.data.max_size_ko
-    this.test(maxSizeKo, 'main file maximum size is specified in data file (ex: maxSizeKo: 100)')
+    this.test(maxSizeKo, 'main file maximum size is specified in data file (ex: max_size_ko: 100)')
     if (!maxSizeKo) return
     const exists = await checkFileExists(mainFilePath)
     this.test(exists, `main file specified in package.json (${mainFilePath}) exists on disk (be sure to build before run repo-check)`)
