@@ -38,6 +38,7 @@ export class CheckPackage extends Test {
     await this.checkMainFile()
     this.checkProperties()
     this.checkScripts()
+    this.checkBuild()
     this.checkDependencies()
   }
 
@@ -88,6 +89,11 @@ export class CheckPackage extends Test {
     if (!this.fileContent.includes('vue-cli-service lint') && this.fileContent.includes('lint')) {
       this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
     }
+  }
+
+  checkBuild () {
+    if (!this.fileContent.includes('"build":')) return
+    this.shouldContains('only dev dependencies for build-able projects', this.regexForObjectProp('dependencies'), 0)
     if (this.fileContent.includes('parcel build')) {
       this.shouldContains('a parcel build with report enabled', /"parcel build.*--detailed-report",/)
     }
@@ -96,18 +102,15 @@ export class CheckPackage extends Test {
   checkDependencies () {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
     const hasDevDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
-    if (hasDependencies || hasDevDependencies) {
-      this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
-      if (!this.fileContent.includes('Shuunen/repo-checker')) {
-        this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/)
-      }
-      /* annoying deps */
-      if (!this.data.sass || this.data.sass !== 'ignore') {
-        this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
-      }
-      this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
-      this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
+    if (!hasDependencies && !hasDevDependencies) return
+    this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
+    if (!this.fileContent.includes('Shuunen/repo-checker')) {
+      this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/)
     }
+    /* annoying deps */
+    if (this.data.ban_sass === undefined || this.data.ban_sass === true) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
+    this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
+    this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
   }
 
   regexForProp (type, name) {
