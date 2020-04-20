@@ -28,7 +28,8 @@
   },
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "data.sample.js"
   ],
   "homepage": "https://github.com/Shuunen/repo-checker",
   "keywords": [
