@@ -7,6 +7,6 @@ export class CheckRenovate extends Test {
     await this.inspectFile('renovate.json')
     this.shouldContains('an extends section', /"extends"/)
     this.shouldContains('a base config', /"config:base"/)
-    this.shouldContains('an auto merge config', /":automergeAll"/)
+    if (this.data.auto_merge === undefined || this.data.auto_merge === true) this.shouldContains('an auto merge config', /":automergeAll"/)
   }
 }
