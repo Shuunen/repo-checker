@@ -1,7 +1,9 @@
 import { access, F_OK, readdir, readFile, stat, writeFile } from 'fs'
 import { join } from 'path'
+import requireFromString from 'require-from-string'
 import { copy } from 'shuutils/dist/objects'
 import { promisify } from 'util'
+import { defaultDataFileName, repoCheckerPath } from './constants'
 import { log } from './logger'
 
 const readFileAsync = promisify(readFile)
@@ -40,6 +42,8 @@ async function augmentDataWithGit (folderPath, data) {
 
 export async function augmentData (folderPath, dataSource) {
   let data = copy(dataSource)
+  const defaults = requireFromString(await readFileInFolder(repoCheckerPath, defaultDataFileName))
+  data = Object.assign({}, defaults, data)
   data = await augmentDataWithGit(folderPath, data)
   return data
 }
