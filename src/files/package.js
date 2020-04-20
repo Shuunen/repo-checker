@@ -78,15 +78,18 @@ export class CheckPackage extends Test {
       })
     }
     if (!this.fileContent.includes('Shuunen/repo-checker')) {
-      this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/, 1)
+      this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/)
     }
-    this.couldContains('a pre-script for version automation', /"preversion": "npm run ci"/, 1)
-    this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags/, 1)
-    this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/, 1)
-    const hasUt = this.couldContains('unit testing', /"ava"/, 1)
-    if (hasUt) this.couldContains('code coverage', /"nyc"/, 1)
+    this.couldContains('a pre-script for version automation', /"preversion": "npm run ci"/)
+    this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags/)
+    this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/)
+    const hasUt = this.couldContains('unit testing', /"ava"/)
+    if (hasUt) this.couldContains('code coverage', /"nyc"/)
     if (!this.fileContent.includes('vue-cli-service lint') && this.fileContent.includes('lint')) {
       this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
+    }
+    if (this.fileContent.includes('parcel build')) {
+      this.shouldContains('a parcel build with report enabled', /"parcel build.*--detailed-report",/)
     }
   }
 
@@ -96,7 +99,7 @@ export class CheckPackage extends Test {
     if (hasDependencies || hasDevDependencies) {
       this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
       if (!this.fileContent.includes('Shuunen/repo-checker')) {
-        this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/, 1)
+        this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/)
       }
       /* annoying deps */
       if (!this.data.sass || this.data.sass !== 'ignore') {

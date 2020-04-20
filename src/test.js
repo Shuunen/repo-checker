@@ -70,7 +70,7 @@ export class Test {
    * @param {boolean} justWarn If this test is optional
    * @return a boolean which indicate if the content exists
    */
-  shouldContains (name, regex, nbMatchExpected, justWarn) {
+  shouldContains (name, regex, nbMatchExpected = 1, justWarn) {
     const contentExists = this.checkContains(regex, nbMatchExpected)
     name += contentExists ? '' : ` -- ${regex}`
     const message = `${this.fileName} ${!contentExists ? justWarn ? 'could have' : 'does not have' : 'has'} ${name} `
@@ -78,7 +78,7 @@ export class Test {
     return contentExists
   }
 
-  couldContains (name, regex, nbMatchExpected) {
+  couldContains (name, regex, nbMatchExpected = 1) {
     return this.shouldContains(name, regex, nbMatchExpected, true)
   }
 
