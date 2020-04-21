@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { blueBright, green, redBright, yellowBright } from 'colorette'
 import { createWriteStream } from 'fs'
-import pkg from '../package.json'
+import { config, name, version } from '../package.json'
 
 class Logger {
   get indent () {
@@ -74,14 +74,14 @@ class Logger {
   start (doFix = false) {
     this.line()
     this._write(`⬇️--- Entry from ${this.date} ---⬇️`)
-    this.info(`${pkg.name} v${pkg.version} is starting ${doFix ? '(fix enabled)' : ''}`)
+    this.info(`${name} v${version} is starting ${doFix ? '(fix enabled)' : ''}`)
     return this.line()
   }
 
   end () {
-    this.info(pkg.name, 'has finished')
+    this.info(name, 'has finished')
     return this.line()
   }
 }
 
-export const log = new Logger(pkg.config.logFile)
+export const log = new Logger(config.logFile)

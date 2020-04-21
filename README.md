@@ -47,8 +47,7 @@ If you want to fix already existing files, use `--force` to overwrite it.
 
 ### init
 
-`--init` ask repo-checker to initialize a data file in the current user directory (`~/repo-checker.config.js`).
-It's a simple copy of `data.sample.js` at the root of this project.
+`--init` ask repo-checker to initialize a data config file in the current user directory (`~/repo-checker.config.js`).
 If file already exists, use `--force` to overwrite it.
 
 ### data

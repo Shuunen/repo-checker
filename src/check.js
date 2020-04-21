@@ -21,7 +21,7 @@ export async function check (folderPath, data, doFix, doForce) {
   for (const folder of folders) {
     log.info('Checking folder :', folder)
     log.setIndentLevel(1)
-    const dataFolder = await augmentData(folder, data)
+    const dataFolder = await augmentData(folder, data, folders.length > 1)
     for (const Checker of Checkers) {
       const instance = new Checker(folder, dataFolder, doFix, doForce)
       await instance.start()

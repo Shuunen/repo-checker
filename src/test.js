@@ -1,4 +1,4 @@
-import { join } from 'path'
+import { templatePath } from './constants'
 import { log } from './logger'
 import { createFile, fillTemplate, folderContainsFile, readFileInFolder } from './utils'
 
@@ -43,7 +43,6 @@ export class Test {
   }
 
   async createFile (fileName) {
-    const templatePath = join(__dirname, '../templates')
     const template = await readFileInFolder(templatePath, fileName, true)
     const fileContent = fillTemplate(template, this.data)
     if (fileContent.length) {

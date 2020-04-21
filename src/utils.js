@@ -3,7 +3,7 @@ import { join } from 'path'
 import requireFromString from 'require-from-string'
 import { copy } from 'shuutils/dist/objects'
 import { promisify } from 'util'
-import { defaultDataFileName, repoCheckerPath } from './constants'
+import { dataDefaults, dataFileName } from './constants'
 import { log } from './logger'
 
 const readFileAsync = promisify(readFile)
@@ -40,10 +40,11 @@ async function augmentDataWithGit (folderPath, data) {
   return data
 }
 
-export async function augmentData (folderPath, dataSource) {
+export async function augmentData (folderPath, dataSource, shouldLoadLocal = false) {
   let data = copy(dataSource)
-  const defaults = requireFromString(await readFileInFolder(repoCheckerPath, defaultDataFileName))
-  data = Object.assign({}, defaults, data)
+  const localDataExists = shouldLoadLocal ? await checkFileExists(join(folderPath, dataFileName)) : false
+  const localData = localDataExists ? requireFromString(await readFileInFolder(folderPath, dataFileName)) : {}
+  data = Object.assign({}, dataDefaults, data, localData)
   data = await augmentDataWithGit(folderPath, data)
   return data
 }
@@ -78,11 +79,13 @@ export function createFile (folderPath, fileName, fileContent) {
  * Read a file content inside a folder
  * @param {string} folderPath
  * @param {string} fileName
- * @param {boolean} returnEmptyIfNotExists if set to true & file does not exists, will return an empty string ''
+ * @param {boolean} returnEmptyIfNotExists if true & file does not exists, will not complain and return an empty string ''
  */
 export async function readFileInFolder (folderPath, fileName, returnEmptyIfNotExists = false) {
   const filePath = join(folderPath, fileName)
-  const content = await readFileAsync(filePath, 'utf8')
+  const content = await readFileAsync(filePath, 'utf8').catch(err => {
+    if (!returnEmptyIfNotExists) throw err
+  })
   if (!content && returnEmptyIfNotExists) return ''
   return content
 }
