@@ -73,14 +73,8 @@ export class CheckPackage extends Test {
 
   checkScripts () {
     const hasScripts = this.shouldContains('a script section', this.regexForObjectProp('scripts'))
-    if (hasScripts) {
-      this.scripts.required.forEach(name => {
-        this.shouldContains(`a ${name} script`, this.regexForStringProp(name))
-      })
-    }
-    if (!this.fileContent.includes('Shuunen/repo-checker')) {
-      this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/)
-    }
+    if (hasScripts) this.scripts.required.forEach(name => this.shouldContains(`a ${name} script`, this.regexForStringProp(name)))
+    if (!this.fileContent.includes('Shuunen/repo-checker')) this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/)
     this.couldContains('a pre-script for version automation', /"preversion": "npm run ci"/)
     this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags/)
     this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/)
@@ -93,10 +87,8 @@ export class CheckPackage extends Test {
 
   checkBuild () {
     if (!this.fileContent.includes('"build":')) return
-    this.shouldContains('only dev dependencies for build-able projects', this.regexForObjectProp('dependencies'), 0)
-    if (this.fileContent.includes('parcel build')) {
-      this.shouldContains('a parcel build with report enabled', /"parcel build.*--detailed-report",/)
-    }
+    if (this.data.dev_deps_only) this.shouldContains('only dev dependencies for build-able projects', this.regexForObjectProp('dependencies'), 0)
+    if (this.fileContent.includes('parcel build')) this.shouldContains('a parcel build with report enabled', /"parcel build.*--detailed-report",/)
   }
 
   checkDependencies () {
@@ -104,9 +96,7 @@ export class CheckPackage extends Test {
     const hasDevDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
     if (!hasDependencies && !hasDevDependencies) return
     this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
-    if (!this.fileContent.includes('Shuunen/repo-checker')) {
-      this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/)
-    }
+    if (!this.fileContent.includes('Shuunen/repo-checker')) this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/)
     /* annoying deps */
     if (this.data.ban_sass === undefined || this.data.ban_sass === true) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
     this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)

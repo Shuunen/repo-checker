@@ -9,6 +9,7 @@ export const dataFileHomePath = join(home, dataFileName)
 export const dataDefaults = {
   auto_merge: true,
   ban_sass: true,
+  dev_deps_only: true,
   license: 'GPL-3.0',
   max_size_ko: 30,
   user_mail: 'romain.racamier@gmail.com',
