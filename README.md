@@ -16,6 +16,7 @@
     - [fix](#fix)
     - [init](#init)
     - [data](#data)
+  - [Todo](#todo)
   - [Thanks](#thanks)
   - [License](#license)
 
@@ -54,6 +55,15 @@ If file already exists, use `--force` to overwrite it.
 
 `--data=path/to/my/data` gives repo-checker data to fill templates files in this repo (`templates/**`)
 If you don't give this parameter, repo-checker will try to load data from `~/repo-checker.config.js`.
+
+## Todo
+
+- [ ] check website related badges
+- [ ] suggest docs/demo.gif
+- [ ] suggest thanks related to deps
+- [ ] check static/public/dist folders for projects with website : should have "_headers" & "favicon.ico" and "manifest.json" files inside
+- [ ] compute build/dist/folder/public size for maxSize compliance
+- [ ] warn todos in readme files
 
 ## Thanks
 
