@@ -9,5 +9,6 @@ export class CheckReadme extends Test {
     this.shouldContains('a badge with licence', /master\/LICENSE/)
     this.shouldContains('a badge with build status & associated thanks', /travis-ci\.org/g, 3)
     this.couldContains('a thanks section', /## Thanks/)
+    this.shouldContains('no link to deprecated *.netlify.com', /(.*)\.netlify\.com/, 0)
   }
 }
