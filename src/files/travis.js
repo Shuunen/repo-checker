@@ -6,8 +6,7 @@ export class CheckTravis extends Test {
     if (!exists) return
     await this.inspectFile('.travis.yml')
     this.shouldContains('a language', /language: node_js/)
-    this.couldContains('a production flag', /env: NODE_ENV=production/)
-    this.couldContains('an install with dev dependencies', /npm install --production=false/)
+    this.shouldContains('a "npm ci" task', /npm ci/) // npm ci install all dependencies
     this.shouldContains('a "run ci" task', /npm run ci/)
   }
 }
