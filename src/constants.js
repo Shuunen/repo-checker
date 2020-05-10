@@ -12,6 +12,7 @@ export const dataDefaults = {
   dev_deps_only: true,
   license: 'GPL-3.0',
   max_size_ko: 10,
+  npm_package: false,
   user_mail: 'romain.racamier@gmail.com',
   user_name: 'Romain Racamier-Lafon',
 }
