@@ -37,6 +37,7 @@ export class CheckPackage extends Test {
     await this.checkMainFile()
     this.checkProperties()
     this.checkScripts()
+    this.checkLint()
     this.checkBuild()
     this.checkDependencies()
   }
@@ -80,9 +81,13 @@ export class CheckPackage extends Test {
     this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/)
     const hasUt = this.couldContains('unit testing', /"ava"/)
     if (hasUt) this.couldContains('code coverage', /"nyc"/)
-    if (!this.fileContent.includes('vue-cli-service lint') && this.fileContent.includes('lint')) {
-      this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
-    }
+  }
+
+  async checkLint () {
+    // avoid non eslint cases
+    if (this.fileContent.includes('vue-cli-service lint') || this.fileContent.includes('npx standard')) return
+    await this.checkFileExists('.eslintrc.rules.js', true)
+    this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
   }
 
   checkBuild () {
