@@ -1,6 +1,5 @@
 import { log } from '../logger'
 import { Test } from '../test'
-import { checkFileExists, getFileSizeInKo } from '../utils'
 
 export class CheckPackage extends Test {
   get props () {
@@ -63,10 +62,10 @@ export class CheckPackage extends Test {
     const maxSizeKo = this.data.max_size_ko
     this.test(maxSizeKo, 'main file maximum size is specified in data file (ex: max_size_ko: 100)')
     if (!maxSizeKo) return
-    const exists = await checkFileExists(mainFilePath)
+    const exists = await this.checkFileExists(mainFilePath)
     this.test(exists, `main file specified in package.json (${mainFilePath}) exists on disk (be sure to build before run repo-check)`)
     if (!exists) return
-    const sizeKo = await getFileSizeInKo(mainFilePath)
+    const sizeKo = await this.getFileSizeInKo(mainFilePath)
     const sizeOk = sizeKo <= maxSizeKo
     this.test(sizeOk, `main file size (${sizeKo}Ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
   }

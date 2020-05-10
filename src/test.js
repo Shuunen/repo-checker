@@ -1,9 +1,10 @@
+import { join } from 'path'
 import { templatePath } from './constants'
 import { log } from './logger'
-import { createFile, fillTemplate, folderContainsFile, readFileInFolder } from './utils'
+import { createFile, fillTemplate, folderContainsFile, getFileSizeInKo, readFileInFolder } from './utils'
 
 export class Test {
-  constructor (folderPath, data, doFix, doForce) {
+  constructor(folderPath, data, doFix, doForce) {
     this.folderPath = folderPath
     this.data = data
     this.doFix = doFix
@@ -59,6 +60,10 @@ export class Test {
       if (this.doForce) return this.createFile(this.fileName)
       log.info('this file has at least one issue, if you want repo-checker to overwrite this file use --force')
     }
+  }
+
+  async getFileSizeInKo (filePath) {
+    return getFileSizeInKo(join(this.folderPath, filePath))
   }
 
   /**
