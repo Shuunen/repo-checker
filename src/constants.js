@@ -11,7 +11,7 @@ export const dataDefaults = {
   ban_sass: true,
   dev_deps_only: true,
   license: 'GPL-3.0',
-  max_size_ko: 30,
+  max_size_ko: 10,
   user_mail: 'romain.racamier@gmail.com',
   user_name: 'Romain Racamier-Lafon',
 }
