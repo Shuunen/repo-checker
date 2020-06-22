@@ -11,7 +11,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "13.0.0",
     "@rollup/plugin-json": "4.1.0",
-    "@rollup/plugin-node-resolve": "8.0.1",
+    "@rollup/plugin-node-resolve": "8.1.0",
     "arg": "4.1.3",
     "colorette": "1.2.0",
     "eslint": "7.2.0",
