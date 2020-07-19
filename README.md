@@ -58,10 +58,11 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 
 ## Todo
 
-- [ ] check website related badges
+- [ ] identify websites
+  - [ ] check related badges
+  - [ ] check static folder : should have "_headers" & "favicon.ico" and "manifest.json" files inside
 - [ ] suggest docs/demo.gif
 - [ ] suggest thanks related to deps
-- [ ] check static/public/dist folders for projects with website : should have "_headers" & "favicon.ico" and "manifest.json" files inside
 - [ ] compute build/dist/folder/public size for maxSize compliance
 - [ ] warn todos in readme files
 
