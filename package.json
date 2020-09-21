@@ -9,7 +9,7 @@
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "15.0.0",
+    "@rollup/plugin-commonjs": "15.1.0",
     "@rollup/plugin-json": "4.1.0",
     "@rollup/plugin-node-resolve": "9.0.0",
     "arg": "4.1.3",
