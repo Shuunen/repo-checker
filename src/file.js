@@ -15,10 +15,6 @@ export class File {
     this.nbFailed = 0
   }
 
-  async start () {
-    log.error('start is not implemented in child class', this.constructor.name)
-  }
-
   async end () {
     return this.checkIssues()
   }
