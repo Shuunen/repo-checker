@@ -14,7 +14,7 @@ function report (nbPassed, nbFailed) {
   if (nbFailed > 0) throw new Error('failed at validating at least one rule in one folder')
 }
 
-export async function check (folderPath, data, doFix, doForce) {
+export async function check (folderPath, data, doFix = false, doForce = false) {
   const folders = await getGitFolders(folderPath)
   let nbPassed = 0
   let nbFailed = 0
@@ -33,4 +33,5 @@ export async function check (folderPath, data, doFix, doForce) {
     log.setIndentLevel(0)
   }
   report(nbPassed, nbFailed)
+  return { nbPassed, nbFailed }
 }

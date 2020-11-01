@@ -23,7 +23,7 @@ test('git folders listing', async (t) => {
   })
   const folders = await getGitFolders(testFolder)
   t.deepEqual(folders, projects.map(p => join(testFolder, p)))
-  projects.forEach(name => rmdirSync(join(testFolder, name), { recursive: true }))
+  projects.map(name => rmdirSync(join(testFolder, name), { recursive: true }))
 })
 
 test('file creation, detection, read', async (t) => {
