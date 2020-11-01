@@ -79,6 +79,7 @@ export class CheckPackage extends Test {
     if (this.data.npm_package) this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags && npm publish"/)
     else this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags"/)
     this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/)
+    if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/, 0)
     const hasUt = this.couldContains('unit testing', /"ava"/)
     if (hasUt) this.couldContains('code coverage', /"nyc"/)
   }
