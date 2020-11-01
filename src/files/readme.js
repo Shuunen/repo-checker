@@ -1,6 +1,6 @@
-import { Test } from '../test'
+import { File } from '../file'
 
-export class CheckReadme extends Test {
+export class ReadmeFile extends File {
   async start () {
     const exists = await this.checkFileExists('README.md')
     if (!exists) return

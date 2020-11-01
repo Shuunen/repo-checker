@@ -1,6 +1,6 @@
-import { Test } from '../test'
+import { File } from '../file'
 
-export class CheckRenovate extends Test {
+export class RenovateFile extends File {
   async start () {
     const exists = await this.checkFileExists('renovate.json')
     if (!exists) return

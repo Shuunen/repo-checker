@@ -1,6 +1,6 @@
-import { Test } from '../test'
+import { File } from '../file'
 
-export class CheckEditorConfig extends Test {
+export class EditorConfigFile extends File {
   async start () {
     const exists = await this.checkFileExists('.editorconfig')
     if (!exists) return

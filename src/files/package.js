@@ -1,7 +1,7 @@
+import { File } from '../file'
 import { log } from '../logger'
-import { Test } from '../test'
 
-export class CheckPackage extends Test {
+export class PackageJsonFile extends File {
   get props () {
     return {
       required: {
