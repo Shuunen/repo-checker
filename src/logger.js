@@ -19,10 +19,12 @@ class Logger {
 
   async _write (...args) {
     this.file.write(args.join(' ') + '\n')
+    return true
   }
 
   async setIndentLevel (level) {
     this.indentLevel = level
+    return level
   }
 
   debug (...args) {
@@ -34,9 +36,10 @@ class Logger {
     return this._write(this.indent, '⬜', ...args)
   }
 
-  error (...args) {
+  async error (...args) {
     console.error(redBright([this.indent, '❌ ', ...args].join(' ')))
-    return this._write(this.indent, '❌', ...args)
+    await this._write(this.indent, '❌', ...args)
+    return false
   }
 
   warn (...args) {
@@ -59,6 +62,7 @@ class Logger {
     } else {
       this.error(msg)
     }
+    return ok
   }
 
   fix (...args) {
