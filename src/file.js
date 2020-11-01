@@ -3,7 +3,7 @@ import { templatePath } from './constants'
 import { log } from './logger'
 import { createFile, fillTemplate, folderContainsFile, getFileSizeInKo, readFileInFolder } from './utils'
 
-export class Test {
+export class File {
   constructor (folderPath, data, doFix, doForce) {
     this.folderPath = folderPath
     this.data = data

@@ -1,6 +1,6 @@
-import { Test } from '../test'
+import { File } from '../file'
 
-export class CheckTravis extends Test {
+export class TravisFile extends File {
   async start () {
     const exists = await this.checkFileExists('.travis.yml')
     if (!exists) return

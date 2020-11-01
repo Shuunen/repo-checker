@@ -1,6 +1,6 @@
-import { Test } from '../test'
+import { File } from '../file'
 
-export class CheckNvmRc extends Test {
+export class NvmrcFile extends File {
   async start () {
     const exists = await this.checkFileExists('.nvmrc')
     if (!exists) return
