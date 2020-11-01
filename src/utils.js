@@ -27,9 +27,8 @@ export async function getGitFolders (folderPath) {
   return gitDirectories
 }
 
-async function augmentDataWithGit (folderPath, data) {
+export async function augmentDataWithGit (folderPath, data) {
   const gitConfigContent = await readFileInFolder(join(folderPath, '.git'), 'config', true)
-  if (gitConfigContent === '') return log.debug('did not found git config file')
   const matches = gitConfigContent.match(/([\w-]+)\/([\w-]+)\.git/) || []
   if (matches.length !== 3) return data
   data.user_id = matches[1]
