@@ -4,7 +4,7 @@ import { log } from './logger'
 import { createFile, fillTemplate, folderContainsFile, getFileSizeInKo, readFileInFolder } from './utils'
 
 export class Test {
-  constructor(folderPath, data, doFix, doForce) {
+  constructor (folderPath, data, doFix, doForce) {
     this.folderPath = folderPath
     this.data = data
     this.doFix = doFix
@@ -74,7 +74,7 @@ export class Test {
    * @param {boolean} justWarn If this test is optional
    * @return a boolean which indicate if the content exists
    */
-  shouldContains (name, regex, nbMatchExpected = 1, justWarn) {
+  shouldContains (name, regex, nbMatchExpected = 1, justWarn = false) {
     const contentExists = this.checkContains(regex, nbMatchExpected)
     name += contentExists ? '' : ` -- ${regex}`
     const message = `${this.fileName} ${!contentExists ? justWarn ? 'could have' : 'does not have' : 'has'} ${name} `

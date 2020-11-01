@@ -22,7 +22,7 @@ async function getData (arg, target) {
   log.info('loading data from', dataPath)
   return requireFromString(await readFileInFolder(dataPath, ''))
 }
-async function getDataPath (arg = '', target) {
+async function getDataPath (arg, target) {
   if (arg && await checkFileExists(join(__dirname, '..', arg))) return join(__dirname, '..', arg)
   const dataFileTargetPath = join(target, dataFileName)
   if (await checkFileExists(dataFileTargetPath)) return dataFileTargetPath
