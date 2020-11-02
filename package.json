@@ -62,5 +62,5 @@
     "test:watch": "nodemon --quiet --watch ./ --exec npm test",
     "update": "npx npm-check-updates -u"
   },
-  "version": "1.10.0"
+  "version": "1.11.0"
 }
