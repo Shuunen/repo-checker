@@ -24,7 +24,7 @@ export class File {
     this.fileContent = await readFileInFolder(this.folderPath, fileName, true)
   }
 
-  async checkFileExists (fileName, justWarn) {
+  async checkFileExists (fileName, justWarn = false) {
     let fileExists = await folderContainsFile(this.folderPath, fileName)
     if (!fileExists && this.doFix) {
       const fileContent = await this.createFile(fileName)
@@ -34,7 +34,7 @@ export class File {
     return fileExists
   }
 
-  async checkNoFileExists (fileName, justWarn) {
+  async checkNoFileExists (fileName, justWarn = false) {
     const fileExists = await folderContainsFile(this.folderPath, fileName)
     this.test(!fileExists, `has no ${fileName} file`, justWarn)
   }
@@ -71,6 +71,7 @@ export class File {
    * @return a boolean which indicate if the content exists
    */
   shouldContains (name, regex, nbMatchExpected = 1, justWarn = false) {
+    if (!regex) regex = new RegExp(name)
     const contentExists = this.checkContains(regex, nbMatchExpected)
     name += contentExists ? '' : ` -- ${regex}`
     const message = `${this.fileName} ${!contentExists ? justWarn ? 'could have' : 'does not have' : 'has'} ${name} `
@@ -82,7 +83,7 @@ export class File {
     return this.shouldContains(name, regex, nbMatchExpected, true)
   }
 
-  checkContains (regex, nbMatchExpected = 1) {
+  checkContains (regex, nbMatchExpected) {
     const matches = this.fileContent.match(regex)
     const nbMatch = (matches && matches.length) || 0
     if (nbMatch !== nbMatchExpected) {
@@ -91,7 +92,7 @@ export class File {
     return (nbMatch === nbMatchExpected)
   }
 
-  test (isValid, message, justWarn) {
+  test (isValid, message, justWarn = false) {
     if (!isValid && !justWarn) {
       this.nbFailed++
     } else {

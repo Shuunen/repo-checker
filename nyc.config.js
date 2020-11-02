@@ -1,5 +1,5 @@
 module.exports = {
-  exclude: ['tests/**'],
+  exclude: ['tests/**', 'src/files/**'],
   'check-coverage': true,
   branches: 90,
   functions: 90,
