@@ -87,7 +87,6 @@ export class PackageJsonFile extends File {
   async checkLint () {
     // avoid non eslint cases
     if (this.fileContent.includes('vue-cli-service lint') || this.fileContent.includes('npx standard')) return
-    await this.checkFileExists('.eslintrc.rules.js', true)
     this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
   }
 

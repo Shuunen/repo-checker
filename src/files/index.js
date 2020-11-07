@@ -1,5 +1,6 @@
 export * from './configs'
 export * from './editor-config'
+export * from './eslint'
 export * from './license'
 export * from './nvmrc'
 export * from './package'

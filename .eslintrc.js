@@ -1,12 +1,11 @@
+const rules = require('./.eslintrc.rules.js')
+
 module.exports = {
   extends: [
     'eslint:recommended',
     'standard',
   ],
-  rules: {
-    'no-console': 'error',
-    'comma-dangle': ['error', 'always-multiline'],
-  },
+  rules,
   parserOptions: {
     parser: 'babel-eslint',
   },
