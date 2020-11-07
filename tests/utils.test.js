@@ -1,12 +1,12 @@
 import test from 'ava'
 import { mkdirSync, rmdirSync } from 'fs'
-import { join } from 'path'
+import path from 'path'
 import { dataDefaults } from '../src/constants'
 import { augmentData, augmentDataWithGit, augmentDataWithPackage, createFile, fillTemplate, folderContainsFile, getFileSizeInKo, getGitFolders, isGitFolder, readFileInFolder } from '../src/utils'
 
 // base project folder
 const testFolder = __dirname
-const rootFolder = join(testFolder, '..')
+const rootFolder = path.join(testFolder, '..')
 const filename = 'test-file.log'
 
 test('git folder detection', async (t) => {
@@ -17,13 +17,13 @@ test('git folders listing', async (t) => {
   t.deepEqual(await getGitFolders(rootFolder), [rootFolder])
   const projects = ['anotherProject', 'sampleProject']
   projects.forEach(async (name) => {
-    const folder = join(testFolder, name, '.git')
+    const folder = path.join(testFolder, name, '.git')
     mkdirSync(folder, { recursive: true })
     await createFile(folder, 'config')
   })
   const folders = await getGitFolders(testFolder)
   t.true(folders.length >= 2)
-  projects.map(name => rmdirSync(join(testFolder, name), { recursive: true }))
+  projects.map(name => rmdirSync(path.join(testFolder, name), { recursive: true }))
 })
 
 test('file creation, detection, read', async (t) => {
@@ -70,9 +70,9 @@ test('data augment with git', async (t) => {
 test('data augment with package', async (t) => {
   const data = await augmentDataWithPackage(rootFolder, {})
   t.deepEqual(data, {})
-  const vueData = await augmentDataWithPackage(join(testFolder, 'data', 'vueProject'), {})
+  const vueData = await augmentDataWithPackage(path.join(testFolder, 'data', 'vueProject'), {})
   t.deepEqual(vueData, { use_vue: true })
-  const tsData = await augmentDataWithPackage(join(testFolder, 'data', 'tsProject'), {})
+  const tsData = await augmentDataWithPackage(path.join(testFolder, 'data', 'tsProject'), {})
   t.deepEqual(tsData, { use_typescript: true })
 })
 

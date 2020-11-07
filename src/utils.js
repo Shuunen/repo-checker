@@ -1,5 +1,5 @@
 import { access, F_OK, readdir, readFile, stat, writeFile } from 'fs'
-import { join } from 'path'
+import path from 'path'
 import requireFromString from 'require-from-string'
 import { copy } from 'shuutils/dist/objects'
 import { promisify } from 'util'
@@ -8,27 +8,27 @@ import { log } from './logger'
 
 const readFileAsync = promisify(readFile)
 const statAsync = promisify(stat)
-const readDirAsync = promisify(readdir)
+const readDirectoryAsync = promisify(readdir)
 
 export async function isGitFolder (folderPath) {
   const stat = await statAsync(folderPath)
   if (!stat.isDirectory()) return false
-  return checkFileExists(join(folderPath, '.git', 'config'))
+  return checkFileExists(path.join(folderPath, '.git', 'config'))
 }
 
 export async function getGitFolders (folderPath) {
   if (await isGitFolder(folderPath)) return [folderPath]
-  const filePaths = await readDirAsync(folderPath)
+  const filePaths = await readDirectoryAsync(folderPath)
   const gitDirectories = []
   for (const filePath of filePaths) {
-    const p = join(folderPath, filePath)
+    const p = path.join(folderPath, filePath)
     if (await isGitFolder(p)) gitDirectories.push(p)
   }
   return gitDirectories
 }
 
 export async function augmentDataWithGit (folderPath, data) {
-  const gitConfigContent = await readFileInFolder(join(folderPath, '.git'), 'config', true)
+  const gitConfigContent = await readFileInFolder(path.join(folderPath, '.git'), 'config', true)
   const matches = gitConfigContent.match(/([\w-]+)\/([\w-]+)\.git/) || []
   if (matches.length !== 3) return data
   data.user_id = matches[1]
@@ -49,7 +49,7 @@ export async function augmentDataWithPackage (folderPath, data) {
 
 export async function augmentData (folderPath, dataSource, shouldLoadLocal = false) {
   let data = copy(dataSource)
-  const localDataExists = shouldLoadLocal ? await checkFileExists(join(folderPath, dataFileName)) : false
+  const localDataExists = shouldLoadLocal ? await checkFileExists(path.join(folderPath, dataFileName)) : false
   const localData = localDataExists ? requireFromString(await readFileInFolder(folderPath, dataFileName)) : {}
   data = Object.assign({}, dataDefaults, data, localData)
   data = await augmentDataWithGit(folderPath, data)
@@ -59,13 +59,13 @@ export async function augmentData (folderPath, dataSource, shouldLoadLocal = fal
 
 export function folderContainsFile (folderPath, fileName) {
   if (!folderPath || !fileName) return log.error('folderContainsFile miss arguments')
-  return checkFileExists(join(folderPath, fileName))
+  return checkFileExists(path.join(folderPath, fileName))
 }
 
 export function checkFileExists (filePath) {
   return new Promise(resolve => {
-    access(filePath, F_OK, (err) => {
-      if (err) return resolve(false)
+    access(filePath, F_OK, (error) => {
+      if (error) return resolve(false)
       resolve(true)
     })
   })
@@ -73,9 +73,9 @@ export function checkFileExists (filePath) {
 
 export function createFile (folderPath, fileName, fileContent) {
   return new Promise(resolve => {
-    writeFile(join(folderPath, fileName), fileContent, 'utf8', (err) => {
-      if (err) {
-        log.error(err)
+    writeFile(path.join(folderPath, fileName), fileContent, 'utf8', (error) => {
+      if (error) {
+        log.error(error)
         resolve(false)
       }
       resolve(true)
@@ -90,9 +90,9 @@ export function createFile (folderPath, fileName, fileContent) {
  * @param {boolean} returnEmptyIfNotExists if true & file does not exists, will not complain and return an empty string ''
  */
 export async function readFileInFolder (folderPath, fileName, returnEmptyIfNotExists = false) {
-  const filePath = join(folderPath, fileName)
-  const content = await readFileAsync(filePath, 'utf8').catch(err => {
-    if (!returnEmptyIfNotExists) throw err
+  const filePath = path.join(folderPath, fileName)
+  const content = await readFileAsync(filePath, 'utf8').catch(error => {
+    if (!returnEmptyIfNotExists) throw error
   })
   if (!content && returnEmptyIfNotExists) return ''
   return content
@@ -106,18 +106,18 @@ export async function getFileSizeInKo (filePath) {
 }
 
 export function fillTemplate (template, data) {
-  let str = (typeof template === 'object' ? JSON.stringify(template, null, 2) : template) || ''
-  if (!str) return str
-  const tokens = str.match(/\{{\s?([^}\s]+)\s?}\}/g)
-  if (!tokens) return str
+  let string = (typeof template === 'object' ? JSON.stringify(template, undefined, 2) : template) || ''
+  if (!string) return string
+  const tokens = string.match(/{{\s?([^\s}]+)\s?}}/g)
+  if (!tokens) return string
   for (const token of tokens) {
-    const key = token.replace(/[{\s}]/g, '')
+    const key = token.replace(/[\s{}]/g, '')
     const value = data && data[key]
-    if (!value || !value.length) {
+    if (!value || value.length === 0) {
       log.warn(`cannot fill variable "${key}"`)
       return ''
     }
-    str = str.replace(token, value)
+    string = string.replace(token, value)
   }
-  return str
+  return string
 }

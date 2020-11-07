@@ -1,6 +1,6 @@
 import test from 'ava'
 import { unlinkSync } from 'fs'
-import { join } from 'path'
+import path from 'path'
 import { repoCheckerPath } from '../src/constants'
 import { File } from '../src/file'
 import { createFile } from '../src/utils'
@@ -16,7 +16,7 @@ test('file validator', async (t) => {
       this.couldContains('world')
       this.checkFileExists('package.json')
       this.checkNoFileExists('zorglub.exe')
-      unlinkSync(join(repoCheckerPath, filename))
+      unlinkSync(path.join(repoCheckerPath, filename))
     }
   }
   const instance = new MyFile(repoCheckerPath, {})
@@ -32,7 +32,7 @@ test('file validator with fix', async (t) => {
     async start () {
       const filename = '.nvmrc'
       const exists = await this.checkFileExists(filename)
-      if (exists) unlinkSync(join(repoCheckerPath, filename))
+      if (exists) unlinkSync(path.join(repoCheckerPath, filename))
       await this.checkFileExists(filename)
       await this.checkFileExists('missing-template.csv')
       const sizeKo = await this.getFileSizeInKo(filename)

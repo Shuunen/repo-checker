@@ -45,12 +45,12 @@ export class PackageJsonFile extends File {
   checkProperties () {
     for (const flag in this.props) {
       const isRequired = flag === 'required'
-      const testFunc = isRequired ? 'shouldContains' : 'couldContains'
-      for (const [prop, type] of Object.entries(this.props[flag])) {
-        const message = `a property ${prop}`
-        const regex = this.regexForProp(type.name, prop)
+      const testFunction = isRequired ? 'shouldContains' : 'couldContains'
+      for (const [property, type] of Object.entries(this.props[flag])) {
+        const message = `a property ${property}`
+        const regex = this.regexForProp(type.name, property)
         // generic equivalent of : this.shouldContains(`a property ${prop}`, this.regexForStringProp(prop))
-        this[testFunc](message, regex)
+        this[testFunction](message, regex)
       }
     }
     this.shouldContains(`a ${this.data.license} license`, this.regexForStringValueProp('license', this.data.license))
@@ -59,7 +59,7 @@ export class PackageJsonFile extends File {
 
   async checkMainFile () {
     const mainFilePath = (this.fileContent.match(/"main": "(.*)"/) || [])[1] || ''
-    if (!mainFilePath.length) return log.debug('no main file specified in package.json')
+    if (mainFilePath.length === 0) return log.debug('no main file specified in package.json')
     const maxSizeKo = this.data.max_size_ko
     this.test(maxSizeKo, 'main file maximum size is specified in data file (ex: max_size_ko: 100)')
     if (!maxSizeKo) return
@@ -85,8 +85,6 @@ export class PackageJsonFile extends File {
   }
 
   async checkLint () {
-    // avoid non eslint cases
-    if (this.fileContent.includes('vue-cli-service lint') || this.fileContent.includes('npx standard')) return
     this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
   }
 
@@ -98,8 +96,8 @@ export class PackageJsonFile extends File {
 
   checkDependencies () {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
-    const hasDevDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
-    if (!hasDependencies && !hasDevDependencies) return
+    const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
+    if (!hasDependencies && !hasDevelopmentDependencies) return
     this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
     if (!this.fileContent.includes('Shuunen/repo-checker')) this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/)
     /* annoying deps */

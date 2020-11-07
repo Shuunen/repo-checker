@@ -3,7 +3,7 @@ import json from '@rollup/plugin-json'
 import resolve from '@rollup/plugin-node-resolve'
 import shebang from 'rollup-plugin-add-shebang'
 import analyze from 'rollup-plugin-analyzer'
-import pkg from './package.json'
+import packageJson from './package.json'
 
 export default [
   {
@@ -19,7 +19,7 @@ export default [
       'util',
     ],
     output: [
-      { file: pkg.main, format: 'cjs' },
+      { file: packageJson.main, format: 'cjs' },
     ],
     plugins: [
       analyze({ summaryOnly: true, limit: 10 }),

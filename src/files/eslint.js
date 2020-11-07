@@ -11,6 +11,8 @@ export class EsLintFile extends File {
     this.shouldContains('external rules', /\.eslintrc\.rules/)
     this.shouldContains('eslint recommended rules', /eslint:recommended/)
     this.shouldContains('standard rules', /standard/)
+    this.couldContains('unicorn rules', /plugin:unicorn\/recommended/)
+    this.couldContains('unicorn plugin', /'unicorn'/)
     await this.checkTs()
     await this.checkVue()
     await this.lintFolder()
@@ -34,7 +36,7 @@ export class EsLintFile extends File {
   lintFolder () {
     if (this.nbFailed > 0) return
     return new Promise(resolve => {
-      const proc = spawn(/^win/.test(process.platform) ? 'npx.cmd' : 'npx', ['eslint', '--ignore-path .gitignore', '--ext .js,.ts,.vue,.html', this.folderPath], { cwd: repoCheckerPath })
+      const proc = spawn(process.platform.startsWith('win') ? 'npx.cmd' : 'npx', ['eslint', '--ignore-path .gitignore', '--ext .js,.ts,.vue,.html', this.folderPath], { cwd: repoCheckerPath })
       proc.stdout.on('data', data => { resolve(`stdout: ${data}`) })
       proc.stderr.on('data', data => { resolve(`stderr: ${data}`) })
       proc.on('error', (error) => { resolve(`error: ${error.message}`) })

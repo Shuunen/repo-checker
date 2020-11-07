@@ -1,5 +1,6 @@
+/* eslint-disable unicorn/no-process-exit */
 import arg from 'arg'
-import { join, resolve } from 'path'
+import path from 'path'
 import requireFromString from 'require-from-string'
 import { version } from '../package.json'
 import { check } from './check'
@@ -16,15 +17,15 @@ async function initDataFile (doForce) {
   if (fileCreated) return log.info('repo-checker data file successfully init, you should edit :', dataFileHomePath)
   log.error('repo-checker failed at creating this file :', dataFileHomePath)
 }
-async function getData (arg, target) {
-  const dataPath = await getDataPath(arg, target)
+async function getData (argument, target) {
+  const dataPath = await getDataPath(argument, target)
   if (!dataPath) return dataDefaults
   log.info('loading data from', dataPath)
   return requireFromString(await readFileInFolder(dataPath, ''))
 }
-async function getDataPath (arg, target) {
-  if (arg && await checkFileExists(join(__dirname, '..', arg))) return join(__dirname, '..', arg)
-  const dataFileTargetPath = join(target, dataFileName)
+async function getDataPath (argument, target) {
+  if (argument && await checkFileExists(path.join(__dirname, '..', argument))) return path.join(__dirname, '..', argument)
+  const dataFileTargetPath = path.join(target, dataFileName)
   if (await checkFileExists(dataFileTargetPath)) return dataFileTargetPath
   if (await checkFileExists(dataFileHomePath)) return dataFileHomePath
   log.warn('you should use --init to prepare a data file to enhance fix')
@@ -32,8 +33,8 @@ async function getDataPath (arg, target) {
   return false
 }
 
-function getTarget (arg) {
-  if (arg) return resolve(arg)
+function getTarget (argument) {
+  if (argument) return path.resolve(argument)
   log.line()
   log.info('no target specified via : --target=path/to/directory')
   log.info('targeting current directory...')
@@ -41,18 +42,18 @@ function getTarget (arg) {
 }
 
 async function start () {
-  const args = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--data': String, '--fix': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
+  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--data': String, '--fix': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
   // eslint-disable-next-line no-console
-  if (args['--version'] || args['-v']) return (console.log(version) && process.exit(0))
-  const doForce = args['--force']
-  if (args['--init']) return initDataFile(doForce).catch(err => log.error(err))
-  const doFix = args['--fix']
-  const target = getTarget(args['--target'])
-  const data = await getData(args['--data'], target)
+  if (options['--version'] || options['-v']) return (console.log(version) && process.exit(0))
+  const doForce = options['--force']
+  if (options['--init']) return initDataFile(doForce).catch(error => log.error(error))
+  const doFix = options['--fix']
+  const target = getTarget(options['--target'])
+  const data = await getData(options['--data'], target)
   log.start(doFix)
     .then(() => check(target, data, doFix, doForce))
-    .catch(err => {
-      log.error(err)
+    .catch(error => {
+      log.error(error)
       log.line()
       log.end()
       process.exit(1)

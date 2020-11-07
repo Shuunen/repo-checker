@@ -17,8 +17,8 @@ class Logger {
     this.indentLevel = 0
   }
 
-  async _write (...args) {
-    this.file.write(args.join(' ') + '\n')
+  async _write (...stuff) {
+    this.file.write(stuff.join(' ') + '\n')
     return true
   }
 
@@ -27,47 +27,47 @@ class Logger {
     return level
   }
 
-  debug (...args) {
-    return this._write(this.indent, '🔹', ...args)
+  debug (...stuff) {
+    return this._write(this.indent, '🔹', ...stuff)
   }
 
-  info (...args) {
-    console.log(this.indent, '⬜ ', ...args)
-    return this._write(this.indent, '⬜', ...args)
+  info (...stuff) {
+    console.log(this.indent, '⬜', ...stuff)
+    return this._write(this.indent, '⬜', ...stuff)
   }
 
-  async error (...args) {
-    console.error(redBright([this.indent, '❌ ', ...args].join(' ')))
-    await this._write(this.indent, '❌', ...args)
+  async error (...stuff) {
+    console.error(redBright([this.indent, '❌ ', ...stuff].join(' ')))
+    await this._write(this.indent, '❌', ...stuff)
     return false
   }
 
-  warn (...args) {
-    console.log(yellowBright([this.indent, '⚠️ ', ...args].join(' ')))
-    return this._write(this.indent, '⚠️', ...args)
+  warn (...stuff) {
+    console.log(yellowBright([this.indent, '⚠️ ', ...stuff].join(' ')))
+    return this._write(this.indent, '⚠️', ...stuff)
   }
 
-  success (outputToConsole, ...args) {
+  success (outputToConsole, ...stuff) {
     if (outputToConsole) {
-      console.log(green([this.indent, '✔️ ', ...args].join(' ')))
+      console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
     }
-    return this._write(this.indent, '✔️', ...args)
+    return this._write(this.indent, '✔️', ...stuff)
   }
 
-  test (ok, msg, justWarn, outputToConsole) {
+  test (ok, message, justWarn, outputToConsole) {
     if (ok) {
-      this.success(outputToConsole, msg)
+      this.success(outputToConsole, message)
     } else if (justWarn) {
-      this.warn(msg)
+      this.warn(message)
     } else {
-      this.error(msg)
+      this.error(message)
     }
     return ok
   }
 
-  fix (...args) {
-    console.log(blueBright([this.indent, '⬜ ', ...args].join(' ')))
-    return this._write(this.indent, '⬜', ...args)
+  fix (...stuff) {
+    console.log(blueBright([this.indent, '⬜ ', ...stuff].join(' ')))
+    return this._write(this.indent, '⬜', ...stuff)
   }
 
   line () {

@@ -1,10 +1,10 @@
-import { join } from 'path'
+import path from 'path'
 
 export const home = process.env.HOME
 export const dataFileName = 'repo-checker.config.js'
-export const repoCheckerPath = join(__dirname, '..')
-export const templatePath = join(repoCheckerPath, 'templates')
-export const dataFileHomePath = join(home, dataFileName)
+export const repoCheckerPath = path.join(__dirname, '..')
+export const templatePath = path.join(repoCheckerPath, 'templates')
+export const dataFileHomePath = path.join(home, dataFileName)
 
 export const dataDefaults = {
   auto_merge: true,

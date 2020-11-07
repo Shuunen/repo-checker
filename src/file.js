@@ -1,4 +1,4 @@
-import { join } from 'path'
+import path from 'path'
 import { templatePath } from './constants'
 import { log } from './logger'
 import { createFile, fillTemplate, folderContainsFile, getFileSizeInKo, readFileInFolder } from './utils'
@@ -42,7 +42,7 @@ export class File {
   async createFile (fileName) {
     const template = await readFileInFolder(templatePath, fileName, true)
     const fileContent = fillTemplate(template, this.data)
-    if (fileContent.length) {
+    if (fileContent.length > 0) {
       await createFile(this.folderPath, fileName, fileContent)
       log.fix('created', fileName)
     } else {
@@ -59,7 +59,7 @@ export class File {
   }
 
   async getFileSizeInKo (filePath) {
-    return getFileSizeInKo(join(this.folderPath, filePath))
+    return getFileSizeInKo(path.join(this.folderPath, filePath))
   }
 
   /**
@@ -73,8 +73,8 @@ export class File {
   shouldContains (name, regex, nbMatchExpected = 1, justWarn = false) {
     if (!regex) regex = new RegExp(name)
     const contentExists = this.checkContains(regex, nbMatchExpected)
-    name += contentExists ? '' : ` -- ${regex}`
-    const message = `${this.fileName} ${!contentExists ? justWarn ? 'could have' : 'does not have' : 'has'} ${name} `
+    name += contentExists ? '' : ` -- ${regex.toString().replace(/\\/g, '')}`
+    const message = `${this.fileName} ${!contentExists ? (justWarn ? 'could have' : 'does not have') : 'has'} ${name} `
     this.test(contentExists, message, justWarn)
     return contentExists
   }
