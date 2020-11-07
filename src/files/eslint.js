@@ -37,7 +37,7 @@ export class EsLintFile extends File {
   lintFolder () {
     if (this.nbFailed > 0) return
     return new Promise(resolve => {
-      const proc = spawn(process.platform.startsWith('win') ? 'npx.cmd' : 'npx', ['eslint', '--ignore-path .gitignore', '--ext .js,.ts,.vue,.html', this.folderPath], { cwd: repoCheckerPath })
+      const proc = spawn(process.platform.startsWith('win') ? 'npx.cmd' : 'npx', ['eslint', '--ext .js,.ts,.vue,.html', this.folderPath], { cwd: repoCheckerPath })
       proc.stdout.on('data', data => { resolve(`stdout: ${data}`) })
       proc.stderr.on('data', data => { resolve(`stderr: ${data}`) })
       proc.on('error', (error) => { resolve(`error: ${error.message}`) })
