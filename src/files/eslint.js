@@ -9,9 +9,9 @@ export class EsLintFile extends File {
     if (!exists) return log.debug('skipping eslintrc checks')
     await this.inspectFile('.eslintrc.js')
     this.shouldContains('external rules', /\.eslintrc\.rules/)
-    this.shouldContains('eslint recommended rules', /eslint:recommended/)
-    this.shouldContains('standard rules', /standard/)
-    this.couldContains('unicorn rules', /plugin:unicorn\/recommended/)
+    this.shouldContains('eslint recommended rules extend', /eslint:recommended/)
+    this.shouldContains('standard rules extend', /standard/)
+    this.couldContains('unicorn rules extend', /plugin:unicorn\/recommended/)
     this.couldContains('unicorn plugin', /'unicorn'/)
     await this.checkTs()
     await this.checkVue()
@@ -20,7 +20,8 @@ export class EsLintFile extends File {
 
   async checkTs () {
     if (!this.data.use_typescript) return
-    this.shouldContains(this.data.use_vue ? '@vue/typescript/recommended' : 'typescript/recommended')
+    if (this.data.use_vue) this.shouldContains('vue typescript rules extend', '@vue/typescript/recommended')
+    else this.shouldContains('typescript eslint plugin', /'@typescript-eslint'/)
   }
 
   async checkVue () {
