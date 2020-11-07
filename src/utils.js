@@ -39,12 +39,21 @@ export async function augmentDataWithGit (folderPath, data) {
   return data
 }
 
+export async function augmentDataWithPackage (folderPath, data) {
+  const content = await readFileInFolder(folderPath, 'package.json', true)
+  if (content.length === 0) return data
+  if (content.includes('"vue"')) data.use_vue = true
+  if (content.includes('"typescript"')) data.use_typescript = true
+  return data
+}
+
 export async function augmentData (folderPath, dataSource, shouldLoadLocal = false) {
   let data = copy(dataSource)
   const localDataExists = shouldLoadLocal ? await checkFileExists(join(folderPath, dataFileName)) : false
   const localData = localDataExists ? requireFromString(await readFileInFolder(folderPath, dataFileName)) : {}
   data = Object.assign({}, dataDefaults, data, localData)
   data = await augmentDataWithGit(folderPath, data)
+  data = await augmentDataWithPackage(folderPath, data)
   return data
 }
 

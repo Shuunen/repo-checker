@@ -2,7 +2,7 @@ import test from 'ava'
 import { mkdirSync, rmdirSync } from 'fs'
 import { join } from 'path'
 import { dataDefaults } from '../src/constants'
-import { augmentData, augmentDataWithGit, createFile, fillTemplate, folderContainsFile, getFileSizeInKo, getGitFolders, isGitFolder, readFileInFolder } from '../src/utils'
+import { augmentData, augmentDataWithGit, augmentDataWithPackage, createFile, fillTemplate, folderContainsFile, getFileSizeInKo, getGitFolders, isGitFolder, readFileInFolder } from '../src/utils'
 
 // base project folder
 const testFolder = __dirname
@@ -58,11 +58,22 @@ test('data augment with git', async (t) => {
     user_id: 'Shuunen',
     user_id_lowercase: 'shuunen',
     repo_id: 'repo-checker',
+    use_typescript: false,
+    use_vue: false,
   }
   const augmentedData = await augmentData(rootFolder, {}, true)
   t.deepEqual(augmentedData, expectedAugmentedData)
   const augmentedDataFromTestFolder = await augmentData(testFolder, {})
   t.deepEqual(augmentedDataFromTestFolder, dataDefaults)
+})
+
+test('data augment with package', async (t) => {
+  const data = await augmentDataWithPackage(rootFolder, {})
+  t.deepEqual(data, {})
+  const vueData = await augmentDataWithPackage(join(testFolder, 'data', 'vueProject'), {})
+  t.deepEqual(vueData, { use_vue: true })
+  const tsData = await augmentDataWithPackage(join(testFolder, 'data', 'tsProject'), {})
+  t.deepEqual(tsData, { use_typescript: true })
 })
 
 test('template filling', t => {
