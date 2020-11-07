@@ -31,7 +31,7 @@ export class File {
       fileExists = fileContent.length > 0
     }
     this.test(fileExists, `has a ${fileName} file`, justWarn)
-    return fileExists
+    return !!fileExists
   }
 
   async checkNoFileExists (fileName, justWarn = false) {
@@ -86,7 +86,7 @@ export class File {
   checkContains (regex, nbMatchExpected) {
     const matches = this.fileContent.match(regex)
     const nbMatch = (matches && matches.length) || 0
-    if (nbMatch !== nbMatchExpected) {
+    if (nbMatchExpected && nbMatch !== nbMatchExpected) {
       log.debug(regex.toString().replace('\n', ''), 'matched', nbMatch, 'instead of', nbMatchExpected)
     }
     return (nbMatch === nbMatchExpected)
