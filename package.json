@@ -51,7 +51,7 @@
     "build": "rollup -c",
     "check": "node .",
     "ci": "npm run lint && npm run check && npm run test",
-    "dev": "rollup -c -w",
+    "dev": "nodemon --quiet --ignore dist/ --exec npm run check",
     "lint": "eslint --fix --ignore-path .gitignore --ext .js .",
     "postversion": "git push && git push --tags && npm publish",
     "precheck": "npm run build",
@@ -59,7 +59,7 @@
     "preversion": "npm run ci",
     "start": "npm run check",
     "test": "nyc ava",
-    "test:watch": "nodemon --quiet --watch ./ --exec npm test",
+    "test:watch": "nodemon --quiet --exec npm test",
     "update": "npx npm-check-updates -u"
   },
   "version": "1.11.0"
