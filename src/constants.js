@@ -13,8 +13,11 @@ export const dataDefaults = {
   license: 'GPL-3.0',
   max_size_ko: 10,
   npm_package: false,
-  use_vue: false,
+  repo_id: 'a-great-repo',
   use_typescript: false,
+  use_vue: false,
+  user_id_lowercase: 'shuunen',
+  user_id: 'Shuunen',
   user_mail: 'romain.racamier@gmail.com',
   user_name: 'Romain Racamier-Lafon',
 }
