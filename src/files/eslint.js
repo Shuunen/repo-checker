@@ -28,7 +28,8 @@ export class EsLintFile extends File {
     if (!this.data.use_vue) return
     this.shouldContains('vue recommended rules', /plugin:vue\/recommended/)
     this.shouldContains('no easy vue essential rules set', /plugin:vue\/essential/, 0)
-    this.shouldContains('vue standard rules', /@vue\/standard/)
+    const haveIt = this.couldContains('vue standard rules', /@vue\/standard/)
+    if (!haveIt) log.info('^ this might not be necessary, should check a fresh vue app')
     await this.inspectFile('.eslintrc.rules.js')
     this.shouldContains("'vue/max-attributes-per-line': 'off',")
     this.shouldContains("'vue/singleline-html-element-content-newline': 'off',")
@@ -37,7 +38,7 @@ export class EsLintFile extends File {
   lintFolder () {
     if (this.nbFailed > 0) return
     return new Promise(resolve => {
-      const proc = spawn(process.platform.startsWith('win') ? 'npx.cmd' : 'npx', ['eslint', '--ext .js,.ts,.vue,.html', this.folderPath], { cwd: repoCheckerPath })
+      const proc = spawn(process.platform.startsWith('win') ? 'npx.cmd' : 'npx', ['eslint', '--ignore-path .gitignore', '--ext .js,.ts,.vue,.html', this.folderPath], { cwd: repoCheckerPath })
       proc.stdout.on('data', data => { resolve(`stdout: ${data}`) })
       proc.stderr.on('data', data => { resolve(`stderr: ${data}`) })
       proc.on('error', (error) => { resolve(`error: ${error.message}`) })
