@@ -1,8 +1,8 @@
 import test from 'ava'
-import { mkdirSync, rmdirSync } from 'fs'
+import { mkdirSync } from 'fs'
 import path from 'path'
 import { dataDefaults } from '../src/constants'
-import { augmentData, augmentDataWithGit, augmentDataWithPackage, createFile, fillTemplate, folderContainsFile, getFileSizeInKo, getGitFolders, isGitFolder, readFileInFolder } from '../src/utils'
+import { augmentData, augmentDataWithGit, augmentDataWithPackage, createFile, deleteFolderRecursive, fillTemplate, folderContainsFile, getFileSizeInKo, getGitFolders, isGitFolder, readFileInFolder } from '../src/utils'
 
 // base project folder
 const testFolder = __dirname
@@ -23,7 +23,7 @@ test('git folders listing', async (t) => {
   })
   const folders = await getGitFolders(testFolder)
   t.true(folders.length >= 2)
-  projects.map(name => rmdirSync(path.join(testFolder, name), { recursive: true }))
+  projects.map(name => deleteFolderRecursive(path.join(testFolder, name)))
 })
 
 test('file creation, detection, read', async (t) => {
@@ -90,4 +90,8 @@ test('template filling', t => {
   t.is(fillTemplate('Hello world !'), 'Hello world !')
   // empty template
   t.is(fillTemplate(''), '')
+})
+
+test('delete a non existing folder', t => {
+  t.is(deleteFolderRecursive('zorglub'), undefined)
 })

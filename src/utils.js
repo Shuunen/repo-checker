@@ -1,4 +1,4 @@
-import { access, F_OK, readdir, readFile, stat, writeFile } from 'fs'
+import { access, existsSync, F_OK, lstatSync, readdir, readdirSync, readFile, rmdirSync, stat, unlinkSync, writeFile } from 'fs'
 import path from 'path'
 import requireFromString from 'require-from-string'
 import { copy } from 'shuutils/dist/objects'
@@ -120,4 +120,15 @@ export function fillTemplate (template, data) {
     string = string.replace(token, value)
   }
   return string
+}
+
+// from https://geedew.com/remove-a-directory-that-is-not-empty-in-nodejs/
+export function deleteFolderRecursive (path) {
+  if (!existsSync(path)) return
+  readdirSync(path).forEach(function (file) {
+    const currentPath = path + '/' + file
+    if (lstatSync(currentPath).isDirectory()) deleteFolderRecursive(currentPath)
+    else unlinkSync(currentPath)
+  })
+  rmdirSync(path)
 }

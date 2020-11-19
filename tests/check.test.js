@@ -1,9 +1,9 @@
 import test from 'ava'
-import { mkdirSync, rmdirSync } from 'fs'
+import { mkdirSync } from 'fs'
 import path from 'path'
 import { check } from '../src/check'
 import { repoCheckerPath } from '../src/constants'
-import { createFile } from '../src/utils'
+import { createFile, deleteFolderRecursive } from '../src/utils'
 
 const testFolder = __dirname
 
@@ -25,5 +25,5 @@ test('check & fix test folder', async (t) => {
   t.is(message, 'failed')
   message = await check(folder, {}, true, true).catch(() => 'failed')
   t.is(message, 'failed')
-  rmdirSync(folder, { recursive: true })
+  deleteFolderRecursive(folder)
 })
