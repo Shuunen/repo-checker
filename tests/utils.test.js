@@ -2,7 +2,7 @@ import test from 'ava'
 import { mkdirSync } from 'fs'
 import path from 'path'
 import { dataDefaults } from '../src/constants'
-import { augmentData, augmentDataWithGit, augmentDataWithPackage, createFile, deleteFolderRecursive, fillTemplate, folderContainsFile, getFileSizeInKo, getGitFolders, isGitFolder, readFileInFolder } from '../src/utils'
+import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, createFile, deleteFolderRecursive, fillTemplate, folderContainsFile, getFileSizeInKo, getGitFolders, isGitFolder, readFileInFolder } from '../src/utils'
 
 // base project folder
 const testFolder = __dirname
@@ -51,8 +51,9 @@ test('data augment with git', async (t) => {
     ban_sass: true,
     dev_deps_only: true,
     license: 'GPL-3.0',
-    max_size_ko: 35,
+    max_size_ko: 40,
     npm_package: true,
+    package_name: 'repo-check',
     user_mail: 'romain.racamier@gmail.com',
     user_name: 'Romain Racamier-Lafon',
     user_id: 'Shuunen',
@@ -60,6 +61,7 @@ test('data augment with git', async (t) => {
     repo_id: 'repo-checker',
     use_typescript: false,
     use_vue: false,
+    web_published: false,
   }
   const augmentedData = await augmentData(rootFolder, {}, true)
   t.deepEqual(augmentedData, expectedAugmentedData)
@@ -68,30 +70,62 @@ test('data augment with git', async (t) => {
 })
 
 test('data augment with package', async (t) => {
-  const data = await augmentDataWithPackage(rootFolder, {})
-  t.deepEqual(data, {})
-  const vueData = await augmentDataWithPackage(path.join(testFolder, 'data', 'vueProject'), {})
-  t.deepEqual(vueData, { use_vue: true })
-  const tsData = await augmentDataWithPackage(path.join(testFolder, 'data', 'tsProject'), {})
-  t.deepEqual(tsData, { use_typescript: true })
+  const data = await augmentDataWithPackageJson(rootFolder, {})
+  t.deepEqual(data, {
+    license: 'GPL-3.0',
+    npm_package: true,
+    package_name: 'repo-check',
+    user_id: 'Shuunen',
+    user_id_lowercase: 'shuunen',
+    user_mail: 'romain.racamier@gmail.com',
+    user_name: 'Romain Racamier-Lafon',
+  })
+  const vueData = await augmentDataWithPackageJson(path.join(testFolder, 'data', 'vueProject'), {})
+  t.deepEqual(vueData, {
+    license: 'GPL-3.0',
+    use_vue: true,
+    user_id: 'Kevin_Malone',
+    user_id_lowercase: 'kevin_malone',
+    package_name: 'name',
+    web_published: true,
+  })
+  const tsData = await augmentData(path.join(testFolder, 'data', 'tsProject'), {}, true)
+  t.deepEqual(tsData, {
+    auto_merge: true,
+    ban_sass: false,
+    dev_deps_only: true,
+    license: 'MIT',
+    max_size_ko: 10,
+    npm_package: false,
+    package_name: '',
+    repo_id: 'a-great-repo',
+    use_typescript: true,
+    use_vue: false,
+    user_id: 'Shuunen',
+    user_id_lowercase: 'shuunen',
+    user_mail: '',
+    user_name: 'Dwight Schrute',
+    web_published: false,
+  })
 })
 
 test('template filling', t => {
-  const data = { user_id: 'Shuunen' }
+  const data = { key_to_happiness: 'Roo-doo-doot-da-doo' }
   // string
-  t.is(fillTemplate('Hello {{ user_id }} !', data), 'Hello Shuunen !')
+  t.is(fillTemplate('Andy : {{ key_to_happiness }} !', data), `Andy : ${data.key_to_happiness} !`)
   t.is(fillTemplate('Hello {{ wtf_key }} !', data), '')
   // object
   const expected = `{
-  "hello": "Shuunen !"
+  "Andy": "${data.key_to_happiness} !"
 }`
-  t.is(fillTemplate({ hello: '{{ user_id }} !' }, data), expected)
+  t.is(fillTemplate({ Andy: '{{ key_to_happiness }} !' }, data), expected)
   // without keys
-  t.is(fillTemplate('Hello world !'), 'Hello world !')
+  const quote = 'Bears. Beets. Battlestar Galactica.'
+  t.is(fillTemplate(quote), quote)
   // empty template
   t.is(fillTemplate(''), '')
 })
 
 test('delete a non existing folder', t => {
-  t.is(deleteFolderRecursive('zorglub'), undefined)
+  t.is(deleteFolderRecursive('Pam-Beesly.jpg'), undefined)
 })

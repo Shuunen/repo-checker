@@ -39,21 +39,35 @@ export async function augmentDataWithGit (folderPath, data) {
   return data
 }
 
-export async function augmentDataWithPackage (folderPath, data) {
+export async function augmentDataWithPackageJson (folderPath, data) {
   const content = await readFileInFolder(folderPath, 'package.json', true)
   if (content.length === 0) return data
+  data.package_name = (content.match(/"name": "([\w+/@-]+)"/) || [])[1] || dataDefaults.package_name
+  data.license = (content.match(/"license": "([\w+-]+)"/) || [])[1] || dataDefaults.license
+  const author = (content.match(/"author": "([\s\w/@-]+)\b[\s<]*([\w-.@]+)?>?"/)) || []
+  if (author.length === 3) {
+    data.user_name = author[1]
+    data.user_mail = author[2] || ''
+  }
+  data.user_id = (content.match(/github\.com\/([\w-]+)\//) || [])[1] || dataDefaults.user_id
+  data.user_id_lowercase = data.user_id.toLowerCase()
   if (content.includes('"vue"')) data.use_vue = true
   if (content.includes('"typescript"')) data.use_typescript = true
+  if (content.includes('html') || data.use_vue) data.web_published = true
+  if (content.includes('npm publish')) data.npm_package = true
   return data
 }
 
 export async function augmentData (folderPath, dataSource, shouldLoadLocal = false) {
   let data = copy(dataSource)
-  const localDataExists = shouldLoadLocal ? await checkFileExists(path.join(folderPath, dataFileName)) : false
-  const localData = localDataExists ? requireFromString(await readFileInFolder(folderPath, dataFileName)) : {}
-  data = Object.assign({}, dataDefaults, data, localData)
+  data = Object.assign({}, dataDefaults, data)
   data = await augmentDataWithGit(folderPath, data)
-  data = await augmentDataWithPackage(folderPath, data)
+  data = await augmentDataWithPackageJson(folderPath, data)
+  const localDataExists = shouldLoadLocal ? await checkFileExists(path.join(folderPath, dataFileName)) : false
+  if (localDataExists) { // local data overwrite the rest
+    const localData = requireFromString(await readFileInFolder(folderPath, dataFileName))
+    Object.assign(data, localData)
+  }
   return data
 }
 

@@ -1,8 +1,8 @@
 {
-  "name": "name",
   "description": "description",
-  "authors": "author",
+  "author": "Michael Scott-Junior",
   "version": "1.0.0",
+  "license": "MIT",
   "main": "pathToMain",
   "dependencies": {
     "typescript": "latest"
