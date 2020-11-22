@@ -1,11 +1,13 @@
 # Repo Checker
 
+[![npm version](https://img.shields.io/npm/v/repo-check.svg?color=informational)](https://www.npmjs.com/package/repo-check)
+[![npm monthly downloads](https://img.shields.io/npm/dm/repo-check.svg?color=informational)](https://www.npmjs.com/package/repo-check)
 [![GitHub license](https://img.shields.io/github/license/shuunen/repo-checker.svg?color=informational)](https://github.com/Shuunen/repo-checker/blob/master/LICENSE)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FShuunen%2Frepo-checker.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FShuunen%2Frepo-checker?ref=badge_shield)
 
 [![Build Status](https://travis-ci.org/Shuunen/repo-checker.svg?branch=master)](https://travis-ci.org/Shuunen/repo-checker)
 [![David](https://img.shields.io/david/shuunen/repo-checker.svg)](https://david-dm.org/shuunen/repo-checker)
 [![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/Shuunen/repo-checker.svg)](https://lgtm.com/projects/g/Shuunen/repo-checker/)
+[![Package Quality](https://npm.packagequality.com/shield/repo-check.svg)](https://packagequality.com/#?package=repo-check)
 
 > Maintain order in repositories chaos
 
@@ -58,16 +60,18 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 
 ## Todo
 
-- [ ] identify websites
-  - [ ] check related badges
-  - [ ] check static folder : should have "_headers" & "favicon.ico" and "manifest.json" files inside
-- [ ] suggest docs/demo.gif
-- [ ] suggest thanks related to deps
+- [ ] if website : check static folder : should have "_headers" & "favicon.ico" and "manifest.json" files inside
 - [ ] compute build/dist/folder/public size for maxSize compliance
-- [ ] warn todos in readme files
+- [ ] minify dist
 
 ## Thanks
 
+- [Ava](https://github.com/avajs/ava) : great test runner easy to setup & use
+- [Eslint](https://eslint.org) : super tool to find & fix problems
+- [Github](https://github.com) : for all their great work year after year, pushing OSS forward
+- [Nyc](https://github.com/istanbuljs/nyc) : an Istanbul cli easy to setup & use along Ava
+- [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
+- [Rollup](https://rollupjs.org) : a fast & efficient js module bundler
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
 - [Travis-ci.org](https://travis-ci.org) : for providing free continuous deployments
 
