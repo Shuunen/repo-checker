@@ -71,7 +71,7 @@ export function checkFileExists (filePath) {
   })
 }
 
-export function createFile (folderPath, fileName, fileContent) {
+export function createFile (folderPath, fileName, fileContent = '') {
   return new Promise(resolve => {
     writeFile(path.join(folderPath, fileName), fileContent, 'utf8', (error) => {
       if (error) {
