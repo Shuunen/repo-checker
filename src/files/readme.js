@@ -40,7 +40,7 @@ export class ReadmeFile extends File {
 
   async getExpectedThanks () {
     const list = []
-    if (this.fileContent.includes('shields.io')) list.push(thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme'))
+    if (this.fileContent.includes('shields')) list.push(thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme'))
     if (this.fileContent.includes('travis-ci')) list.push(thanks('Travis-ci.org', 'https://travis-ci.org', 'for providing free continuous deployments'))
     if (this.fileContent.includes('github')) list.push(thanks('Github', 'https://github.com', 'for all their great work year after year, pushing OSS forward'))
     if (this.fileContent.includes('netlify')) list.push(thanks('Netlify', 'https://netlify.com', 'awesome company that offers free CI & hosting for OSS projects'))
