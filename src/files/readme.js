@@ -13,6 +13,7 @@ export class ReadmeFile extends File {
     if (!exists) return
     await this.inspectFile('README.md')
     this.shouldContains('a title', /^#\s\w+/)
+    this.couldContains('a logo', /docs\/logo.svg\)/, 1, '![demo](docs/logo.svg)')
     this.couldContains('a demo gif', /docs\/demo.gif\)/, 1, '![demo](docs/demo.gif)')
     this.shouldContains('no link to deprecated *.netlify.com', /(.*)\.netlify\.com/, 0)
     this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
