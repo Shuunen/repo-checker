@@ -67,8 +67,8 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] apply the same "expected" logic in thanks into badges, code will be clearer
 - [ ] test the readme fix-ability in UT
 - [ ] no need to create a repo-checker.config.js with this content
-- [ ] do not inject/suggest csscomb if no html or css files exists
-- [ ] ts projects eslintrc should extend 'plugin:@typescript-eslint/recommended',
+- [ ] ts projects eslintrc should extend 'plugin:@typescript-eslint/recommended'
+- [ ] can check the latest version of repo-check in package.json
 
 ## Thanks
 

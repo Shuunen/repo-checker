@@ -70,14 +70,6 @@ export class File {
     return getFileSizeInKo(path.join(this.folderPath, filePath))
   }
 
-  /**
-   * shouldContains verify that the target file contains specific strings
-   * @param {string} name The name of the test
-   * @param {regex} regex The regex that should validate the test
-   * @param {number} nbMatchExpected The number of matches expected
-   * @param {boolean} justWarn If this test is optional
-   * @return a boolean which indicate if the content exists
-   */
   shouldContains (name, regex, nbMatchExpected = 1, justWarn = false, helpMessage = '', canFix = false) {
     if (!regex) regex = new RegExp(name)
     const contentExists = this.checkContains(regex, nbMatchExpected)
