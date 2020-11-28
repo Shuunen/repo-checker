@@ -66,7 +66,8 @@ class Logger {
   }
 
   fix (...stuff) {
-    console.log(blueBright([this.indent, '⬜ ', ...stuff].join(' ')))
+    stuff.push('(fixed)')
+    console.log(blueBright([this.indent, '⬜', ...stuff].join(' ')))
     return this._write(this.indent, '⬜', ...stuff)
   }
 
