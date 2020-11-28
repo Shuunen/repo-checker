@@ -22,4 +22,5 @@ export const dataDefaults = {
   user_mail: 'romain.racamier@gmail.com',
   user_name: 'Romain Racamier-Lafon',
   web_published: false,
+  web_url: 'https://my-website.com',
 }

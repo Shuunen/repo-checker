@@ -62,6 +62,7 @@ test('data augment with git', async (t) => {
     use_typescript: false,
     use_vue: false,
     web_published: false,
+    web_url: 'https://my-website.com',
   }
   const augmentedData = await augmentData(rootFolder, {}, true)
   t.deepEqual(augmentedData, expectedAugmentedData)
@@ -106,6 +107,7 @@ test('data augment with package', async (t) => {
     user_mail: '',
     user_name: 'Dwight Schrute',
     web_published: false,
+    web_url: 'https://my-website.com',
   })
 })
 
