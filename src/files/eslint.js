@@ -1,4 +1,3 @@
-import { repoCheckerPath } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
 const { spawn } = require('child_process')
@@ -38,14 +37,12 @@ export class EsLintFile extends File {
   lintFolder () {
     if (this.nbFailed > 0) return
     return new Promise(resolve => {
-      const proc = spawn(process.platform.startsWith('win') ? 'npx.cmd' : 'npx', ['eslint', '--ext .js,.ts,.vue,.html', this.folderPath], { cwd: repoCheckerPath })
-      proc.stdout.on('data', data => { resolve(`stdout: ${data}`) })
+      const proc = spawn(process.platform.startsWith('win') ? 'npm.cmd' : 'npm', ['run', 'lint'], { cwd: this.folderPath })
       proc.stderr.on('data', data => { resolve(`stderr: ${data}`) })
       proc.on('error', (error) => { resolve(`error: ${error.message}`) })
       proc.on('close', code => { resolve(`child process exited with code ${code}`) })
     }).then(message => {
-      const hasIssues = message !== 'child process exited with code 0'
-      if (hasIssues) log.error(message)
+      const hasIssues = message.includes('stderr')
       this.test(!hasIssues, 'has no lint issues')
     })
   }
