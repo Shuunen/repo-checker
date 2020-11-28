@@ -1,3 +1,4 @@
+import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
 import { readFileInFolder } from '../utils'
@@ -17,14 +18,23 @@ export class ReadmeFile extends File {
     this.couldContains('a demo screen or gif', /docs\/demo/, 1, '![demo](docs/demo.gif)')
     this.shouldContains('no link to deprecated *.netlify.com', /(.*)\.netlify\.com/, 0)
     this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
-    await this.checkBadges()
+    this.checkMarkdown()
+    this.checkBadges()
+    this.checkTodos()
     await this.checkThanks()
-    await this.checkTodos()
+  }
+
+  checkMarkdown () {
+    let ok = this.shouldContains('no CRLF Windows carriage return', /\r/, 0, false, 'prefer Unix LF', true)
+    if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\r\n/g, '\n')
+    const starLists = /\n\*\s([\w[])/g
+    ok = this.couldContains('no star flavored list', starLists, 0, 'should use dash flavor', true)
+    if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\n\*\s([\w[])/g, '\n- $1')
   }
 
   addBadge (line) {
     // just after project title
-    this.fileContent = this.fileContent.replace(/^(# [\s\w]+)/, `$1${line}\n`)
+    this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/, `$1${line}\n`)
   }
 
   async checkBadges () {
@@ -33,18 +43,19 @@ export class ReadmeFile extends File {
     let md = `[![Website Up](https://img.shields.io/website/https/${this.data.web_url.replace('https://', '')}.svg)](${this.data.web_url})`
     let ok = false
     if (this.data.web_published) {
-      ok = this.couldContains('a badge with website link', /shields\.io\/website/, 1, md, true)
-      if (!ok && this.doFix) this.addBadge(md)
+      const fixable = this.data.web_url !== dataDefaults.web_url
+      ok = this.couldContains('a badge with website link', /shields\.io\/website/, 1, md, fixable)
+      if (!ok && this.doFix && fixable) this.addBadge(md)
     }
     if (!this.data.npm_package) return
     md = `[![Package Quality](https://npm.packagequality.com/shield/${this.data.package_name}.svg)](https://packagequality.com/#?package=${this.data.package_name})`
     ok = this.couldContains('a badge with package quality', /npm\.packagequality\.com\/shield/, 1, md, true)
     if (!ok && this.doFix) this.addBadge(md)
-    md = `[![npm version](https://img.shields.io/npm/v/${this.data.package_name}.svg?color=informational)](https://www.npmjs.com/package/${this.data.package_name})`
-    ok = this.couldContains('a badge with package version', /shields\.io\/npm\/v/, 1, md, true)
-    if (!ok && this.doFix) this.addBadge(md)
     md = `[![npm monthly downloads](https://img.shields.io/npm/dm/${this.data.package_name}.svg?color=informational)](https://www.npmjs.com/package/${this.data.package_name})`
     ok = this.couldContains('a badge with package downloads per month', /shields\.io\/npm\/dm/, 1, md, true)
+    if (!ok && this.doFix) this.addBadge(md)
+    md = `[![npm version](https://img.shields.io/npm/v/${this.data.package_name}.svg?color=informational)](https://www.npmjs.com/package/${this.data.package_name})`
+    ok = this.couldContains('a badge with package version', /shields\.io\/npm\/v/, 1, md, true)
     if (!ok && this.doFix) this.addBadge(md)
   }
 
