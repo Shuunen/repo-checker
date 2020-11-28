@@ -10,18 +10,26 @@ export class File {
     this.doFix = doFix
     this.doForce = doForce
     this.fileContent = ''
+    this.originalFileContent = ''
     this.fileName = ''
     this.nbPassed = 0
     this.nbFailed = 0
   }
 
   async end () {
-    return this.checkIssues()
+    await this.updateFile()
+    await this.checkIssues()
   }
 
   async inspectFile (fileName) {
     this.fileName = fileName
-    this.fileContent = await readFileInFolder(this.folderPath, fileName, true)
+    this.originalFileContent = this.fileContent = await readFileInFolder(this.folderPath, fileName, true)
+  }
+
+  async updateFile () {
+    if (!this.doFix) return
+    if (this.originalFileContent === this.fileContent) return
+    return createFile(this.folderPath, this.fileName, this.fileContent)
   }
 
   async checkFileExists (fileName, justWarn = false) {
@@ -70,17 +78,22 @@ export class File {
    * @param {boolean} justWarn If this test is optional
    * @return a boolean which indicate if the content exists
    */
-  shouldContains (name, regex, nbMatchExpected = 1, justWarn = false, helpMessage = '') {
+  shouldContains (name, regex, nbMatchExpected = 1, justWarn = false, helpMessage = '', canFix = false) {
     if (!regex) regex = new RegExp(name)
     const contentExists = this.checkContains(regex, nbMatchExpected)
-    name += contentExists ? '' : ` -- ${helpMessage || regex.toString().replace(/\\/g, '')}`
+    const fix = this.doFix && canFix && !contentExists
+    name += (contentExists || fix) ? '' : ` -- ${helpMessage || regex.toString().replace(/\\/g, '')}`
     const message = `${this.fileName} ${!contentExists ? (justWarn ? 'could have' : 'does not have') : 'has'} ${name} `
-    this.test(contentExists, message, justWarn)
+    if (fix) {
+      log.fix(message)
+    } else {
+      this.test(contentExists, message, justWarn)
+    }
     return contentExists
   }
 
-  couldContains (name, regex, nbMatchExpected = 1, helpMessage = '') {
-    return this.shouldContains(name, regex, nbMatchExpected, true, helpMessage)
+  couldContains (name, regex, nbMatchExpected = 1, helpMessage = '', canFix = false) {
+    return this.shouldContains(name, regex, nbMatchExpected, true, helpMessage, canFix)
   }
 
   checkContains (regex, nbMatchExpected) {

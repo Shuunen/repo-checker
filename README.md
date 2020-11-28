@@ -63,6 +63,9 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] if website : check static folder : should have "_headers" & "favicon.ico" and "manifest.json" files inside
 - [ ] compute build/dist/folder/public size for maxSize compliance
 - [ ] minify dist
+- [ ] add nbFixes to the report
+- [ ] apply the same "expected" logic in thanks into badges, code will be clearer
+- [ ] test the readme fix-ability in UT
 
 ## Thanks
 
