@@ -1,34 +1,13 @@
+import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
 
+const SCRIPTS = {
+  required: ['ci', 'start', 'test'],
+}
+
 export class PackageJsonFile extends File {
-  get props () {
-    return {
-      required: {
-        author: String,
-        description: String,
-        homepage: String,
-        license: String,
-        name: String,
-        version: String,
-      },
-      optional: {
-        bugs: String,
-        keywords: Array,
-        private: Boolean,
-        files: Array,
-        repository: Object,
-      },
-    }
-  }
-
-  get scripts () {
-    return {
-      required: ['ci', 'start', 'test'],
-    }
-  }
-
-  async start () {
+  async start (): Promise<void> {
     const exists = await this.checkFileExists('package.json')
     await this.checkFileExists('package-lock.json')
     await this.checkNoFileExists('yarn.lock')
@@ -42,27 +21,31 @@ export class PackageJsonFile extends File {
     this.checkDependencies()
   }
 
-  checkProperties () {
-    for (const flag in this.props) {
-      const isRequired = flag === 'required'
-      const testFunction = isRequired ? 'shouldContains' : 'couldContains'
-      for (const [property, type] of Object.entries(this.props[flag])) {
-        const message = `a property ${property}`
-        const regex = this.regexForProp(type.name, property)
-        // generic equivalent of : this.shouldContains(`a property ${prop}`, this.regexForStringProp(prop))
-        this[testFunction](message, regex)
-      }
-    }
-    this.shouldContains(`a ${this.data.license} license`, this.regexForStringValueProp('license', this.data.license))
+  checkProperties (): void {
+    this.couldContains('a "bugs" property', this.regexForStringProp('bugs'))
+    this.couldContains('a "description" property', this.regexForStringProp('description'))
+    this.couldContains('a "files" property', this.regexForArrayProp('files'))
+    this.couldContains('a "homepage" property', this.regexForStringProp('homepage'))
+    this.couldContains('a "keywords" property', this.regexForArrayProp('keywords'))
+    this.couldContains('a "private" property', this.regexForBooleanProp('private'))
+    this.couldContains('a "repository" property', this.regexForObjectProp('repository'))
+    this.shouldContains('a "author" property', this.regexForStringProp('author'))
+    this.shouldContains('a "name" property', this.regexForStringProp('name'))
+    this.shouldContains('a "version" property', this.regexForStringProp('version'))
+    const hasLicence = this.shouldContains('a "license" property', this.regexForStringProp('license'))
+    if (hasLicence) this.shouldContains(`a ${this.data.license} license`, this.regexForStringValueProp('license', this.data.license))
     this.couldContains('no engines section', /"engines"/, 0)
   }
 
-  async checkMainFile () {
-    const mainFilePath = (this.fileContent.match(/"main": "(.*)"/) || [])[1] || ''
-    if (mainFilePath.length === 0) return log.debug('no main file specified in package.json')
+  async checkMainFile (): Promise<void> {
+    const mainFilePath = this.fileContent.match(/"main": "(.*)"/)?.[1] ?? ''
+    if (mainFilePath.length === 0) {
+      log.debug('no main file specified in package.json')
+      return
+    }
     const maxSizeKo = this.data.max_size_ko
-    this.test(maxSizeKo, 'main file maximum size is specified in data file (ex: max_size_ko: 100)')
-    if (!maxSizeKo) return
+    const ok = this.test(maxSizeKo !== dataDefaults.max_size_ko, 'main file maximum size is specified in data file (ex: max_size_ko: 100)')
+    if (!ok) return
     const exists = await this.checkFileExists(mainFilePath)
     this.test(exists, `main file specified in package.json (${mainFilePath}) exists on disk (be sure to build before run repo-check)`)
     if (!exists) return
@@ -71,9 +54,9 @@ export class PackageJsonFile extends File {
     this.test(sizeOk, `main file size (${sizeKo}Ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
   }
 
-  checkScripts () {
+  checkScripts (): void {
     const hasScripts = this.shouldContains('a script section', this.regexForObjectProp('scripts'))
-    if (hasScripts) this.scripts.required.forEach(name => this.shouldContains(`a ${name} script`, this.regexForStringProp(name)))
+    if (hasScripts) SCRIPTS.required.forEach(name => this.shouldContains(`a ${name} script`, this.regexForStringProp(name)))
     if (!this.fileContent.includes('Shuunen/repo-checker')) this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/)
     this.couldContains('a pre-script for version automation', /"preversion": "npm run ci"/)
     if (this.data.npm_package) this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags && npm publish"/)
@@ -84,60 +67,45 @@ export class PackageJsonFile extends File {
     if (hasUt) this.couldContains('code coverage', /"nyc"/)
   }
 
-  async checkLint () {
+  checkLint (): void {
     this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
   }
 
-  checkBuild () {
+  checkBuild (): void {
     if (!this.fileContent.includes('"build":')) return
     if (this.data.dev_deps_only) this.shouldContains('only dev dependencies for build-able projects', this.regexForObjectProp('dependencies'), 0)
     if (this.fileContent.includes('parcel build')) this.shouldContains('a parcel build with report enabled', /"parcel build.*--detailed-report",/)
   }
 
-  checkDependencies () {
+  checkDependencies (): void {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
     const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
     if (!hasDependencies && !hasDevelopmentDependencies) return
     this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
     if (!this.fileContent.includes('Shuunen/repo-checker')) this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/)
     /* annoying deps */
-    if (this.data.ban_sass === undefined || this.data.ban_sass === true) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
+    if (this.data.ban_sass === undefined || this.data.ban_sass) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
     this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
     this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
   }
 
-  regexForProp (type, name) {
-    switch (type) {
-      case 'String':
-        return this.regexForStringProp(name)
-      case 'Boolean':
-        return this.regexForBooleanProp(name)
-      case 'Array':
-        return this.regexForArrayProp(name)
-      case 'Object':
-        return this.regexForObjectProp(name)
-      default:
-        throw new Error('missing regex constructor for type : ' + type)
-    }
-  }
-
-  regexForStringProp (name) {
+  regexForStringProp (name = ''): RegExp {
     return new RegExp(`"${name}":\\s".+"`)
   }
 
-  regexForStringValueProp (name, value) {
+  regexForStringValueProp (name = '', value = ''): RegExp {
     return new RegExp(`"${name}":\\s"${value}"`)
   }
 
-  regexForObjectProp (name) {
+  regexForObjectProp (name = ''): RegExp {
     return new RegExp(`"${name}":\\s{\n`)
   }
 
-  regexForArrayProp (name) {
+  regexForArrayProp (name = ''): RegExp {
     return new RegExp(`"${name}":\\s\\[\n`)
   }
 
-  regexForBooleanProp (name) {
+  regexForBooleanProp (name = ''): RegExp {
     return new RegExp(`"${name}":\\s(?:false|true),\n`)
   }
 }

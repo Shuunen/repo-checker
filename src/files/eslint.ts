@@ -1,12 +1,13 @@
+import { spawn } from 'child_process'
 import { File } from '../file'
 import { log } from '../logger'
-const { spawn } = require('child_process')
 
 export class EsLintFile extends File {
-  async start () {
-    const exists = await this.checkFileExists('.eslintrc.js', true)
+  async start (): Promise<boolean> {
+    const expectedFile = this.data.is_module ? '.eslintrc.cjs' : '.eslintrc.js'
+    const exists = await this.checkFileExists(expectedFile, true)
     if (!exists) return log.debug('skipping eslintrc checks')
-    await this.inspectFile('.eslintrc.js')
+    await this.inspectFile(expectedFile)
     this.shouldContains('external rules', /\.eslintrc\.rules/)
     this.shouldContains('standard rules extend', /standard/)
     this.couldContains('unicorn rules extend', /plugin:unicorn\/recommended/)
@@ -14,15 +15,19 @@ export class EsLintFile extends File {
     await this.checkTs()
     await this.checkVue()
     await this.lintFolder()
+    return true
   }
 
-  async checkTs () {
-    if (!this.data.use_typescript) return this.shouldContains('eslint recommended rules extend', /eslint:recommended/)
-    if (this.data.use_vue) this.shouldContains('vue typescript rules extend', '@vue/typescript/recommended')
+  async checkTs (): Promise<void> {
+    if (!this.data.use_typescript) {
+      this.shouldContains('eslint recommended rules extend', /eslint:recommended/)
+      return
+    }
+    if (this.data.use_vue) this.shouldContains('vue typescript rules extend', /@vue\/typescript\/recommended/)
     else this.shouldContains('standard-with-typescript extend', /standard-with-typescript/)
   }
 
-  async checkVue () {
+  async checkVue (): Promise<void> {
     if (!this.data.use_vue) return
     this.shouldContains('vue recommended rules', /plugin:vue\/recommended/)
     this.shouldContains('no easy vue essential rules set', /plugin:vue\/essential/, 0)
@@ -33,16 +38,15 @@ export class EsLintFile extends File {
     this.shouldContains("'vue/singleline-html-element-content-newline': 'off',")
   }
 
-  lintFolder () {
+  async lintFolder (): Promise<void> {
     if (this.nbFailed > 0) return
-    return new Promise(resolve => {
+    const message = await new Promise(resolve => {
       const proc = spawn(process.platform.startsWith('win') ? 'npm.cmd' : 'npm', ['run', 'lint'], { cwd: this.folderPath })
-      proc.stderr.on('data', data => { resolve(`stderr: ${data}`) })
+      proc.stderr.on('data', (data: string) => { resolve(`stderr: ${data}`) })
       proc.on('error', (error) => { resolve(`error: ${error.message}`) })
       proc.on('close', code => { resolve(`child process exited with code ${code}`) })
-    }).then(message => {
-      const hasIssues = message.includes('stderr')
-      this.test(!hasIssues, 'has no lint issues')
     })
+    const hasIssues = (message as string).includes('stderr')
+    this.test(!hasIssues, 'has no lint issues')
   }
 }

@@ -1,60 +1,62 @@
 /* eslint-disable no-console */
 import { blueBright, green, redBright, yellowBright } from 'colorette'
-import { createWriteStream } from 'fs'
+import { createWriteStream, WriteStream } from 'fs'
 import { config, name, version } from '../package.json'
 
 class Logger {
-  get indent () {
+  indentLevel = 0
+  file: WriteStream
+
+  get indent (): string {
     return '    '.repeat(this.indentLevel)
   }
 
-  get date () {
+  get date (): string {
     return new Date().toISOString().replace('T', ' ').split('.')[0]
   }
 
-  constructor (filePath) {
+  constructor (filePath = '') {
     this.file = createWriteStream(filePath, { flags: 'a' })
-    this.indentLevel = 0
   }
 
-  async _write (...stuff) {
+  _write (...stuff: string[]): boolean {
     this.file.write(stuff.join(' ') + '\n')
     return true
   }
 
-  async setIndentLevel (level) {
+  setIndentLevel (level = 0): number {
     this.indentLevel = level
     return level
   }
 
-  debug (...stuff) {
+  debug (...stuff: string[]): boolean {
     return this._write(this.indent, '🔹', ...stuff)
   }
 
-  info (...stuff) {
+  info (...stuff: string[]): boolean {
     console.log(this.indent, '⬜', ...stuff)
     return this._write(this.indent, '⬜', ...stuff)
   }
 
-  async error (...stuff) {
+  error (...stuff: string[]): boolean {
     console.error(redBright([this.indent, '❌ ', ...stuff].join(' ')))
-    await this._write(this.indent, '❌', ...stuff)
+    this._write(this.indent, '❌', ...stuff)
     return false
   }
 
-  warn (...stuff) {
+  warn (...stuff: string[]): boolean {
     console.log(yellowBright([this.indent, '⚠️ ', ...stuff].join(' ')))
     return this._write(this.indent, '⚠️', ...stuff)
   }
 
-  success (outputToConsole, ...stuff) {
+  success (outputToConsole = false, ...stuff: string[]): boolean {
     if (outputToConsole) {
       console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
     }
     return this._write(this.indent, '✔️', ...stuff)
   }
 
-  test (ok, message, justWarn, outputToConsole) {
+  test (ok = false, message = '', justWarn = false, outputToConsole = false): boolean {
     if (ok) {
       this.success(outputToConsole, message)
     } else if (justWarn) {
@@ -65,25 +67,25 @@ class Logger {
     return ok
   }
 
-  fix (...stuff) {
+  fix (...stuff: string[]): boolean {
     stuff.push('(fixed)')
     console.log(blueBright([this.indent, '⬜', ...stuff].join(' ')))
     return this._write(this.indent, '⬜', ...stuff)
   }
 
-  line () {
+  line (): boolean {
     console.log('')
     return this._write('')
   }
 
-  start (doFix = false) {
+  start (doFix = false): boolean {
     this.line()
     this._write(`⬇️--- Entry from ${this.date} ---⬇️`)
     this.info(`${name} v${version} is starting ${doFix ? '(fix enabled)' : ''}`)
     return this.line()
   }
 
-  end () {
+  end (): boolean {
     this.info(name, 'has finished')
     return this.line()
   }
