@@ -25,7 +25,7 @@
     "esm": "3.2.25",
     "nyc": "15.1.0",
     "require-from-string": "2.0.2",
-    "rollup": "2.33.3",
+    "rollup": "2.34.0",
     "rollup-plugin-add-shebang": "0.3.1",
     "rollup-plugin-analyzer": "3.3.0",
     "shuutils": "4.1.0"
