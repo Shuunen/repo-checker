@@ -68,6 +68,8 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] test the readme fix-ability in UT
 - [ ] no need to create a repo-checker.config.js with this content
 - [ ] can check the latest version of repo-check in package.json
+- [ ] suggest [xo](https://github.com/xojs/xo) ?
+- [ ] check last tag, suggest to tag if last one is old
 
 ## Thanks
 
