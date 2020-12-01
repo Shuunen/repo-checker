@@ -1,7 +1,6 @@
 import { access, existsSync, lstatSync, readdir, readdirSync, readFile, rmdirSync, stat, unlinkSync, writeFile } from 'fs'
 import path from 'path'
 import requireFromString from 'require-from-string'
-import { copy } from 'shuutils/dist/objects'
 import { promisify } from 'util'
 import { dataDefaults, dataFileName, ProjectData } from './constants'
 import { log } from './logger'
@@ -27,7 +26,8 @@ export async function getGitFolders (folderPath = ''): Promise<string[]> {
   return gitDirectories
 }
 
-export async function augmentDataWithGit (folderPath: string, data: ProjectData): Promise<ProjectData> {
+export async function augmentDataWithGit (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
+  const data = new ProjectData(dataSource)
   const gitConfigContent = await readFileInFolder(path.join(folderPath, '.git'), 'config')
   const matches = gitConfigContent.match(/([\w-]+)\/([\w-]+)\.git/) ?? []
   if (matches.length !== 3) return data
@@ -39,7 +39,8 @@ export async function augmentDataWithGit (folderPath: string, data: ProjectData)
   return data
 }
 
-export async function augmentDataWithPackageJson (folderPath: string, data: ProjectData): Promise<ProjectData> {
+export async function augmentDataWithPackageJson (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
+  const data = new ProjectData(dataSource)
   const content = await readFileInFolder(folderPath, 'package.json')
   if (content.length === 0) return data
   data.package_name = content.match(/"name": "([\w+/@-]+)"/)?.[1] ?? dataDefaults.package_name
@@ -60,8 +61,7 @@ export async function augmentDataWithPackageJson (folderPath: string, data: Proj
 }
 
 export async function augmentData (folderPath: string, dataSource: ProjectData, shouldLoadLocal = false): Promise<ProjectData> {
-  let data = copy(dataSource)
-  data = Object.assign({}, dataDefaults, data)
+  let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
   data = await augmentDataWithPackageJson(folderPath, data)
   const localDataExists = shouldLoadLocal ? await checkFileExists(path.join(folderPath, dataFileName)) : false
@@ -111,7 +111,7 @@ export async function getFileSizeInKo (filePath = ''): Promise<number> {
   return size
 }
 
-export function fillTemplate (template = '', data: { [key: string]: string } = {}): string {
+export function fillTemplate (template: string | object, data: { [key: string]: string } = {}): string {
   let string = (typeof template === 'object' ? JSON.stringify(template, undefined, 2) : template)
   if (string.length === 0) return string
   const tokens = string.match(/{{\s?([^\s}]+)\s?}}/g)

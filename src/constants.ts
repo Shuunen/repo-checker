@@ -1,9 +1,8 @@
 import path from 'path'
-import { fileURLToPath } from 'url'
 
-export const home = process.env.HOME ?? '' // TODO: when does HOME is not defined ?
+export const home = process.env.HOME ?? '' /* c8 ignore next */ // TODO: when does HOME is not defined ?
 export const dataFileName = 'repo-checker.config.js'
-export const repoCheckerPath = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
+export const repoCheckerPath = process.env.pwd ?? '' /* c8 ignore next */ // TODO: when does env is not defined ?
 export const templatePath = path.join(repoCheckerPath, 'templates')
 export const dataFileHomePath = path.join(home, dataFileName)
 
@@ -25,6 +24,10 @@ export class ProjectData {
   user_name = 'Romain Racamier-Lafon'
   web_published = false
   web_url = 'https://my-website.com'
+
+  constructor (data: Partial<ProjectData> = {}) {
+    Object.assign(this, data)
+  }
 }
 
 export const dataDefaults = new ProjectData()

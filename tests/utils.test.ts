@@ -1,7 +1,7 @@
 import test from 'ava'
 import { mkdirSync } from 'fs'
 import path from 'path'
-import { dataDefaults } from '../src/constants'
+import { dataDefaults, ProjectData } from '../src/constants'
 import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, createFile, deleteFolderRecursive, fillTemplate, folderContainsFile, getFileSizeInKo, getGitFolders, isGitFolder, readFileInFolder } from '../src/utils'
 
 // base project folder
@@ -16,7 +16,7 @@ test('git folder detection', async (t) => {
 test('git folders listing', async (t) => {
   t.deepEqual(await getGitFolders(rootFolder), [rootFolder])
   const projects = ['anotherProject', 'sampleProject']
-  projects.forEach(async (name) => {
+  projects.map(async (name) => {
     const folder = path.join(testFolder, name, '.git')
     mkdirSync(folder, { recursive: true })
     await createFile(folder, 'config')
@@ -31,7 +31,7 @@ test('file creation, detection, read', async (t) => {
   t.true(await folderContainsFile(rootFolder, filename))
   t.false(await folderContainsFile(filename))
   t.false(await createFile('/', filename, 'plop'))
-  t.is(await readFileInFolder('/', filename).catch(() => 'failed'), 'failed')
+  t.is(await readFileInFolder('/', filename).catch(() => 'failed'), '')
 })
 
 test('file size calculation', async (t) => {
@@ -39,76 +39,58 @@ test('file size calculation', async (t) => {
 })
 
 test('data augment with git', async (t) => {
-  const expectedDataFromGit = {
+  const expectedDataFromGit = new ProjectData({
     user_id: 'Shuunen',
     user_id_lowercase: 'shuunen',
     repo_id: 'repo-checker',
-  }
-  const dataFromGit = await augmentDataWithGit(rootFolder, {})
+  })
+  const dataFromGit = await augmentDataWithGit(rootFolder, dataDefaults)
   t.deepEqual(dataFromGit, expectedDataFromGit)
-  const expectedAugmentedData = {
+  const expectedAugmentedData = new ProjectData({
     auto_merge: true,
-    ban_sass: true,
-    dev_deps_only: true,
-    license: 'GPL-3.0',
-    max_size_ko: 40,
+    is_module: true,
+    max_size_ko: 45,
     npm_package: true,
     package_name: 'repo-check',
-    user_mail: 'romain.racamier@gmail.com',
-    user_name: 'Romain Racamier-Lafon',
-    user_id: 'Shuunen',
-    user_id_lowercase: 'shuunen',
     repo_id: 'repo-checker',
-    use_typescript: false,
-    use_vue: false,
-    web_published: false,
-    web_url: 'https://my-website.com',
-  }
-  const augmentedData = await augmentData(rootFolder, {}, true)
+    use_typescript: true,
+  })
+  const augmentedData = await augmentData(rootFolder, dataDefaults, true)
   t.deepEqual(augmentedData, expectedAugmentedData)
-  const augmentedDataFromTestFolder = await augmentData(testFolder, {})
+  const augmentedDataFromTestFolder = await augmentData(testFolder, dataDefaults)
   t.deepEqual(augmentedDataFromTestFolder, dataDefaults)
 })
 
 test('data augment with package', async (t) => {
-  const data = await augmentDataWithPackageJson(rootFolder, {})
-  t.deepEqual(data, {
-    license: 'GPL-3.0',
+  const data = await augmentDataWithPackageJson(rootFolder, dataDefaults)
+  const expectedData = new ProjectData({
+    is_module: true,
     npm_package: true,
     package_name: 'repo-check',
-    user_id: 'Shuunen',
-    user_id_lowercase: 'shuunen',
-    user_mail: 'romain.racamier@gmail.com',
-    user_name: 'Romain Racamier-Lafon',
+    use_typescript: true,
   })
-  const vueData = await augmentDataWithPackageJson(path.join(testFolder, 'data', 'vueProject'), {})
-  t.deepEqual(vueData, {
-    license: 'GPL-3.0',
-    use_vue: true,
-    user_id: 'Kevin_Malone',
-    user_id_lowercase: 'kevin_malone',
+  t.deepEqual(data, expectedData)
+  const vueData = await augmentDataWithPackageJson(path.join(testFolder, 'data', 'vueProject'), dataDefaults)
+  const expectedVueData = new ProjectData({
     package_name: 'name',
+    use_vue: true,
+    user_id_lowercase: 'kevin_malone',
+    user_id: 'Kevin_Malone',
     web_published: true,
   })
-  const tsData = await augmentData(path.join(testFolder, 'data', 'tsProject'), {}, true)
-  t.deepEqual(tsData, {
-    auto_merge: true,
+  t.deepEqual(vueData, expectedVueData)
+  const tsData = await augmentData(path.join(testFolder, 'data', 'tsProject'), dataDefaults, true)
+  const expectedTsData = new ProjectData({
     ban_sass: false,
-    dev_deps_only: true,
     license: 'MIT',
-    max_size_ko: 10,
-    npm_package: false,
     package_name: '',
     repo_id: 'a-great-repo',
     use_typescript: true,
-    use_vue: false,
-    user_id: 'Shuunen',
-    user_id_lowercase: 'shuunen',
     user_mail: '',
     user_name: 'Dwight Schrute',
-    web_published: false,
     web_url: 'https://my-website.com',
   })
+  t.deepEqual(tsData, expectedTsData)
 })
 
 test('template filling', t => {

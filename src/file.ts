@@ -98,10 +98,10 @@ export class File {
   }
 
   test (isValid = false, message = '', justWarn = false): boolean {
-    if (!isValid && !justWarn) {
-      this.nbFailed++
-    } else {
+    if (isValid) {
       this.nbPassed++
+    } else if (!justWarn) {
+      this.nbFailed++
     }
     log.test(isValid, message, justWarn)
     return isValid
