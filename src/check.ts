@@ -1,10 +1,11 @@
-import * as files from './files'
+import { ProjectData } from './constants'
+import { ConfigsFile, EditorConfigFile, EsLintFile, LicenseFile, NvmrcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TravisFile } from './files'
 import { log } from './logger'
 import { augmentData, getGitFolders } from './utils'
 
-const Checkers = Object.keys(files).map(f => files[f])
+const Checkers = [ConfigsFile, EditorConfigFile, EsLintFile, LicenseFile, NvmrcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TravisFile]
 
-function report (nbPassed, nbFailed) {
+function report (nbPassed = 0, nbFailed = 0): void {
   log.info('Report :')
   log.setIndentLevel(1)
   log.test(nbPassed > 0, `${nbPassed} test(s) passed successfully`, false, true)
@@ -14,7 +15,7 @@ function report (nbPassed, nbFailed) {
   if (nbFailed > 0) throw new Error('failed at validating at least one rule in one folder')
 }
 
-export async function check (folderPath, data, doFix = false, doForce = false) {
+export async function check (folderPath: string, data: ProjectData, doFix = false, doForce = false): Promise<{ nbPassed: number, nbFailed: number }> {
   const folders = await getGitFolders(folderPath)
   let nbPassed = 0
   let nbFailed = 0

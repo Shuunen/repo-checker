@@ -3,13 +3,20 @@ import { File } from '../file'
 import { log } from '../logger'
 import { readFileInFolder } from '../utils'
 
-const thanks = (label, link, description) => {
+interface Thanks {
+  label: string
+  link: string
+  description: string
+  markdown: string
+}
+
+const thanks = (label = '', link = '', description = ''): Thanks => {
   const markdown = `- [${label}](${link}) : ${description}`
   return { label, link, description, markdown }
 }
 
 export class ReadmeFile extends File {
-  async start () {
+  async start (): Promise<void> {
     const exists = await this.checkFileExists('README.md')
     if (!exists) return
     await this.inspectFile('README.md')
@@ -20,11 +27,11 @@ export class ReadmeFile extends File {
     this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
     this.checkMarkdown()
     this.checkBadges()
-    this.checkTodos()
+    await this.checkTodos()
     await this.checkThanks()
   }
 
-  checkMarkdown () {
+  checkMarkdown (): void {
     let ok = this.shouldContains('no CRLF Windows carriage return', /\r/, 0, false, 'prefer Unix LF', true)
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\r\n/g, '\n')
     const starLists = /\n\*\s([\w[])/g
@@ -32,12 +39,12 @@ export class ReadmeFile extends File {
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\n\*\s([\w[])/g, '\n- $1')
   }
 
-  addBadge (line) {
+  addBadge (line = ''): void {
     // just after project title
     this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/, `$1${line}\n`)
   }
 
-  async checkBadges () {
+  checkBadges (): void {
     this.shouldContains('a badge with project licence', /shields\.io\/github\/license/)
     this.shouldContains('a badge with build status', /]\(https:\/\/travis-ci.org\//)
     let md = `[![Website Up](https://img.shields.io/website/https/${this.data.web_url.replace('https://', '')}.svg)](${this.data.web_url})`
@@ -59,12 +66,12 @@ export class ReadmeFile extends File {
     if (!ok && this.doFix) this.addBadge(md)
   }
 
-  addThanks (line) {
+  addThanks (line = ''): void {
     // just after Thank title
     this.fileContent = this.fileContent.replace(/(## Thank.*\n\n)/, `$1${line}\n`)
   }
 
-  async checkThanks () {
+  async checkThanks (): Promise<void> {
     const hasThanks = this.couldContains('a thanks section', /## Thanks/)
     if (!hasThanks) return
     const expected = await this.getExpectedThanks()
@@ -74,13 +81,13 @@ export class ReadmeFile extends File {
     })
   }
 
-  async getExpectedThanks () {
-    const list = []
+  async getExpectedThanks (): Promise<Thanks[]> {
+    const list: Thanks[] = []
     if (this.fileContent.includes('shields')) list.push(thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme'))
     if (this.fileContent.includes('travis-ci')) list.push(thanks('Travis-ci.org', 'https://travis-ci.org', 'for providing free continuous deployments'))
     if (this.fileContent.includes('github')) list.push(thanks('Github', 'https://github.com', 'for all their great work year after year, pushing OSS forward'))
     if (this.fileContent.includes('netlify')) list.push(thanks('Netlify', 'https://netlify.com', 'awesome company that offers free CI & hosting for OSS projects'))
-    const json = await readFileInFolder(this.folderPath, 'package.json', true)
+    const json = await readFileInFolder(this.folderPath, 'package.json')
     if (json === '') return list
     if (json.includes('rollup"')) list.push(thanks('Rollup', 'https://rollupjs.org', 'a fast & efficient js module bundler'))
     if (json.includes('ava"')) list.push(thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use'))
@@ -95,8 +102,10 @@ export class ReadmeFile extends File {
     return list
   }
 
-  async checkTodos () {
-    (this.fileContent.match(/- \[ ] (.*)/g) || []).forEach(line => {
+  checkTodos (): void {
+    const matches = this.fileContent.match(/- \[ ] (.*)/g)
+    if (matches === null) return
+    matches.map(async (line) => {
       // a todo line in markdown is like "- [ ] add some fancy gifs"
       const todo = line.replace('- [ ] ', '')
       log.info('TODO : ' + todo)

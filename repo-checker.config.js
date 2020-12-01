@@ -1,3 +1,3 @@
 module.exports = {
-  max_size_ko: 40,
+  max_size_ko: 45,
 }
