@@ -30,7 +30,10 @@ test('file creation, detection, read', async (t) => {
   t.true(await createFile(rootFolder, filename))
   t.true(await folderContainsFile(rootFolder, filename))
   t.false(await folderContainsFile(filename))
+  t.false(await folderContainsFile())
   t.false(await createFile('/', filename, 'plop'))
+  t.false(await createFile(rootFolder))
+  t.false(await createFile())
   t.is(await readFileInFolder('/', filename).catch(() => 'failed'), '')
 })
 
