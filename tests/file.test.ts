@@ -11,11 +11,17 @@ test('file validator', async (t) => {
       const filename = 'some-file.log'
       await createFile(repoCheckerPath, filename, 'Foobar content')
       await this.inspectFile(filename)
+      t.is(this.nbPassed, 0)
       this.shouldContains('Foobar')
+      t.is(this.nbPassed, 1)
       this.shouldContains('plop')
+      t.is(this.nbPassed, 1)
       this.couldContains('world')
+      t.is(this.nbPassed, 1)
       await this.checkFileExists('package.json')
+      t.is(this.nbPassed, 2)
       await this.checkNoFileExists('zorglub.exe')
+      t.is(this.nbPassed, 3)
       unlinkSync(path.join(repoCheckerPath, filename))
     }
   }
@@ -27,6 +33,7 @@ test('file validator', async (t) => {
   t.is(nbFailed, 1)
 })
 
+/*
 test('file validator with fix', async (t) => {
   class MyFileFix extends File {
     async start (): Promise<void> {
@@ -63,3 +70,4 @@ test('file validator with fix & force', async (t) => {
   t.is(nbPassed, 1)
   t.is(nbFailed, 1)
 })
+*/
