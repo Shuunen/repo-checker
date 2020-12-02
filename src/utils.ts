@@ -73,7 +73,8 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
 }
 
 export async function folderContainsFile (folderPath = '', fileName = ''): Promise<boolean> {
-  if (folderPath.length === 0 || fileName.length === 0) return log.error('folderContainsFile miss arguments')
+  if (folderPath.length === 0) return log.error('folderContainsFile need a folderPath argument')
+  if (fileName.length === 0) return log.error('folderContainsFile need a fileName argument')
   return await checkFileExists(path.join(folderPath, fileName))
 }
 
@@ -87,6 +88,8 @@ export async function checkFileExists (filePath = ''): Promise<boolean> {
 }
 
 export async function createFile (folderPath = '', fileName = '', fileContent = ''): Promise<boolean> {
+  if (folderPath.length === 0) return log.error('createFile need a folderPath argument')
+  if (fileName.length === 0) return log.error('createFile need a fileName argument')
   return await new Promise(resolve => {
     writeFile(path.join(folderPath, fileName), fileContent, 'utf8', (error) => {
       if (error !== null) {
