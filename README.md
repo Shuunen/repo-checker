@@ -69,6 +69,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] can check the latest version of repo-check in package.json
 - [ ] suggest [xo](https://github.com/xojs/xo) ?
 - [ ] check last tag, suggest to tag if last one is old
+- [ ] suggest `fs-extra` instead of `fs`, utils inside are already promises
 
 ## Thanks
 
