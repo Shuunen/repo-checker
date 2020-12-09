@@ -74,10 +74,10 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 ## Thanks
 
 - [Ava](https://github.com/avajs/ava) : great test runner easy to setup & use
+- [C8](https://github.com/bcoe/c8) : an Istanbul cli easy to setup & use along Ava
 - [Eslint](https://eslint.org) : super tool to find & fix problems
 - [Github](https://github.com) : for all their great work year after year, pushing OSS forward
 - [Npm-run-all](https://github.com/mysticatea/npm-run-all) : to keep my npm scripts clean & readable
-- [Nyc](https://github.com/istanbuljs/nyc) : an Istanbul cli easy to setup & use along Ava
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
 - [Rollup](https://rollupjs.org) : a fast & efficient js module bundler
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
