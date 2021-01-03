@@ -23,7 +23,7 @@ export class ReadmeFile extends File {
     if (!exists) return
     await this.inspectFile('README.md')
     this.shouldContains('a title', /^#\s\w+/)
-    this.couldContains('a logo', /docs\/logo.svg\)/, 1, '![demo](docs/logo.svg)')
+    this.couldContains('a logo', /docs\/logo.svg\)/, 1, '![logo](docs/logo.svg)')
     this.couldContains('a demo screen or gif', /docs\/demo/, 1, '![demo](docs/demo.gif)')
     this.shouldContains('no link to deprecated *.netlify.com', /(.*)\.netlify\.com/, 0)
     this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
@@ -81,7 +81,7 @@ export class ReadmeFile extends File {
     if (!hasSection) return
     const thanks = await this.getThanks()
     thanks.forEach(thank => {
-      const ok = this.couldContains(`${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`, new RegExp(`\\[${thank.label}]`), thank.expected ? 1 : 0, thank.markdown, thank.expected)
+      const ok = this.couldContains(`${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`, new RegExp(`\\[${thank.label}]`, 'i'), thank.expected ? 1 : 0, thank.markdown, thank.expected)
       if (!ok && thank.expected && thank.fixable && this.doFix) this.addThanks(thank.markdown)
     })
   }
@@ -99,8 +99,8 @@ export class ReadmeFile extends File {
     list.push(new Thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use', json.includes('ava"')))
     list.push(new Thanks('Mocha', 'https://github.com/mochajs/mocha', 'great test runner easy to setup & use', json.includes('mocha"')))
     list.push(new Thanks('Npm-run-all', 'https://github.com/mysticatea/npm-run-all', 'to keep my npm scripts clean & readable', json.includes('npm-run-all"')))
-    list.push(new Thanks('C8', 'https://github.com/bcoe/c8', 'an Istanbul cli easy to setup & use along Ava', json.includes('c8"')))
-    list.push(new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'an Istanbul cli easy to setup & use along Ava', json.includes('nyc"')))
+    list.push(new Thanks('C8', 'https://github.com/bcoe/c8', 'simple & effective cli for code coverage', json.includes('c8"')))
+    list.push(new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'simple & effective cli for code coverage', json.includes('nyc"')))
     list.push(new Thanks('Repo-checker', 'https://github.com/Shuunen/repo-checker', 'eslint cover /src code and this tool the rest ^^', json.includes('repo-check')))
     list.push(new Thanks('Vue', 'https://vuejs.org', 'when I need a front framework, this is the one I choose <3', json.includes('vue"')))
     list.push(new Thanks('Eslint', 'https://eslint.org', 'super tool to find & fix problems', json.includes('eslint"')))
