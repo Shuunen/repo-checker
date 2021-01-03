@@ -28,8 +28,12 @@ export class File {
     await createFile(this.folderPath, this.fileName, this.fileContent)
   }
 
+  async fileExists (fileName: string): Promise<boolean> {
+    return await folderContainsFile(this.folderPath, fileName)
+  }
+
   async checkFileExists (fileName = '', justWarn = false): Promise<boolean> {
-    let fileExists = await folderContainsFile(this.folderPath, fileName)
+    let fileExists = await this.fileExists(fileName)
     if (!fileExists && this.doFix) {
       const fileContent = await this.createFile(fileName)
       fileExists = fileContent.length > 0

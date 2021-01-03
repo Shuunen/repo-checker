@@ -67,8 +67,10 @@ export class PackageJsonFile extends File {
     if (hasUt && !this.fileContent.includes('"c8"')) this.couldContains('code coverage', /"(nyc|c8)"/g)
   }
 
-  checkLint (): void {
-    this.couldContains('an eslint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
+  checkLint (): boolean {
+    const useXo = this.fileContent.includes('"xo"')
+    if (useXo) return this.couldContains('a lint task', /"lint": "xo --fix/)
+    return this.couldContains('an lint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
   }
 
   checkBuild (): void {

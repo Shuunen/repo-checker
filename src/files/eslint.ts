@@ -4,6 +4,17 @@ import { log } from '../logger'
 
 export class EsLintFile extends File {
   async start (): Promise<boolean> {
+    const useXo = await this.fileExists('xo.config.js')
+    if (useXo) return await this.checkXo()
+    return await this.checkEslint()
+  }
+
+  async checkXo (): Promise<boolean> {
+    await this.lintFolder()
+    return true
+  }
+
+  async checkEslint (): Promise<boolean> {
     const expectedFile = this.data.is_module ? '.eslintrc.cjs' : '.eslintrc.js'
     const exists = await this.checkFileExists(expectedFile, true)
     if (!exists) return log.debug('skipping eslintrc checks')
@@ -18,13 +29,10 @@ export class EsLintFile extends File {
     return true
   }
 
-  async checkTs (): Promise<void> {
-    if (!this.data.use_typescript) {
-      this.shouldContains('eslint recommended rules extend', /eslint:recommended/)
-      return
-    }
-    if (this.data.use_vue) this.shouldContains('vue typescript rules extend', /@vue\/typescript\/recommended/)
-    else this.shouldContains('standard-with-typescript extend', /standard-with-typescript/)
+  async checkTs (): Promise<boolean> {
+    if (!this.data.use_typescript) return this.shouldContains('eslint recommended rules extend', /eslint:recommended/)
+    if (this.data.use_vue) return this.shouldContains('vue typescript rules extend', /@vue\/typescript\/recommended/)
+    return this.shouldContains('standard-with-typescript extend', /standard-with-typescript/)
   }
 
   async checkVue (): Promise<void> {
