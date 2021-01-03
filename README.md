@@ -2,9 +2,9 @@
 
 [![npm version](https://img.shields.io/npm/v/repo-check.svg?color=informational)](https://www.npmjs.com/package/repo-check)
 [![npm monthly downloads](https://img.shields.io/npm/dm/repo-check.svg?color=informational)](https://www.npmjs.com/package/repo-check)
-[![GitHub license](https://img.shields.io/github/license/shuunen/repo-checker.svg?color=informational)](https://github.com/Shuunen/repo-checker/blob/master/LICENSE)
+[![Project license](https://img.shields.io/github/license/Shuunen/repo-checker.svg?color=informational)](https://github.com/Shuunen/repo-checker/blob/master/LICENSE)
 
-[![Build Status](https://travis-ci.org/Shuunen/repo-checker.svg?branch=master)](https://travis-ci.org/Shuunen/repo-checker)
+[![Build status](https://travis-ci.com/Shuunen/repo-checker.svg?branch=master)](https://travis-ci.com/Shuunen/repo-checker)
 [![David](https://img.shields.io/david/shuunen/repo-checker.svg)](https://david-dm.org/shuunen/repo-checker)
 [![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/Shuunen/repo-checker.svg)](https://lgtm.com/projects/g/Shuunen/repo-checker/)
 [![Package Quality](https://npm.packagequality.com/shield/repo-check.svg)](https://packagequality.com/#?package=repo-check)
@@ -64,7 +64,6 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] compute build/dist/folder/public size for maxSize compliance
 - [ ] minify dist
 - [ ] add nbFixes to the report
-- [ ] apply the same "expected" logic in thanks into badges, code will be clearer
 - [ ] test the readme fix-ability in UT
 - [ ] can check the latest version of repo-check in package.json
 - [ ] suggest [xo](https://github.com/xojs/xo) ?
@@ -81,7 +80,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
 - [Rollup](https://rollupjs.org) : a fast & efficient js module bundler
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
-- [Travis-ci.org](https://travis-ci.org) : for providing free continuous deployments
+- [Travis-ci.com](https://travis-ci.com) : for providing free continuous deployments
 
 ## License
 

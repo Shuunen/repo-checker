@@ -10,8 +10,7 @@ export class File {
   nbPassed = 0
   nbFailed = 0
 
-  constructor (public folderPath: string, public data: ProjectData, public doFix = false, public doForce = false) {
-  }
+  constructor (public folderPath: string, public data: ProjectData, public doFix = false, public doForce = false) {}
 
   async end (): Promise<void> {
     await this.updateFile()

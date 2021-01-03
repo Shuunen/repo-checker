@@ -5,8 +5,15 @@ import { readFileInFolder } from '../utils'
 
 class Thanks {
   markdown = ''
-  constructor (public label = '', public link = '', public description = '', public expected = false) {
+  constructor (public label = '', public link = '', public description = '', public expected = false, public fixable = true) {
     this.markdown = `- [${label}](${link}) : ${description}`
+  }
+}
+
+class Badge {
+  markdown = ''
+  constructor (public label = '', public link = '', public image = '', public expected = true, public fixable = true) {
+    this.markdown = `[![${label}](${image})](${link})`
   }
 }
 
@@ -21,7 +28,7 @@ export class ReadmeFile extends File {
     this.shouldContains('no link to deprecated *.netlify.com', /(.*)\.netlify\.com/, 0)
     this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
     this.checkMarkdown()
-    this.checkBadges()
+    await this.checkBadges()
     await this.checkTodos()
     await this.checkThanks()
   }
@@ -39,26 +46,29 @@ export class ReadmeFile extends File {
     this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/, `$1${line}\n`)
   }
 
-  checkBadges (): void {
-    this.shouldContains('a badge with project licence', /shields\.io\/github\/license/)
-    this.shouldContains('a badge with build status', /]\(https:\/\/travis-ci.org\//)
-    let md = `[![Website Up](https://img.shields.io/website/https/${this.data.web_url.replace('https://', '')}.svg)](${this.data.web_url})`
-    let ok = false
-    if (this.data.web_published) {
-      const fixable = this.data.web_url !== dataDefaults.web_url
-      ok = this.couldContains('a badge with website link', /shields\.io\/website/, 1, md, fixable)
-      if (!ok && this.doFix && fixable) this.addBadge(md)
+  async checkBadges (): Promise<void> {
+    const badges = await this.getBadges()
+    badges.forEach(badge => {
+      const ok = this.couldContains(`${badge.expected ? 'a' : 'no'} "${badge.label}" badge`, new RegExp(`\\(${badge.link}\\)`), badge.expected ? 1 : 0, badge.markdown, badge.expected)
+      if (!ok && badge.expected && badge.fixable && this.doFix) this.addBadge(badge.markdown)
+    })
+  }
+
+  async getBadges (): Promise<Badge[]> {
+    const userRepo = `${this.data.user_id}/${this.data.repo_id}`
+    const list = [
+      new Badge('Project license', `https://github.com/${userRepo}/blob/master/LICENSE`, `https://img.shields.io/github/license/${userRepo}.svg?color=informational`),
+      new Badge('Build status', `https://travis-ci.com/${userRepo}`, `https://travis-ci.com/${userRepo}.svg?branch=master`),
+    ]
+    if (this.data.web_published && !this.fileContent.includes('shields.io/website/')) {
+      list.push(new Badge('Website up', this.data.web_url, `https://img.shields.io/website/https/${this.data.web_url.replace('https://', '')}.svg`, true, this.data.web_url !== dataDefaults.web_url))
     }
-    if (!this.data.npm_package) return
-    md = `[![Package Quality](https://npm.packagequality.com/shield/${this.data.package_name}.svg)](https://packagequality.com/#?package=${this.data.package_name})`
-    ok = this.couldContains('a badge with package quality', /npm\.packagequality\.com\/shield/, 1, md, true)
-    if (!ok && this.doFix) this.addBadge(md)
-    md = `[![npm monthly downloads](https://img.shields.io/npm/dm/${this.data.package_name}.svg?color=informational)](https://www.npmjs.com/package/${this.data.package_name})`
-    ok = this.couldContains('a badge with package downloads per month', /shields\.io\/npm\/dm/, 1, md, true)
-    if (!ok && this.doFix) this.addBadge(md)
-    md = `[![npm version](https://img.shields.io/npm/v/${this.data.package_name}.svg?color=informational)](https://www.npmjs.com/package/${this.data.package_name})`
-    ok = this.couldContains('a badge with package version', /shields\.io\/npm\/v/, 1, md, true)
-    if (!ok && this.doFix) this.addBadge(md)
+    if (this.data.npm_package) {
+      list.push(new Badge('Package Quality', `https://packagequality.com/#?package=${this.data.package_name}`, `https://npm.packagequality.com/shield/${this.data.package_name}.svg`))
+      list.push(new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/dm/${this.data.package_name}.svg?color=informational`))
+      list.push(new Badge('Npm version', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/v/${this.data.package_name}.svg?color=informational`))
+    }
+    return list
   }
 
   addThanks (line = ''): void {
@@ -72,14 +82,14 @@ export class ReadmeFile extends File {
     const thanks = await this.getThanks()
     thanks.forEach(thank => {
       const ok = this.couldContains(`${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`, new RegExp(`\\[${thank.label}]`), thank.expected ? 1 : 0, thank.markdown, thank.expected)
-      if (!ok && thank.expected && this.doFix) this.addThanks(thank.markdown)
+      if (!ok && thank.expected && thank.fixable && this.doFix) this.addThanks(thank.markdown)
     })
   }
 
   async getThanks (): Promise<Thanks[]> {
     const list = [
       new Thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme', this.fileContent.includes('shields')),
-      new Thanks('Travis-ci.org', 'https://travis-ci.org', 'for providing free continuous deployments', this.fileContent.includes('travis-ci')),
+      new Thanks('Travis-ci.com', 'https://travis-ci.com', 'for providing free continuous deployments', this.fileContent.includes('travis-ci')),
       new Thanks('Github', 'https://github.com', 'for all their great work year after year, pushing OSS forward', this.fileContent.includes('github')),
       new Thanks('Netlify', 'https://netlify.com', 'awesome company that offers free CI & hosting for OSS projects', this.fileContent.includes('netlify')),
     ]
@@ -87,6 +97,7 @@ export class ReadmeFile extends File {
     if (json === '') return list
     list.push(new Thanks('Rollup', 'https://rollupjs.org', 'a fast & efficient js module bundler', json.includes('rollup"')))
     list.push(new Thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use', json.includes('ava"')))
+    list.push(new Thanks('Mocha', 'https://github.com/mochajs/mocha', 'great test runner easy to setup & use', json.includes('mocha"')))
     list.push(new Thanks('Npm-run-all', 'https://github.com/mysticatea/npm-run-all', 'to keep my npm scripts clean & readable', json.includes('npm-run-all"')))
     list.push(new Thanks('C8', 'https://github.com/bcoe/c8', 'an Istanbul cli easy to setup & use along Ava', json.includes('c8"')))
     list.push(new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'an Istanbul cli easy to setup & use along Ava', json.includes('nyc"')))
