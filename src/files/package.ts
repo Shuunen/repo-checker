@@ -64,7 +64,7 @@ export class PackageJsonFile extends File {
     this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/)
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/, 0)
     const hasUt = this.couldContains('unit testing', /"(ava|mocha)"/g)
-    if (hasUt) this.couldContains('code coverage', /"(nyc|c8)"/g)
+    if (hasUt && !this.fileContent.includes('"c8"')) this.couldContains('code coverage', /"(nyc|c8)"/g)
   }
 
   checkLint (): void {
