@@ -63,7 +63,7 @@ export class PackageJsonFile extends File {
     else this.couldContains('a post-script for version automation', /"postversion": "git push && git push --tags"/)
     this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/)
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/, 0)
-    const hasUt = this.couldContains('unit testing', /"ava"/)
+    const hasUt = this.couldContains('unit testing', /"(ava|mocha)"/g)
     if (hasUt) this.couldContains('code coverage', /"(nyc|c8)"/g)
   }
 
