@@ -51,7 +51,9 @@ export class ReadmeFile extends File {
   async checkBadges (): Promise<void> {
     const badges = await this.getBadges()
     badges.forEach(badge => {
-      const ok = this.couldContains(`${badge.expected ? 'a' : 'no'} "${badge.label}" badge`, new RegExp(`\\(${badge.link}\\)`), badge.expected ? 1 : 0, badge.markdown, badge.expected)
+      const message = `${badge.expected ? 'a' : 'no'} "${badge.label}" badge`
+      const regex = new RegExp(`\\(${badge.link.replace('?', '\\?')}\\)`)
+      const ok = this.couldContains(message, regex, badge.expected ? 1 : 0, badge.markdown, badge.expected)
       if (!ok && badge.expected && badge.fixable && this.doFix) this.addBadge(badge.markdown)
     })
   }
@@ -105,6 +107,7 @@ export class ReadmeFile extends File {
     list.push(new Thanks('Repo-checker', 'https://github.com/Shuunen/repo-checker', 'eslint cover /src code and this tool the rest ^^', json.includes('repo-check')))
     list.push(new Thanks('Vue', 'https://vuejs.org', 'when I need a front framework, this is the one I choose <3', json.includes('vue"')))
     list.push(new Thanks('Eslint', 'https://eslint.org', 'super tool to find & fix problems', json.includes('eslint"')))
+    list.push(new Thanks('Xo', 'https://github.com/xojs/xo', 'super tool to find & fix problems', json.includes('"xo"')))
     list.push(new Thanks('Reef', 'https://reefjs.com', 'a lightweight library for creating reactive, state-based components and UI', json.includes('reefjs"')))
     list.push(new Thanks('TailwindCss', 'https://tailwindcss.com', 'awesome lib to produce maintainable style', json.includes('tailwindcss"')))
     list.push(new Thanks('Cypress.io', 'https://www.cypress.io', 'cool E2E testing framework', json.includes('cypress"')))
