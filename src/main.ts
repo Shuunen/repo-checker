@@ -67,14 +67,4 @@ export async function start (): Promise<void> {
   const data = await getData(options['--data'], target)
   log.start(doFix)
   await check(target, data, doFix, doForce)
-    .catch(error => {
-      log.error(error.message)
-      log.line()
-      log.end()
-      process.exit(1)
-    })
-    .then(() => {
-      log.end()
-      process.exit(0)
-    })
 }

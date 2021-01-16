@@ -1,3 +1,13 @@
+/* eslint-disable unicorn/no-process-exit */
+import { log } from './logger'
 import { start } from './main'
 
-await start()
+start().then(() => {
+  log.end()
+  process.exit(0)
+}).catch(error => {
+  log.error(error.message)
+  log.line()
+  log.end()
+  process.exit(1)
+})
