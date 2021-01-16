@@ -65,23 +65,25 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] minify dist
 - [ ] add nbFixes to the report
 - [ ] test the readme fix-ability in UT
-- [ ] suggest [xo](https://github.com/xojs/xo) ?
 - [ ] check last tag, suggest to tag if last one is old
-- [ ] use `fs-extra` instead of `fs`, utils inside are already promises
-- [ ] suggest `fs-extra` instead of `fs`, utils inside are already promises
+- [ ] use `fs-extra` over `fs`, utils inside are already promises
+- [ ] suggest `fs-extra` over `fs`, utils inside are already promises
 - [ ] get rid of eslint-disable : camelcase, no-await-in-loop
+- [ ] suggest `mocha` over `ava` (retry benchmarking those, last time mocha was 5x faster)
+- [ ] suggest `xo` over `eslint` : less deps in pkg, good lint coverage
+- [ ] try to build repo-checker with `tsup` or `esbuild`
 
 ## Thanks
 
 - [Ava](https://github.com/avajs/ava) : great test runner easy to setup & use
 - [C8](https://github.com/bcoe/c8) : an Istanbul cli easy to setup & use along Ava
-- [Eslint](https://eslint.org) : super tool to find & fix problems
 - [Github](https://github.com) : for all their great work year after year, pushing OSS forward
 - [Npm-run-all](https://github.com/mysticatea/npm-run-all) : to keep my npm scripts clean & readable
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
 - [Rollup](https://rollupjs.org) : a fast & efficient js module bundler
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
 - [Travis-ci.com](https://travis-ci.com) : for providing free continuous deployments
+- [Xo](https://github.com/xojs/xo) : super tool to find & fix problems
 
 ## License
 
