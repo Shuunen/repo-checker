@@ -1,3 +1,4 @@
+import { version as rcVersion } from '../../package.json'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
@@ -84,11 +85,22 @@ export class PackageJsonFile extends File {
     const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
     if (!hasDependencies && !hasDevelopmentDependencies) return
     this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
-    if (!this.fileContent.includes('Shuunen/repo-checker')) this.shouldContains('repo-check dependency', /"repo-check":\s"[\d+.]+"/)
     /* annoying deps */
     if (this.data.ban_sass === undefined || this.data.ban_sass) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
     this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
     this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
+    this.checkRepoChecker()
+  }
+
+  // how ironic ^^
+  checkRepoChecker (): void {
+    if (this.fileContent.includes('Shuunen/repo-checker')) return // if it's this repo... ^^''
+    const [, version] = this.fileContent.match(/"repo-check": "(.+)"/) ?? []
+    this.test(version !== undefined, 'has a repo-check dependency')
+    if (version === undefined || version === 'lastest') return
+    const [, pin] = version.match(/.*(\d+.\d+.\d+).*/) ?? []
+    if (pin === undefined) log.error('failed to extract repo-checker pinned version')
+    else this.test(pin === rcVersion, `has (latest|${rcVersion}) version of repo-checker`)
   }
 
   regexForStringProp (name = ''): RegExp {

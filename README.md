@@ -65,7 +65,6 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] minify dist
 - [ ] add nbFixes to the report
 - [ ] test the readme fix-ability in UT
-- [ ] can check the latest version of repo-check in package.json
 - [ ] suggest [xo](https://github.com/xojs/xo) ?
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] suggest `fs-extra` instead of `fs`, utils inside are already promises
