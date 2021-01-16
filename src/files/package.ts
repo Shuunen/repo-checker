@@ -97,7 +97,7 @@ export class PackageJsonFile extends File {
     if (this.fileContent.includes('Shuunen/repo-checker')) return // if it's this repo... ^^''
     const [, version] = this.fileContent.match(/"repo-check": "(.+)"/) ?? []
     this.test(version !== undefined, 'has a repo-check dependency')
-    if (version === undefined || version === 'lastest') return
+    if (version === undefined || version === 'latest') return
     const [, pin] = version.match(/.*(\d+.\d+.\d+).*/) ?? []
     if (pin === undefined) log.error('failed to extract repo-checker pinned version')
     else this.test(pin === rcVersion, `has (latest|${rcVersion}) version of repo-checker`)
