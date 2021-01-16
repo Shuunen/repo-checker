@@ -75,5 +75,5 @@
     "update": "npx npm-check-updates -u"
   },
   "type": "module",
-  "version": "1.14.4"
+  "version": "1.14.5"
 }
