@@ -67,7 +67,9 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] test the readme fix-ability in UT
 - [ ] suggest [xo](https://github.com/xojs/xo) ?
 - [ ] check last tag, suggest to tag if last one is old
+- [ ] use `fs-extra` instead of `fs`, utils inside are already promises
 - [ ] suggest `fs-extra` instead of `fs`, utils inside are already promises
+- [ ] get rid of eslint-disable : camelcase, no-await-in-loop
 
 ## Thanks
 

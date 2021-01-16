@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { blueBright, green, redBright, yellowBright } from 'colorette'
 import { createWriteStream, WriteStream } from 'fs'
 import { config, name, version } from '../package.json'
@@ -50,20 +49,14 @@ class Logger {
   }
 
   success (outputToConsole = false, ...stuff: string[]): boolean {
-    if (outputToConsole) {
-      console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
-    }
+    if (outputToConsole) console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
     return this._write(this.indent, '✔️', ...stuff)
   }
 
   test (ok = false, message = '', justWarn = false, outputToConsole = false): boolean {
-    if (ok) {
-      this.success(outputToConsole, message)
-    } else if (justWarn) {
-      this.warn(message)
-    } else {
-      this.error(message)
-    }
+    if (ok) this.success(outputToConsole, message)
+    else if (justWarn) this.warn(message)
+    else this.error(message)
     return ok
   }
 

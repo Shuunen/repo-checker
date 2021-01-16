@@ -52,7 +52,6 @@ function getTarget (argument = ''): string {
 
 export async function start (): Promise<void> {
   const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--data': String, '--fix': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
-  // eslint-disable-next-line no-console
   if ((options['--version'] ?? false) || (options['-v'] ?? false)) {
     console.log(version)
     process.exit(0)

@@ -20,7 +20,7 @@ export default [
       'util',
     ],
     output: [
-      { file: packageJson.main, format: 'es' },
+      { file: packageJson.main, format: 'cjs' },
     ],
     plugins: [
       analyze({ summaryOnly: true, limit: 10 }),

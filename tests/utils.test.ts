@@ -9,14 +9,14 @@ const testFolder = __dirname
 const rootFolder = path.join(testFolder, '..')
 const filename = 'test-file.log'
 
-test('git folder detection', async (t) => {
+test('git folder detection', async t => {
   t.true(await isGitFolder(rootFolder))
 })
 
-test('git folders listing', async (t) => {
+test('git folders listing', async t => {
   t.deepEqual(await getGitFolders(rootFolder), [rootFolder])
   const projects = ['anotherProject', 'sampleProject']
-  projects.map(async (name) => {
+  projects.map(async name => {
     const folder = path.join(testFolder, name, '.git')
     mkdirSync(folder, { recursive: true })
     await createFile(folder, 'config')
@@ -26,7 +26,7 @@ test('git folders listing', async (t) => {
   projects.map(name => deleteFolderRecursive(path.join(testFolder, name)))
 })
 
-test('file creation, detection, read', async (t) => {
+test('file creation, detection, read', async t => {
   t.true(await createFile(rootFolder, filename))
   t.true(await folderContainsFile(rootFolder, filename))
   t.false(await folderContainsFile(filename))
@@ -37,11 +37,11 @@ test('file creation, detection, read', async (t) => {
   t.is(await readFileInFolder('/', filename).catch(() => 'failed'), '')
 })
 
-test('file size calculation', async (t) => {
+test('file size calculation', async t => {
   t.is(await getFileSizeInKo(filename), 0)
 })
 
-test('data augment with git', async (t) => {
+test('data augment with git', async t => {
   const expectedDataFromGit = new ProjectData({
     user_id: 'Shuunen',
     user_id_lowercase: 'shuunen',
@@ -51,7 +51,7 @@ test('data augment with git', async (t) => {
   t.deepEqual(dataFromGit, expectedDataFromGit)
   const expectedAugmentedData = new ProjectData({
     auto_merge: true,
-    is_module: true,
+    is_module: false,
     max_size_ko: 45,
     npm_package: true,
     package_name: 'repo-check',
@@ -64,10 +64,10 @@ test('data augment with git', async (t) => {
   t.deepEqual(augmentedDataFromTestFolder, dataDefaults)
 })
 
-test('data augment with package', async (t) => {
+test('data augment with package', async t => {
   const data = await augmentDataWithPackageJson(rootFolder, dataDefaults)
   const expectedData = new ProjectData({
-    is_module: true,
+    is_module: false,
     npm_package: true,
     package_name: 'repo-check',
     use_typescript: true,

@@ -5,7 +5,7 @@ import { dataDefaults, repoCheckerPath } from '../src/constants'
 import { File } from '../src/file'
 import { createFile } from '../src/utils'
 
-test('file validator', async (t) => {
+test('file validator', async t => {
   class MyFile extends File {
     async start (): Promise<void> {
       const filename = 'some-file.log'

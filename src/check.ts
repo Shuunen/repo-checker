@@ -15,10 +15,11 @@ function report (nbPassed = 0, nbFailed = 0): void {
   if (nbFailed > 0) throw new Error('failed at validating at least one rule in one folder')
 }
 
-export async function check (folderPath: string, data: ProjectData, doFix = false, doForce = false): Promise<{ nbPassed: number, nbFailed: number }> {
+export async function check (folderPath: string, data: ProjectData, doFix = false, doForce = false): Promise<{ nbPassed: number; nbFailed: number }> {
   const folders = await getGitFolders(folderPath)
   let nbPassed = 0
   let nbFailed = 0
+  /* eslint-disable no-await-in-loop */
   for (const folder of folders) {
     log.info('Checking folder :', folder)
     log.setIndentLevel(1)
@@ -33,6 +34,7 @@ export async function check (folderPath: string, data: ProjectData, doFix = fals
     log.line()
     log.setIndentLevel(0)
   }
+  /* eslint-enable no-await-in-loop */
   report(nbPassed, nbFailed)
   return { nbPassed, nbFailed }
 }

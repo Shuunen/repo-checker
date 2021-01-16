@@ -5,6 +5,7 @@ import { readFileInFolder } from '../utils'
 
 class Thanks {
   markdown = ''
+  // eslint-disable-next-line max-params
   constructor (public label = '', public link = '', public description = '', public expected = false, public fixable = true) {
     this.markdown = `- [${label}](${link}) : ${description}`
   }
@@ -12,6 +13,7 @@ class Thanks {
 
 class Badge {
   markdown = ''
+  // eslint-disable-next-line max-params
   constructor (public label = '', public link = '', public image = '', public expected = true, public fixable = true) {
     this.markdown = `[![${label}](${image})](${link})`
   }
@@ -28,8 +30,8 @@ export class ReadmeFile extends File {
     this.shouldContains('no link to deprecated *.netlify.com', /(.*)\.netlify\.com/, 0)
     this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
     this.checkMarkdown()
+    this.checkTodos()
     await this.checkBadges()
-    await this.checkTodos()
     await this.checkThanks()
   }
 
@@ -60,9 +62,8 @@ export class ReadmeFile extends File {
       new Badge('Project license', `https://github.com/${userRepo}/blob/master/LICENSE`, `https://img.shields.io/github/license/${userRepo}.svg?color=informational`),
       new Badge('Build status', `https://travis-ci.com/${userRepo}`, `https://travis-ci.com/${userRepo}.svg?branch=master`),
     ]
-    if (this.data.web_published && !this.fileContent.includes('shields.io/website/')) {
+    if (this.data.web_published && !this.fileContent.includes('shields.io/website/'))
       list.push(new Badge('Website up', this.data.web_url, `https://img.shields.io/website/https/${this.data.web_url.replace('https://', '')}.svg`, true, this.data.web_url !== dataDefaults.web_url))
-    }
     if (this.data.npm_package) {
       list.push(new Badge('Package Quality', `https://packagequality.com/#?package=${this.data.package_name}`, `https://npm.packagequality.com/shield/${this.data.package_name}.svg`))
       list.push(new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/dm/${this.data.package_name}.svg?color=informational`))
@@ -113,7 +114,7 @@ export class ReadmeFile extends File {
   checkTodos (): void {
     const matches = this.fileContent.match(/- \[ ] (.*)/g)
     if (matches === null) return
-    matches.map(async (line) => {
+    matches.forEach(line => {
       // a todo line in markdown is like "- [ ] add some fancy gifs"
       const todo = line.replace('- [ ] ', '')
       log.info('TODO : ' + todo)

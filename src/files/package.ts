@@ -39,7 +39,7 @@ export class PackageJsonFile extends File {
   }
 
   async checkMainFile (): Promise<void> {
-    const mainFilePath = this.fileContent.match(/"main": "(.*)"/)?.[1] ?? ''
+    const mainFilePath = /"main": "(.*)"/.exec(this.fileContent)?.[1] ?? ''
     if (mainFilePath.length === 0) {
       log.debug('no main file specified in package.json')
       return
@@ -95,10 +95,10 @@ export class PackageJsonFile extends File {
   // how ironic ^^
   checkRepoChecker (): void {
     if (this.fileContent.includes('Shuunen/repo-checker')) return // if it's this repo... ^^''
-    const [, version] = this.fileContent.match(/"repo-check": "(.+)"/) ?? []
+    const [, version] = /"repo-check": "(.+)"/.exec(this.fileContent) ?? []
     this.test(version !== undefined, 'has a repo-check dependency')
     if (version === undefined || version === 'latest') return
-    const [, pin] = version.match(/.*(\d+.\d+.\d+).*/) ?? []
+    const [, pin] = /.*(\d+.\d+.\d+).*/.exec(version) ?? []
     if (pin === undefined) log.error('failed to extract repo-checker pinned version')
     else this.test(pin === rcVersion, `has (latest|${rcVersion}) version of repo-checker`)
   }

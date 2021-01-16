@@ -5,8 +5,8 @@ import { log } from '../logger'
 export class EsLintFile extends File {
   async start (): Promise<boolean> {
     const useXo = await this.fileExists('xo.config.js')
-    if (useXo) return await this.checkXo()
-    return await this.checkEslint()
+    if (useXo) return this.checkXo()
+    return this.checkEslint()
   }
 
   async checkXo (): Promise<boolean> {
@@ -42,17 +42,23 @@ export class EsLintFile extends File {
     const haveIt = this.couldContains('vue standard rules', /@vue\/standard/)
     if (!haveIt) log.info('^ this might not be necessary, should check a fresh vue app')
     await this.inspectFile('.eslintrc.rules.js')
-    this.shouldContains("'vue/max-attributes-per-line': 'off',")
-    this.shouldContains("'vue/singleline-html-element-content-newline': 'off',")
+    this.shouldContains('\'vue/max-attributes-per-line\': \'off\',')
+    this.shouldContains('\'vue/singleline-html-element-content-newline\': \'off\',')
   }
 
   async lintFolder (): Promise<void> {
     if (this.nbFailed > 0) return
     const message = await new Promise(resolve => {
       const proc = spawn(process.platform.startsWith('win') ? 'npm.cmd' : 'npm', ['run', 'lint'], { cwd: this.folderPath })
-      proc.stderr.on('data', (data: string) => { resolve(`stderr: ${data}`) })
-      proc.on('error', (error) => { resolve(`error: ${error.message}`) })
-      proc.on('close', code => { resolve(`child process exited with code ${code}`) })
+      proc.stderr.on('data', (data: string) => {
+        resolve(`stderr: ${data}`)
+      })
+      proc.on('error', error => {
+        resolve(`error: ${String(error.message)}`)
+      })
+      proc.on('close', code => {
+        resolve(`child process exited with code ${String(code)}`)
+      })
     })
     const hasIssues = (message as string).includes('stderr')
     this.test(!hasIssues, 'has no lint issues')

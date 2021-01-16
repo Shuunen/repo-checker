@@ -19,7 +19,8 @@ export class File {
 
   async inspectFile (fileName = ''): Promise<void> {
     this.fileName = fileName
-    this.originalFileContent = this.fileContent = await readFileInFolder(this.folderPath, fileName)
+    this.originalFileContent = await readFileInFolder(this.folderPath, fileName)
+    this.fileContent = this.originalFileContent
   }
 
   async updateFile (): Promise<void> {
@@ -29,7 +30,7 @@ export class File {
   }
 
   async fileExists (fileName: string): Promise<boolean> {
-    return await folderContainsFile(this.folderPath, fileName)
+    return folderContainsFile(this.folderPath, fileName)
   }
 
   async checkFileExists (fileName = '', justWarn = false): Promise<boolean> {
@@ -39,7 +40,7 @@ export class File {
       fileExists = fileContent.length > 0
     }
     this.test(fileExists, `has a ${fileName} file`, justWarn)
-    return !!fileExists
+    return Boolean(fileExists)
   }
 
   async checkNoFileExists (fileName = '', justWarn = false): Promise<void> {
@@ -49,17 +50,16 @@ export class File {
 
   async createFile (fileName = ''): Promise<string> {
     const template = await readFileInFolder(templatePath, fileName)
-    const fileContent = fillTemplate(template, this.data as {})
+    const data = this.data as unknown
+    const fileContent = fillTemplate(template, data as Record<string, string>)
     if (fileContent.length > 0) {
       await createFile(this.folderPath, fileName, fileContent)
       log.fix('created', fileName)
-    } else {
-      log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
-    }
+    } else log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
     return fileContent
   }
 
-  async checkIssues (): Promise<void> {
+  async checkIssues () {
     if (this.nbFailed > 0 && this.doFix) {
       if (this.doForce) {
         await this.createFile(this.fileName)
@@ -70,42 +70,36 @@ export class File {
   }
 
   async getFileSizeInKo (filePath = ''): Promise<number> {
-    return await getFileSizeInKo(path.join(this.folderPath, filePath))
+    return getFileSizeInKo(path.join(this.folderPath, filePath))
   }
 
+  // eslint-disable-next-line max-params
   shouldContains (name: string, regex?: RegExp, nbMatchExpected = 1, justWarn = false, helpMessage = '', canFix = false): boolean {
     if (regex === undefined) regex = new RegExp(name)
     const contentExists = this.checkContains(regex, nbMatchExpected)
     const fix = this.doFix && canFix && !contentExists
     name += (contentExists || fix) ? '' : ` -- ${helpMessage.length > 0 ? helpMessage : regex.toString().replace(/\\/g, '')}`
-    const message = `${this.fileName} ${!contentExists ? (justWarn ? 'could have' : 'does not have') : 'has'} ${name} `
-    if (fix) {
-      log.fix(message)
-    } else {
-      this.test(contentExists, message, justWarn)
-    }
+    const message = `${this.fileName} ${contentExists ? 'has' : (justWarn ? 'could have' : 'does not have')} ${name} `
+    if (fix) log.fix(message)
+    else this.test(contentExists, message, justWarn)
     return contentExists
   }
 
+  // eslint-disable-next-line max-params
   couldContains (name: string, regex?: RegExp, nbMatchExpected = 1, helpMessage = '', canFix = false): boolean {
     return this.shouldContains(name, regex, nbMatchExpected, true, helpMessage, canFix)
   }
 
   checkContains (regex: RegExp, nbMatchExpected = 1): boolean {
-    const matches = this.fileContent.match(regex)
-    const nbMatch = matches?.length ?? 0
-    if (nbMatch !== nbMatchExpected) {
-      log.debug(regex.toString().replace('\n', ''), `matched ${nbMatch} instead of ${nbMatchExpected}`)
-    }
-    return (nbMatch === nbMatchExpected)
+    const matches = this.fileContent.match(regex) ?? [] // eslint-disable-line @typescript-eslint/prefer-regexp-exec
+    const ok = nbMatchExpected === matches.length
+    if (!ok) log.debug(regex.toString().replace('\n', ''), `matched ${matches.length} instead of ${nbMatchExpected}`)
+    return ok
   }
 
   test (isValid = false, message = '', justWarn = false): boolean {
-    if (isValid) {
-      this.nbPassed++
-    } else if (!justWarn) {
-      this.nbFailed++
-    }
+    if (isValid) this.nbPassed++
+    else if (!justWarn) this.nbFailed++
     log.test(isValid, message, justWarn)
     return isValid
   }

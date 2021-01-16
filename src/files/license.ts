@@ -1,7 +1,7 @@
 import { File } from '../file'
 
 export class LicenseFile extends File {
-  async start (): Promise<void> {
+  async start () {
     const exists = await this.checkFileExists('LICENSE')
     if (!exists) return
     await this.inspectFile('LICENSE')
@@ -11,8 +11,6 @@ export class LicenseFile extends File {
       this.shouldContains('a version 3 subtitle', /Version 3, 29 June 2007/)
       return
     }
-    if (license === 'MIT') {
-      this.shouldContains('a MIT title', /MIT License/)
-    }
+    if (license === 'MIT') this.shouldContains('a MIT title', /MIT License/)
   }
 }
