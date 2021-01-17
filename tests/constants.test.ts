@@ -1,12 +1,14 @@
-import test from 'ava'
+import { strictEqual as equal } from 'assert'
 import { home, repoCheckerPath } from '../src/constants'
 
-test('home (process.env.HOME) is defined', t => {
-  t.truthy(home)
-})
-// console.log(`home is "${home}"`)
+describe('constants', () => {
+  it('home (process.env.HOME) is defined', () => {
+    equal(home.length > 0, true)
+  })
+  // console.log(`home is "${home}"`)
 
-test('repoCheckerPath (process.env.pwd) is defined', t => {
-  t.truthy(repoCheckerPath)
+  it('repoCheckerPath (process.env.pwd) is defined', () => {
+    equal(repoCheckerPath.length > 0, true)
+  })
+  // console.log(`repoCheckerPath is "${repoCheckerPath}"`)
 })
-// console.log(`repoCheckerPath is "${repoCheckerPath}"`)

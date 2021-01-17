@@ -1,23 +1,24 @@
-import test from 'ava'
+import { strictEqual as equal } from 'assert'
 import { log } from '../src/logger'
 
-test('log correctly', t => {
-  t.true(log.start())
-  t.true(log.start(true))
-  t.false(log.error('damn-err'))
-  t.true(log.warn('damn-warn'))
-  t.true(log.debug('damn-debug'))
-  t.true(log.success(true, 'damn-success in console'))
-  t.true(log.success(false, 'damn-success not in console'))
-  /*
-  t.true(log.test(true, 'damn-valid'))
-  t.false(log.test(false, 'damn-invalid'))
-  t.false(log.test(false, 'damn-invalid-ninja', true))
-  */
-  t.true(log.fix('damn-fix'))
-  t.true(log.end())
-})
+describe('logger', () => {
+  it('log correctly', () => {
+    log.noConsole = true
+    equal(log.start(), true)
+    equal(log.start(true), true)
+    equal(log.error('damn-err'), false)
+    equal(log.warn('damn-warn'), true)
+    equal(log.debug('damn-debug'), true)
+    equal(log.success(true, 'damn-success in console'), true)
+    equal(log.success(false, 'damn-success not in console'), true)
+    equal(log.test(true, 'damn-valid'), true)
+    equal(log.test(false, 'damn-invalid'), false)
+    equal(log.test(false, 'damn-invalid-ninja', true), false)
+    equal(log.fix('damn-fix'), true)
+    equal(log.end(), true)
+  })
 
-test('can set indentation level', t => {
-  t.is(log.setIndentLevel(2), 2)
+  it('can set indentation level', () => {
+    equal(log.setIndentLevel(2), 2)
+  })
 })

@@ -1,3 +1,3 @@
 module.exports = {
-  max_size_ko: 45, // eslint-disable-line camelcase
+  max_size_ko: 120, // eslint-disable-line camelcase
 }

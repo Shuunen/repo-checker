@@ -3,6 +3,7 @@ import { createWriteStream, WriteStream } from 'fs'
 import { config, name, version } from '../package.json'
 
 class Logger {
+  noConsole = false
   indentLevel = 0
   file: WriteStream
 
@@ -14,7 +15,7 @@ class Logger {
     return new Date().toISOString().replace('T', ' ').split('.')[0]
   }
 
-  constructor (filePath = '') {
+  constructor (filePath: string) {
     this.file = createWriteStream(filePath, { flags: 'a' })
   }
 
@@ -23,7 +24,7 @@ class Logger {
     return true
   }
 
-  setIndentLevel (level = 0): number {
+  setIndentLevel (level: number): number {
     this.indentLevel = level
     return level
   }
@@ -33,27 +34,27 @@ class Logger {
   }
 
   info (...stuff: string[]): boolean {
-    console.log(this.indent, '⬜', ...stuff)
+    if (!this.noConsole) console.log(this.indent, '⬜', ...stuff)
     return this._write(this.indent, '⬜', ...stuff)
   }
 
   error (...stuff: string[]): boolean {
-    console.error(redBright([this.indent, '❌ ', ...stuff].join(' ')))
+    if (!this.noConsole) console.error(redBright([this.indent, '❌ ', ...stuff].join(' ')))
     this._write(this.indent, '❌', ...stuff)
     return false
   }
 
   warn (...stuff: string[]): boolean {
-    console.log(yellowBright([this.indent, '⚠️ ', ...stuff].join(' ')))
+    if (!this.noConsole) console.log(yellowBright([this.indent, '⚠️ ', ...stuff].join(' ')))
     return this._write(this.indent, '⚠️', ...stuff)
   }
 
-  success (outputToConsole = false, ...stuff: string[]): boolean {
-    if (outputToConsole) console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
+  success (outputToConsole: boolean, ...stuff: string[]): boolean {
+    if (outputToConsole && !this.noConsole) console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
     return this._write(this.indent, '✔️', ...stuff)
   }
 
-  test (ok = false, message = '', justWarn = false, outputToConsole = false): boolean {
+  test (ok: boolean, message: string, justWarn = false, outputToConsole = false): boolean {
     if (ok) this.success(outputToConsole, message)
     else if (justWarn) this.warn(message)
     else this.error(message)
@@ -62,12 +63,12 @@ class Logger {
 
   fix (...stuff: string[]): boolean {
     stuff.push('(fixed)')
-    console.log(blueBright([this.indent, '⬜', ...stuff].join(' ')))
+    if (!this.noConsole) console.log(blueBright([this.indent, '⬜', ...stuff].join(' ')))
     return this._write(this.indent, '⬜', ...stuff)
   }
 
   line (): boolean {
-    console.log('')
+    if (!this.noConsole) console.log('')
     return this._write('')
   }
 

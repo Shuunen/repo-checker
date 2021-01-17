@@ -18,7 +18,9 @@
     - [fix](#fix)
     - [init](#init)
     - [data](#data)
+    - [quiet](#quiet)
   - [Todo](#todo)
+  - [Benchmarks](#benchmarks)
   - [Thanks](#thanks)
   - [License](#license)
 
@@ -58,31 +60,44 @@ If file already exists, use `--force` to overwrite it.
 `--data=path/to/my/data` gives repo-checker data to fill templates files in this repo (`templates/**`)
 If you don't give this parameter, repo-checker will try to load data from `~/repo-checker.config.js`.
 
+### quiet
+
+`--quiet` repo-checker will works silently without outputing to console, will keep output to logfile.
+
 ## Todo
 
 - [ ] if website : check static folder : should have "_headers" & "favicon.ico" and "manifest.json" files inside
 - [ ] compute build/dist/folder/public size for maxSize compliance
-- [ ] minify dist
 - [ ] add nbFixes to the report
-- [ ] test the readme fix-ability in UT
 - [ ] check last tag, suggest to tag if last one is old
-- [ ] use `fs-extra` over `fs`, utils inside are already promises
-- [ ] suggest `fs-extra` over `fs`, utils inside are already promises
 - [ ] get rid of eslint-disable : camelcase, no-await-in-loop
-- [ ] suggest `mocha` over `ava` (retry benchmarking those, last time mocha was 5x faster)
-- [ ] suggest `xo` over `eslint` : less deps in pkg, good lint coverage
-- [ ] try to build repo-checker with `tsup` or `esbuild`
+- [ ] try to defer console.log to improve repo-checker execution
+
+## Benchmarks
+
+Each task is run 3 times via `time npm run <task>` to get the average execution time in seconds.
+
+| task       | lib          | seconds | comment                                            |
+| ---------- | ------------ | ------- | -------------------------------------------------- |
+| build      | tsup         | 1       | 0 config, 1 dep only, super fast                   |
+| build      | rollup       | 2,7     | lots of deps (plugins) & config to do the same job |
+| check      | repo-checker | 3,2     | can surely be reduced ^^                           |
+| lint       | xo           | 2,7     | usually longer to exec than eslint but 1 dep only  |
+| test       | ava          | 9       |                                                    |
+| test       | mocha        | 7,4     | a bit faster, same amount of setup                 |
+| test + cov | ava + c8     | 16      | 7 seconds for coverage ? wtf                       |
+| test + cov | mocha + c8   | 12      | 7 seconds for coverage ? wtf                       |
 
 ## Thanks
 
-- [Ava](https://github.com/avajs/ava) : great test runner easy to setup & use
 - [C8](https://github.com/bcoe/c8) : an Istanbul cli easy to setup & use along Ava
 - [Github](https://github.com) : for all their great work year after year, pushing OSS forward
+- [Mocha](https://github.com/mochajs/mocha) : great test runner easy to setup & use
 - [Npm-run-all](https://github.com/mysticatea/npm-run-all) : to keep my npm scripts clean & readable
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
-- [Rollup](https://rollupjs.org) : a fast & efficient js module bundler
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
 - [Travis-ci.com](https://travis-ci.com) : for providing free continuous deployments
+- [Tsup](https://github.com/egoist/tsup) : super fast js/ts bundler with no config, powered by esbuild <3
 - [Xo](https://github.com/xojs/xo) : super tool to find & fix problems
 
 ## License

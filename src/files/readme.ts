@@ -1,7 +1,8 @@
+import { pathExists, readFile } from 'fs-extra'
+import { join } from 'path'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
-import { readFileInFolder } from '../utils'
 
 class Thanks {
   markdown = ''
@@ -77,6 +78,7 @@ export class ReadmeFile extends File {
   addThanks (line = ''): void {
     // just after Thank title
     this.fileContent = this.fileContent.replace(/(## Thank.*\n\n)/, `$1${line}\n`)
+    log.debug('added line', line)
   }
 
   async checkThanks (): Promise<void> {
@@ -84,8 +86,12 @@ export class ReadmeFile extends File {
     if (!hasSection) return
     const thanks = await this.getThanks()
     thanks.forEach(thank => {
-      const ok = this.couldContains(`${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`, new RegExp(`\\[${thank.label}]`, 'i'), thank.expected ? 1 : 0, thank.markdown, thank.expected)
-      if (!ok && thank.expected && thank.fixable && this.doFix) this.addThanks(thank.markdown)
+      const message = `${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`
+      const regex = new RegExp(`\\[${thank.label}]`, 'i')
+      const ok = this.couldContains(message, regex, thank.expected ? 1 : 0, thank.markdown, thank.expected)
+      const shouldAdd = !ok && thank.expected && thank.fixable && this.doFix
+      // if (thank.label === 'Mocha') console.table({ ok, expected: thank.expected, fixable: thank.fixable, doFix: this.doFix, shouldAdd })
+      if (shouldAdd) this.addThanks(thank.markdown)
     })
   }
 
@@ -96,9 +102,12 @@ export class ReadmeFile extends File {
       new Thanks('Github', 'https://github.com', 'for all their great work year after year, pushing OSS forward', this.fileContent.includes('github')),
       new Thanks('Netlify', 'https://netlify.com', 'awesome company that offers free CI & hosting for OSS projects', this.fileContent.includes('netlify')),
     ]
-    const json = await readFileInFolder(this.folderPath, 'package.json')
+    const filePath = join(this.folderPath, 'package.json')
+    if (!await pathExists(filePath)) return list
+    const json = await readFile(filePath, 'utf-8')
     if (json === '') return list
     list.push(new Thanks('Rollup', 'https://rollupjs.org', 'a fast & efficient js module bundler', json.includes('rollup"')))
+    list.push(new Thanks('Tsup', 'https://github.com/egoist/tsup', 'super fast js/ts bundler with no config, powered by esbuild <3', json.includes('tsup"')))
     list.push(new Thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use', json.includes('ava"')))
     list.push(new Thanks('Mocha', 'https://github.com/mochajs/mocha', 'great test runner easy to setup & use', json.includes('mocha"')))
     list.push(new Thanks('Npm-run-all', 'https://github.com/mysticatea/npm-run-all', 'to keep my npm scripts clean & readable', json.includes('npm-run-all"')))

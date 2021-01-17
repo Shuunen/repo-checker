@@ -5,7 +5,7 @@ import { augmentData, getGitFolders } from './utils'
 
 const Checkers = [ConfigsFile, EditorConfigFile, EsLintFile, LicenseFile, NvmrcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TravisFile]
 
-function report (nbPassed = 0, nbFailed = 0): void {
+export function report (nbPassed = 0, nbFailed = 0): void {
   log.info('Report :')
   log.setIndentLevel(1)
   log.test(nbPassed > 0, `${nbPassed} test(s) passed successfully`, false, true)
@@ -19,6 +19,7 @@ export async function check (folderPath: string, data: ProjectData, doFix = fals
   const folders = await getGitFolders(folderPath)
   let nbPassed = 0
   let nbFailed = 0
+  log.noConsole = data.quiet
   /* eslint-disable no-await-in-loop */
   for (const folder of folders) {
     log.info('Checking folder :', folder)

@@ -1,26 +1,26 @@
-import { access, existsSync, lstatSync, readdir, readdirSync, readFile, rmdirSync, stat, unlinkSync, writeFile } from 'fs'
-import path from 'path'
-import requireFromString from 'require-from-string'
+import { readdir, stat } from 'fs'
+import { pathExists, readFile } from 'fs-extra'
+import { join } from 'path'
+import * as requireFromString from 'require-from-string'
 import { promisify } from 'util'
 import { dataDefaults, dataFileName, ProjectData } from './constants'
 import { log } from './logger'
 
-const readFileAsync = promisify(readFile)
 const statAsync = promisify(stat)
 const readDirectoryAsync = promisify(readdir)
 
-export async function isGitFolder (folderPath = ''): Promise<boolean> {
+export async function isGitFolder (folderPath: string): Promise<boolean> {
   const stat = await statAsync(folderPath)
   if (!stat.isDirectory()) return false
-  return checkFileExists(path.join(folderPath, '.git', 'config'))
+  return pathExists(join(folderPath, '.git', 'config'))
 }
 
-export async function getGitFolders (folderPath = ''): Promise<string[]> {
+export async function getGitFolders (folderPath: string): Promise<string[]> {
   if (await isGitFolder(folderPath)) return [folderPath]
   const filePaths = await readDirectoryAsync(folderPath)
   const gitDirectories = []
   for (const filePath of filePaths) {
-    const p = path.join(folderPath, filePath)
+    const p = join(folderPath, filePath)
     if (await isGitFolder(p)) gitDirectories.push(p) // eslint-disable-line no-await-in-loop
   }
   return gitDirectories
@@ -28,7 +28,7 @@ export async function getGitFolders (folderPath = ''): Promise<string[]> {
 
 export async function augmentDataWithGit (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
-  const gitConfigContent = await readFileInFolder(path.join(folderPath, '.git'), 'config')
+  const gitConfigContent = await readFileInFolder(join(folderPath, '.git'), 'config')
   const matches = /([\w-]+)\/([\w-]+)\.git/.exec(gitConfigContent) ?? []
   if (matches.length !== 3) return data
   data.user_id = matches[1]
@@ -54,7 +54,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   data.user_id = /github\.com\/([\w-]+)\//.exec(content)?.[1] ?? dataDefaults.user_id
   data.user_id_lowercase = data.user_id.toLowerCase()
   if (content.includes('"vue"')) data.use_vue = true
-  if (content.includes('typescript')) data.use_typescript = true
+  if (/(ts-node|typescript)/.test(content)) data.use_typescript = true
   if (content.includes('html') || data.use_vue) data.web_published = true
   if (content.includes('npm publish')) data.npm_package = true
   return data
@@ -64,50 +64,22 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
   let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
   data = await augmentDataWithPackageJson(folderPath, data)
-  const localDataExists = shouldLoadLocal ? await checkFileExists(path.join(folderPath, dataFileName)) : false
+  const localDataExists = shouldLoadLocal ? await pathExists(join(folderPath, dataFileName)) : false
   if (localDataExists) { // local data overwrite the rest
+    // should use something else than requireFromString
     const localData = requireFromString(await readFileInFolder(folderPath, dataFileName))
     Object.assign(data, localData)
   }
   return data
 }
 
-export async function folderContainsFile (folderPath = '', fileName = ''): Promise<boolean> {
-  if (folderPath.length === 0) return log.error('folderContainsFile need a folderPath argument')
-  if (fileName.length === 0) return log.error('folderContainsFile need a fileName argument')
-  return checkFileExists(path.join(folderPath, fileName))
+export async function readFileInFolder (folderPath: string, fileName: string): Promise<string> {
+  const filePath = join(folderPath, fileName)
+  if (!await pathExists(filePath)) return ''
+  return readFile(filePath, 'utf8')
 }
 
-export async function checkFileExists (filePath = ''): Promise<boolean> {
-  return new Promise(resolve => {
-    access(filePath, error => {
-      if (error !== null) return resolve(false)
-      resolve(true)
-    })
-  })
-}
-
-export async function createFile (folderPath = '', fileName = '', fileContent = ''): Promise<boolean> {
-  if (folderPath.length === 0) return log.error('createFile need a folderPath argument')
-  if (fileName.length === 0) return log.error('createFile need a fileName argument')
-  return new Promise(resolve => {
-    writeFile(path.join(folderPath, fileName), fileContent, 'utf8', error => {
-      if (error !== null) {
-        log.error(error.message)
-        resolve(false)
-      }
-      resolve(true)
-    })
-  })
-}
-
-export async function readFileInFolder (folderPath = '', fileName = ''): Promise<string> {
-  const filePath = path.join(folderPath, fileName)
-  const content = await readFileAsync(filePath, 'utf8').catch(error => console.error(error.message))
-  return typeof content === 'string' ? content : ''
-}
-
-export async function getFileSizeInKo (filePath = ''): Promise<number> {
+export async function getFileSizeInKo (filePath: string): Promise<number> {
   const stat = await statAsync(filePath)
   const size = Math.round(stat.size / 1024)
   log.debug('found that file', filePath, 'has a size of :', `${size}`, 'Ko')
@@ -129,15 +101,4 @@ export function fillTemplate (template: string | Record<string, unknown>, data: 
     string = string.replace(token, value)
   }
   return string
-}
-
-// from https://geedew.com/remove-a-directory-that-is-not-empty-in-nodejs/
-export function deleteFolderRecursive (path = ''): void {
-  if (!existsSync(path)) return
-  readdirSync(path).forEach(file => {
-    const currentPath = `${path}/${String(file)}`
-    if (lstatSync(currentPath).isDirectory()) deleteFolderRecursive(currentPath)
-    else unlinkSync(currentPath)
-  })
-  rmdirSync(path)
 }

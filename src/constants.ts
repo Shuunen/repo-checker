@@ -1,10 +1,10 @@
-import path from 'path'
+import { join } from 'path'
 
 export const home = process.env.HOME ?? '' /* c8 ignore next */ // when does HOME is not defined ?
 export const dataFileName = 'repo-checker.config.js'
 export const repoCheckerPath = process.env.pwd ?? process.cwd() /* c8 ignore next */
-export const templatePath = path.join(repoCheckerPath, 'templates')
-export const dataFileHomePath = path.join(home, dataFileName)
+export const templatePath = join(repoCheckerPath, 'templates')
+export const dataFileHomePath = join(home, dataFileName)
 
 export class ProjectData {
   auto_merge = true
@@ -15,6 +15,7 @@ export class ProjectData {
   max_size_ko = 1
   npm_package = false
   package_name = ''
+  quiet = false
   repo_id = 'a-great-repo'
   use_typescript = false
   use_vue = false
