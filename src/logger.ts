@@ -74,7 +74,7 @@ class Logger {
   start (doFix = false): boolean {
     this.line()
     this._write(`⬇️--- Entry from ${this.date} ---⬇️`)
-    this.info(`${name} v${version} is starting ${doFix ? '(fix enabled)' : ''}`)
+    this.info(`${String(name)} v${String(version)} is starting ${doFix ? '(fix enabled)' : ''}`)
     return this.line()
   }
 
