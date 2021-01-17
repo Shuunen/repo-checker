@@ -46,9 +46,9 @@ export class File {
     return Boolean(fileExists)
   }
 
-  async checkNoFileExists (fileName: string, justWarn = false): Promise<void> {
+  async checkNoFileExists (fileName: string): Promise<void> {
     const fileExists = await this.fileExists(fileName)
-    this.test(!fileExists, `has no ${fileName} file`, justWarn)
+    this.test(!fileExists, `has no ${fileName} file`)
   }
 
   async initFile (fileName: string): Promise<string> {

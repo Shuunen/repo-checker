@@ -1,8 +1,10 @@
 import { join } from 'path'
 
-export const home = process.env.HOME ?? '' /* c8 ignore next */ // when does HOME is not defined ?
+/* istanbul ignore next */
+export const home = process.env.HOME ?? '' // when does HOME is not defined ?
 export const dataFileName = 'repo-checker.config.js'
-export const repoCheckerPath = process.env.pwd ?? process.cwd() /* c8 ignore next */
+/* istanbul ignore next */
+export const repoCheckerPath = process.env.pwd ?? process.cwd()
 export const templatePath = join(repoCheckerPath, 'templates')
 export const dataFileHomePath = join(home, dataFileName)
 

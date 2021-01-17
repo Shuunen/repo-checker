@@ -34,22 +34,26 @@ class Logger {
   }
 
   info (...stuff: string[]): boolean {
+    /* istanbul ignore if */
     if (!this.noConsole) console.log(this.indent, '⬜', ...stuff)
     return this._write(this.indent, '⬜', ...stuff)
   }
 
   error (...stuff: string[]): boolean {
+    /* istanbul ignore if */
     if (!this.noConsole) console.error(redBright([this.indent, '❌ ', ...stuff].join(' ')))
     this._write(this.indent, '❌', ...stuff)
     return false
   }
 
   warn (...stuff: string[]): boolean {
+    /* istanbul ignore if */
     if (!this.noConsole) console.log(yellowBright([this.indent, '⚠️ ', ...stuff].join(' ')))
     return this._write(this.indent, '⚠️', ...stuff)
   }
 
   success (outputToConsole: boolean, ...stuff: string[]): boolean {
+    /* istanbul ignore if */
     if (outputToConsole && !this.noConsole) console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
     return this._write(this.indent, '✔️', ...stuff)
   }
@@ -63,11 +67,13 @@ class Logger {
 
   fix (...stuff: string[]): boolean {
     stuff.push('(fixed)')
+    /* istanbul ignore if */
     if (!this.noConsole) console.log(blueBright([this.indent, '⬜', ...stuff].join(' ')))
     return this._write(this.indent, '⬜', ...stuff)
   }
 
   line (): boolean {
+    /* istanbul ignore if */
     if (!this.noConsole) console.log('')
     return this._write('')
   }

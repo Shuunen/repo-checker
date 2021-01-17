@@ -72,6 +72,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] get rid of eslint-disable : camelcase, no-await-in-loop
 - [ ] try to defer console.log to improve repo-checker execution
+- [ ] extends unit tests to src/files (remove nyc.config.js current exclusion)
 
 ## Benchmarks
 
@@ -85,8 +86,9 @@ Each task is run 3 times via `time npm run <task>` to get the average execution 
 | lint       | xo           | 2,7     | usually longer to exec than eslint but 1 dep only  |
 | test       | ava          | 9       |                                                    |
 | test       | mocha        | 7,4     | a bit faster, same amount of setup                 |
-| test + cov | ava + c8     | 16      | 7 seconds for coverage ? wtf                       |
-| test + cov | mocha + c8   | 12      | 7 seconds for coverage ? wtf                       |
+| test + cov | ava + c8     | 16      | 7 seconds for c8 coverage ? wtf                    |
+| test + cov | mocha + c8   | 12      | 7 seconds for c8 coverage ? wtf                    |
+| test + cov | mocha + nyc  | 9,6     | 2 seconds for coverage seems more reasonable       |
 
 ## Thanks
 
