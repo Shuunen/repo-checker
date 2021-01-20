@@ -10,7 +10,7 @@ const SCRIPTS = {
 export class PackageJsonFile extends File {
   async start (): Promise<void> {
     const exists = await this.checkFileExists('package.json')
-    await this.checkFileExists('package-lock.json')
+    // await this.checkFileExists('package-lock.json')
     await this.checkNoFileExists('yarn.lock')
     if (!exists) return
     await this.inspectFile('package.json')
