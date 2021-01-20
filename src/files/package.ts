@@ -100,7 +100,7 @@ export class PackageJsonFile extends File {
     if (version === undefined || version === 'latest') return
     const [, pin] = /.*(\d+.\d+.\d+).*/.exec(version) ?? []
     if (pin === undefined) log.error('failed to extract repo-checker pinned version')
-    else this.test(pin === rcVersion, `has (latest|${String(rcVersion)}) version of repo-checker`)
+    else this.test(pin === rcVersion, `has (latest|${String(rcVersion)}) version of repo-checker`, true)
   }
 
   regexForStringProp (name = ''): RegExp {
