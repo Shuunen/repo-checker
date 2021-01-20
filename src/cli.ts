@@ -1,4 +1,5 @@
-/* eslint-disable unicorn/no-process-exit */
+#!/usr/bin/env node
+
 import { log } from './logger'
 import { start } from './main'
 
