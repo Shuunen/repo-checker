@@ -46,7 +46,7 @@
     "ci": "run-s build lint check test",
     "dev": "nodemon --quiet --ignore dist/ --ext .ts --exec run-s build check",
     "lint": "xo --fix",
-    "postversion": "git push && git push --tags && npm publish",
+    "postversion": "git push && git push --tags && npm run build && npm publish",
     "prebuild": "rm dist -rf",
     "preversion": "npm run ci",
     "start": "npm run check",
