@@ -19,7 +19,7 @@
     "require-from-string": "2.0.2",
     "shuutils": "4.3.0",
     "ts-node": "9.1.1",
-    "tsup": "4.6.0",
+    "tsup": "4.6.1",
     "xo": "0.38.2"
   },
   "files": [
