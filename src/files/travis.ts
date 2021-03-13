@@ -2,7 +2,7 @@ import { File } from '../file'
 
 export class TravisFile extends File {
   async start (): Promise<void> {
-    const exists = await this.checkFileExists('.travis.yml')
+    const exists = await this.fileExists('.travis.yml')
     if (!exists) return
     await this.inspectFile('.travis.yml')
     this.shouldContains('a language', /language: node_js/)
