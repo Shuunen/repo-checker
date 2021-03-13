@@ -51,12 +51,12 @@ export class ReadmeFile extends File {
 
   async checkBadges (): Promise<void> {
     const badges = await this.getBadges()
-    badges.forEach(badge => {
+    for (const badge of badges) {
       const message = `${badge.expected ? 'a' : 'no'} "${badge.label}" badge`
       const regex = new RegExp(`\\(${badge.link.replace('?', '\\?')}\\)`)
       const ok = this.couldContains(message, regex, badge.expected ? 1 : 0, badge.markdown, badge.expected)
       if (!ok && badge.expected && badge.fixable && this.doFix) this.addBadge(badge.markdown)
-    })
+    }
   }
 
   async getBadges (): Promise<Badge[]> {
@@ -67,11 +67,11 @@ export class ReadmeFile extends File {
     ]
     if (this.data.web_published && !this.fileContent.includes('shields.io/website/'))
       list.push(new Badge('Website up', this.data.web_url, `https://img.shields.io/website/https/${this.data.web_url.replace('https://', '')}.svg`, true, this.data.web_url !== dataDefaults.web_url))
-    if (this.data.npm_package) {
-      list.push(new Badge('Package Quality', `https://packagequality.com/#?package=${this.data.package_name}`, `https://npm.packagequality.com/shield/${this.data.package_name}.svg`))
-      list.push(new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/dm/${this.data.package_name}.svg?color=informational`))
-      list.push(new Badge('Npm version', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/v/${this.data.package_name}.svg?color=informational`))
-    }
+    if (this.data.npm_package) list.push(
+      new Badge('Package Quality', `https://packagequality.com/#?package=${this.data.package_name}`, `https://npm.packagequality.com/shield/${this.data.package_name}.svg`),
+      new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/dm/${this.data.package_name}.svg?color=informational`),
+      new Badge('Npm version', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/v/${this.data.package_name}.svg?color=informational`),
+    )
     return list
   }
 
@@ -85,14 +85,14 @@ export class ReadmeFile extends File {
     const hasSection = this.couldContains('a thanks section', /## Thanks/)
     if (!hasSection) return
     const thanks = await this.getThanks()
-    thanks.forEach(thank => {
+    for (const thank of thanks) {
       const message = `${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`
       const regex = new RegExp(`\\[${thank.label}]`, 'i')
       const ok = this.couldContains(message, regex, thank.expected ? 1 : 0, thank.markdown, thank.expected)
       const shouldAdd = !ok && thank.expected && thank.fixable && this.doFix
       // if (thank.label === 'Mocha') console.table({ ok, expected: thank.expected, fixable: thank.fixable, doFix: this.doFix, shouldAdd })
       if (shouldAdd) this.addThanks(thank.markdown)
-    })
+    }
   }
 
   async getThanks (): Promise<Thanks[]> {
@@ -106,30 +106,32 @@ export class ReadmeFile extends File {
     if (!await pathExists(filePath)) return list
     const json = await readFile(filePath, 'utf-8')
     if (json === '') return list
-    list.push(new Thanks('Rollup', 'https://rollupjs.org', 'a fast & efficient js module bundler', json.includes('rollup"')))
-    list.push(new Thanks('Tsup', 'https://github.com/egoist/tsup', 'super fast js/ts bundler with no config, powered by esbuild <3', json.includes('tsup"')))
-    list.push(new Thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use', json.includes('ava"')))
-    list.push(new Thanks('Mocha', 'https://github.com/mochajs/mocha', 'great test runner easy to setup & use', json.includes('mocha"')))
-    list.push(new Thanks('Npm-run-all', 'https://github.com/mysticatea/npm-run-all', 'to keep my npm scripts clean & readable', json.includes('npm-run-all"')))
-    list.push(new Thanks('C8', 'https://github.com/bcoe/c8', 'simple & effective cli for code coverage', json.includes('c8"')))
-    list.push(new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'simple & effective cli for code coverage', json.includes('nyc"')))
-    list.push(new Thanks('Repo-checker', 'https://github.com/Shuunen/repo-checker', 'eslint cover /src code and this tool the rest ^^', json.includes('repo-check')))
-    list.push(new Thanks('Vue', 'https://vuejs.org', 'when I need a front framework, this is the one I choose <3', json.includes('vue"')))
-    list.push(new Thanks('Eslint', 'https://eslint.org', 'super tool to find & fix problems', json.includes('eslint"')))
-    list.push(new Thanks('Xo', 'https://github.com/xojs/xo', 'super tool to find & fix problems', json.includes('"xo"')))
-    list.push(new Thanks('Reef', 'https://reefjs.com', 'a lightweight library for creating reactive, state-based components and UI', json.includes('reefjs"')))
-    list.push(new Thanks('TailwindCss', 'https://tailwindcss.com', 'awesome lib to produce maintainable style', json.includes('tailwindcss"')))
-    list.push(new Thanks('Cypress.io', 'https://www.cypress.io', 'cool E2E testing framework', json.includes('cypress"')))
+    list.push(
+      new Thanks('Rollup', 'https://rollupjs.org', 'a fast & efficient js module bundler', json.includes('rollup"')),
+      new Thanks('Tsup', 'https://github.com/egoist/tsup', 'super fast js/ts bundler with no config, powered by esbuild <3', json.includes('tsup"')),
+      new Thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use', json.includes('ava"')),
+      new Thanks('Mocha', 'https://github.com/mochajs/mocha', 'great test runner easy to setup & use', json.includes('mocha"')),
+      new Thanks('Npm-run-all', 'https://github.com/mysticatea/npm-run-all', 'to keep my npm scripts clean & readable', json.includes('npm-run-all"')),
+      new Thanks('C8', 'https://github.com/bcoe/c8', 'simple & effective cli for code coverage', json.includes('c8"')),
+      new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'simple & effective cli for code coverage', json.includes('nyc"')),
+      new Thanks('Repo-checker', 'https://github.com/Shuunen/repo-checker', 'eslint cover /src code and this tool the rest ^^', json.includes('repo-check')),
+      new Thanks('Vue', 'https://vuejs.org', 'when I need a front framework, this is the one I choose <3', json.includes('vue"')),
+      new Thanks('Eslint', 'https://eslint.org', 'super tool to find & fix problems', json.includes('eslint"')),
+      new Thanks('Xo', 'https://github.com/xojs/xo', 'super tool to find & fix problems', json.includes('"xo"')),
+      new Thanks('Reef', 'https://reefjs.com', 'a lightweight library for creating reactive, state-based components and UI', json.includes('reefjs"')),
+      new Thanks('TailwindCss', 'https://tailwindcss.com', 'awesome lib to produce maintainable style', json.includes('tailwindcss"')),
+      new Thanks('Cypress.io', 'https://www.cypress.io', 'cool E2E testing framework', json.includes('cypress"')),
+    )
     return list
   }
 
   checkTodos (): void {
     const matches = this.fileContent.match(/- \[ ] (.*)/g)
     if (matches === null) return
-    matches.forEach(line => {
+    for (const line of matches) {
       // a todo line in markdown is like "- [ ] add some fancy gifs"
       const todo = line.replace('- [ ] ', '')
       log.info('TODO : ' + todo)
-    })
+    }
   }
 }
