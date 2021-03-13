@@ -80,6 +80,7 @@ export async function readFileInFolder (folderPath: string, fileName: string): P
 }
 
 export async function getFileSizeInKo (filePath: string): Promise<number> {
+  if (!await pathExists(filePath)) return 0
   const stat = await statAsync(filePath)
   const size = Math.round(stat.size / 1024)
   log.debug('found that file', filePath, 'has a size of :', `${size}`, 'Ko')

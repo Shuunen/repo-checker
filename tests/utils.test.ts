@@ -28,7 +28,10 @@ describe('utils', () => {
   })
 
   it('file size calculation', async () => {
-    equal(await getFileSizeInKo(filename), 0)
+    const nonExistingFileSize = await getFileSizeInKo(filename)
+    equal(nonExistingFileSize, 0)
+    const existingFileSize = await getFileSizeInKo('package.json')
+    equal(existingFileSize >= 1, true)
   })
 
   it('data augment with git', async () => {
