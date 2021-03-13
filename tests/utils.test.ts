@@ -44,7 +44,7 @@ describe('utils', () => {
     deepEqual(dataFromGit, expectedDataFromGit)
   })
 
-  it('data augment with git : repo-check & local', async () => {
+  it('data augment : repo-check & local', async () => {
     const expectedAugmentedData = new ProjectData({
       auto_merge: true,
       is_module: false,
@@ -58,7 +58,7 @@ describe('utils', () => {
     deepEqual(augmentedData, expectedAugmentedData)
   })
 
-  it('data augment with git : test folder', async () => {
+  it('data augment : test folder', async () => {
     const augmentedDataFromTestFolder = await augmentData(testFolder, dataDefaults)
     deepEqual(augmentedDataFromTestFolder, dataDefaults)
   })
