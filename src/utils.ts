@@ -29,6 +29,7 @@ export async function getGitFolders (folderPath: string): Promise<string[]> {
 export async function augmentDataWithGit (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
   const gitConfigContent = await readFileInFolder(join(folderPath, '.git'), 'config')
+  console.log('here is the git config :', 'START\n\n', gitConfigContent, '\n\nEND')
   const matches = /([\w-]+)\/([\w-]+)\.git/.exec(gitConfigContent) ?? []
   if (matches.length !== 3) return data
   data.user_id = matches[1]
