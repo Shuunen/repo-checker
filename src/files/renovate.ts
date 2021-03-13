@@ -2,7 +2,7 @@ import { File } from '../file'
 
 export class RenovateFile extends File {
   async start (): Promise<void> {
-    const exists = await this.checkFileExists('renovate.json')
+    const exists = await this.checkFileExists('renovate.json', true)
     if (!exists) return
     await this.inspectFile('renovate.json')
     this.shouldContains('an extends section', /"extends"/)
