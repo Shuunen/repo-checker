@@ -57,7 +57,7 @@ export class PackageJsonFile extends File {
 
   checkScripts (): void {
     const hasScripts = this.shouldContains('a script section', this.regexForObjectProp('scripts'))
-    if (hasScripts) SCRIPTS.required.forEach(name => this.shouldContains(`a ${name} script`, this.regexForStringProp(name)))
+    if (hasScripts) for (const name of SCRIPTS.required) this.shouldContains(`a ${name} script`, this.regexForStringProp(name))
     if (!this.fileContent.includes('Shuunen/repo-checker')) this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/)
     this.couldContains('a pre-script for version automation', /"preversion": "/, 1, 'like : "preversion": "npm run ci",')
     if (this.data.npm_package) this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags && npm publish",')

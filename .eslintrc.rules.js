@@ -2,6 +2,7 @@
   Custom rules for this project
 */
 module.exports = {
+  '@typescript-eslint/object-curly-spacing': 'off',
   '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
   '@typescript-eslint/consistent-type-assertions': 'off',
   '@typescript-eslint/no-confusing-void-expression': 'off',
