@@ -4,6 +4,8 @@ import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
 import { fillTemplate, getFileSizeInKo, readFileInFolder } from './utils'
 
+const MORE_THAN_ONE = 99
+
 export class File {
   fileContent = ''
   originalFileContent = ''
@@ -78,7 +80,7 @@ export class File {
   }
 
   // eslint-disable-next-line max-params
-  shouldContains (name: string, regex?: RegExp, nbMatchExpected = 1, justWarn = false, helpMessage = '', canFix = false): boolean {
+  shouldContains (name: string, regex?: RegExp, nbMatchExpected = MORE_THAN_ONE, justWarn = false, helpMessage = '', canFix = false): boolean {
     if (regex === undefined) regex = new RegExp(name)
     const contentExists = this.checkContains(regex, nbMatchExpected)
     const fix = this.doFix && canFix && !contentExists
@@ -91,14 +93,14 @@ export class File {
   }
 
   // eslint-disable-next-line max-params
-  couldContains (name: string, regex?: RegExp, nbMatchExpected = 1, helpMessage = '', canFix = false): boolean {
+  couldContains (name: string, regex?: RegExp, nbMatchExpected = MORE_THAN_ONE, helpMessage = '', canFix = false): boolean {
     return this.shouldContains(name, regex, nbMatchExpected, true, helpMessage, canFix)
   }
 
-  checkContains (regex: RegExp, nbMatchExpected = 1): boolean {
+  checkContains (regex: RegExp, nbMatchExpected = MORE_THAN_ONE): boolean {
     const matches = this.fileContent.match(regex) ?? [] // eslint-disable-line @typescript-eslint/prefer-regexp-exec
-    const ok = nbMatchExpected === matches.length
-    if (!ok) log.debug(regex.toString().replace('\n', ''), `matched ${matches.length} instead of ${nbMatchExpected}`)
+    const ok = nbMatchExpected === MORE_THAN_ONE ? (matches.length > 0) : nbMatchExpected === matches.length
+    if (!ok) log.debug(regex.toString().replace('\n', ''), `matched ${matches.length} instead of ${nbMatchExpected === MORE_THAN_ONE ? 'one or more' : nbMatchExpected}`)
     return ok
   }
 
