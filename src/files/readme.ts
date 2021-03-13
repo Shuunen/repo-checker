@@ -63,7 +63,6 @@ export class ReadmeFile extends File {
     const userRepo = `${this.data.user_id}/${this.data.repo_id}`
     const list = [
       new Badge('Project license', `https://github.com/${userRepo}/blob/master/LICENSE`, `https://img.shields.io/github/license/${userRepo}.svg?color=informational`),
-      new Badge('Build status', `https://travis-ci.com/${userRepo}`, `https://travis-ci.com/${userRepo}.svg?branch=master`),
     ]
     if (this.data.web_published && !this.fileContent.includes('shields.io/website/'))
       list.push(new Badge('Website up', this.data.web_url, `https://img.shields.io/website/https/${this.data.web_url.replace('https://', '')}.svg`, true, this.data.web_url !== dataDefaults.web_url))
@@ -98,7 +97,7 @@ export class ReadmeFile extends File {
   async getThanks (): Promise<Thanks[]> {
     const list = [
       new Thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme', this.fileContent.includes('shields')),
-      new Thanks('Travis-ci.com', 'https://travis-ci.com', 'for providing free continuous deployments', this.fileContent.includes('travis-ci')),
+      // new Thanks('Travis-ci.com', 'https://travis-ci.com', 'for providing free continuous deployments', this.fileContent.includes('travis-ci')),
       new Thanks('Github', 'https://github.com', 'for all their great work year after year, pushing OSS forward', this.fileContent.includes('github')),
       new Thanks('Netlify', 'https://netlify.com', 'awesome company that offers free CI & hosting for OSS projects', this.fileContent.includes('netlify')),
     ]
