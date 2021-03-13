@@ -34,7 +34,7 @@ describe('utils', () => {
     equal(existingFileSize >= 1, true)
   })
 
-  it('data augment with git', async () => {
+  it('data augment with git : repo-check & no-local', async () => {
     const expectedDataFromGit = new ProjectData({
       user_id: 'Shuunen',
       user_id_lowercase: 'shuunen',
@@ -42,6 +42,9 @@ describe('utils', () => {
     })
     const dataFromGit = await augmentDataWithGit(rootFolder, dataDefaults)
     deepEqual(dataFromGit, expectedDataFromGit)
+  })
+
+  it('data augment with git : repo-check & local', async () => {
     const expectedAugmentedData = new ProjectData({
       auto_merge: true,
       is_module: false,
@@ -53,6 +56,9 @@ describe('utils', () => {
     })
     const augmentedData = await augmentData(rootFolder, dataDefaults, true)
     deepEqual(augmentedData, expectedAugmentedData)
+  })
+
+  it('data augment with git : test folder', async () => {
     const augmentedDataFromTestFolder = await augmentData(testFolder, dataDefaults)
     deepEqual(augmentedDataFromTestFolder, dataDefaults)
   })
@@ -80,7 +86,6 @@ describe('utils', () => {
       ban_sass: false,
       license: 'MIT',
       package_name: '',
-      repo_id: 'a-great-repo',
       use_typescript: true,
       user_mail: '',
       user_name: 'Dwight Schrute',
