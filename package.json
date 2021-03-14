@@ -54,5 +54,5 @@
     "test:watch": "nodemon --quiet --exec npm test --ext .ts",
     "update": "npx npm-check-updates -u"
   },
-  "version": "1.15.0"
+  "version": "1.15.1"
 }
