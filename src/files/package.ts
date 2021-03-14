@@ -1,10 +1,9 @@
-import { version as rcVersion } from '../../package.json'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
 
 const SCRIPTS = {
-  required: ['ci', 'start', 'test'],
+  required: ['start', 'test'],
 }
 
 export class PackageJsonFile extends File {
@@ -17,7 +16,6 @@ export class PackageJsonFile extends File {
     await this.checkMainFile()
     this.checkProperties()
     this.checkScripts()
-    this.checkLint()
     this.checkBuild()
     this.checkDependencies()
   }
@@ -58,20 +56,10 @@ export class PackageJsonFile extends File {
   checkScripts (): void {
     const hasScripts = this.shouldContains('a script section', this.regexForObjectProp('scripts'))
     if (hasScripts) for (const name of SCRIPTS.required) this.shouldContains(`a ${name} script`, this.regexForStringProp(name))
-    if (!this.fileContent.includes('Shuunen/repo-checker')) this.couldContains('a check script that does not rely on npx', /"check": "repo-check"/)
     this.couldContains('a pre-script for version automation', /"preversion": "/, 1, 'like : "preversion": "npm run ci",')
     if (this.data.npm_package) this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags && npm publish",')
     else this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags",')
-    this.couldContains('an update script to help maintain deps to latest version', /"update": "npx npm-check-updates -u"/)
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/, 0)
-    const hasUt = this.couldContains('unit testing', /"(ava|mocha)"/g)
-    if (hasUt && !this.fileContent.includes('"c8"')) this.couldContains('code coverage', /"(nyc|c8)"/g)
-  }
-
-  checkLint (): boolean {
-    const useXo = this.fileContent.includes('"xo"')
-    if (useXo) return this.couldContains('a lint task', /"lint": "xo --fix/)
-    return this.couldContains('an lint task that use ignore rule and ext syntax', /"lint": "eslint --fix --ignore-path \.gitignore --ext/)
   }
 
   checkBuild (): void {
@@ -89,18 +77,6 @@ export class PackageJsonFile extends File {
     if (this.data.ban_sass === undefined || this.data.ban_sass) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
     this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
     this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
-    this.checkRepoChecker()
-  }
-
-  // how ironic ^^
-  checkRepoChecker (): void {
-    if (this.fileContent.includes('Shuunen/repo-checker')) return // if it's this repo... ^^''
-    const [, version] = /"repo-check": "(.+)"/.exec(this.fileContent) ?? []
-    this.test(version !== undefined, 'has a repo-check dependency')
-    if (version === undefined || version === 'latest') return
-    const [, pin] = /.*(\d+.\d+.\d+).*/.exec(version) ?? []
-    if (pin === undefined) log.error('failed to extract repo-checker pinned version')
-    else this.test(pin === rcVersion, `has (latest|${String(rcVersion)}) version of repo-checker`, true)
   }
 
   regexForStringProp (name = ''): RegExp {

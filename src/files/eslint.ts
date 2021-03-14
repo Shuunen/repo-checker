@@ -15,10 +15,10 @@ export class EsLintFile extends File {
   }
 
   async checkEslint (): Promise<boolean> {
-    const expectedFile = this.data.is_module ? '.eslintrc.cjs' : '.eslintrc.js'
-    const exists = await this.checkFileExists(expectedFile, true)
+    const filename = this.data.is_module ? '.eslintrc.cjs' : '.eslintrc.js'
+    const exists = await this.fileExists(filename)
     if (!exists) return log.debug('skipping eslintrc checks')
-    await this.inspectFile(expectedFile)
+    await this.inspectFile(filename)
     this.shouldContains('external rules', /\.eslintrc\.rules/)
     this.shouldContains('standard rules extend', /standard/)
     this.couldContains('unicorn rules extend', /plugin:unicorn\/recommended/)
