@@ -86,7 +86,7 @@ class Logger {
   }
 
   end (): boolean {
-    this.info(name, 'has finished')
+    this.debug(name, 'has finished')
     return this.line()
   }
 }

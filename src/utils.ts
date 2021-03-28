@@ -1,7 +1,7 @@
 import { readdir, stat } from 'fs'
 import { pathExists, readFile } from 'fs-extra'
 import { join } from 'path'
-import * as requireFromString from 'require-from-string'
+import requireFromString from 'require-from-string'
 import { promisify } from 'util'
 import { dataDefaults, dataFileName, ProjectData } from './constants'
 import { log } from './logger'
