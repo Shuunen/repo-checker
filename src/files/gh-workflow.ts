@@ -6,12 +6,11 @@ export class GithubWorkflowFile extends File {
     const exists = await this.fileExists(filePath)
     if (!exists) return
     await this.inspectFile(filePath)
-    this.shouldContains('a checkout step', /actions\/checkout/)
-    this.shouldContains('a node step', /actions\/setup-node/)
-    this.shouldContains('a cache step', /actions\/cache/)
+    this.shouldContains('a checkout step in ci workflow', /actions\/checkout/)
+    this.shouldContains('a node step in ci workflow', /actions\/setup-node/)
     const hasInstall = this.fileContent.includes('npm install') || this.fileContent.includes('npm ci')
-    this.test(hasInstall, 'a install step')
+    this.test(hasInstall, 'a install step in ci workflow')
     const hasTests = this.fileContent.includes('npm run test') || this.fileContent.includes('npm run ci')
-    this.test(hasTests, 'at least one test step')
+    this.test(hasTests, 'at least one test step in ci workflow')
   }
 }
