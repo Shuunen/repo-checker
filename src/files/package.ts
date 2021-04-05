@@ -2,10 +2,6 @@ import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
 
-const SCRIPTS = {
-  required: ['start', 'test'],
-}
-
 export class PackageJsonFile extends File {
   async start (): Promise<void> {
     const exists = await this.checkFileExists('package.json')
@@ -54,8 +50,7 @@ export class PackageJsonFile extends File {
   }
 
   checkScripts (): void {
-    const hasScripts = this.shouldContains('a script section', this.regexForObjectProp('scripts'))
-    if (hasScripts) for (const name of SCRIPTS.required) this.shouldContains(`a ${name} script`, this.regexForStringProp(name))
+    this.shouldContains('a script section', this.regexForObjectProp('scripts'))
     this.couldContains('a pre-script for version automation', /"preversion": "/, 1, 'like : "preversion": "npm run ci",')
     if (this.data.npm_package) this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags && npm publish",')
     else this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags",')

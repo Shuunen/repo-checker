@@ -19,10 +19,12 @@ describe('check', () => {
     const gitConfig = join(folder, '.git', 'config')
     await ensureFile(gitConfig)
     const data = new ProjectData({ quiet: true })
-    let message = await check(folder, data, true).catch(() => 'failed')
-    equal(message, 'failed')
-    message = await check(folder, data, true, true).catch(() => 'failed')
-    equal(message, 'failed')
+    let status = await check(folder, data, true).catch(() => 'failed')
+    if (typeof status === 'string') return
+    equal(status.nbFailed, 0)
+    status = await check(folder, data, true, true).catch(() => 'failed')
+    if (typeof status === 'string') return
+    equal(status.nbFailed, 0)
     remove(folder).catch(error => console.error(error))
   })
   it('report does nothing by default', () => {

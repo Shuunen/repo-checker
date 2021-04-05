@@ -2,6 +2,9 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "target": "ES5"
+    "target": "ES5",
+    "lib": [
+      "ES2015"
+    ]
   }
 }
