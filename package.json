@@ -12,7 +12,7 @@
     "@types/require-from-string": "1.2.0",
     "arg": "5.0.0",
     "colorette": "1.2.2",
-    "fs-extra": "9.1.0",
+    "fs-extra": "10.0.0",
     "mocha": "8.3.2",
     "npm-run-all": "4.1.5",
     "nyc": "15.1.0",
