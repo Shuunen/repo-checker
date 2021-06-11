@@ -39,7 +39,7 @@ export class PackageJsonFile extends File {
       return
     }
     const maxSizeKo = this.data.max_size_ko
-    const ok = this.test(maxSizeKo !== dataDefaults.max_size_ko, 'main file maximum size is specified in data file (ex: max_size_ko: 100)')
+    const ok = this.test(maxSizeKo !== dataDefaults.max_size_ko, 'main file maximum size is specified in data file (ex: max_size_ko: 100)', true)
     if (!ok) return
     const exists = await this.checkFileExists(mainFilePath)
     this.test(exists, `main file specified in package.json (${mainFilePath}) exists on disk (be sure to build before run repo-check)`)
