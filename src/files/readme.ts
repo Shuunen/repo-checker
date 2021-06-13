@@ -1,8 +1,8 @@
 import { pathExists, readFile } from 'fs-extra'
-import { join } from 'path'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
+import { join } from '../utils'
 
 class Thanks {
   markdown = ''

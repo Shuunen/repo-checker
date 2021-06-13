@@ -1,20 +1,20 @@
 import { deepStrictEqual as deepEqual, strictEqual as equal } from 'assert'
 import { ensureFileSync, removeSync } from 'fs-extra'
-import { join } from 'path'
 import { dataDefaults, ProjectData } from '../src/constants'
-import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, fillTemplate, getFileSizeInKo, getGitFolders, isGitFolder, readFileInFolder } from '../src/utils'
+import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, fillTemplate, getFileSizeInKo, getGitFolders, isGitFolder, join, readFileInFolder } from '../src/utils'
 
-describe('utils', () => {
-  // base project folder
-  const testFolder = __dirname
-  const rootFolder = join(testFolder, '..')
-  const filename = 'test-file.log'
+// base project folder
+const testFolder = __dirname
+const rootFolder = join(testFolder, '..')
+const filename = 'test-file.log'
 
-  it('git folder detection', async () => {
+describe('utils', function () {
+
+  it('git folder detection', async function () {
     equal(await isGitFolder(rootFolder), true)
   })
 
-  it('git folders listing', async () => {
+  it('git folders listing', async function () {
     deepEqual(await getGitFolders(rootFolder), [rootFolder])
     const projects = ['anotherProject', 'sampleProject']
     projects.map(name => ensureFileSync(join(testFolder, name, '.git', 'config')))
@@ -23,18 +23,18 @@ describe('utils', () => {
     projects.map(name => removeSync(join(testFolder, name)))
   })
 
-  it('file creation, detection, read', async () => {
+  it('file creation, detection, read', async function () {
     equal(await readFileInFolder('/', filename).catch(() => 'failed'), '')
   })
 
-  it('file size calculation', async () => {
+  it('file size calculation', async function () {
     const nonExistingFileSize = await getFileSizeInKo(filename)
     equal(nonExistingFileSize, 0)
     const existingFileSize = await getFileSizeInKo('package.json')
     equal(existingFileSize >= 1, true)
   })
 
-  it('data augment with git : repo-check & no-local', async () => {
+  it('data augment with git : repo-check & no-local', async function () {
     const expectedDataFromGit = new ProjectData({
       user_id: 'Shuunen',
       user_id_lowercase: 'shuunen',
@@ -44,7 +44,7 @@ describe('utils', () => {
     deepEqual(dataFromGit, expectedDataFromGit)
   })
 
-  it('data augment : repo-check & local', async () => {
+  it('data augment : repo-check & local', async function () {
     const expectedAugmentedData = new ProjectData({
       auto_merge: true,
       is_module: false,
@@ -58,12 +58,12 @@ describe('utils', () => {
     deepEqual(augmentedData, expectedAugmentedData)
   })
 
-  it('data augment : test folder', async () => {
+  it('data augment : test folder', async function () {
     const augmentedDataFromTestFolder = await augmentData(testFolder, dataDefaults)
     deepEqual(augmentedDataFromTestFolder, dataDefaults)
   })
 
-  it('data augment with package', async () => {
+  it('data augment with package', async function () {
     const data = await augmentDataWithPackageJson(rootFolder, dataDefaults)
     const expectedData = new ProjectData({
       is_module: false,
@@ -94,7 +94,7 @@ describe('utils', () => {
     deepEqual(tsData, expectedTsData)
   })
 
-  it('template filling', () => {
+  it('template filling', function () {
     const data = { key_to_happiness: 'Roo-doo-doot-da-doo' }
     // string
     equal(fillTemplate('Andy : {{ key_to_happiness }} !', data), `Andy : ${data.key_to_happiness} !`)

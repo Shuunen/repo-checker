@@ -61,7 +61,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 
 ### quiet
 
-`--quiet` repo-checker will works silently without outputing to console, will keep output to logfile.
+`--quiet` repo-checker will works silently without output-ing to console, will keep output to logfile.
 
 ## Todo
 
@@ -94,11 +94,8 @@ Each task is run 3 times via `time npm run <task>` to get the average execution 
 - [Github](https://github.com) : for all their great work year after year, pushing OSS forward
 - [Mocha](https://github.com/mochajs/mocha) : great test runner easy to setup & use
 - [Npm-run-all](https://github.com/mysticatea/npm-run-all) : to keep my npm scripts clean & readable
-- [Nyc](https://github.com/istanbuljs/nyc) : simple & effective cli for code coverage
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
-- [Tsup](https://github.com/egoist/tsup) : super fast js/ts bundler with no config, powered by esbuild <3
-- [Xo](https://github.com/xojs/xo) : super tool to find & fix problems
 
 ## License
 

@@ -1,8 +1,8 @@
 import { strictEqual as equal } from 'assert'
 import { log } from '../src/logger'
 
-describe('logger', () => {
-  it('log correctly', () => {
+describe('logger', function () {
+  it('log correctly', function () {
     log.noConsole = true
     equal(log.start(), true)
     equal(log.start(true), true)
@@ -15,10 +15,9 @@ describe('logger', () => {
     equal(log.test(false, 'damn-invalid'), false)
     equal(log.test(false, 'damn-invalid-ninja', true), false)
     equal(log.fix('damn-fix'), true)
-    equal(log.end(), true)
   })
 
-  it('can set indentation level', () => {
+  it('can set indentation level', function () {
     equal(log.setIndentLevel(2), 2)
   })
 })

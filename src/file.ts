@@ -1,8 +1,7 @@
 import { outputFile, pathExists } from 'fs-extra'
-import { join } from 'path'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
-import { fillTemplate, getFileSizeInKo, readFileInFolder } from './utils'
+import { fillTemplate, getFileSizeInKo, join, readFileInFolder } from './utils'
 
 const MORE_THAN_ONE = 99
 
@@ -65,7 +64,7 @@ export class File {
     return fileContent
   }
 
-  async checkIssues () {
+  async checkIssues (): Promise<void> {
     if (this.nbFailed > 0 && this.doFix) {
       if (this.doForce) {
         await this.initFile(this.fileName)

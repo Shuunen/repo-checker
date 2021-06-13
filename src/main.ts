@@ -1,13 +1,12 @@
 /* eslint-disable unicorn/no-process-exit */
 import arg from 'arg'
 import { outputFile, pathExists } from 'fs-extra'
-import { join, resolve } from 'path'
 import requireFromString from 'require-from-string'
 import { version } from '../package.json'
 import { check } from './check'
 import { dataDefaults, dataFileHomePath, dataFileName, home, ProjectData, repoCheckerPath, templatePath } from './constants'
 import { log } from './logger'
-import { readFileInFolder } from './utils'
+import { join, readFileInFolder, resolve } from './utils'
 
 async function initDataFile (doForce = false): Promise<void> {
   log.line()

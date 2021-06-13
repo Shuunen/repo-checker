@@ -1,4 +1,4 @@
-import { join } from 'path'
+import { join } from './utils'
 
 /* istanbul ignore next */
 export const home = process.env.HOME ?? '' // when does HOME is not defined ?

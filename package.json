@@ -7,20 +7,16 @@
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {
-    "@types/fs-extra": "9.0.11",
-    "@types/mocha": "8.2.2",
+    "@types/fs-extra": "*",
+    "@types/mocha": "*",
     "@types/require-from-string": "1.2.0",
     "arg": "5.0.0",
-    "colorette": "1.2.2",
-    "fs-extra": "10.0.0",
-    "mocha": "8.3.2",
-    "npm-run-all": "4.1.5",
-    "nyc": "15.1.0",
+    "colorette": "*",
+    "fs-extra": "*",
+    "npm-run-all": "*",
     "require-from-string": "2.0.2",
-    "shuutils": "4.4.0",
-    "ts-node": "9.1.1",
-    "tsup": "4.10.1",
-    "xo": "0.38.2"
+    "shuunen-stack": "0.8.0",
+    "shuutils": "*"
   },
   "files": [
     "dist",
@@ -41,18 +37,17 @@
     "url": "https://github.com/Shuunen/repo-checker.git"
   },
   "scripts": {
-    "build": "tsup src/cli.ts",
+    "build": "stack build src/cli.ts --platform node --minify",
     "check": "node .",
     "ci": "run-s build lint check test",
-    "dev": "nodemon --quiet --ignore dist/ --ext .ts --exec run-s build check",
-    "lint": "xo --fix",
+    "dev": "npm run build -- --dev",
+    "lint": "stack lint",
     "postversion": "git push && git push --tags && npm run build && npm publish",
-    "prebuild": "rm dist -rf",
     "preversion": "npm run ci",
     "start": "npm run check",
-    "test": "nyc mocha",
-    "test:watch": "nodemon --quiet --exec npm test --ext .ts",
-    "update": "npx npm-check-updates -u"
+    "test": "stack test",
+    "test:watch": "stack test --watch",
+    "update": "stack update"
   },
   "version": "1.17.0"
 }
