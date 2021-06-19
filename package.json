@@ -15,7 +15,7 @@
     "fs-extra": "*",
     "npm-run-all": "*",
     "require-from-string": "2.0.2",
-    "shuunen-stack": "0.9.0",
+    "shuunen-stack": "0.9.5",
     "shuutils": "*"
   },
   "files": [
