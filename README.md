@@ -20,7 +20,6 @@
   - [Todo](#todo)
   - [Benchmarks](#benchmarks)
   - [Thanks](#thanks)
-  - [License](#license)
 
 ## Usage
 
@@ -100,7 +99,3 @@ Each task is run 3 times via `time npm run <task>` to get the average execution 
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
 - [Servor](https://github.com/lukejacksonn/servor) : dependency free dev server for single page app development
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
-
-## License
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FShuunen%2Frepo-checker.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FShuunen%2Frepo-checker?ref=badge_large)

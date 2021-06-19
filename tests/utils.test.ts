@@ -52,6 +52,7 @@ describe('utils', function () {
       npm_package: true,
       package_name: 'repo-check',
       repo_id: 'repo-checker',
+      use_stack: true,
       use_typescript: true,
     })
     const augmentedData = await augmentData(rootFolder, dataDefaults, true)
@@ -69,6 +70,7 @@ describe('utils', function () {
       is_module: false,
       npm_package: true,
       package_name: 'repo-check',
+      use_stack: true,
       use_typescript: true,
     })
     deepEqual(data, expectedData)

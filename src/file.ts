@@ -40,7 +40,6 @@ export class File {
   async checkFileExists (fileName: string, justWarn = false): Promise<boolean> {
     let fileExists = await this.fileExists(fileName)
     if (!fileExists && this.doFix) {
-      log.debug(`file ${fileName} does not exists and fix ${this.doFix ? 'active' : 'inactive'}`)
       const fileContent = await this.initFile(fileName)
       fileExists = fileContent.length > 0
     }
