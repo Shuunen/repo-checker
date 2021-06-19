@@ -84,11 +84,6 @@ class Logger {
     this.info(`${String(name)} v${String(version)} is starting ${doFix ? '(fix enabled)' : ''}`)
     return this.line()
   }
-
-  end (): boolean {
-    this.debug(name, 'has finished')
-    return this.line()
-  }
 }
 
 export const log = new Logger(config.logFile)

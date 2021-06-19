@@ -4,7 +4,6 @@
 [![npm monthly downloads](https://img.shields.io/npm/dm/repo-check.svg?color=informational)](https://www.npmjs.com/package/repo-check)
 [![Project license](https://img.shields.io/github/license/Shuunen/repo-checker.svg?color=informational)](https://github.com/Shuunen/repo-checker/blob/master/LICENSE)
 
-[![David](https://img.shields.io/david/shuunen/repo-checker.svg)](https://david-dm.org/shuunen/repo-checker)
 [![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/Shuunen/repo-checker.svg)](https://lgtm.com/projects/g/Shuunen/repo-checker/)
 [![Package Quality](https://npm.packagequality.com/shield/repo-check.svg)](https://packagequality.com/#?package=repo-check)
 
@@ -21,7 +20,6 @@
   - [Todo](#todo)
   - [Benchmarks](#benchmarks)
   - [Thanks](#thanks)
-  - [License](#license)
 
 ## Usage
 
@@ -61,7 +59,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 
 ### quiet
 
-`--quiet` repo-checker will works silently without outputing to console, will keep output to logfile.
+`--quiet` repo-checker will works silently without output-ing to console, will keep output to logfile.
 
 ## Todo
 
@@ -91,15 +89,13 @@ Each task is run 3 times via `time npm run <task>` to get the average execution 
 
 ## Thanks
 
+- [Chokidar](https://github.com/paulmillr/chokidar) : minimal and efficient cross-platform file watching library
+- [Esbuild](https://github.com/evanw/esbuild) : an extremely fast JavaScript bundler and minifier
+- [Eslint](https://eslint.org) : super tool to find & fix problems
 - [Github](https://github.com) : for all their great work year after year, pushing OSS forward
 - [Mocha](https://github.com/mochajs/mocha) : great test runner easy to setup & use
 - [Npm-run-all](https://github.com/mysticatea/npm-run-all) : to keep my npm scripts clean & readable
 - [Nyc](https://github.com/istanbuljs/nyc) : simple & effective cli for code coverage
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
+- [Servor](https://github.com/lukejacksonn/servor) : dependency free dev server for single page app development
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
-- [Tsup](https://github.com/egoist/tsup) : super fast js/ts bundler with no config, powered by esbuild <3
-- [Xo](https://github.com/xojs/xo) : super tool to find & fix problems
-
-## License
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FShuunen%2Frepo-checker.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FShuunen%2Frepo-checker?ref=badge_large)

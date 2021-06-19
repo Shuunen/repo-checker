@@ -1,13 +1,18 @@
 import { readdir, stat } from 'fs'
 import { pathExists, readFile } from 'fs-extra'
-import { join } from 'path'
+import path from 'path'
 import requireFromString from 'require-from-string'
 import { promisify } from 'util'
 import { dataDefaults, dataFileName, ProjectData } from './constants'
 import { log } from './logger'
 
 const statAsync = promisify(stat)
+
 const readDirectoryAsync = promisify(readdir)
+
+export const join = path.join
+
+export const resolve = path.resolve
 
 export async function isGitFolder (folderPath: string): Promise<boolean> {
   const stat = await statAsync(folderPath)
@@ -54,9 +59,10 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   data.user_id = /github\.com\/([\w-]+)\//.exec(content)?.[1] ?? dataDefaults.user_id
   data.user_id_lowercase = data.user_id.toLowerCase()
   if (content.includes('"vue"')) data.use_vue = true
-  if (/(ts-node|typescript)/.test(content)) data.use_typescript = true
-  if (content.includes('html') || data.use_vue) data.web_published = true
+  if (/(ts-node|typescript|@types)/.test(content)) data.use_typescript = true
+  if (/(webcomponent|css|website|webapp)/.test(content) || data.use_vue) data.web_published = true
   if (content.includes('npm publish')) data.npm_package = true
+  if (content.includes('"shuunen-stack"')) data.use_stack = true
   return data
 }
 
