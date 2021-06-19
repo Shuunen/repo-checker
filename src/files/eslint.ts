@@ -1,20 +1,15 @@
-import { spawn } from 'child_process'
 import { File } from '../file'
 import { log } from '../logger'
 
 export class EsLintFile extends File {
   async start (): Promise<boolean> {
-    const useXo = await this.fileExists('xo.config.js')
-    if (useXo) return this.checkXo()
+    await this.checkNoFileExists('xo.config.js')
     return this.checkEslint()
   }
 
-  async checkXo (): Promise<boolean> {
-    await this.lintFolder()
-    return true
-  }
-
   async checkEslint (): Promise<boolean> {
+    if (this.data.use_stack) return this.checkEslintStack()
+    log.debug('does not use shuunen-stack apparently')
     const filename = this.data.is_module ? '.eslintrc.cjs' : '.eslintrc.js'
     const exists = await this.fileExists(filename)
     if (!exists) return log.debug('skipping eslintrc checks')
@@ -22,10 +17,18 @@ export class EsLintFile extends File {
     this.shouldContains('external rules', /\.eslintrc\.rules/)
     this.shouldContains('standard rules extend', /standard/)
     this.couldContains('unicorn rules extend', /plugin:unicorn\/recommended/)
-    this.couldContains('unicorn plugin', /'unicorn'/)
     await this.checkTs()
     await this.checkVue()
-    await this.lintFolder()
+    return true
+  }
+
+  async checkEslintStack (): Promise<boolean> {
+    log.debug('use shuunen-stack apparently')
+    const filename = '.eslintrc.json'
+    const exists = await this.checkFileExists(filename)
+    if (!exists) return log.debug('skipping eslintrc checks')
+    await this.inspectFile(filename)
+    if (this.data.package_name !== 'shuunen-stack') this.shouldContains('shuunen-stack rules extends', /extends": "\.\/node_modules\/shuunen-stack/, 1)
     return true
   }
 
@@ -44,23 +47,5 @@ export class EsLintFile extends File {
     await this.inspectFile('.eslintrc.rules.js')
     this.shouldContains('\'vue/max-attributes-per-line\': \'off\',')
     this.shouldContains('\'vue/singleline-html-element-content-newline\': \'off\',')
-  }
-
-  async lintFolder (): Promise<void> {
-    if (this.nbFailed > 0) return
-    const message = await new Promise(resolve => {
-      const proc = spawn(process.platform.startsWith('win') ? 'npm.cmd' : 'npm', ['run', 'lint'], { cwd: this.folderPath })
-      proc.stderr.on('data', (data: string) => {
-        resolve(`stderr: ${data}`)
-      })
-      proc.on('error', error => {
-        resolve(`error: ${String(error.message)}`)
-      })
-      proc.on('close', code => {
-        resolve(`child process exited with code ${String(code)}`)
-      })
-    })
-    const hasIssues = (message as string).includes('stderr')
-    this.test(!hasIssues, 'has no lint issues')
   }
 }

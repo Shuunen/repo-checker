@@ -3,11 +3,12 @@
   "bugs": "https://github.com/{{ user_id }}/{{ repo_id }}/issues",
   "description": "",
   "devDependencies": {
-    "repo-check": "latest"
+    "npm-run-all": "*",
+    "shuunen-stack": "latest"
   },
   "files": [
-    "src",
-    "*"
+    "public",
+    "src"
   ],
   "homepage": "https://github.com/{{ user_id }}/{{ repo_id }}",
   "keywords": [],
@@ -19,16 +20,15 @@
     "url": "https://github.com/{{ user_id }}/{{ repo_id }}.git"
   },
   "scripts": {
-    "check": "repo-check",
-    "ci": "npm run test",
-    "dev": "npm start",
-    "lint": "eslint --fix --ignore-path .gitignore --ext .js,.html .",
-    "postinstall": "npm run check",
+    "build": "stack build src/index.ts --out-dir public --format iife --minify",
+    "ci": "run-s build lint test",
+    "dev": "npm run build -- --dev",
+    "lint": "stack lint",
     "postversion": "git push && git push --tags",
     "preversion": "npm run ci",
-    "start": "",
-    "test": "npm run lint && npm run check",
-    "update": "npx npm-check-updates -u"
+    "test": "stack test",
+    "test:watch": "stack test -- --watch",
+    "update": "stack update"
   },
   "version": "0.0.1"
 }

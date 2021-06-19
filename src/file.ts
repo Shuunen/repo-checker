@@ -40,6 +40,7 @@ export class File {
   async checkFileExists (fileName: string, justWarn = false): Promise<boolean> {
     let fileExists = await this.fileExists(fileName)
     if (!fileExists && this.doFix) {
+      log.debug(`file ${fileName} does not exists and fix ${this.doFix ? 'active' : 'inactive'}`)
       const fileContent = await this.initFile(fileName)
       fileExists = fileContent.length > 0
     }
@@ -54,7 +55,10 @@ export class File {
 
   async initFile (fileName: string): Promise<string> {
     const template = await readFileInFolder(templatePath, fileName)
-    if (template === '') return ''
+    if (template === '') {
+      log.debug(`found no template ${fileName}, using a empty string instead`)
+      return ''
+    }
     const data = this.data as unknown
     const fileContent = fillTemplate(template, data as Record<string, string>)
     if (fileContent.length > 0) {

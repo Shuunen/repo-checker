@@ -14,6 +14,7 @@ export class PackageJsonFile extends File {
     this.checkScripts()
     this.checkBuild()
     this.checkDependencies()
+    this.suggestStack()
   }
 
   checkProperties (): void {
@@ -72,6 +73,21 @@ export class PackageJsonFile extends File {
     if (this.data.ban_sass === undefined || this.data.ban_sass) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
     this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
     this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
+  }
+
+  suggestStack (): boolean {
+    if (!this.fileContent.includes('github.com/Shuunen')) return log.debug('does not suggests stack to everyone ^^')
+    if (this.data.package_name === 'shuunen-stack') return log.debug('does not suggests stack to himself ^^')
+    this.shouldContains('a shuunen-stack dep', /"shuunen-stack"/, 1)
+    this.shouldContains('a fixed stack-dependency', /"shuunen-stack": "latest"/, 0)
+    this.couldContains('no eslint dependency directly, use shuunen-stack', /"eslint"/, 0)
+    this.couldContains('no mocha dependency directly, use shuunen-stack', /"mocha"/, 0)
+    this.couldContains('no parcel dependency directly, use shuunen-stack', /"parcel-bundler"/, 0)
+    this.couldContains('no serve dependency directly, use shuunen-stack', /"serve": "\d/, 0)
+    this.couldContains('no ava dependency directly, use shuunen-stack', /"ava"/, 0)
+    this.couldContains('no c8 dependency directly, use shuunen-stack', /"c8"/, 0)
+    this.couldContains('no xo dependency directly, use shuunen-stack', /"xo"/, 0)
+    return true
   }
 
   regexForStringProp (name = ''): RegExp {
