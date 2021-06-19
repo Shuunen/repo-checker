@@ -60,11 +60,14 @@ export class File {
     }
     const data = this.data as unknown
     const fileContent = fillTemplate(template, data as Record<string, string>)
-    if (fileContent.length > 0) {
-      await outputFile(join(this.folderPath, fileName), fileContent)
-      log.fix('created', fileName)
-    } else log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
+    if (fileContent.length > 0) this.createFile(fileName, fileContent)
+    else log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
     return fileContent
+  }
+
+  async createFile (fileName: string, fileContent: string): Promise<void> {
+    await outputFile(join(this.folderPath, fileName), fileContent)
+    log.fix('created', fileName)
   }
 
   async checkIssues (): Promise<void> {

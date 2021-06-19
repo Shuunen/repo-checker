@@ -25,8 +25,9 @@ export class EsLintFile extends File {
   async checkEslintStack (): Promise<boolean> {
     log.debug('use shuunen-stack apparently')
     const filename = '.eslintrc.json'
-    const exists = await this.checkFileExists(filename)
-    if (!exists) return log.debug('skipping eslintrc checks')
+    const exists = await this.fileExists(filename)
+    if (!exists && !this.doFix) return this.test(false, 'missing eslint config file')
+    if (!exists) await this.createFile(filename, '{\n  "extends": "./node_modules/shuunen-stack/.eslintrc.json"\n}')
     await this.inspectFile(filename)
     if (this.data.package_name !== 'shuunen-stack') this.shouldContains('shuunen-stack rules extends', /extends": "\.\/node_modules\/shuunen-stack/, 1)
     return true
