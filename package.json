@@ -9,7 +9,7 @@
   "devDependencies": {
     "@types/fs-extra": "*",
     "@types/mocha": "*",
-    "@types/require-from-string": "1.2.0",
+    "@types/require-from-string": "1.2.1",
     "arg": "5.0.0",
     "colorette": "*",
     "fs-extra": "*",
