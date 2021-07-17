@@ -6,5 +6,6 @@
 *.tgz
 coverage
 dist
+meta.json
 node_modules
 sample.*

@@ -1,8 +1,11 @@
 .cache
 .DS_Store
 .env
+.nyc_output
 *.log
 *.tgz
+coverage
 dist
+meta.json
 node_modules
 sample.*
