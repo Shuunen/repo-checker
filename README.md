@@ -6,8 +6,8 @@
 
 [![LGTM Grade](https://img.shields.io/lgtm/grade/javascript/github/Shuunen/repo-checker.svg)](https://lgtm.com/projects/g/Shuunen/repo-checker/)
 [![Package Quality](https://npm.packagequality.com/shield/repo-check.svg)](https://packagequality.com/#?package=repo-check)
-[![Install size](https://packagephobia.com/badge?p=repo-check)](https://packagephobia.com/result?p=repo-check)
-[![Minified size](https://img.shields.io/bundlephobia/min/repo-check)](https://bundlephobia.com/package/repo-check)
+[![Publish size](https://img.shields.io/bundlephobia/min/repo-check?label=publish%20size)](https://bundlephobia.com/package/repo-check)
+[![Install size](https://badgen.net/packagephobia/install/repo-check)](https://packagephobia.com/result?p=repo-check)
 
 > Maintain order in repositories chaos
 
