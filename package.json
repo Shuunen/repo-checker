@@ -43,7 +43,7 @@
     "lint": "stack lint",
     "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run ci",
-    "start": "stack build --run",
+    "start": "ts-node src/index.ts",
     "test": "stack test",
     "test:watch": "stack test --watch",
     "update": "stack update"
