@@ -1,7 +1,7 @@
 import { deepStrictEqual as deepEqual, strictEqual as equal } from 'assert'
 import { ensureFileSync, removeSync } from 'fs-extra'
 import { dataDefaults, ProjectData } from '../src/constants'
-import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, fillTemplate, getFileSizeInKo, getGitFolders, isGitFolder, join, readFileInFolder } from '../src/utils'
+import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, getFileSizeInKo, getGitFolders, isGitFolder, join, readFileInFolder } from '../src/utils'
 
 // base project folder
 const testFolder = __dirname
@@ -94,22 +94,5 @@ describe('utils', function () {
       web_url: 'https://my-website.com',
     })
     deepEqual(tsData, expectedTsData)
-  })
-
-  it('template filling', function () {
-    const data = { key_to_happiness: 'Roo-doo-doot-da-doo' }
-    // string
-    equal(fillTemplate('Andy : {{ key_to_happiness }} !', data), `Andy : ${data.key_to_happiness} !`)
-    equal(fillTemplate('Hello {{ wtf_key }} !', data), '')
-    // object
-    const expected = `{
-  "Andy": "${data.key_to_happiness} !"
-}`
-    equal(fillTemplate({ Andy: '{{ key_to_happiness }} !' }, data), expected)
-    // without keys
-    const quote = 'Bears. Beets. Battlestar Galactica.'
-    equal(fillTemplate(quote), quote)
-    // empty template
-    equal(fillTemplate(''), '')
   })
 })

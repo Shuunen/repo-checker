@@ -8,5 +8,6 @@ module.exports = {
   'exclude': [
     'src/files/**/*',
     'tests/**',
+    '*.js',
   ],
 }

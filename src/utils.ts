@@ -92,20 +92,3 @@ export async function getFileSizeInKo (filePath: string): Promise<number> {
   log.debug('found that file', filePath, 'has a size of :', `${size}`, 'Ko')
   return size
 }
-
-export function fillTemplate (template: string | Record<string, unknown>, data: Record<string, string> = {}): string {
-  let string = (typeof template === 'object' ? JSON.stringify(template, undefined, 2) : template)
-  if (string.length === 0) return string
-  const tokens = string.match(/{{\s?([^\s}]+)\s?}}/g)
-  if (tokens === null || tokens.length === 0) return string
-  for (const token of tokens) {
-    const key = token.replace(/[\s{}]/g, '')
-    const value = data[key] ?? ''
-    if (value.length === 0) {
-      log.warn(`cannot fill variable "${key}"`)
-      return ''
-    }
-    string = string.replace(token, value)
-  }
-  return string
-}

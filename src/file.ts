@@ -1,7 +1,8 @@
 import { outputFile, pathExists } from 'fs-extra'
+import { fillTemplate } from 'shuutils'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
-import { fillTemplate, getFileSizeInKo, join, readFileInFolder } from './utils'
+import { getFileSizeInKo, join, readFileInFolder } from './utils'
 
 const MORE_THAN_ONE = 99
 
@@ -60,7 +61,7 @@ export class File {
     }
     const data = this.data as unknown
     const fileContent = fillTemplate(template, data as Record<string, string>)
-    if (fileContent.length > 0) this.createFile(fileName, fileContent)
+    if (!fileContent.includes('{{')) this.createFile(fileName, fileContent)
     else log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
     return fileContent
   }
