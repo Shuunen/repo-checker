@@ -20,12 +20,13 @@
     "url": "https://github.com/{{ user_id }}/{{ repo_id }}.git"
   },
   "scripts": {
-    "build": "stack build src/index.ts --out-dir public --format iife --minify",
+    "build": "stack build --minify",
     "ci": "run-s build lint test",
-    "dev": "npm run build -- --dev",
+    "dev": "stack build --run --watch",
     "lint": "stack lint",
     "postversion": "git push && git push --tags",
     "preversion": "npm run ci",
+    "start": "stack build --run",
     "test": "stack test",
     "test:watch": "stack test -- --watch",
     "update": "stack update"
