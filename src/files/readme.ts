@@ -67,9 +67,10 @@ export class ReadmeFile extends File {
     if (this.data.web_published && !this.fileContent.includes('shields.io/website/'))
       list.push(new Badge('Website up', this.data.web_url, `https://img.shields.io/website/https/${this.data.web_url.replace('https://', '')}.svg`, true, this.data.web_url !== dataDefaults.web_url))
     if (this.data.npm_package) list.push(
-      new Badge('Package Quality', `https://packagequality.com/#?package=${this.data.package_name}`, `https://npm.packagequality.com/shield/${this.data.package_name}.svg`),
       new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/dm/${this.data.package_name}.svg?color=informational`),
       new Badge('Npm version', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/v/${this.data.package_name}.svg?color=informational`),
+      new Badge('Minified size', `https://bundlephobia.com/package/${this.data.package_name}`, `https://img.shields.io/bundlephobia/min/${this.data.package_name}`),
+      new Badge('Install size', `https://packagephobia.com/result?p=${this.data.package_name}`, `https://packagephobia.com/badge?p=${this.data.package_name}`),
     )
     return list
   }
