@@ -1,6 +1,6 @@
 {
   "author": "Romain Racamier-Lafon <romain.racamier@gmail.com>",
-  "bin": "dist/cli.js",
+  "bin": "dist/index.js",
   "bugs": "https://github.com/Shuunen/repo-checker/issues",
   "config": {
     "logFile": "repo-check.log"
@@ -29,7 +29,7 @@
     "checker"
   ],
   "license": "GPL-3.0",
-  "main": "dist/cli.js",
+  "main": "dist/index.js",
   "name": "repo-check",
   "private": false,
   "repository": {
@@ -37,14 +37,13 @@
     "url": "https://github.com/Shuunen/repo-checker.git"
   },
   "scripts": {
-    "build": "stack build src/cli.ts --platform node --minify",
-    "check": "node .",
-    "ci": "run-s build lint check test",
-    "dev": "npm run build -- --dev",
+    "build": "stack build --platform node --minify",
+    "ci": "run-s build lint start test",
+    "dev": "stack build --run --watch",
     "lint": "stack lint",
     "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run ci",
-    "start": "npm run check",
+    "start": "stack build --run",
     "test": "stack test",
     "test:watch": "stack test --watch",
     "update": "stack update"
