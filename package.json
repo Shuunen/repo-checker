@@ -16,7 +16,7 @@
     "npm-run-all": "*",
     "require-from-string": "2.0.2",
     "shuunen-stack": "0.11.1",
-    "shuutils": "4.7.0"
+    "shuutils": "4.8.1"
   },
   "files": [
     "dist",
