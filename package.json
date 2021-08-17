@@ -10,7 +10,7 @@
     "@types/fs-extra": "*",
     "@types/mocha": "*",
     "@types/require-from-string": "1.2.1",
-    "arg": "5.0.0",
+    "arg": "5.0.1",
     "colorette": "*",
     "fs-extra": "*",
     "npm-run-all": "*",
