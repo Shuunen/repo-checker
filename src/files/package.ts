@@ -15,6 +15,7 @@ export class PackageJsonFile extends File {
     this.checkBuild()
     this.checkDependencies()
     this.suggestStack()
+    this.suggestAlternatives()
   }
 
   checkProperties (): void {
@@ -88,6 +89,10 @@ export class PackageJsonFile extends File {
     this.couldContains('no c8 dependency directly, use shuunen-stack', /"c8"/, 0)
     this.couldContains('no xo dependency directly, use shuunen-stack', /"xo"/, 0)
     return true
+  }
+
+  suggestAlternatives ():void {
+    this.couldContains('no fat color dependency, use nanocolors', /"(colorette|chalk|colors)"/, 0) // soon picocolors will be better
   }
 
   regexForStringProp (name = ''): RegExp {
