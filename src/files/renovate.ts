@@ -7,7 +7,7 @@ export class RenovateFile extends File {
     await this.inspectFile('renovate.json')
     this.shouldContains('an extends section', /"extends"/)
     this.shouldContains('a base config', /"config:base"/)
-    this.shouldContains('a dashboard setting to true or false', /"dependencyDashboard"/)
+    this.shouldContains('a dashboard setting to false', /"dependencyDashboard": false/)
     if (this.data.auto_merge === undefined || this.data.auto_merge) this.shouldContains('an auto merge config', /":automergeAll"/)
   }
 }
