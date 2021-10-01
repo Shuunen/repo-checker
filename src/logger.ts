@@ -1,5 +1,5 @@
-import { blueBright, green, redBright, yellowBright } from 'colorette'
 import { createWriteStream, WriteStream } from 'fs'
+import { blue, green, red, yellow } from 'nanocolors'
 import { config, name, version } from '../package.json'
 
 class Logger {
@@ -41,14 +41,14 @@ class Logger {
 
   error (...stuff: string[]): boolean {
     /* istanbul ignore if */
-    if (!this.noConsole) console.error(redBright([this.indent, '❌ ', ...stuff].join(' ')))
+    if (!this.noConsole) console.error(red([this.indent, '❌ ', ...stuff].join(' ')))
     this._write(this.indent, '❌', ...stuff)
     return false
   }
 
   warn (...stuff: string[]): boolean {
     /* istanbul ignore if */
-    if (!this.noConsole) console.log(yellowBright([this.indent, '⚠️ ', ...stuff].join(' ')))
+    if (!this.noConsole) console.log(yellow([this.indent, '⚠️ ', ...stuff].join(' ')))
     return this._write(this.indent, '⚠️', ...stuff)
   }
 
@@ -68,7 +68,7 @@ class Logger {
   fix (...stuff: string[]): boolean {
     stuff.push('(fixed)')
     /* istanbul ignore if */
-    if (!this.noConsole) console.log(blueBright([this.indent, '⬜', ...stuff].join(' ')))
+    if (!this.noConsole) console.log(blue([this.indent, '⬜', ...stuff].join(' ')))
     return this._write(this.indent, '⬜', ...stuff)
   }
 
