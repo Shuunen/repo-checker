@@ -93,6 +93,7 @@ export class PackageJsonFile extends File {
 
   suggestAlternatives ():void {
     this.couldContains('no fat color dependency, use nanocolors', /"(colorette|chalk|colors)"/, 0) // soon picocolors will be better
+    this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, 0)
   }
 
   regexForStringProp (name = ''): RegExp {

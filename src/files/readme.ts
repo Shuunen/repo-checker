@@ -1,4 +1,4 @@
-import { pathExists, readFile } from 'fs-extra'
+import { existsSync, readFileSync } from 'fs'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
@@ -103,8 +103,8 @@ export class ReadmeFile extends File {
       new Thanks('Netlify', 'https://netlify.com', 'awesome company that offers free CI & hosting for OSS projects', this.fileContent.includes('netlify')),
     ]
     const filePath = join(this.folderPath, 'package.json')
-    if (!await pathExists(filePath)) return list
-    const json = await readFile(filePath, 'utf-8')
+    if (!existsSync(filePath)) return list
+    const json = readFileSync(filePath, 'utf-8')
     if (json === '') return list
     const useStack = json.includes('"shuunen-stack"')
     list.push(

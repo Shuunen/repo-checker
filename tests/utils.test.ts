@@ -48,7 +48,7 @@ describe('utils', function () {
     const expectedAugmentedData = new ProjectData({
       auto_merge: true,
       is_module: false,
-      max_size_ko: 120,
+      max_size_ko: 40,
       npm_package: true,
       package_name: 'repo-check',
       repo_id: 'repo-checker',
