@@ -1,4 +1,4 @@
-import { outputFile, pathExists } from 'fs-extra'
+import { existsSync, writeFileSync } from 'fs'
 import { fillTemplate } from 'shuutils'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
@@ -30,12 +30,12 @@ export class File {
     if (!this.doFix) return log.debug('cant update file if fix not active')
     if (this.originalFileContent === this.fileContent) return log.debug('avoid file update when updated content is the same')
     if (this.nbFailed > 0 && !this.doForce) return log.debug('cant update file without force if some checks failed')
-    await outputFile(join(this.folderPath, this.fileName), this.fileContent)
+    writeFileSync(join(this.folderPath, this.fileName), this.fileContent)
     return log.debug('updated', this.fileName, 'with the new content')
   }
 
   async fileExists (fileName: string): Promise<boolean> {
-    return pathExists(join(this.folderPath, fileName))
+    return existsSync(join(this.folderPath, fileName))
   }
 
   async checkFileExists (fileName: string, justWarn = false): Promise<boolean> {
@@ -67,7 +67,7 @@ export class File {
   }
 
   async createFile (fileName: string, fileContent: string): Promise<void> {
-    await outputFile(join(this.folderPath, fileName), fileContent)
+    writeFileSync(join(this.folderPath, fileName), fileContent)
     log.fix('created', fileName)
   }
 

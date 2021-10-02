@@ -1,5 +1,4 @@
-import { readdir, stat } from 'fs'
-import { pathExists, readFile } from 'fs-extra'
+import { existsSync, readdir, readFileSync, stat } from 'fs'
 import path from 'path'
 import requireFromString from 'require-from-string'
 import { promisify } from 'util'
@@ -17,7 +16,7 @@ export const resolve = path.resolve
 export async function isGitFolder (folderPath: string): Promise<boolean> {
   const stat = await statAsync(folderPath)
   if (!stat.isDirectory()) return false
-  return pathExists(join(folderPath, '.git', 'config'))
+  return existsSync(join(folderPath, '.git', 'config'))
 }
 
 export async function getGitFolders (folderPath: string): Promise<string[]> {
@@ -70,7 +69,7 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
   let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
   data = await augmentDataWithPackageJson(folderPath, data)
-  const localDataExists = shouldLoadLocal ? await pathExists(join(folderPath, dataFileName)) : false
+  const localDataExists = shouldLoadLocal ? existsSync(join(folderPath, dataFileName)) : false
   if (localDataExists) { // local data overwrite the rest
     // should use something else than requireFromString
     const localData = requireFromString(await readFileInFolder(folderPath, dataFileName))
@@ -81,12 +80,12 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
 
 export async function readFileInFolder (folderPath: string, fileName: string): Promise<string> {
   const filePath = join(folderPath, fileName)
-  if (!await pathExists(filePath)) return ''
-  return readFile(filePath, 'utf8')
+  if (!existsSync(filePath)) return ''
+  return readFileSync(filePath, 'utf8')
 }
 
 export async function getFileSizeInKo (filePath: string): Promise<number> {
-  if (!await pathExists(filePath)) return 0
+  if (!existsSync(filePath)) return 0
   const stat = await statAsync(filePath)
   const size = Math.round(stat.size / 1024)
   log.debug('found that file', filePath, 'has a size of :', `${size}`, 'Ko')

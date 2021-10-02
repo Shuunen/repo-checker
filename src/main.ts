@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-process-exit */
 import arg from 'arg'
-import { outputFile, pathExists } from 'fs-extra'
+import { existsSync, writeFileSync } from 'fs'
 import requireFromString from 'require-from-string'
 import { version } from '../package.json'
 import { check } from './check'
@@ -10,15 +10,15 @@ import { join, readFileInFolder, resolve } from './utils'
 
 async function initDataFile (doForce = false): Promise<void> {
   log.line()
-  const fileExists = await pathExists(dataFileHomePath)
+  const fileExists = existsSync(dataFileHomePath)
   if (fileExists && !doForce) {
     log.warn('repo-checker data file', dataFileHomePath, 'already exists, use --force to overwrite it')
     return
   }
   const fileContent = await readFileInFolder(templatePath, dataFileName)
   const filePath = join(home, dataFileName)
-  await outputFile(filePath, fileContent)
-  if (await pathExists(filePath)) log.info('repo-checker data file successfully init, you should edit :', dataFileHomePath)
+  writeFileSync(filePath, fileContent)
+  if (existsSync(filePath)) log.info('repo-checker data file successfully init, you should edit :', dataFileHomePath)
   else log.error('repo-checker failed at creating this file :', dataFileHomePath)
 }
 
@@ -30,11 +30,11 @@ async function getData (argument = '', target = ''): Promise<ProjectData> {
 }
 
 async function getDataPath (argument = '', target = ''): Promise<string> {
-  const fileExists = await pathExists(join(repoCheckerPath, argument))
+  const fileExists = existsSync(join(repoCheckerPath, argument))
   if (argument.length > 0 && fileExists) return join(repoCheckerPath, argument)
   const dataFileTargetPath = join(target, dataFileName)
-  if (await pathExists(dataFileTargetPath)) return dataFileTargetPath
-  if (await pathExists(dataFileHomePath)) return dataFileHomePath
+  if (existsSync(dataFileTargetPath)) return dataFileTargetPath
+  if (existsSync(dataFileHomePath)) return dataFileHomePath
   log.warn('you should use --init to prepare a data file to enhance fix')
   log.info('because no custom data file has been found, default data will be used')
   return ''
