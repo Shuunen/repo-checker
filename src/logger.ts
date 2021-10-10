@@ -1,5 +1,5 @@
 import { createWriteStream, WriteStream } from 'fs'
-import { blue, green, red, yellow } from 'nanocolors'
+import { blue, green, red, yellow } from 'shuutils'
 import { config, name, version } from '../package.json'
 
 class Logger {
