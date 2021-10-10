@@ -69,7 +69,6 @@ export class PackageJsonFile extends File {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
     const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
     if (!hasDependencies && !hasDevelopmentDependencies) return
-    this.shouldContains('pinned dependencies', /":\s"\^[\d+.]+"/, 0)
     /* annoying deps */
     if (this.data.ban_sass === undefined || this.data.ban_sass) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
     this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
@@ -92,7 +91,7 @@ export class PackageJsonFile extends File {
   }
 
   suggestAlternatives ():void {
-    this.couldContains('no fat color dependency, use nanocolors', /"(colorette|chalk|colors)"/, 0) // soon picocolors will be better
+    this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(colorette|chalk|colors)"/, 0)
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, 0)
   }
 
