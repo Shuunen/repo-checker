@@ -14,7 +14,6 @@ export class PackageJsonFile extends File {
     this.checkScripts()
     this.checkBuild()
     this.checkDependencies()
-    this.suggestStack()
     this.suggestAlternatives()
   }
 
@@ -75,24 +74,10 @@ export class PackageJsonFile extends File {
     this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
   }
 
-  suggestStack (): boolean {
-    if (!this.fileContent.includes('github.com/Shuunen')) return log.debug('does not suggests stack to everyone ^^')
-    if (this.data.package_name === 'shuunen-stack') return log.debug('does not suggests stack to himself ^^')
-    this.shouldContains('a shuunen-stack dep', /"shuunen-stack"/, 1)
-    this.shouldContains('a fixed stack-dependency', /"shuunen-stack": "latest"/, 0)
-    this.couldContains('no eslint dependency directly, use shuunen-stack', /"eslint"/, 0)
-    this.couldContains('no mocha dependency directly, use shuunen-stack', /"mocha"/, 0)
-    this.couldContains('no parcel dependency directly, use shuunen-stack', /"parcel-bundler"/, 0)
-    this.couldContains('no serve dependency directly, use shuunen-stack', /"serve": "\d/, 0)
-    this.couldContains('no ava dependency directly, use shuunen-stack', /"ava"/, 0)
-    this.couldContains('no c8 dependency directly, use shuunen-stack', /"c8"/, 0)
-    this.couldContains('no xo dependency directly, use shuunen-stack', /"xo"/, 0)
-    return true
-  }
-
   suggestAlternatives ():void {
     this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(colorette|chalk|colors)"/, 0)
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, 0)
+    this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/, 0)
   }
 
   regexForStringProp (name = ''): RegExp {

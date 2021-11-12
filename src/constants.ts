@@ -19,7 +19,6 @@ export class ProjectData {
   package_name = ''
   quiet = false
   repo_id = 'a-great-repo'
-  use_stack = false
   use_typescript = false
   use_vue = false
   user_id = 'Shuunen'
