@@ -5,6 +5,6 @@ export class NvmrcFile extends File {
     const exists = await this.checkFileExists('.nvmrc')
     if (!exists) return
     await this.inspectFile('.nvmrc')
-    this.couldContains('a recent lts node version', /14\.\d+\.\d+/)
+    this.couldContains('a recent lts node version', /1(4|6)\.\d+\.\d+/)
   }
 }
