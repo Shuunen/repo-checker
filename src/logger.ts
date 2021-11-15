@@ -1,5 +1,5 @@
 import { createWriteStream, WriteStream } from 'fs'
-import { blue, green, red, yellow } from 'shuutils'
+import { bgBlue, black, blue, green, red, yellow } from 'shuutils'
 import { config, name, version } from '../package.json'
 
 class Logger {
@@ -66,7 +66,7 @@ class Logger {
   }
 
   fix (...stuff: string[]): boolean {
-    stuff.push('(fixed)')
+    stuff.push(bgBlue(black('[ fixed ]')))
     /* istanbul ignore if */
     if (!this.noConsole) console.log(blue([this.indent, '⬜', ...stuff].join(' ')))
     return this._write(this.indent, '⬜', ...stuff)

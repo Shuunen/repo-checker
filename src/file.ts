@@ -1,5 +1,5 @@
 import { existsSync, writeFileSync } from 'fs'
-import { fillTemplate } from 'shuutils'
+import { bgYellow, black, fillTemplate } from 'shuutils'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
 import { getFileSizeInKo, join, readFileInFolder } from './utils'
@@ -88,14 +88,14 @@ export class File {
   // eslint-disable-next-line max-params
   shouldContains (name: string, regex?: RegExp, nbMatchExpected = MORE_THAN_ONE, justWarn = false, helpMessage = '', canFix = false): boolean {
     if (regex === undefined) regex = new RegExp(name)
-    const contentExists = this.checkContains(regex, nbMatchExpected)
-    const fix = this.doFix && canFix && !contentExists
-    // console.table({ doFix: this.doFix, doForce: this.doForce, canFix, contentExists, fix })
-    name += (contentExists || fix) ? '' : ` -- ${helpMessage.length > 0 ? helpMessage : regex.toString().replace(/\\/g, '')}`
-    const message = `${this.fileName} ${contentExists ? 'has' : (justWarn ? 'could have' : 'does not have')} ${name} `
+    const ok = this.checkContains(regex, nbMatchExpected)
+    const fix = this.doFix && canFix && !ok
+    // console.table({ doFix: this.doFix, doForce: this.doForce, canFix, ok, fix })
+    name += (ok || fix) ? '' : ` -- ${helpMessage.length > 0 ? helpMessage : regex.toString().replace(/\\/g, '')} ${(canFix && !fix) ? bgYellow(black('[ fixable ]')) : ''}`
+    const message = `${this.fileName} ${ok ? 'has' : (justWarn ? 'could have' : 'does not have')} ${name} `
     if (fix) log.fix(message)
-    else this.test(contentExists, message, justWarn)
-    return contentExists
+    else this.test(ok, message, justWarn)
+    return ok
   }
 
   // eslint-disable-next-line max-params
