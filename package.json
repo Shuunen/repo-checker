@@ -56,8 +56,7 @@
     "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run ci",
     "start": "ts-node src/index.ts",
-    "test": "nyc mocha",
-    "update": "stack update"
+    "test": "nyc mocha"
   },
   "version": "1.20.0"
 }
