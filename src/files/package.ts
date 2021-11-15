@@ -75,6 +75,8 @@ export class PackageJsonFile extends File {
     if (this.data.ban_sass === undefined || this.data.ban_sass) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
     this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
     this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
+    const ok = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+/g, 0, 'patch precision is rarely useful', true)
+    if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)(\.\d+)/g, '$1')
   }
 
   suggestAlternatives (): void {
