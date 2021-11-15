@@ -28,6 +28,7 @@ describe('file', function () {
         await this.checkNoFileExists('zorglub.exe')
         equal(this.nbPassed, 3)
         await remove(missingFilepath)
+        this.shouldContains('two dots', /\./g, 2, true, 'hehe 2 dots', true)
       }
     }
     const instance = new MyFile(repoCheckerPath, new ProjectData({ quiet: true }))
