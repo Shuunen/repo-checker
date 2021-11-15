@@ -56,6 +56,9 @@ export class PackageJsonFile extends File {
     if (this.data.npm_package) this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags && npm publish",')
     else this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags",')
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/, 0)
+    if (!this.fileContent.includes('github.com/Shuunen')) return
+    this.couldContains('a repo-check script', /"check": "repo-check"/, 1, '(don\'t forget to npm i repo-check)')
+    this.couldContains('a ci script', /"ci": "/, 1, 'like "ci": "run-s build lint check test" (don\'t forget to npm i npm-run-all)')
   }
 
   checkBuild (): void {
@@ -74,7 +77,7 @@ export class PackageJsonFile extends File {
     this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
   }
 
-  suggestAlternatives ():void {
+  suggestAlternatives (): void {
     this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(colorette|chalk|colors)"/, 0)
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, 0)
     this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/, 0)
