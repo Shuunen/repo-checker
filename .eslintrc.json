@@ -8,7 +8,6 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:mocha/recommended",
-    "plugin:promise/recommended",
     "plugin:unicorn/recommended"
   ],
   "overrides": [
@@ -38,7 +37,6 @@
     "@typescript-eslint",
     "html",
     "mocha",
-    "promise",
     "unicorn"
   ],
   "rules": {

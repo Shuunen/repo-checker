@@ -17,7 +17,6 @@
     "eslint": "8",
     "eslint-plugin-html": "6",
     "eslint-plugin-mocha": "9",
-    "eslint-plugin-promise": "5",
     "eslint-plugin-unicorn": "38",
     "fs-extra": "10",
     "mocha": "9",
