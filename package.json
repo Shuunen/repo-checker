@@ -21,7 +21,6 @@
     "eslint-plugin-unicorn": "38",
     "fs-extra": "10",
     "npm-run-all": "4",
-    "repo-check": "^1.20",
     "require-from-string": "2",
     "shuutils": "^5.3",
     "tsm": "^2",
@@ -49,13 +48,12 @@
   },
   "scripts": {
     "build": "node bin/build.mjs",
-    "check": "repo-check",
-    "ci": "run-s build lint check test",
+    "ci": "run-s build lint start test",
     "dev": "npm run build -- --watch",
     "lint": "eslint --fix --ignore-path .gitignore --ext .js,.ts .",
     "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run ci",
-    "start": "npm run dev",
+    "start": "node .",
     "test": "c8 uvu -r tsm tests",
     "test:watch": "watchlist src tests -- npm test"
   },
