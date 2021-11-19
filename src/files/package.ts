@@ -57,7 +57,7 @@ export class PackageJsonFile extends File {
     else this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags",')
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/, 0)
     if (!this.fileContent.includes('github.com/Shuunen')) return
-    this.couldContains('a repo-check script', /"check": "repo-check"/, 1, '(don\'t forget to npm i repo-check)')
+    if (this.data.package_name !== 'repo-check') this.couldContains('a repo-check script', /"check": "repo-check"/, 1, '(don\'t forget to npm i repo-check)')
     this.couldContains('a ci script', /"ci": "/, 1, 'like "ci": "run-s build lint check test" (don\'t forget to npm i npm-run-all)')
   }
 

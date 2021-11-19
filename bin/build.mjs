@@ -3,7 +3,7 @@ import run from 'esbuild-plugin-run'
 
 (async () => {
   const watch = process.argv.includes('--watch')
-  const res = await build({
+  await build({
     bundle: true,
     entryPoints: ['./src/index.ts'],
     logLevel: 'info',

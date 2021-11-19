@@ -9,4 +9,5 @@ export * from './readme'
 export * from './renovate'
 export * from './repo-checker'
 export * from './travis'
+export * from './ts-config'
 // dam lint
