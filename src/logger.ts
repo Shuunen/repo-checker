@@ -34,26 +34,26 @@ class Logger {
   }
 
   info (...stuff: string[]): boolean {
-    /* istanbul ignore if */
+    /* c8 ignore next */
     if (!this.noConsole) console.log(this.indent, '⬜', ...stuff)
     return this._write(this.indent, '⬜', ...stuff)
   }
 
   error (...stuff: string[]): boolean {
-    /* istanbul ignore if */
+    /* c8 ignore next */
     if (!this.noConsole) console.error(red([this.indent, '❌ ', ...stuff].join(' ')))
     this._write(this.indent, '❌', ...stuff)
     return false
   }
 
   warn (...stuff: string[]): boolean {
-    /* istanbul ignore if */
+    /* c8 ignore next */
     if (!this.noConsole) console.log(yellow([this.indent, '⚠️ ', ...stuff].join(' ')))
     return this._write(this.indent, '⚠️', ...stuff)
   }
 
   success (outputToConsole: boolean, ...stuff: string[]): boolean {
-    /* istanbul ignore if */
+    /* c8 ignore next */
     if (outputToConsole && !this.noConsole) console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
     return this._write(this.indent, '✔️', ...stuff)
   }
@@ -67,13 +67,13 @@ class Logger {
 
   fix (...stuff: string[]): boolean {
     stuff.push(bgBlue(black('[ fixed ]')))
-    /* istanbul ignore if */
+    /* c8 ignore next */
     if (!this.noConsole) console.log(blue([this.indent, '⬜', ...stuff].join(' ')))
     return this._write(this.indent, '⬜', ...stuff)
   }
 
   line (): boolean {
-    /* istanbul ignore if */
+    /* c8 ignore next */
     if (!this.noConsole) console.log('')
     return this._write('')
   }

@@ -108,6 +108,7 @@ export class ReadmeFile extends File {
     if (json === '') return list
     const useStack = json.includes('"shuunen-stack"')
     list.push(
+      new Thanks('Arg', 'https://github.com/vercel/arg', 'unopinionated, no-frills CLI argument parser', json.includes('"arg":')),
       new Thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use', json.includes('ava"')),
       new Thanks('C8', 'https://github.com/bcoe/c8', 'simple & effective cli for code coverage', json.includes('c8"')),
       new Thanks('Chokidar', 'https://github.com/paulmillr/chokidar', 'minimal and efficient cross-platform file watching library', json.includes('"chokidar"') || useStack),
@@ -123,12 +124,15 @@ export class ReadmeFile extends File {
       new Thanks('Rollup', 'https://rollupjs.org', 'a fast & efficient js module bundler', json.includes('rollup"')),
       new Thanks('Servor', 'https://github.com/lukejacksonn/servor', 'dependency free dev server for single page app development', json.includes('"servor"') || useStack),
       new Thanks('Showdown', 'https://github.com/showdownjs/showdown', 'a Markdown to HTML converter written in Javascript', json.includes('"showdown"')),
+      new Thanks('Shuutils', 'https://github.com/Shuunen/shuutils', 'collection of pure JS utils', json.includes('"shuutils"')),
       new Thanks('TailwindCss', 'https://tailwindcss.com', 'awesome lib to produce maintainable style', json.includes('tailwindcss"')),
       new Thanks('Tsup', 'https://github.com/egoist/tsup', 'super fast js/ts bundler with no config, powered by esbuild <3', json.includes('tsup"')),
+      new Thanks('UvU', 'https://github.com/lukeed/uvu', 'extremely fast and lightweight test runner for Node.js and the browser', json.includes('"uvu":')),
       new Thanks('Vite', 'https://github.com/vitejs/vite', 'super fast frontend tooling', json.includes('vitejs') || json.includes('"vite"')),
       new Thanks('Vue', 'https://vuejs.org', 'when I need a front framework, this is the one I choose <3', json.includes('vue"')),
+      new Thanks('Watchlist', 'https://github.com/lukeed/watchlist', 'recursively watch a list of directories & run a command on any file system', json.includes('"watchlist"')),
       new Thanks('Xo', 'https://github.com/xojs/xo', 'super tool to find & fix problems', json.includes('"xo"')),
-      // new Thanks('name', 'url', 'desc', condition),
+      // new Thanks('name', 'url', 'desc', json.includes('"xxx":')),
     )
     return list
   }

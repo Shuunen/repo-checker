@@ -1,9 +1,8 @@
 import { join } from './utils'
 
-/* istanbul ignore next */
+/* c8 ignore next */
 export const home = process.env.HOME ?? '' // when does HOME is not defined ?
 export const dataFileName = 'repo-checker.config.js'
-/* istanbul ignore next */
 export const repoCheckerPath = join(__dirname, '..')
 export const templatePath = join(repoCheckerPath, 'templates')
 export const dataFileHomePath = join(home, dataFileName)
