@@ -76,8 +76,12 @@ export class PackageJsonFile extends File {
     this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
     this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
     this.shouldContains('no eslint-plugin-promise 5 dependency (require eslint 7)', /"eslint-plugin-promise": "\^?5/, 0)
+    /* useless precision in deps versions */
     const ok = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+/g, 0, 'patch precision is rarely useful', true)
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)(\.\d+)/g, '$1')
+    /* duplicates */
+    this.couldContains('one unit testing dependency (and only one)', /("mocha")|("uvu")/g, 1)
+    this.couldContains('one coverage dependency (and only one)', /("nyc")|("c8")/g, 1)
   }
 
   suggestAlternatives (): void {
