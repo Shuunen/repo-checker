@@ -67,6 +67,8 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 
 - [ ] if website : check static folder : should have "_headers" & "favicon.ico" and "manifest.json" files inside
 - [ ] compute build/dist/folder/public size for maxSize compliance
+- [ ] check `rel="noopener"` or `rel="noreferrer"` to any `<a` external links to improve performance and prevent security vulnerabilities
+- [ ] check `width` and `height` attributes to any `<img` or `<video` to ensures that the browser can allocate the correct amount of space in the document
 - [ ] add nbFixes to the report
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] get rid of eslint-disable : camelcase, no-await-in-loop
