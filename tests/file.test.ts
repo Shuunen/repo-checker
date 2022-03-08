@@ -92,7 +92,7 @@ test('validator with fix & force, update a problematic file on the go', async fu
   const { nbPassed, nbFailed } = instance
   equal(nbPassed, 0)
   equal(nbFailed, 0)
-  equal(await readFile(existingFilepath, 'utf-8'), fakeContent)
+  equal(await readFile(existingFilepath, 'utf8'), fakeContent)
   await outputFile(existingFilepath, originalContent) // restore the file
 })
 
@@ -109,7 +109,7 @@ test('validator without force cannot fix a problematic file on the go', async fu
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ quiet: true }), true, false)
   await instance.start()
   await instance.end()
-  equal(await readFile(existingFilepath, 'utf-8'), originalContent)
+  equal(await readFile(existingFilepath, 'utf8'), originalContent)
 })
 
 test('validator with fix cannot fix if the template require data that is missing', async function () {
