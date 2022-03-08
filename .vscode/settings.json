@@ -1,8 +1,13 @@
 {
-    "cSpell.words": [
-        "automerge",
-        "colorette",
-        "repo",
-        "simplegit"
-    ]
+  "cSpell.words": [
+    "automerge",
+    "colorette",
+    "repo",
+    "simplegit"
+  ],
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#232F3A",
+    "titleBar.activeBackground": "#304251",
+    "titleBar.activeForeground": "#F9FAFB"
+  }
 }
