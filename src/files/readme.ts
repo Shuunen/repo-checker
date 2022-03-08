@@ -104,7 +104,7 @@ export class ReadmeFile extends File {
     ]
     const filePath = join(this.folderPath, 'package.json')
     if (!existsSync(filePath)) return list
-    const json = readFileSync(filePath, 'utf-8')
+    const json = readFileSync(filePath, 'utf8')
     if (json === '') return list
     const useStack = json.includes('"shuunen-stack"')
     list.push(
