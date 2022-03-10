@@ -20,7 +20,6 @@
     "eslint-plugin-html": "6",
     "eslint-plugin-unicorn": "41",
     "fs-extra": "10",
-    "npm-run-all": "4",
     "require-from-string": "2",
     "shuutils": "^5.4",
     "tsm": "2.2",
@@ -48,7 +47,7 @@
   },
   "scripts": {
     "build": "node bin/build.mjs",
-    "ci": "run-s build lint start test",
+    "ci": "npm run build && npm run lint && npm start && npm test",
     "dev": "npm run build -- --watch",
     "lint": "tsc --noEmit && eslint --fix --ignore-path .gitignore --ext .js,.ts .",
     "postversion": "git push && git push --tags && npm run build && npm publish",

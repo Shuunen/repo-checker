@@ -116,7 +116,6 @@ export class ReadmeFile extends File {
       new Thanks('Esbuild', 'https://github.com/evanw/esbuild', 'an extremely fast JavaScript bundler and minifier', json.includes('esbuild') || useStack),
       new Thanks('Eslint', 'https://eslint.org', 'super tool to find & fix problems', json.includes('eslint"') || useStack),
       new Thanks('Mocha', 'https://github.com/mochajs/mocha', 'great test runner easy to setup & use', json.includes('mocha"') || useStack),
-      new Thanks('Npm-run-all', 'https://github.com/mysticatea/npm-run-all', 'to keep my npm scripts clean & readable', json.includes('npm-run-all"') || useStack),
       new Thanks('Nuxt', 'https://github.com/nuxt/nuxt.js', 'minimalistic framework for server-rendered Vue.js applications', json.includes('"nuxt"')),
       new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'simple & effective cli for code coverage', json.includes('nyc"') || useStack),
       new Thanks('Reef', 'https://github.com/cferdinandi/reef', 'a lightweight library for creating reactive, state-based components and UI', json.includes('reefjs"')),

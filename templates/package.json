@@ -2,10 +2,6 @@
   "author": "{{ user_name }} <{{ user_mail }}>",
   "bugs": "https://github.com/{{ user_id }}/{{ repo_id }}/issues",
   "description": "",
-  "devDependencies": {
-    "npm-run-all": "*",
-    "shuunen-stack": "latest"
-  },
   "files": [
     "public",
     "src"
@@ -20,12 +16,15 @@
     "url": "https://github.com/{{ user_id }}/{{ repo_id }}.git"
   },
   "scripts": {
-    "build": "stack build --minify",
-    "ci": "run-s build lint test",
-    "dev": "stack build --run --watch",
-    "lint": "stack lint",
-    "postversion": "git push && git push --tags",
+    "build": "esbuild src/index.ts --outdir=public --bundle --target=es2020 --define:global=window",
+    "check": "repo-check",
+    "ci": "npm run build && npm run lint && npm start && npm test",
+    "dev": "npm run build -- --watch",
+    "lint": "tsc --noEmit && eslint --fix --ignore-path .gitignore --ext .js,.ts . && npm run check",
+    "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run ci",
+    "start": "node .",
+    "test": "c8 uvu -r tsm tests",
     "test:watch": "watchlist src tests -eager -- npm test"
   },
   "version": "0.0.1"

@@ -60,7 +60,7 @@ export class PackageJsonFile extends File {
     if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/, 1, 'like watchlist src tests -eager -- npm run test')
     if (!this.fileContent.includes('github.com/Shuunen')) return
     if (this.data.package_name !== 'repo-check') this.couldContains('a repo-check script', /"check": "repo-check"/, 1, '(don\'t forget to npm i repo-check)')
-    this.couldContains('a ci script', /"ci": "/, 1, 'like "ci": "run-s build lint check test" (don\'t forget to npm i npm-run-all)')
+    this.couldContains('a ci script', /"ci": "/, 1, 'like "ci": "npm run build && npm run lint ...')
   }
 
   checkBuild (): void {
@@ -90,6 +90,7 @@ export class PackageJsonFile extends File {
     this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(colorette|chalk|colors)"/, 0)
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, 0)
     this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/, 0)
+    this.couldContains('no fat task runner, use npm run xyz && npm run abc', /"npm-run-all"/, 0)
   }
 
   regexForStringProp (name = ''): RegExp {
