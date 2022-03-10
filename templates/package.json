@@ -26,10 +26,7 @@
     "lint": "stack lint",
     "postversion": "git push && git push --tags",
     "preversion": "npm run ci",
-    "start": "stack build --run",
-    "test": "stack test",
-    "test:watch": "stack test -- --watch",
-    "update": "stack update"
+    "test:watch": "watchlist src tests -eager -- npm test"
   },
   "version": "0.0.1"
 }

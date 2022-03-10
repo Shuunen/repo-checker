@@ -55,7 +55,7 @@
     "preversion": "npm run ci",
     "start": "node .",
     "test": "c8 uvu -r tsm tests",
-    "test:watch": "watchlist src tests -- npm test"
+    "test:watch": "watchlist src tests -eager -- npm test"
   },
   "version": "1.22.0"
 }
