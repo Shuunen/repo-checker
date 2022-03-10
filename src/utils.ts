@@ -1,3 +1,4 @@
+/* c8 ignore next */
 import { existsSync, readdir, readFileSync, stat } from 'fs'
 import path from 'path'
 import requireFromString from 'require-from-string'
