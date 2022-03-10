@@ -15,7 +15,6 @@
     "arg": "5",
     "c8": "7",
     "esbuild": "^0.14",
-    "esbuild-plugin-run": "^0.3",
     "eslint": "8.10",
     "eslint-plugin-html": "6",
     "eslint-plugin-unicorn": "41",
@@ -24,6 +23,7 @@
     "shuutils": "^5.4",
     "tsm": "2.2",
     "typescript": "4.6",
+    "typescript-run": "0",
     "uvu": "0.5",
     "watchlist": "0.3"
   },
@@ -46,13 +46,13 @@
     "url": "https://github.com/Shuunen/repo-checker.git"
   },
   "scripts": {
-    "build": "node bin/build.mjs",
+    "build": "esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs",
     "ci": "npm run build && npm run lint && npm start && npm test",
-    "dev": "npm run build -- --watch",
+    "dev": "ts-run src -w src",
     "lint": "tsc --noEmit && eslint --fix --ignore-path .gitignore --ext .js,.ts .",
     "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run ci",
-    "start": "node .",
+    "start": "ts-run src",
     "test": "c8 uvu -r tsm tests",
     "test:watch": "watchlist src tests -eager -- npm test"
   },
