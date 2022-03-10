@@ -1,11 +1,11 @@
-import { join } from './utils'
+/* c8 ignore next 3 */
+import path from 'path'
 
-/* c8 ignore next */
 export const home = process.env.HOME ?? '' // when does HOME is not defined ?
 export const dataFileName = 'repo-checker.config.js'
-export const repoCheckerPath = join(__dirname, '..')
-export const templatePath = join(repoCheckerPath, 'templates')
-export const dataFileHomePath = join(home, dataFileName)
+export const repoCheckerPath = path.join(__dirname, '..')
+export const templatePath = path.join(repoCheckerPath, 'templates')
+export const dataFileHomePath = path.join(home, dataFileName)
 
 export class ProjectData {
   auto_merge = true
