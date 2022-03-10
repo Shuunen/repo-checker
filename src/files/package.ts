@@ -5,8 +5,6 @@ import { log } from '../logger'
 export class PackageJsonFile extends File {
   async start (): Promise<void> {
     const exists = await this.checkFileExists('package.json')
-    // await this.checkFileExists('package-lock.json')
-    await this.checkNoFileExists('yarn.lock')
     if (!exists) return
     await this.inspectFile('package.json')
     await this.checkMainFile()
@@ -57,6 +55,7 @@ export class PackageJsonFile extends File {
     else this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags",')
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/, 0)
     if (this.data.use_typescript) this.shouldContains('a typescript build or check', /(tsc)|(tsc --noEmit)/)
+    if (this.data.use_typescript) this.couldContains('a typescript runner', /"typescript-run"/, 1, 'like "dev": "ts-run src --watch" or "ts-run src -w src another-folder"')
     if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/, 1, 'like watchlist src tests -eager -- npm run test')
     if (!this.fileContent.includes('github.com/Shuunen')) return
     if (this.data.package_name !== 'repo-check') this.couldContains('a repo-check script', /"check": "repo-check"/, 1, '(don\'t forget to npm i repo-check)')
@@ -91,6 +90,7 @@ export class PackageJsonFile extends File {
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, 0)
     this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/, 0)
     this.couldContains('no fat task runner, use npm run xyz && npm run abc', /"npm-run-all"/, 0)
+    if (this.fileContent.includes('esbuild-plugin-run')) this.couldContains('not fat ts runner, use "typescript-run" like "dev": "ts-run src --watch" or "ts-run src -w src another-folder"')
   }
 
   regexForStringProp (name = ''): RegExp {
