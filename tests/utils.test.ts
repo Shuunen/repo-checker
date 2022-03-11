@@ -1,8 +1,8 @@
-import { deepStrictEqual as deepEqual, strictEqual as equal } from 'assert'
-import { ensureFileSync, removeSync } from 'fs-extra'
+import { mkdirSync, rmSync, writeFileSync } from 'fs'
 import { test } from 'uvu'
+import { equal } from 'uvu/assert'
 import { dataDefaults, ProjectData } from '../src/constants'
-import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, getFileSizeInKo, getGitFolders, isGitFolder, join, readFileInFolder } from '../src/utils'
+import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findStringInFolder, getFileSizeInKo, getGitFolders, isGitFolder, join, readFileInFolder } from '../src/utils'
 
 // base project folder
 const testFolder = __dirname
@@ -14,12 +14,16 @@ test('git folder detection', async function () {
 })
 
 test('git folders listing', async function () {
-  deepEqual(await getGitFolders(rootFolder), [rootFolder])
+  equal(await getGitFolders(rootFolder), [rootFolder])
   const projects = ['anotherProject', 'sampleProject']
-  projects.map(name => ensureFileSync(join(testFolder, name, '.git', 'config')))
+  projects.forEach(name => {
+    const folderPath = join(testFolder, name, '.git')
+    mkdirSync(folderPath, { recursive: true })
+    writeFileSync(join(folderPath, 'config'), '', 'utf8')
+  })
   const folders = await getGitFolders(testFolder)
   equal(folders.length >= 2, true)
-  projects.map(name => removeSync(join(testFolder, name)))
+  projects.forEach(name => rmSync(join(testFolder, name), { recursive: true }))
 })
 
 test('file creation, detection, read', async function () {
@@ -40,7 +44,7 @@ test('data augment with git : repo-check & no-local', async function () {
     repo_id: 'repo-checker',
   })
   const dataFromGit = await augmentDataWithGit(rootFolder, dataDefaults)
-  deepEqual(dataFromGit, expectedDataFromGit)
+  equal(dataFromGit, expectedDataFromGit)
 })
 
 test('data augment : repo-check & local', async function () {
@@ -54,12 +58,12 @@ test('data augment : repo-check & local', async function () {
     use_typescript: true,
   })
   const augmentedData = await augmentData(rootFolder, dataDefaults, true)
-  deepEqual(augmentedData, expectedAugmentedData)
+  equal(augmentedData, expectedAugmentedData)
 })
 
 test('data augment : test folder', async function () {
   const augmentedDataFromTestFolder = await augmentData(testFolder, dataDefaults)
-  deepEqual(augmentedDataFromTestFolder, dataDefaults)
+  equal(augmentedDataFromTestFolder, dataDefaults)
 })
 
 test('data augment with package', async function () {
@@ -70,7 +74,7 @@ test('data augment with package', async function () {
     package_name: 'repo-check',
     use_typescript: true,
   })
-  deepEqual(data, expectedData)
+  equal(data, expectedData)
   const vueData = await augmentDataWithPackageJson(join(testFolder, 'data', 'vueProject'), dataDefaults)
   const expectedVueData = new ProjectData({
     package_name: 'name',
@@ -79,7 +83,7 @@ test('data augment with package', async function () {
     user_id: 'Kevin_Malone',
     web_published: true,
   })
-  deepEqual(vueData, expectedVueData)
+  equal(vueData, expectedVueData)
   const tsData = await augmentData(join(testFolder, 'data', 'tsProject'), dataDefaults, true)
   const expectedTsData = new ProjectData({
     ban_sass: false,
@@ -90,7 +94,14 @@ test('data augment with package', async function () {
     user_name: 'Dwight Schrute',
     web_url: 'https://my-website.com',
   })
-  deepEqual(tsData, expectedTsData)
+  equal(tsData, expectedTsData)
+})
+
+test('find string in folder', async function (){
+  const folder = join(testFolder, 'data', 'tsProject')
+  const string = 'Dwight Schrute'
+  const result = await findStringInFolder(folder, string)
+  equal(result[0], 'repo-checker.config.js')
 })
 
 test.run()
