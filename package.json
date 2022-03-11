@@ -7,7 +7,6 @@
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {
-    "@types/fs-extra": "9",
     "@types/node": "16",
     "@types/require-from-string": "^1.2",
     "@typescript-eslint/eslint-plugin": "5.14",
@@ -18,7 +17,6 @@
     "eslint": "8.10",
     "eslint-plugin-html": "6",
     "eslint-plugin-unicorn": "41",
-    "fs-extra": "10",
     "require-from-string": "2",
     "shuutils": "^5.4",
     "tsm": "2.2",

@@ -1,5 +1,5 @@
-import { strictEqual as equal } from 'assert'
 import { test } from 'uvu'
+import { equal } from 'uvu/assert'
 import { check, report } from '../src/check'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 

@@ -81,6 +81,8 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
 export async function readFileInFolder (folderPath: string, fileName: string): Promise<string> {
   const filePath = join(folderPath, fileName)
   if (!existsSync(filePath)) return ''
+  const stat = await statAsync(filePath)
+  if (stat.isDirectory()) return ''
   return readFileSync(filePath, 'utf8')
 }
 
@@ -90,4 +92,14 @@ export async function getFileSizeInKo (filePath: string): Promise<number> {
   const size = Math.round(stat.size / 1024)
   log.debug('found that file', filePath, 'has a size of :', `${size}`, 'Ko')
   return size
+}
+
+export async function findStringInFolder (folderPath: string, pattern: string): Promise<string[]> {
+  const filePaths = await readDirectoryAsync(folderPath)
+  const matches = []
+  for (const filePath of filePaths) {
+    const content = await readFileInFolder(folderPath, filePath)
+    if (content.includes(pattern)) matches.push(filePath)
+  }
+  return matches
 }

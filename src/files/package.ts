@@ -1,6 +1,8 @@
+import { ellipsis } from 'shuutils'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
+import { findStringInFolder, join } from '../utils'
 
 export class PackageJsonFile extends File {
   async start (): Promise<void> {
@@ -8,14 +10,14 @@ export class PackageJsonFile extends File {
     if (!exists) return
     await this.inspectFile('package.json')
     await this.checkMainFile()
-    this.checkProperties()
-    this.checkScripts()
-    this.checkBuild()
-    this.checkDependencies()
-    this.suggestAlternatives()
+    await this.checkProperties()
+    await this.checkScripts()
+    await this.checkBuild()
+    await this.checkDependencies()
+    await this.suggestAlternatives()
   }
 
-  checkProperties (): void {
+  async checkProperties () {
     this.couldContains('a "bugs" property', this.regexForStringProp('bugs'))
     this.couldContains('a "description" property', this.regexForStringProp('description'))
     this.couldContains('a "files" property', this.regexForArrayProp('files'))
@@ -48,7 +50,7 @@ export class PackageJsonFile extends File {
     this.test(sizeOk, `main file size (${sizeKo}Ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
   }
 
-  checkScripts (): void {
+  async checkScripts () {
     this.shouldContains('a script section', this.regexForObjectProp('scripts'))
     this.couldContains('a pre-script for version automation', /"preversion": "/, 1, 'like : "preversion": "npm run ci",')
     if (this.data.npm_package) this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags && npm publish",')
@@ -62,13 +64,13 @@ export class PackageJsonFile extends File {
     this.couldContains('a ci script', /"ci": "/, 1, 'like "ci": "npm run build && npm run lint ...')
   }
 
-  checkBuild (): void {
+  async checkBuild () {
     if (!this.fileContent.includes('"build":')) return
     if (this.data.dev_deps_only) this.shouldContains('only dev dependencies for build-able projects', this.regexForObjectProp('dependencies'), 0)
     if (this.fileContent.includes('parcel build')) this.shouldContains('a parcel build with report enabled', /"parcel build.*--detailed-report",/)
   }
 
-  checkDependencies (): void {
+  async checkDependencies () {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
     const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
     if (!hasDependencies && !hasDevelopmentDependencies) return
@@ -83,9 +85,16 @@ export class PackageJsonFile extends File {
     /* duplicates */
     this.couldContains('one unit testing dependency (and only one)', /("mocha")|("uvu")/g, 1)
     this.couldContains('one coverage dependency (and only one)', /("nyc")|("c8")/g, 1)
+    /* usages */
+    if (this.fileContent.includes('"uvu"')) await this.checkUvuUsages()
   }
 
-  suggestAlternatives (): void {
+  async checkUvuUsages () {
+    const badAssert = await findStringInFolder(join(this.folderPath, 'tests'), 'from \'assert\'')
+    this.test(badAssert.length === 0, `assert dependency used in "${ellipsis(badAssert.join(','), 50)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
+  }
+
+  async suggestAlternatives () {
     this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(colorette|chalk|colors)"/, 0)
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, 0)
     this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/, 0)

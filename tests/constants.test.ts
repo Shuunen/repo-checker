@@ -1,5 +1,5 @@
-import { strictEqual as equal } from 'assert'
 import { test } from 'uvu'
+import { equal } from 'uvu/assert'
 import { home, ProjectData, repoCheckerPath } from '../src/constants'
 
 test('home (process.env.HOME) is defined', function () {

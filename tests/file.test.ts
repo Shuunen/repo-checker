@@ -1,6 +1,6 @@
-import { strictEqual as equal } from 'assert'
-import { outputFile, readFile, remove } from 'fs-extra'
+import { readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { test } from 'uvu'
+import { equal } from 'uvu/assert'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 import { File } from '../src/file'
 import { join } from '../src/utils'
@@ -14,7 +14,7 @@ const fakeContent = 'zorglub'
 test('simple validator', async function () {
   class MyFile extends File {
     async start (): Promise<void> {
-      await outputFile(missingFilepath, 'Foobar content')
+      writeFileSync(missingFilepath, 'Foobar content')
       await this.inspectFile(missingFilename)
       equal(this.nbPassed, 0)
       this.shouldContains('Foobar')
@@ -27,7 +27,7 @@ test('simple validator', async function () {
       equal(this.nbPassed, 2)
       await this.checkNoFileExists('zorglub.exe')
       equal(this.nbPassed, 3)
-      await remove(missingFilepath)
+      unlinkSync(missingFilepath)
       this.shouldContains('two dots', /\./g, 2, true, 'hehe 2 dots', true)
     }
   }
@@ -43,7 +43,7 @@ test('validator with fix', async function () {
   class MyFileFix extends File {
     async start (): Promise<void> {
       await this.checkFileExists(existingFilename)
-      await remove(existingFilepath)
+      unlinkSync(existingFilepath)
       await this.checkFileExists(existingFilename)
       await this.checkFileExists('missing-template.csv')
       const sizeKo = await this.getFileSizeInKo(existingFilename)
@@ -92,8 +92,8 @@ test('validator with fix & force, update a problematic file on the go', async fu
   const { nbPassed, nbFailed } = instance
   equal(nbPassed, 0)
   equal(nbFailed, 0)
-  equal(await readFile(existingFilepath, 'utf8'), fakeContent)
-  await outputFile(existingFilepath, originalContent) // restore the file
+  equal(readFileSync(existingFilepath, 'utf8'), fakeContent)
+  writeFileSync(existingFilepath, originalContent) // restore the file
 })
 
 test('validator without force cannot fix a problematic file on the go', async function () {
@@ -109,7 +109,7 @@ test('validator without force cannot fix a problematic file on the go', async fu
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ quiet: true }), true, false)
   await instance.start()
   await instance.end()
-  equal(await readFile(existingFilepath, 'utf8'), originalContent)
+  equal(readFileSync(existingFilepath, 'utf8'), originalContent)
 })
 
 test('validator with fix cannot fix if the template require data that is missing', async function () {
