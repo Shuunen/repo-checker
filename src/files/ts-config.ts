@@ -13,6 +13,7 @@ export class TsConfigFile extends File {
     let ok = this.couldContains('an include section', /"include"/, 1, undefined, true)
     if (!ok && this.doFix) content.include = ['src']
     ok = this.couldContains('a esModuleInterop compiler option', /"esModuleInterop": true,/, 1, undefined, true)
+    if (this.doFix && !content.compilerOptions) content.compilerOptions = {}
     if (!ok && this.doFix) content.compilerOptions.esModuleInterop = true
     ok = this.couldContains('a forceConsistentCasingInFileNames compiler option', /"forceConsistentCasingInFileNames": true,/, 1, undefined, true)
     if (!ok && this.doFix) content.compilerOptions.forceConsistentCasingInFileNames = true

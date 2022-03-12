@@ -12,7 +12,7 @@
   "overrides": [
     {
       "files": [
-        "tests/*"
+        "tests/**/*"
       ],
       "rules": {
         "func-names": "off"

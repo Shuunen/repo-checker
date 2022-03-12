@@ -1,5 +1,6 @@
 import { File } from '../file'
 
+/* c8 ignore start */
 export class NvmrcFile extends File {
   async start (): Promise<void> {
     const exists = await this.checkFileExists('.nvmrc')
@@ -8,3 +9,4 @@ export class NvmrcFile extends File {
     this.couldContains('a recent lts node version', /1(4|6)\.\d+\.\d+/)
   }
 }
+/* c8 ignore stop */

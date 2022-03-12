@@ -1,5 +1,6 @@
 import { File } from '../file'
 
+/* c8 ignore start */
 export class GithubWorkflowFile extends File {
   async start (): Promise<void> {
     const filePath = '.github/workflows/ci.yml'
@@ -14,3 +15,4 @@ export class GithubWorkflowFile extends File {
     this.test(hasTests, 'at least one test step in ci workflow')
   }
 }
+/* c8 ignore stop */

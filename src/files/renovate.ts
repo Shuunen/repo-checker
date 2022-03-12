@@ -1,5 +1,6 @@
 import { File } from '../file'
 
+/* c8 ignore start */
 export class RenovateFile extends File {
   async start (): Promise<void> {
     const exists = await this.checkFileExists('renovate.json', true)
@@ -13,3 +14,4 @@ export class RenovateFile extends File {
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace('":automergeAll"', '":automergeAll",\n    ":preserveSemverRanges"')
   }
 }
+/* c8 ignore stop */

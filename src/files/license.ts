@@ -1,5 +1,6 @@
 import { File } from '../file'
 
+/* c8 ignore start */
 export class LicenseFile extends File {
   async start (): Promise<void> {
     const exists = await this.checkFileExists('LICENSE')
@@ -14,3 +15,4 @@ export class LicenseFile extends File {
     if (license === 'MIT') this.shouldContains('a MIT title', /MIT License/)
   }
 }
+/* c8 ignore stop */

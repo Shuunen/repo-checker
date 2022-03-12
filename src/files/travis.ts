@@ -1,5 +1,6 @@
 import { File } from '../file'
 
+/* c8 ignore start */
 export class TravisFile extends File {
   async start (): Promise<void> {
     const exists = await this.fileExists('.travis.yml')
@@ -10,3 +11,4 @@ export class TravisFile extends File {
     this.shouldContains('a "run ci" task', /npm run ci/)
   }
 }
+/* c8 ignore stop */

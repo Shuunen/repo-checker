@@ -3,7 +3,7 @@
   "check-coverage": true,
   "functions": 90,
   "include": [
-    "src/*.ts"
+    "src/**/*.ts"
   ],
   "lines": 90,
   "reporter": [

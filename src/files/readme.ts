@@ -20,6 +20,7 @@ class Badge {
   }
 }
 
+/* c8 ignore start */
 export class ReadmeFile extends File {
   async start (): Promise<void> {
     const exists = await this.checkFileExists('README.md')
@@ -146,3 +147,4 @@ export class ReadmeFile extends File {
     }
   }
 }
+/* c8 ignore stop */

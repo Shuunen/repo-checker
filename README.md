@@ -73,8 +73,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] add nbFixes to the report
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] get rid of eslint-disable : camelcase, no-await-in-loop
-- [ ] try to defer console.log to improve repo-checker execution
-- [ ] extends unit tests to src/files (remove nyc.config.js current exclusion)
+- [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
 
 ## Benchmarks
 

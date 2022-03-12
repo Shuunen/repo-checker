@@ -4,6 +4,7 @@ import { File } from '../file'
 import { log } from '../logger'
 import { findStringInFolder, join } from '../utils'
 
+/* c8 ignore start */
 export class PackageJsonFile extends File {
   async start (): Promise<void> {
     const exists = await this.checkFileExists('package.json')
@@ -122,3 +123,4 @@ export class PackageJsonFile extends File {
     return new RegExp(`"${name}":\\s(?:false|true),\n`)
   }
 }
+/* c8 ignore stop */
