@@ -1,9 +1,11 @@
+import { existsSync, unlinkSync } from 'fs'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
+import { config } from '../package.json'
 import { log } from '../src/logger'
 
 test('log correctly', function () {
-  log.noConsole = true
+  log.consoleLog = false
   equal(log.start(), true)
   equal(log.start(true), true)
   equal(log.error('damn-err'), false)
@@ -19,6 +21,19 @@ test('log correctly', function () {
 
 test('can set indentation level', function () {
   equal(log.setIndentLevel(2), 2)
+})
+
+test('can prevent log file generation', function (){
+  log.fileLog = false
+  log.consoleLog = false
+  unlinkSync(config.logFile)
+  equal(log.start(), false)
+  equal(log.write('damn-write'), false)
+  equal(log.error('damn-err'), false)
+  equal(log.warn('damn-warn'), false)
+  equal(log.success(false, 'damn-success not in console'), false)
+  equal(log.fix('damn-fix'), false)
+  equal(existsSync(config.logFile), false)
 })
 
 test.run()

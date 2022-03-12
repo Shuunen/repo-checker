@@ -19,7 +19,8 @@ export async function check (folderPath: string, data: ProjectData, doFix = fals
   const folders = await getGitFolders(folderPath)
   let nbPassed = 0
   let nbFailed = 0
-  log.noConsole = data.quiet
+  log.consoleLog = !data.quiet
+  log.fileLog = !data.noReport
   /* eslint-disable no-await-in-loop */
   for (const folder of folders) {
     log.info('Checking folder :', folder)

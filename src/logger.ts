@@ -3,9 +3,10 @@ import { bgBlue, black, blue, green, red, yellow } from 'shuutils'
 import { config, name, version } from '../package.json'
 
 class Logger {
-  noConsole = false
+  consoleLog = true
+  fileLog = true
   indentLevel = 0
-  file: WriteStream
+  file?: WriteStream
 
   get indent (): string {
     return '    '.repeat(this.indentLevel)
@@ -15,11 +16,11 @@ class Logger {
     return new Date().toISOString().replace('T', ' ').split('.')[0]
   }
 
-  constructor (filePath: string) {
-    this.file = createWriteStream(filePath, { flags: 'a' })
-  }
+  constructor (private filePath: string) {}
 
-  _write (...stuff: string[]): boolean {
+  write (...stuff: string[]): boolean {
+    if (!this.fileLog) return false
+    if (this.file === undefined) this.file = createWriteStream(this.filePath, { flags: 'a' })
     this.file.write(stuff.join(' ') + '\n')
     return true
   }
@@ -30,32 +31,36 @@ class Logger {
   }
 
   debug (...stuff: string[]): boolean {
-    return this._write(this.indent, '🔹', ...stuff)
+    if (this.fileLog) return this.write(this.indent, '🔹', ...stuff)
+    return false
   }
 
   info (...stuff: string[]): boolean {
     /* c8 ignore next */
-    if (!this.noConsole) console.log(this.indent, '⬜', ...stuff)
-    return this._write(this.indent, '⬜', ...stuff)
+    if (this.consoleLog) console.log(this.indent, '⬜', ...stuff)
+    if (this.fileLog) return this.write(this.indent, '⬜', ...stuff)
+    return false
   }
 
   error (...stuff: string[]): boolean {
     /* c8 ignore next */
-    if (!this.noConsole) console.error(red([this.indent, '❌ ', ...stuff].join(' ')))
-    this._write(this.indent, '❌', ...stuff)
+    if (this.consoleLog) console.error(red([this.indent, '❌ ', ...stuff].join(' ')))
+    if (this.fileLog) this.write(this.indent, '❌', ...stuff)
     return false
   }
 
   warn (...stuff: string[]): boolean {
     /* c8 ignore next */
-    if (!this.noConsole) console.log(yellow([this.indent, '⚠️ ', ...stuff].join(' ')))
-    return this._write(this.indent, '⚠️', ...stuff)
+    if (this.consoleLog) console.log(yellow([this.indent, '⚠️ ', ...stuff].join(' ')))
+    if (this.fileLog) return this.write(this.indent, '⚠️', ...stuff)
+    return false
   }
 
   success (outputToConsole: boolean, ...stuff: string[]): boolean {
     /* c8 ignore next */
-    if (outputToConsole && !this.noConsole) console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
-    return this._write(this.indent, '✔️', ...stuff)
+    if (outputToConsole && this.consoleLog) console.log(green([this.indent, '✔️ ', ...stuff].join(' ')))
+    if (this.fileLog) return this.write(this.indent, '✔️', ...stuff)
+    return false
   }
 
   test (ok: boolean, message: string, justWarn = false, outputToConsole = false): boolean {
@@ -68,19 +73,21 @@ class Logger {
   fix (...stuff: string[]): boolean {
     stuff.push(bgBlue(black('[ fixed ]')))
     /* c8 ignore next */
-    if (!this.noConsole) console.log(blue([this.indent, '⬜', ...stuff].join(' ')))
-    return this._write(this.indent, '⬜', ...stuff)
+    if (this.consoleLog) console.log(blue([this.indent, '⬜', ...stuff].join(' ')))
+    if (this.fileLog) return this.write(this.indent, '⬜', ...stuff)
+    return false
   }
 
   line (): boolean {
     /* c8 ignore next */
-    if (!this.noConsole) console.log('')
-    return this._write('')
+    if (this.consoleLog) console.log('')
+    if (this.fileLog) return this.write('')
+    return false
   }
 
   start (doFix = false): boolean {
     this.line()
-    this._write(`⬇️--- Entry from ${this.date} ---⬇️`)
+    if (this.fileLog) this.write(`⬇️--- Entry from ${this.date} ---⬇️`)
     this.info(`${String(name)} v${String(version)} is starting ${doFix ? '(fix enabled)' : ''}`)
     return this.line()
   }

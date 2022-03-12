@@ -49,7 +49,7 @@ function getTarget (argument = ''): string {
 }
 
 export async function start (): Promise<void> {
-  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--data': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
+  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--data': String, '--fix': Boolean, '--quiet': Boolean, '--no-report': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
   if ((options['--version'] ?? false) || (options['-v'] ?? false)) {
     console.log(version)
     process.exit(0)
@@ -61,10 +61,13 @@ export async function start (): Promise<void> {
   }
   const doFix = options['--fix']
   const quiet = options['--quiet'] ?? false
-  log.noConsole = quiet
+  const noReport = options['--no-report'] ?? false
+  log.consoleLog = !quiet
+  log.fileLog = !noReport
   const target = getTarget(options['--target'])
   const data = await getData(options['--data'], target)
   data.quiet = data.quiet || quiet
+  data.noReport = data.noReport || noReport
   log.start(doFix)
   await check(target, data, doFix, doForce)
 }

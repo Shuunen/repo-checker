@@ -17,6 +17,7 @@ export class ProjectData {
   npm_package = false
   package_name = ''
   quiet = false
+  noReport = false
   repo_id = 'a-great-repo'
   use_typescript = false
   use_vue = false
