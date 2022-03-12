@@ -21,6 +21,7 @@
     - [quiet](#quiet)
   - [Todo](#todo)
   - [Benchmarks](#benchmarks)
+    - [Old method](#old-method)
   - [Thanks](#thanks)
 
 ## Usage
@@ -76,6 +77,34 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] extends unit tests to src/files (remove nyc.config.js current exclusion)
 
 ## Benchmarks
+
+Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
+
+| command alias      | date       | main lib targeted   | seconds | comment                                  |
+| ------------------ | ---------- | ------------------- | ------- | ---------------------------------------- |
+| repo-check         | 2022-03-12 | node & repo-checker | 160 ms  | pretty cool before any optimisations     |
+| repo-check-no-out  | 2022-03-12 | node & repo-checker | 140 ms  | 20 ms dedicated to console/file output   |
+| esbuild            | 2022-03-12 | esbuild             | 170 ms  |                                          |
+| ts-run             | 2022-03-12 | typescript-run      | 420 ms  | it's faster to build & run ^^'           |
+| tsc-no-emit        | 2022-03-12 | typescript          | 3,5 sec |                                          |
+| eslint             | 2022-03-12 | eslint              | 6,5 sec | damn slow, seems slower than old benches |
+| eslint-ts-src-only | 2022-03-12 | eslint              | 5,5 sec | 1 sec diff, still slow IMHO              |
+| uvu                | 2022-03-12 | uvu                 | 820 ms  | pretty good                              |
+| c8-uvu             | 2022-03-12 | c8 & uvu            | 1,6 sec | 800 ms too for coverage, still good      |
+
+Command aliases :
+
+- repo-check : `node dist/repo-check.min.cjs`
+- repo-check-no-out : `node dist/repo-check.min.cjs --quiet --no-report`
+- esbuild : `node node_modules/esbuild/bin/esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs`
+- ts-run : `node node_modules/typescript-run/src/index.js src`
+- tsc-no-emit : `node node_modules/typescript/bin/tsc --noEmit`
+- eslint : `node node_modules/eslint/bin/eslint --fix --ignore-path .gitignore --ext .js,.ts .`
+- eslint-ts-src-only : `node node_modules/eslint/bin/eslint src/ --ext .ts`
+- uvu : `node node_modules/uvu/bin -r tsm tests`
+- c8-uvu : `node node_modules/c8/bin/c8 node_modules/uvu/bin -r tsm tests`
+
+### Old method
 
 Each task is run 3 times via `time npm run <task>` to get the average execution time in seconds.
 
