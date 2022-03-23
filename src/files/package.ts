@@ -84,8 +84,11 @@ export class PackageJsonFile extends File {
     const ok = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+/g, 0, 'patch precision is rarely useful', true)
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)(\.\d+)/g, '$1')
     /* duplicates */
-    this.couldContains('one unit testing dependency (and only one)', /("mocha")|("uvu")/g, 1)
-    this.couldContains('one coverage dependency (and only one)', /("nyc")|("c8")/g, 1)
+    const ut = /"(mocha|uvu)"/.exec(this.fileContent)?.[1]
+    this.test(!!ut, 'one unit testing dependency from : mocha, uvu', true)
+    const cv = /"(nyc|c8)"/.exec(this.fileContent)?.[1]
+    this.test(!!cv, 'one coverage dependency from : nyc, c8', true)
+    if (ut && cv) this.couldContains('coverage followed by unit testing', new RegExp(`${cv} ${ut}`), 1)
     /* usages */
     if (this.fileContent.includes('"uvu"')) await this.checkUvuUsages()
   }
