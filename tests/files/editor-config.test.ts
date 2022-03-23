@@ -1,13 +1,12 @@
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
-import { ProjectData } from '../../src/constants'
 import { EditorConfigFile } from '../../src/files'
 import { log } from '../../src/logger'
 
 test('editor config missing file', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new EditorConfigFile('', new ProjectData({ quiet: true }), true)
+  const instance = new EditorConfigFile()
   instance.checkFileExists = async () => false
   await instance.start()
   await instance.end()
@@ -18,7 +17,7 @@ test('editor config missing file', async function () {
 test('editor config file', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new EditorConfigFile('', new ProjectData({ quiet: true }), true)
+  const instance = new EditorConfigFile()
   instance.checkFileExists = async () => true
   instance.inspectFile = async () => void 0
   instance.fileContent = ''

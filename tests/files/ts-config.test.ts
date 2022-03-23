@@ -7,7 +7,7 @@ import { log } from '../../src/logger'
 test('ts config file no check', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new TsConfigFile('', new ProjectData({ use_typescript: false, quiet: true }), true)
+  const instance = new TsConfigFile('', new ProjectData({ use_typescript: false }))
   await instance.start()
   await instance.end()
   equal(instance.nbPassed, 0)
@@ -17,7 +17,7 @@ test('ts config file no check', async function () {
 test('ts config file fix', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new TsConfigFile('', new ProjectData({ use_typescript: true, quiet: true }), true)
+  const instance = new TsConfigFile('', new ProjectData({ use_typescript: true }), true)
   const fileInitial = '{ "name": "John" }'
   const fileFixed = JSON.stringify({
     name: 'John',

@@ -7,7 +7,7 @@ import { log } from '../../src/logger'
 test('eslint config missing file', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new EsLintFile('', new ProjectData({ quiet: true }), true)
+  const instance = new EsLintFile()
   instance.fileExists = async () => false
   await instance.start()
   await instance.end()
@@ -18,7 +18,7 @@ test('eslint config missing file', async function () {
 test('eslint config file empty', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new EsLintFile('', new ProjectData({ quiet: true }), true)
+  const instance = new EsLintFile()
   instance.fileExists = async () => true
   instance.inspectFile = async () => void 0
   instance.fileContent = ''
