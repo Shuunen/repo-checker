@@ -58,7 +58,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   data.is_module = content.includes('"type": "module"')
   data.user_id = /github\.com\/([\w-]+)\//.exec(content)?.[1] ?? dataDefaults.user_id
   data.user_id_lowercase = data.user_id.toLowerCase()
-  if (content.includes('"vue"')) data.use_vue = true
+  if (/"(vue|vitepress|nuxt)"/.test(content)) data.use_vue = true
   if (/(ts-node|typescript|@types)/.test(content)) data.use_typescript = true
   if (/(webcomponent|css|website|webapp)/.test(content) || data.use_vue) data.web_published = true
   if (content.includes('npm publish')) data.npm_package = true

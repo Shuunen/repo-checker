@@ -3,7 +3,8 @@
     "automerge",
     "colorette",
     "repo",
-    "simplegit"
+    "simplegit",
+    "vitepress"
   ],
   "workbench.colorCustomizations": {
     "activityBar.background": "#232F3A",
