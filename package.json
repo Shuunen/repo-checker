@@ -9,8 +9,8 @@
   "devDependencies": {
     "@types/node": "16",
     "@types/require-from-string": "^1.2",
-    "@typescript-eslint/eslint-plugin": "5.16",
-    "@typescript-eslint/parser": "5.16",
+    "@typescript-eslint/eslint-plugin": "5.17",
+    "@typescript-eslint/parser": "5.17",
     "arg": "5",
     "c8": "7",
     "esbuild": "^0.14",
