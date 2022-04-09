@@ -36,8 +36,11 @@ export class EsLintFile extends File {
     const json = isJSON(this.fileContent)
     if (typeof json === 'boolean') return log.warn('cannot check empty or invalid .eslintrc.json file')
     const rules = new EslintRcJsonFile(json).rules
-    const expectedJson = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
-    const expectedRules = new EslintRcJsonFile(JSON.parse(expectedJson)).rules
+    const expectedJsonString = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
+    const expectedJson = isJSON(expectedJsonString)
+    /* c8 ignore next */
+    if (typeof expectedJson === 'boolean') return log.warn('cannot check empty or invalid repo-checker .eslintrc.json file')
+    const expectedRules = new EslintRcJsonFile(expectedJson).rules
     const missingRules = Object.keys(expectedRules).filter(rule => {
       if (rule.startsWith('@typescript') && !this.data.use_typescript) return false
       return !(rule in rules)

@@ -43,4 +43,18 @@ test('ts config file fix', async function () {
   equal(instance.nbFailed, 0)
 })
 
+test('ts config malformed', async function () {
+  log.consoleLog = false
+  log.fileLog = false
+  const instance = new TsConfigFile('', new ProjectData({ use_typescript: true }))
+  const fileInitial = '"name": "John" }'
+  instance.inspectFile = async () => void 0
+  instance.fileContent = fileInitial
+  equal(instance.fileContent, fileInitial)
+  await instance.start()
+  await instance.end()
+  equal(instance.nbPassed, 0)
+  equal(instance.nbFailed, 0)
+})
+
 test.run()
