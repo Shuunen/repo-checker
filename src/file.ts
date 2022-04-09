@@ -27,8 +27,8 @@ export class File {
   }
 
   async updateFile (): Promise<boolean> {
-    if (!this.doFix) return log.debug('cant update file if fix not active')
     if (this.originalFileContent === this.fileContent) return log.debug('avoid file update when updated content is the same')
+    if (!this.doFix) return log.debug('cant update file if fix not active')
     if (this.nbFailed > 0 && !this.doForce) return log.debug('cant update file without force if some checks failed')
     writeFileSync(join(this.folderPath, this.fileName), this.fileContent)
     return log.debug('updated', this.fileName, 'with the new content')
