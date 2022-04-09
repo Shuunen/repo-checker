@@ -27,6 +27,7 @@
   },
   "files": [
     "dist/*.min.cjs",
+    ".eslintrc.json",
     "templates"
   ],
   "homepage": "https://github.com/Shuunen/repo-checker",
