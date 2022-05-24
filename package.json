@@ -20,7 +20,7 @@
     "require-from-string": "2",
     "shuutils": "^5.4",
     "tsm": "2.2",
-    "typescript": "4.6",
+    "typescript": "4.7",
     "typescript-run": "0",
     "uvu": "0.5",
     "watchlist": "0.3"
