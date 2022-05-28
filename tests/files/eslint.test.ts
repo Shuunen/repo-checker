@@ -4,6 +4,11 @@ import { ProjectData } from '../../src/constants'
 import { EsLintFile } from '../../src/files'
 import { log } from '../../src/logger'
 
+const fileExists = async (path: string): Promise<boolean> => {
+  if (path === '.eslintrc.json') return true
+  return false
+}
+
 test('eslint config missing file', async function () {
   log.consoleLog = false
   log.fileLog = false
@@ -19,33 +24,33 @@ test('eslint config file empty', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile()
-  instance.fileExists = async () => true
+  instance.fileExists = fileExists
   instance.inspectFile = async () => void 0
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 1)
-  equal(instance.nbFailed, 2)
+  equal(instance.nbPassed, 2)
+  equal(instance.nbFailed, 1)
 })
 
 test('eslint config file empty for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ use_vue: true, use_typescript: true }))
-  instance.fileExists = async () => true
+  instance.fileExists = fileExists
   instance.inspectFile = async () => void 0
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 2)
-  equal(instance.nbFailed, 7)
+  equal(instance.nbPassed, 3)
+  equal(instance.nbFailed, 2)
 })
 
 test('eslint config partial file for js project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile()
-  instance.fileExists = async () => true
+  instance.fileExists = fileExists
   instance.inspectFile = async () => void 0
   instance.fileContent = `{
     "extends": [
@@ -59,15 +64,15 @@ test('eslint config partial file for js project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 5)
-  equal(instance.nbFailed, 1)
+  equal(instance.nbPassed, 6)
+  equal(instance.nbFailed, 0)
 })
 
 test('eslint config partial file for ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ use_typescript: true }))
-  instance.fileExists = async () => true
+  instance.fileExists = fileExists
   instance.inspectFile = async () => void 0
   instance.fileContent = `{
     "extends": [
@@ -83,15 +88,15 @@ test('eslint config partial file for ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 6)
-  equal(instance.nbFailed, 1)
+  equal(instance.nbPassed, 7)
+  equal(instance.nbFailed, 0)
 })
 
 test('eslint config partial file for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ use_vue: true, use_typescript: true }))
-  instance.fileExists = async () => true
+  instance.fileExists = fileExists
   instance.inspectFile = async () => void 0
   instance.fileContent = `{
     "extends": [
@@ -114,8 +119,35 @@ test('eslint config partial file for vue ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 11)
+  equal(instance.nbPassed, 7)
   equal(instance.nbFailed, 1)
+})
+
+test('eslint up to date config file for vue ts project', async function () {
+  log.consoleLog = false
+  log.fileLog = false
+  const instance = new EsLintFile('', new ProjectData({ use_vue: true, use_typescript: true }))
+  instance.fileExists = fileExists
+  instance.inspectFile = async () => void 0
+  instance.fileContent = `{
+    "extends": [
+      "plugin:vue/vue3-recommended",
+      "eslint:recommended",
+      "@vue/typescript/recommended",
+      "plugin:unicorn/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2021
+    },
+    "plugins": [
+      "html",
+      "unicorn"
+    ],
+  }`
+  await instance.start()
+  await instance.end()
+  equal(instance.nbPassed, 8)
+  equal(instance.nbFailed, 0)
 })
 
 test.run()
