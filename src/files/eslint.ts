@@ -56,20 +56,24 @@ export class EsLintFile extends File {
   }
 
   async checkTs (): Promise<boolean> {
+    // check here ts & vue ts projects
+    if (this.data.use_vue) return true
+    // check here ts only projects
     this.shouldContains('typescript eslint extend', /plugin:@typescript-eslint\/recommended/)
     this.shouldContains('typescript eslint plugin', /"@typescript-eslint"/)
     return true
   }
 
   async checkVue (): Promise<void> {
-    this.shouldContains('vue recommended rules', /plugin:vue\/vue3-recommended/)
+    this.shouldContains('vue recommended rules extends', /plugin:vue\/vue3-recommended/)
     this.shouldContains('no easy vue essential rules set', /plugin:vue\/essential/, 0)
+    this.shouldContains('vue ts recommended rules extends', /@vue\/typescript\/recommended/)
     this.couldContains('"vue/max-attributes-per-line": "off"')
     this.couldContains('"vue/html-self-closing": "off"')
     this.couldContains('"vue/no-multiple-template-root": "off"')
     this.couldContains('"vue/singleline-html-element-content-newline": "off"')
-    this.shouldContains('"parser": "vue-eslint-parser"')
-    this.shouldContains('@typescript-eslint/parser inside parserOptions', /"parser": "@typescript-eslint\/parser"/)
-    this.shouldContains('sourceType: module inside parserOptions', /"sourceType": "module"/)
+    // this.shouldContains('"parser": "vue-eslint-parser"')
+    // this.shouldContains('@typescript-eslint/parser inside parserOptions', /"parser": "@typescript-eslint\/parser"/)
+    // this.shouldContains('sourceType: module inside parserOptions', /"sourceType": "module"/)
   }
 }
