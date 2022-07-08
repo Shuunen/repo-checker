@@ -94,7 +94,7 @@ export class PackageJsonFile extends File {
   }
 
   async checkUvuUsages () {
-    const badAssert = await findStringInFolder(join(this.folderPath, 'tests'), 'from \'assert\'')
+    const badAssert = await findStringInFolder({ folderPath: join(this.folderPath, 'tests'), pattern: 'from \'assert\'', fix: this.doFix })
     this.test(badAssert.length === 0, `assert dependency used in "${ellipsis(badAssert.join(','), 50)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
   }
 

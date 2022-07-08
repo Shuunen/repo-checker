@@ -1,3 +1,4 @@
+export * from './all'
 export * from './configs'
 export * from './editor-config'
 export * from './eslint'

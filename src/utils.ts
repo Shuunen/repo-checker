@@ -1,5 +1,5 @@
 /* c8 ignore next */
-import { existsSync, readdir, readFileSync, stat } from 'fs'
+import { existsSync, readdir, readFileSync, stat, writeFileSync } from 'fs'
 import path from 'path'
 import requireFromString from 'require-from-string'
 import { promisify } from 'util'
@@ -94,12 +94,18 @@ export async function getFileSizeInKo (filePath: string): Promise<number> {
   return size
 }
 
-export async function findStringInFolder (folderPath: string, pattern: string): Promise<string[]> {
+export async function findStringInFolder ({ folderPath, fix = false, pattern, replaceWith, matches = [] }: { folderPath: string; fix: boolean, pattern: RegExp; replaceWith?: string; matches?: string[] }): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
-  const matches = []
+  console.log(filePaths)
   for (const filePath of filePaths) {
     const content = await readFileInFolder(folderPath, filePath)
-    if (content.includes(pattern)) matches.push(filePath)
+    if (!pattern.test(content)) continue
+    console.log({ fix, replaceWith })
+    if (replaceWith) {
+      content.replace(pattern, replaceWith)
+      writeFileSync(filePath, content, 'utf8')
+    } else
+      matches.push(filePath)
   }
   return matches
 }
