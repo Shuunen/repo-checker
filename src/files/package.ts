@@ -18,7 +18,7 @@ export class PackageJsonFile extends File {
     await this.suggestAlternatives()
   }
 
-  async checkProperties () {
+  async checkProperties (): Promise<void> {
     this.couldContains('a "bugs" property', this.regexForStringProp('bugs'))
     this.couldContains('a "description" property', this.regexForStringProp('description'))
     this.couldContains('a "files" property', this.regexForArrayProp('files'))
@@ -51,7 +51,7 @@ export class PackageJsonFile extends File {
     this.test(sizeOk, `main file size (${sizeKo}Ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
   }
 
-  async checkScripts () {
+  async checkScripts (): Promise<void> {
     this.shouldContains('a script section', this.regexForObjectProp('scripts'))
     this.couldContains('a pre-script for version automation', /"preversion": "/, 1, 'like : "preversion": "npm run ci",')
     if (this.data.npm_package) this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags && npm publish",')
@@ -65,13 +65,13 @@ export class PackageJsonFile extends File {
     this.couldContains('a ci script', /"ci": "/, 1, 'like "ci": "npm run build && npm run lint ...')
   }
 
-  async checkBuild () {
+  async checkBuild (): Promise<void> {
     if (!this.fileContent.includes('"build":')) return
     if (this.data.dev_deps_only) this.shouldContains('only dev dependencies for build-able projects', this.regexForObjectProp('dependencies'), 0)
     if (this.fileContent.includes('parcel build')) this.shouldContains('a parcel build with report enabled', /"parcel build.*--detailed-report",/)
   }
 
-  async checkDependencies () {
+  async checkDependencies (): Promise<void> {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
     const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
     if (!hasDependencies && !hasDevelopmentDependencies) return
@@ -93,12 +93,12 @@ export class PackageJsonFile extends File {
     if (this.fileContent.includes('"uvu"')) await this.checkUvuUsages()
   }
 
-  async checkUvuUsages () {
+  async checkUvuUsages (): Promise<void> {
     const badAssert = await findStringInFolder(join(this.folderPath, 'tests'), 'from \'assert\'')
     this.test(badAssert.length === 0, `assert dependency used in "${ellipsis(badAssert.join(','), 50)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
   }
 
-  async suggestAlternatives () {
+  async suggestAlternatives (): Promise<void> {
     this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(colorette|chalk|colors)"/, 0)
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, 0)
     this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/, 0)

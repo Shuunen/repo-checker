@@ -1,6 +1,6 @@
 {
   "env": {
-    "browser": false,
+    "browser": true,
     "es6": true,
     "node": true
   },
@@ -45,6 +45,7 @@
         "allowSingleLine": true
       }
     ],
+    "@typescript-eslint/explicit-function-return-type": "error",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {

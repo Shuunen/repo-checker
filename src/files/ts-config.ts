@@ -8,7 +8,7 @@ interface TsConfigJsonFile {
 }
 
 export class TsConfigFile extends File {
-  async start () {
+  async start (): Promise<boolean | undefined> {
     if (this.data.use_typescript === false) return
     await this.inspectFile('tsconfig.json')
     const content = isJSON(this.fileContent)

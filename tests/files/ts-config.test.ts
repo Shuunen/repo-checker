@@ -32,9 +32,9 @@ test('ts config file fix', async function () {
       target: 'ES2020',
     },
   }, undefined, 2)
-  instance.inspectFile = async () => void 0
+  instance.inspectFile = async (): Promise<undefined> => void 0
   instance.fileContent = fileInitial
-  instance.updateFile = async () => true
+  instance.updateFile = async (): Promise<true> => true
   equal(instance.fileContent, fileInitial)
   await instance.start()
   await instance.end()
@@ -48,7 +48,7 @@ test('ts config malformed', async function () {
   log.fileLog = false
   const instance = new TsConfigFile('', new ProjectData({ use_typescript: true }))
   const fileInitial = '"name": "John" }'
-  instance.inspectFile = async () => void 0
+  instance.inspectFile = async (): Promise<undefined> => void 0
   instance.fileContent = fileInitial
   equal(instance.fileContent, fileInitial)
   await instance.start()
