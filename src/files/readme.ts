@@ -107,22 +107,23 @@ export class ReadmeFile extends File {
     if (!existsSync(filePath)) return list
     const json = readFileSync(filePath, 'utf8')
     if (json === '') return list
-    const useStack = json.includes('"shuunen-stack"')
     list.push(
       new Thanks('Arg', 'https://github.com/vercel/arg', 'unopinionated, no-frills CLI argument parser', json.includes('"arg":')),
       new Thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use', json.includes('ava"')),
       new Thanks('C8', 'https://github.com/bcoe/c8', 'simple & effective cli for code coverage', json.includes('c8"')),
-      new Thanks('Chokidar', 'https://github.com/paulmillr/chokidar', 'minimal and efficient cross-platform file watching library', json.includes('"chokidar"') || useStack),
+      new Thanks('Chokidar', 'https://github.com/paulmillr/chokidar', 'minimal and efficient cross-platform file watching library', json.includes('"chokidar"')),
       new Thanks('Cypress.io', 'https://www.cypress.io', 'cool E2E testing framework', json.includes('cypress')),
-      new Thanks('Esbuild', 'https://github.com/evanw/esbuild', 'an extremely fast JavaScript bundler and minifier', json.includes('esbuild') || useStack),
-      new Thanks('Eslint', 'https://eslint.org', 'super tool to find & fix problems', json.includes('eslint"') || useStack),
-      new Thanks('Mocha', 'https://github.com/mochajs/mocha', 'great test runner easy to setup & use', json.includes('mocha"') || useStack),
+      new Thanks('Esbuild', 'https://github.com/evanw/esbuild', 'an extremely fast JavaScript bundler and minifier', json.includes('esbuild')),
+      new Thanks('Eslint', 'https://eslint.org', 'super tool to find & fix problems', json.includes('eslint"')),
+      new Thanks('Mocha', 'https://github.com/mochajs/mocha', 'great test runner easy to setup & use', json.includes('mocha"')),
+      new Thanks('Npm-run-all', 'https://github.com/mysticatea/npm-run-all', 'to keep my npm scripts clean & readable', json.includes('npm-run-all"')),
+      new Thanks('Npm-parallel', 'https://github.com/spion/npm-parallel', 'to keep my npm scripts clean & readable', json.includes('npm-parallel"')),
       new Thanks('Nuxt', 'https://github.com/nuxt/nuxt.js', 'minimalistic framework for server-rendered Vue.js applications', json.includes('"nuxt"')),
-      new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'simple & effective cli for code coverage', json.includes('nyc"') || useStack),
+      new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'simple & effective cli for code coverage', json.includes('nyc"')),
       new Thanks('Reef', 'https://github.com/cferdinandi/reef', 'a lightweight library for creating reactive, state-based components and UI', json.includes('reefjs"')),
-      new Thanks('Repo-checker', 'https://github.com/Shuunen/repo-checker', 'eslint cover /src code and this tool the rest ^^', json.includes('repo-check"') || useStack),
+      new Thanks('Repo-checker', 'https://github.com/Shuunen/repo-checker', 'eslint cover /src code and this tool the rest ^^', json.includes('repo-check"')),
       new Thanks('Rollup', 'https://rollupjs.org', 'a fast & efficient js module bundler', json.includes('rollup"')),
-      new Thanks('Servor', 'https://github.com/lukejacksonn/servor', 'dependency free dev server for single page app development', json.includes('"servor"') || useStack),
+      new Thanks('Servor', 'https://github.com/lukejacksonn/servor', 'dependency free dev server for single page app development', json.includes('"servor"')),
       new Thanks('Showdown', 'https://github.com/showdownjs/showdown', 'a Markdown to HTML converter written in Javascript', json.includes('"showdown"')),
       new Thanks('Shuutils', 'https://github.com/Shuunen/shuutils', 'collection of pure JS utils', json.includes('"shuutils"')),
       new Thanks('TailwindCss', 'https://tailwindcss.com', 'awesome lib to produce maintainable style', json.includes('tailwindcss"')),
