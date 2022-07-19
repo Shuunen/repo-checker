@@ -1,4 +1,4 @@
-import { isJSON } from 'shuutils'
+import { parseJson } from 'shuutils'
 import { repoCheckerPath } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
@@ -33,14 +33,12 @@ export class EsLintFile extends File {
   }
 
   async checkRules (): Promise<boolean> {
-    const json = isJSON(this.fileContent)
-    if (typeof json === 'boolean') return log.warn('cannot check empty or invalid .eslintrc.json file')
-    const rules = new EslintRcJsonFile(json).rules
+    let data = parseJson<EslintRcJsonFile>(this.fileContent)
+    if (data.error) return log.warn('cannot check empty or invalid .eslintrc.json file')
+    const rules = new EslintRcJsonFile(data.value).rules
     const expectedJsonString = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
-    const expectedJson = isJSON(expectedJsonString)
-    /* c8 ignore next */
-    if (typeof expectedJson === 'boolean') return log.warn('cannot check empty or invalid repo-checker .eslintrc.json file')
-    const expectedRules = new EslintRcJsonFile(expectedJson).rules
+    data = parseJson<EslintRcJsonFile>(expectedJsonString)
+    const expectedRules = new EslintRcJsonFile(data.value).rules
     const missingRules = Object.keys(expectedRules).filter(rule => {
       if (rule.startsWith('@typescript') && !this.data.use_typescript) return false
       return !(rule in rules)
