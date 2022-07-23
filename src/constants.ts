@@ -2,6 +2,9 @@
 import path from 'path'
 
 export const home = process.env.HOME ?? '' // when does HOME is not defined ?
+/**
+ * The name of the file that contains the configuration for repo-checker
+ */
 export const dataFileName = 'repo-checker.config.js'
 export const repoCheckerPath = path.join(__dirname, '..')
 export const templatePath = path.join(repoCheckerPath, 'templates')
@@ -17,6 +20,9 @@ export class ProjectData {
   npm_package = false
   package_name = ''
   quiet = false
+  /**
+   * Tells repo-checker to generate a report for the given project
+   */
   noReport = false
   repo_id = 'a-great-repo'
   use_typescript = false

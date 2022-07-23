@@ -1,7 +1,7 @@
 import { mkdirSync, rmSync, writeFileSync } from 'fs'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
-import { dataDefaults, ProjectData } from '../src/constants'
+import { dataDefaults, dataFileName, ProjectData } from '../src/constants'
 import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findStringInFolder, getFileSizeInKo, getGitFolders, isGitFolder, join, readFileInFolder } from '../src/utils'
 
 // base project folder
@@ -101,7 +101,7 @@ test('find string in folder', async function (){
   const folder = join(testFolder, 'data', 'tsProject')
   const string = 'Dwight Schrute'
   const result = await findStringInFolder(folder, string)
-  equal(result[0], 'repo-checker.config.js')
+  equal(result[0], dataFileName)
 })
 
 test.run()
