@@ -1,6 +1,6 @@
 import { existsSync, unlinkSync } from 'fs'
 import { test } from 'uvu'
-import { equal, ok } from 'uvu/assert'
+import { equal } from 'uvu/assert'
 import { config } from '../package.json'
 import { log } from '../src/logger'
 
@@ -35,10 +35,6 @@ test('can prevent log file generation', function () {
   equal(log.success(false, 'damn-success not in console'), false)
   equal(log.fix('damn-fix'), false)
   equal(existsSync(config.logFile), false)
-})
-
-test('logger return date', function () {
-  ok(log.date.includes('-') && log.date.includes('20'))
 })
 
 test.run()
