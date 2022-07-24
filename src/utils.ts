@@ -34,13 +34,16 @@ export async function getGitFolders (folderPath: string): Promise<string[]> {
 export async function augmentDataWithGit (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
   const gitConfigContent = await readFileInFolder(join(folderPath, '.git'), 'config')
-  const matches = /url = .*[/:]([\w-]+)\/([\w-]+)/.exec(gitConfigContent) ?? []
-  if (matches.length !== 3) return data
-  data.user_id = matches[1]
-  data.user_id_lowercase = data.user_id.toLowerCase()
-  data.repo_id = matches[2]
-  log.debug('found user_id in git config :', data.user_id)
-  log.debug('found repo_id in git config :', data.repo_id)
+  const matches = /url = .*[/:]([\w-]+)\/([\w-]+)/.exec(gitConfigContent) ?? ['', '', '']
+  if (matches[1]) {
+    data.user_id = matches[1]
+    log.debug('found user_id in git config :', data.user_id)
+    data.user_id_lowercase = data.user_id.toLowerCase()
+  }
+  if (matches[2]) {
+    data.repo_id = matches[2]
+    log.debug('found repo_id in git config :', data.repo_id)
+  }
   return data
 }
 
@@ -50,11 +53,9 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   if (content.length === 0) return data
   data.package_name = /"name": "([\w+/@-]+)"/.exec(content)?.[1] ?? dataDefaults.package_name
   data.license = /"license": "([\w+-.]+)"/.exec(content)?.[1] ?? dataDefaults.license
-  const author = /"author": "([\s\w/@-]+)\b[\s<]*([\w-.@]+)?>?"/.exec(content) ?? []
-  if (author.length === 3) {
-    data.user_name = author[1]
-    data.user_mail = author[2] ?? ''
-  }
+  const author = /"author": "([\s\w/@-]+)\b[\s<]*([\w-.@]+)?>?"/.exec(content) ?? ['', '', '']
+  if (author[1]) data.user_name = author[1]
+  if (author[2]) data.user_mail = author[2]
   data.is_module = content.includes('"type": "module"')
   data.useTailwind = content.includes('"tailwindcss"')
   data.user_id = /github\.com\/([\w-]+)\//.exec(content)?.[1] ?? dataDefaults.user_id

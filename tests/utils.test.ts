@@ -91,7 +91,6 @@ test('data augment with package', async function () {
     license: 'MIT',
     package_name: '',
     use_typescript: true,
-    user_mail: '',
     user_name: 'Dwight Schrute',
     web_url: 'https://my-website.com',
   })
