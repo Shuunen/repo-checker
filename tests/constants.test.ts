@@ -1,25 +1,12 @@
-import { test } from 'uvu'
-import { equal } from 'uvu/assert'
+import { check } from 'shuutils'
 import { home, ProjectData, repoCheckerPath } from '../src/constants'
 
-test('home (process.env.HOME) is defined', function () {
-  equal(home.length > 0, true)
-  // console.log(`home is "${home}"`)
-})
+check('home (process.env.HOME) is defined', home.length > 0, true)
 
-test('repoCheckerPath (process.env.pwd) is defined', function () {
-  equal(repoCheckerPath.length > 0, true)
-  // console.log(`repoCheckerPath is "${repoCheckerPath}"`)
-})
+check('repoCheckerPath (process.env.pwd) is defined', repoCheckerPath.length > 0, true)
 
-test('ProjectData ban sass by default', function (){
-  const data = new ProjectData()
-  equal(data.ban_sass, true)
-})
+check('ProjectData ban sass by default', new ProjectData().ban_sass, true)
 
-test('ProjectData assign', function (){
-  const data = new ProjectData({ ban_sass: false })
-  equal(data.ban_sass, false)
-})
+check('ProjectData assign', new ProjectData({ ban_sass: false }).ban_sass, false)
 
-test.run()
+check.run()
