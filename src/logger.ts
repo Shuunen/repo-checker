@@ -12,10 +12,6 @@ class Logger {
     return '    '.repeat(this.indentLevel)
   }
 
-  get date (): string {
-    return new Date().toISOString().replace('T', ' ').split('.')[0]
-  }
-
   constructor (private filePath: string) {}
 
   write (...stuff: string[]): boolean {
@@ -87,7 +83,7 @@ class Logger {
 
   start (doFix = false): boolean {
     this.line()
-    if (this.fileLog) this.write(`⬇️--- Entry from ${this.date} ---⬇️`)
+    if (this.fileLog) this.write(`⬇️--- Entry from ${new Date().toISOString()} ---⬇️`)
     this.info(`${String(name)} v${String(version)} is starting ${doFix ? '(fix enabled)' : ''}`)
     return this.line()
   }
