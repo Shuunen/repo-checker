@@ -1,4 +1,4 @@
-import { ProjectData } from './constants'
+import type { ProjectData } from './constants'
 import { ConfigsFile, EditorConfigFile, EsLintFile, GithubWorkflowFile, LicenseFile, NvmrcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TravisFile, TsConfigFile } from './files'
 import { log } from './logger'
 import { augmentData, getGitFolders } from './utils'

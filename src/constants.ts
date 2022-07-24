@@ -1,7 +1,7 @@
 /* c8 ignore next 3 */
 import path from 'path'
 
-export const home = process.env.HOME ?? '' // when does HOME is not defined ?
+export const home = process.env['HOME'] ?? '' // when does HOME is not defined ?
 /**
  * The name of the file that contains the configuration for repo-checker
  */
