@@ -1,5 +1,6 @@
 import { existsSync, writeFileSync } from 'fs'
-import { bgYellow, black, fillTemplate } from 'shuutils'
+import { bgYellow, black } from 'shuutils/dist/colors'
+import { fillTemplate } from 'shuutils/dist/strings'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
 import { getFileSizeInKo, join, readFileInFolder } from './utils'

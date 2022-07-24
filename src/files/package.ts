@@ -1,4 +1,4 @@
-import { ellipsis } from 'shuutils'
+import { ellipsis } from 'shuutils/dist/strings'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
