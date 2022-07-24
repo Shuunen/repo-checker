@@ -25,6 +25,7 @@ export class ProjectData {
    */
   noReport = false
   repo_id = 'a-great-repo'
+  useTailwind = false
   use_typescript = false
   use_vue = false
   user_id = 'Shuunen'

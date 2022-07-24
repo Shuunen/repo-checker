@@ -1,11 +1,12 @@
 {
-  "name": "name",
-  "bugs": "https://github.com/Kevin_Malone/recipes/issues",
-  "description": "description",
   "authors": "author",
-  "version": "1.0.0",
-  "main": "pathToMain",
+  "bugs": "https://github.com/Kevin_Malone/recipes/issues",
   "dependencies": {
+    "tailwindcss": "latest",
     "vue": "latest"
-  }
+  },
+  "description": "description",
+  "main": "pathToMain",
+  "name": "name",
+  "version": "1.0.0"
 }
