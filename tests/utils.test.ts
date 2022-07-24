@@ -82,6 +82,7 @@ test('data augment with package', async function () {
     user_id_lowercase: 'kevin_malone',
     user_id: 'Kevin_Malone',
     web_published: true,
+    useTailwind: true,
   })
   equal(vueData, expectedVueData)
   const tsData = await augmentData(join(testFolder, 'data', 'tsProject'), dataDefaults, true)
