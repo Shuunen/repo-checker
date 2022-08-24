@@ -25,7 +25,6 @@ export class TsConfigFile extends File {
       exactOptionalPropertyTypes: true,
       forceConsistentCasingInFileNames: true,
       importsNotUsedAsValues: 'error',
-      moduleResolution: 'node',
       noFallthroughCasesInSwitch: true,
       noImplicitAny: true,
       noImplicitOverride: true,

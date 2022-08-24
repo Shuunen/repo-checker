@@ -30,7 +30,6 @@ test('ts config file fix', async function () {
       exactOptionalPropertyTypes: true,
       forceConsistentCasingInFileNames: true,
       importsNotUsedAsValues: 'error',
-      moduleResolution: 'Node',
       noFallthroughCasesInSwitch: true,
       noImplicitAny: true,
       noImplicitOverride: true,
@@ -42,6 +41,7 @@ test('ts config file fix', async function () {
       skipLibCheck: true,
       strict: true,
       outDir: './dist',
+      moduleResolution: 'Node',
       target: 'ES2020',
     },
   }, undefined, 2)
