@@ -4,8 +4,17 @@ import { File } from '../file'
 import { log } from '../logger'
 import { readFileInFolder } from '../utils'
 
+type EslintConfigRules = Record<string, string | string[]>
+
+interface EslintConfigOverride {
+  files: string[]
+  extends: string[]
+  rules: EslintConfigRules
+}
+
 class EslintRcJsonFile {
-  rules: Record<string, string | string[]> = {}
+  rules: EslintConfigRules = {}
+  overrides: EslintConfigOverride[] = []
   constructor (data: Partial<EslintRcJsonFile> = {}) {
     Object.assign(this, data)
   }
@@ -38,7 +47,9 @@ export class EsLintFile extends File {
     const rules = new EslintRcJsonFile(data.value).rules
     const expectedJsonString = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
     data = parseJson<EslintRcJsonFile>(expectedJsonString)
-    const expectedRules = new EslintRcJsonFile(data.value).rules
+    const expectedRules = new EslintRcJsonFile(data.value).overrides?.[0]?.rules
+    /* c8 ignore next */
+    if (!expectedRules) return log.error('failed to found repo checker eslint rules')
     const missingRules = Object.keys(expectedRules).filter(rule => {
       if (rule.startsWith('@typescript') && !this.data.use_typescript) return false
       return !(rule in rules)
