@@ -5,6 +5,7 @@ import { config, name, version } from '../package.json'
 class Logger {
   consoleLog = true
   fileLog = true
+  forceLog = false
   indentLevel = 0
   file?: WriteStream
 
@@ -60,7 +61,7 @@ class Logger {
   }
 
   test (ok: boolean, message: string, justWarn = false, outputToConsole = false): boolean {
-    if (ok) this.success(outputToConsole, message)
+    if (ok) this.success(outputToConsole || this.forceLog, message)
     else if (justWarn) this.warn(message)
     else this.error(message)
     return ok
