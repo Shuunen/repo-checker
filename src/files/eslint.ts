@@ -44,7 +44,10 @@ export class EsLintFile extends File {
   async checkRules (): Promise<boolean> {
     let data = parseJson<EslintRcJsonFile>(this.fileContent)
     if (data.error) return log.warn('cannot check empty or invalid .eslintrc.json file')
-    const rules = new EslintRcJsonFile(data.value).rules
+    const content = new EslintRcJsonFile(data.value)
+    const rules = content.overrides?.[1]?.rules ?? content.overrides?.[0]?.rules ?? content.rules
+    /* c8 ignore next */
+    if (!rules) return log.error('failed to found project eslint rules')
     const expectedJsonString = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
     data = parseJson<EslintRcJsonFile>(expectedJsonString)
     const expectedRules = new EslintRcJsonFile(data.value).overrides?.[0]?.rules
