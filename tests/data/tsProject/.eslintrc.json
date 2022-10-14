@@ -1,0 +1,6 @@
+{
+  "just": "rules",
+  "rules": {
+    "no-console": "off"
+  }
+}
