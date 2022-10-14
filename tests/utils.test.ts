@@ -60,6 +60,7 @@ test('data augment : repo-check & local', async function () {
     package_name: 'repo-check',
     repo_id: 'repo-checker',
     use_typescript: true,
+    useC8: true,
   })
   const augmentedData = await augmentData(rootFolder, dataDefaults, true)
   equal(augmentedData, expectedAugmentedData)
@@ -77,8 +78,9 @@ test('data augment with package', async function () {
     npm_package: true,
     package_name: 'repo-check',
     use_typescript: true,
+    useC8: true,
   })
-  equal(data, expectedData)
+  equal(data, expectedData, 'RC set')
   const vueData = await augmentDataWithPackageJson(join(testFolder, 'data', 'vueProject'), dataDefaults)
   const expectedVueData = new ProjectData({
     package_name: 'name',
@@ -88,7 +90,7 @@ test('data augment with package', async function () {
     web_published: true,
     useTailwind: true,
   })
-  equal(vueData, expectedVueData)
+  equal(vueData, expectedVueData, 'Vue set')
   const tsData = await augmentData(join(testFolder, 'data', 'tsProject'), dataDefaults, true)
   const expectedTsData = new ProjectData({
     ban_sass: false,
@@ -98,7 +100,7 @@ test('data augment with package', async function () {
     user_name: 'Dwight Schrute',
     web_url: 'https://my-website.com',
   })
-  equal(tsData, expectedTsData)
+  equal(tsData, expectedTsData, 'TS set')
 })
 
 test('find string in folder', async function () {

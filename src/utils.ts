@@ -51,7 +51,10 @@ export async function augmentDataWithGit (folderPath: string, dataSource: Projec
 
 export async function augmentDataWithPackageJson (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
-  if (!existsSync(join(folderPath, 'package.json'))) return data
+  if (!existsSync(join(folderPath, 'package.json'))) {
+    log.debug('cannot augment, no package.json found in', folderPath)
+    return data
+  }
   const content = await readFileInFolder(folderPath, 'package.json')
   data.package_name = /"name": "([\w+/@-]+)"/.exec(content)?.[1] ?? dataDefaults.package_name
   data.license = /"license": "([\w+-.]+)"/.exec(content)?.[1] ?? dataDefaults.license
@@ -61,6 +64,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   data.is_module = content.includes('"type": "module"')
   data.useTailwind = content.includes('"tailwindcss"')
   data.useNyc = content.includes('"nyc"')
+  data.useC8 = content.includes('"c8"')
   data.user_id = /github\.com\/([\w-]+)\//.exec(content)?.[1] ?? dataDefaults.user_id
   data.user_id_lowercase = data.user_id.toLowerCase()
   if (/"(vue|vitepress|nuxt)"/.test(content)) data.use_vue = true
