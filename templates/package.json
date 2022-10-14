@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package",
   "author": "{{ user_name }} <{{ user_mail }}>",
   "bugs": "https://github.com/{{ user_id }}/{{ repo_id }}/issues",
   "description": "",

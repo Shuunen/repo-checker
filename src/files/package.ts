@@ -19,6 +19,7 @@ export class PackageJsonFile extends File {
   }
 
   async checkProperties (): Promise<void> {
+    this.couldContainsSchema('https://json.schemastore.org/package')
     this.couldContains('a "bugs" property', this.regexForStringProp('bugs'))
     this.couldContains('a "description" property', this.regexForStringProp('description'))
     this.couldContains('a "files" property', this.regexForArrayProp('files'))
