@@ -3,6 +3,11 @@ import { equal } from 'uvu/assert'
 import { ProjectData } from '../../src/constants'
 import { EsLintFile } from '../../src/files'
 import { log } from '../../src/logger'
+import { join } from '../../src/utils'
+
+const testFolder = join(__dirname, '..')
+const vueProjectFolder = join(testFolder, 'data', 'vueProject')
+const tsProjectFolder = join(testFolder, 'data', 'tsProject')
 
 const fileExists = async (path: string): Promise<boolean> => {
   if (path === '.eslintrc.json') return true
@@ -149,6 +154,27 @@ test('eslint up to date config file for vue ts project', async function () {
   equal(instance.nbPassed, 8, 'nbPassed')
   equal(instance.nbFailed, 0, 'nbFailed')
 })
+
+test('eslint config file with no rules', async function () {
+  log.consoleLog = false
+  log.fileLog = false
+  const instance = new EsLintFile(vueProjectFolder, new ProjectData({}))
+  instance.fileExists = fileExists
+  await instance.start()
+  await instance.end()
+  equal(instance.nbPassed, 2, 'nbPassed')
+  equal(instance.nbFailed, 1, 'nbFailed')
+})
+
+test('eslint config file with just rules (no override)', async function () {
+  log.consoleLog = false
+  log.fileLog = false
+  const instance = new EsLintFile(tsProjectFolder, new ProjectData({}))
+  instance.fileExists = fileExists
+  await instance.start()
+  await instance.end()
+  equal(instance.nbPassed, 2, 'nbPassed')
+  equal(instance.nbFailed, 1, 'nbFailed')
 })
 
 test.run()

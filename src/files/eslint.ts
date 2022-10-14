@@ -41,16 +41,31 @@ export class EsLintFile extends File {
     return this.checkJs()
   }
 
+  findRules (config: EslintRcJsonFile): EslintConfigRules {
+    const override = config.overrides.find(override => override.files.find(file => file.endsWith('.ts')))
+    if (override && Object.keys(override.rules).length > 0) {
+      log.debug(`found ${Object.keys(override.rules).length} override rules`)
+      return override.rules
+    }
+    if (config.rules && Object.keys(config.rules).length > 0) {
+      log.debug(`found no override rules but ${Object.keys(config.rules).length} root/global rules`)
+      return config.rules
+    }
+    log.error('failed to find rules in eslint config')
+    return {}
+  }
+
   async checkRules (): Promise<boolean> {
     let data = parseJson<EslintRcJsonFile>(this.fileContent)
     if (data.error) return log.warn('cannot check empty or invalid .eslintrc.json file')
     const content = new EslintRcJsonFile(data.value)
-    const rules = content.overrides?.[1]?.rules ?? content.overrides?.[0]?.rules ?? content.rules
+    const rules = this.findRules(content)
     /* c8 ignore next */
     if (!rules) return log.error('failed to found project eslint rules')
     const expectedJsonString = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
     data = parseJson<EslintRcJsonFile>(expectedJsonString)
-    const expectedRules = new EslintRcJsonFile(data.value).overrides?.[0]?.rules
+    const expectedContent = new EslintRcJsonFile(data.value)
+    const expectedRules = this.findRules(expectedContent)
     /* c8 ignore next */
     if (!expectedRules) return log.error('failed to found repo checker eslint rules')
     const missingRules = Object.keys(expectedRules).filter(rule => {
