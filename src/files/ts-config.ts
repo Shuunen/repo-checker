@@ -11,6 +11,7 @@ export class TsConfigFile extends File {
   async start (): Promise<boolean> {
     if (this.data.use_typescript === false) return log.debug('does not use typescript, skipping tsconfig.json checks')
     await this.inspectFile('tsconfig.json')
+    this.couldContainsSchema('https://json.schemastore.org/tsconfig')
     const data = parseJson<TsConfigJsonFile>(this.fileContent)
     if (data.error) return log.error('cannot check empty or invalid tsconfig.json file')
     const json = data.value
