@@ -58,6 +58,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   if (author[2]) data.user_mail = author[2]
   data.is_module = content.includes('"type": "module"')
   data.useTailwind = content.includes('"tailwindcss"')
+  data.useNyc = content.includes('"nyc"')
   data.user_id = /github\.com\/([\w-]+)\//.exec(content)?.[1] ?? dataDefaults.user_id
   data.user_id_lowercase = data.user_id.toLowerCase()
   if (/"(vue|vitepress|nuxt)"/.test(content)) data.use_vue = true
