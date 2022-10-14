@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package",
   "author": "Romain Racamier-Lafon <romain.racamier@gmail.com>",
   "bin": "dist/repo-check.min.cjs",
   "bugs": "https://github.com/Shuunen/repo-checker/issues",
