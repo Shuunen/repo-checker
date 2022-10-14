@@ -124,9 +124,9 @@ test('find no string in folder', async function () {
   equal(result.length, 0)
 })
 
-test('find is stopped when scanning too much files', async function () {
-  const result = await findStringInFolder(rootFolder, 'blob volley').catch(() => 'failed')
-  equal(result, 'failed')
+test('find is skipped when scanning node_modules or git folders', async function () {
+  const result = await findStringInFolder(rootFolder, 'blob volley')
+  equal(result, ['utils.test.ts'])
 })
 
 test.run()
