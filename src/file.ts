@@ -14,7 +14,12 @@ export class File {
   nbPassed = 0
   nbFailed = 0
 
-  constructor (public folderPath = '', public data = new ProjectData(), public doFix = false, public doForce = false) {}
+  constructor (
+    public folderPath = '',
+    public data = new ProjectData(),
+    public doFix = false,
+    public doForce = false,
+  ) { } // eslint-disable-line unicorn/empty-brace-spaces
 
   async end (): Promise<void> {
     await this.updateFile()
@@ -31,6 +36,7 @@ export class File {
     if (this.originalFileContent.trim() === this.fileContent.trim()) return log.debug('avoid file update when updated content is the same')
     if (!this.doFix) return log.debug('cant update file if fix not active')
     if (this.nbFailed > 0 && !this.doForce) return log.debug('cant update file without force if some checks failed')
+    if (this.fileName.length === 0) return log.debug('cant update file without a file name, probably running tests')
     writeFileSync(join(this.folderPath, this.fileName), this.fileContent)
     return log.debug('updated', this.fileName, 'with the new content')
   }
@@ -39,6 +45,12 @@ export class File {
     return existsSync(join(this.folderPath, fileName))
   }
 
+  /**
+   * Check if a file exists, create a file if fix enabled, trigger a success or fail
+   * @param fileName the file name to check
+   * @param justWarn just warn if the file is not found
+   * @returns true if the file is found
+   */
   async checkFileExists (fileName: string, justWarn = false): Promise<boolean> {
     let fileExists = await this.fileExists(fileName)
     if (!fileExists && this.doFix) {
