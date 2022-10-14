@@ -8,7 +8,7 @@ test('nyc rc file exists', async function () {
   await instance.start()
   await instance.end()
   const { nbPassed, nbFailed } = instance
-  equal(nbPassed, 2, 'nbPassed')
+  equal(nbPassed, 3, 'nbPassed')
   equal(nbFailed, 0, 'nbFailed')
 })
 
