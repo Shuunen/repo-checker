@@ -6,6 +6,7 @@ export class RenovateFile extends File {
     const exists = await this.checkFileExists('renovate.json', true)
     if (!exists) return
     await this.inspectFile('renovate.json')
+    this.couldContainsSchema('https://docs.renovatebot.com/renovate-schema.json')
     this.shouldContains('an extends section', /"extends"/)
     this.shouldContains('a base config', /"config:base"/)
     this.shouldContains('a dashboard setting to false', /"dependencyDashboard": false/)
