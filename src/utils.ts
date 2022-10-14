@@ -99,15 +99,20 @@ export async function getFileSizeInKo (filePath: string): Promise<number> {
   return size
 }
 
-export async function findStringInFolder (folderPath: string, pattern: string): Promise<string[]> {
+export async function findStringInFolder (folderPath: string, pattern: string, count = 0): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
-  const matches = []
+  const matches: string[] = []
   for (const filePath of filePaths) {
+    if (['node_modules', '.git'].includes(filePath)) continue
+    count++
+    /* c8 ignore next */
+    if (count > 1000) throw new Error('too many files to scan, please reduce the scope')
     const target = join(folderPath, filePath)
     const stat = await statAsync(target)
-    if (stat.isDirectory())
-      // return findStringInFolder(target, pattern) // recursive should not work without this
+    if (stat.isDirectory()) {
+      matches.push(...(await findStringInFolder(target, pattern, count)))
       continue
+    }
     const content = await readFileInFolder(folderPath, filePath)
     if (content.includes(pattern)) matches.push(filePath)
   }

@@ -108,4 +108,23 @@ test('find string in folder', async function () {
   equal(result[0], dataFileName)
 })
 
+test('find string in sub folder', async function () {
+  const folder = join(testFolder, 'data', 'tsProject')
+  const string = 'Alice'
+  const result = await findStringInFolder(folder, string)
+  equal(result[0], 'here.txt')
+})
+
+test('find no string in folder', async function () {
+  const folder = join(testFolder, 'data', 'tsProject')
+  const string = 'Bob'
+  const result = await findStringInFolder(folder, string)
+  equal(result.length, 0)
+})
+
+test('find is stopped when scanning too much files', async function () {
+  const result = await findStringInFolder(rootFolder, 'blob volley').catch(() => 'failed')
+  equal(result, 'failed')
+})
+
 test.run()
