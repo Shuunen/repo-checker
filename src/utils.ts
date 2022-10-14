@@ -33,14 +33,16 @@ export async function getGitFolders (folderPath: string): Promise<string[]> {
 
 export async function augmentDataWithGit (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
-  const gitConfigContent = await readFileInFolder(join(folderPath, '.git'), 'config')
-  const matches = /url = .*[/:]([\w-]+)\/([\w-]+)/.exec(gitConfigContent) ?? ['', '', '']
-  if (matches[1]) {
+  const gitFolder = join(folderPath, '.git')
+  if (!existsSync(join(gitFolder, 'config'))) return data
+  const gitConfigContent = await readFileInFolder(gitFolder, 'config')
+  const matches = /url = .*[/:]([\w-]+)\/([\w-]+)/.exec(gitConfigContent)
+  if (matches && matches[1]) {
     data.user_id = matches[1]
     log.debug('found user_id in git config :', data.user_id)
     data.user_id_lowercase = data.user_id.toLowerCase()
   }
-  if (matches[2]) {
+  if (matches && matches[2]) {
     data.repo_id = matches[2]
     log.debug('found repo_id in git config :', data.repo_id)
   }
@@ -49,8 +51,8 @@ export async function augmentDataWithGit (folderPath: string, dataSource: Projec
 
 export async function augmentDataWithPackageJson (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
+  if (!existsSync(join(folderPath, 'package.json'))) return data
   const content = await readFileInFolder(folderPath, 'package.json')
-  if (content.length === 0) return data
   data.package_name = /"name": "([\w+/@-]+)"/.exec(content)?.[1] ?? dataDefaults.package_name
   data.license = /"license": "([\w+-.]+)"/.exec(content)?.[1] ?? dataDefaults.license
   const author = /"author": "([\s\w/@-]+)\b[\s<]*([\w-.@]+)?>?"/.exec(content) ?? ['', '', '']
@@ -83,9 +85,9 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
 
 export async function readFileInFolder (folderPath: string, fileName: string): Promise<string> {
   const filePath = join(folderPath, fileName)
-  if (!existsSync(filePath)) return ''
+  if (!existsSync(filePath)) throw new Error(`file "${filePath}" does not exists`)
   const stat = await statAsync(filePath)
-  if (stat.isDirectory()) return ''
+  if (stat.isDirectory()) throw new Error(`filepath "${filePath}" is a directory`)
   return readFileSync(filePath, 'utf8')
 }
 
@@ -101,6 +103,11 @@ export async function findStringInFolder (folderPath: string, pattern: string): 
   const filePaths = await readDirectoryAsync(folderPath)
   const matches = []
   for (const filePath of filePaths) {
+    const target = join(folderPath, filePath)
+    const stat = await statAsync(target)
+    if (stat.isDirectory())
+      // return findStringInFolder(target, pattern) // recursive should not work without this
+      continue
     const content = await readFileInFolder(folderPath, filePath)
     if (content.includes(pattern)) matches.push(filePath)
   }
