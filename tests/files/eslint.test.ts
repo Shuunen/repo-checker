@@ -16,8 +16,8 @@ test('eslint config missing file', async function () {
   instance.fileExists = async (): Promise<false> => false
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 1)
-  equal(instance.nbFailed, 0)
+  equal(instance.nbPassed, 1, 'nbPassed')
+  equal(instance.nbFailed, 0, 'nbFailed')
 })
 
 test('eslint config file empty', async function () {
@@ -29,8 +29,8 @@ test('eslint config file empty', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 2)
-  equal(instance.nbFailed, 1)
+  equal(instance.nbPassed, 2, 'nbPassed')
+  equal(instance.nbFailed, 1, 'nbFailed')
 })
 
 test('eslint config file empty for vue ts project', async function () {
@@ -42,8 +42,8 @@ test('eslint config file empty for vue ts project', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 3)
-  equal(instance.nbFailed, 2)
+  equal(instance.nbPassed, 3, 'nbPassed')
+  equal(instance.nbFailed, 2, 'nbFailed')
 })
 
 test('eslint config partial file for js project', async function () {
@@ -64,8 +64,8 @@ test('eslint config partial file for js project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 6)
-  equal(instance.nbFailed, 0)
+  equal(instance.nbPassed, 6, 'nbPassed')
+  equal(instance.nbFailed, 0, 'nbFailed')
 })
 
 test('eslint config partial file for ts project', async function () {
@@ -88,8 +88,8 @@ test('eslint config partial file for ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 7)
-  equal(instance.nbFailed, 0)
+  equal(instance.nbPassed, 7, 'nbPassed')
+  equal(instance.nbFailed, 0, 'nbFailed')
 })
 
 test('eslint config partial file for vue ts project', async function () {
@@ -119,8 +119,8 @@ test('eslint config partial file for vue ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 7)
-  equal(instance.nbFailed, 1)
+  equal(instance.nbPassed, 7, 'nbPassed')
+  equal(instance.nbFailed, 1, 'nbFailed')
 })
 
 test('eslint up to date config file for vue ts project', async function () {
@@ -146,8 +146,9 @@ test('eslint up to date config file for vue ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 8)
-  equal(instance.nbFailed, 0)
+  equal(instance.nbPassed, 8, 'nbPassed')
+  equal(instance.nbFailed, 0, 'nbFailed')
+})
 })
 
 test.run()
