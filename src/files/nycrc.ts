@@ -1,6 +1,6 @@
+/* c8 ignore start */
 import { File } from '../file'
 
-/* c8 ignore start */
 export class NycRcFile extends File {
   async start (): Promise<void> {
     if (!this.data.useNyc) return
