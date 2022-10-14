@@ -10,7 +10,9 @@ export class NycRcFile extends File {
     const ok = this.test(exists, 'nycrc file exists')
     if (!ok) return false
     /* c8 ignore next */
-    await this.inspectFile(hasRc ? '.nycrc' : '.nycrc.json')
+    const fileName = hasRc ? '.nycrc' : '.nycrc.json'
+    await this.checkFileExists(fileName)
+    await this.inspectFile(fileName)
     this.couldContainsSchema('https://json.schemastore.org/nycrc')
     return true
   }
