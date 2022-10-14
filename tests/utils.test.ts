@@ -27,7 +27,11 @@ test('git folders listing', async function () {
 })
 
 test('file creation, detection, read', async function () {
-  equal(await readFileInFolder('/', filename).catch(() => 'failed'), '')
+  equal(await readFileInFolder('/', filename).catch(() => 'failed'), 'failed')
+})
+
+test('read folder instead of file', async function () {
+  equal(await readFileInFolder(testFolder, '').catch(() => 'failed'), 'failed')
 })
 
 test('file size calculation', async function () {
@@ -97,7 +101,7 @@ test('data augment with package', async function () {
   equal(tsData, expectedTsData)
 })
 
-test('find string in folder', async function (){
+test('find string in folder', async function () {
   const folder = join(testFolder, 'data', 'tsProject')
   const string = 'Dwight Schrute'
   const result = await findStringInFolder(folder, string)

@@ -23,7 +23,7 @@ export class File {
 
   async inspectFile (fileName: string): Promise<void> {
     this.fileName = fileName
-    this.originalFileContent = await readFileInFolder(this.folderPath, fileName)
+    this.originalFileContent = await readFileInFolder(this.folderPath, fileName).catch(() => '')
     this.fileContent = this.originalFileContent
   }
 
@@ -55,7 +55,7 @@ export class File {
   }
 
   async initFile (fileName: string): Promise<string> {
-    const template = await readFileInFolder(templatePath, fileName)
+    const template = await readFileInFolder(templatePath, fileName).catch(() => '')
     if (template === '') {
       log.debug(`found no template ${fileName}, using a empty string instead`)
       return ''
