@@ -117,4 +117,13 @@ export class File {
     log.test(isValid, message, justWarn)
     return isValid
   }
+
+  couldContainsSchema (url: string): boolean {
+    const line = `"$schema": "${url}",`
+    const ok = this.couldContains('a $schema declaration', /"\$schema": "/, 1, `like ${line}`, true)
+    if (ok) return true
+    if (!this.doFix) return ok
+    this.fileContent = this.fileContent.replace(/(^{\n)(\s+)/, `$1$2${line}\n$2`)
+    return true
+  }
 }

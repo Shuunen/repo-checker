@@ -123,4 +123,55 @@ test('validator with fix cannot fix if the template require data that is missing
   await instance.end()
 })
 
+test('validator can detect a missing schema', async function () {
+  class MyFileFix extends File {
+    async start (): Promise<void> {
+      this.fileContent = '{}'
+      const ok = this.couldContainsSchema('does-not-exist')
+      equal(ok, false)
+    }
+  }
+  const instance = new MyFileFix(repoCheckerPath, new ProjectData({ quiet: true }))
+  await instance.start()
+  await instance.end()
+})
+
+test('validator can detect an existing schema', async function () {
+  class MyFileFix extends File {
+    async start (): Promise<void> {
+      this.fileContent = `{
+        "something": "else",
+        "$schema": "https://json.schemastore.org/does-exist",
+        "age": 42
+      }`
+      const ok = this.couldContainsSchema('https://json.schemastore.org/does-exist')
+      equal(ok, true)
+    }
+  }
+  const instance = new MyFileFix(repoCheckerPath, new ProjectData({ quiet: true }))
+  await instance.start()
+  await instance.end()
+})
+
+test('validator can fix a missing schema', async function () {
+  class MyFileFix extends File {
+    async start (): Promise<void> {
+      this.fileContent = `{
+        "something": "else",
+        "age": 42
+      }`
+      const ok = this.couldContainsSchema('https://json.schemastore.org/does-exist-too')
+      equal(ok, true)
+      equal(this.fileContent, `{
+        "$schema": "https://json.schemastore.org/does-exist-too",
+        "something": "else",
+        "age": 42
+      }`)
+    }
+  }
+  const instance = new MyFileFix(repoCheckerPath, new ProjectData({ quiet: true }), true)
+  await instance.start()
+  await instance.end()
+})
+
 test.run()
