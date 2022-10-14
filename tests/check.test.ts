@@ -10,8 +10,8 @@ test('repo-checker folder fails with low max size', async function () {
 
 test('repo-checker folder succeed with acceptable max size', async function () {
   const { nbPassed, nbFailed } = await check(repoCheckerPath, new ProjectData({ max_size_ko: 120, npm_package: true, quiet: true }))
-  equal(nbPassed >= 20, true)
-  equal(nbFailed, 0)
+  equal(nbPassed >= 20, true, 'nbPassed')
+  equal(nbFailed, 0, 'nbFailed')
 })
 
 // const folder = join(__dirname, 'checkFolder')

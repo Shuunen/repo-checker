@@ -35,8 +35,8 @@ test('simple validator', async function () {
   await instance.start()
   await instance.end()
   const { nbPassed, nbFailed } = instance
-  equal(nbPassed, 3)
-  equal(nbFailed, 1)
+  equal(nbPassed, 3, 'nbPassed')
+  equal(nbFailed, 1, 'nbFailed')
 })
 
 test('validator with fix', async function () {
@@ -54,8 +54,8 @@ test('validator with fix', async function () {
   await instance.start()
   await instance.end()
   const { nbPassed, nbFailed } = instance
-  equal(nbPassed, 3)
-  equal(nbFailed, 1)
+  equal(nbPassed, 3, 'nbPassed')
+  equal(nbFailed, 1, 'nbFailed')
 })
 
 test('validator with fix & force, overwrite a problematic file with template', async function () {
@@ -73,8 +73,8 @@ test('validator with fix & force, overwrite a problematic file with template', a
   await instance.start()
   await instance.end()
   const { nbPassed, nbFailed } = instance
-  equal(nbPassed, 1)
-  equal(nbFailed, 1)
+  equal(nbPassed, 1, 'nbPassed')
+  equal(nbFailed, 1, 'nbFailed')
 })
 
 test('validator with fix & force, update a problematic file on the go', async function () {
@@ -90,8 +90,8 @@ test('validator with fix & force, update a problematic file on the go', async fu
   await instance.start()
   await instance.end()
   const { nbPassed, nbFailed } = instance
-  equal(nbPassed, 0)
-  equal(nbFailed, 0)
+  equal(nbPassed, 0, 'nbPassed')
+  equal(nbFailed, 0, 'nbFailed')
   equal(readFileSync(existingFilepath, 'utf8'), fakeContent)
   writeFileSync(existingFilepath, originalContent) // restore the file
 })
