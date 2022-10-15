@@ -90,6 +90,8 @@ export class PackageJsonFile extends File {
     const cv = /"(nyc|c8)"/.exec(this.fileContent)?.[1]
     this.test(!!cv, 'one coverage dependency from : nyc, c8', true)
     if (ut && cv) this.couldContains('coverage followed by unit testing', new RegExp(`${cv} ${ut}`), 1)
+    /* suggestions */
+    if (this.data.useTailwind && this.data.useEslint) this.couldContains('an eslint tailwindcss plugin', /"eslint-plugin-tailwindcss"/)
     /* usages */
     if (this.fileContent.includes('"uvu"')) await this.checkUvuUsages()
   }
