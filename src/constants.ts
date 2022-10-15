@@ -28,6 +28,7 @@ export class ProjectData {
   useTailwind = false
   useNyc = false
   useC8 = false
+  useEslint = false
   use_typescript = false
   use_vue = false
   user_id = 'Shuunen'

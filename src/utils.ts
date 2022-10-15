@@ -65,6 +65,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   data.useTailwind = content.includes('"tailwindcss"')
   data.useNyc = content.includes('"nyc"')
   data.useC8 = content.includes('"c8"')
+  data.useEslint = content.includes('"eslint"')
   data.user_id = /github\.com\/([\w-]+)\//.exec(content)?.[1] ?? dataDefaults.user_id
   data.user_id_lowercase = data.user_id.toLowerCase()
   if (/"(vue|vitepress|nuxt)"/.test(content)) data.use_vue = true
