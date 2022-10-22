@@ -15,7 +15,7 @@
     "arg": "5",
     "c8": "7",
     "esbuild": "0.15",
-    "eslint": "8.25",
+    "eslint": "8.26",
     "eslint-plugin-unicorn": "44",
     "require-from-string": "2",
     "shuutils": "6.3",
