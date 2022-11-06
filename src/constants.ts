@@ -11,34 +11,57 @@ export const templatePath = path.join(repoCheckerPath, 'templates')
 export const dataFileHomePath = path.join(home, dataFileName)
 
 export class ProjectData {
-  auto_merge = true
-  ban_sass = true
-  dev_deps_only = true
-  is_module = false
-  license = 'GPL-3.0'
-  max_size_ko = 1
-  npm_package = false
-  package_name = ''
-  quiet = false
+
+  public autoMerge = true
+
+  public banSass = true
+
+  public devDepsOnly = true
+
+  public isModule = false
+
+  public license = 'GPL-3.0'
+
+  public maxSizeKo = 1
+
+  public npmPackage = false
+
+  public packageName = ''
+
+  public quiet = false
+
   /**
    * Tells repo-checker to generate a report for the given project
    */
-  noReport = false
-  repo_id = 'a-great-repo'
-  useTailwind = false
-  useNyc = false
-  useC8 = false
-  useEslint = false
-  use_typescript = false
-  use_vue = false
-  user_id = 'Shuunen'
-  user_id_lowercase = 'shuunen'
-  user_mail = 'romain.racamier@gmail.com'
-  user_name = 'Romain Racamier-Lafon'
-  web_published = false
-  web_url = 'https://my-website.com'
+  public noReport = false
 
-  constructor (data: Partial<ProjectData> = {}) {
+  public repoId = 'a-great-repo'
+
+  public useTailwind = false
+
+  public useNyc = false
+
+  public useC8 = false
+
+  public useEslint = false
+
+  public useTypescript = false
+
+  public useVue = false
+
+  public userId = 'Shuunen'
+
+  public userIdLowercase = 'shuunen'
+
+  public userMail = 'romain.racamier@gmail.com'
+
+  public userName = 'Romain Racamier-Lafon'
+
+  public webPublished = false
+
+  public webUrl = 'https://my-website.com'
+
+  public constructor (data: Partial<ProjectData> = {}) {
     Object.assign(this, data)
   }
 }

@@ -2,7 +2,7 @@ import { File } from '../file'
 import { log } from '../logger'
 
 export class NycRcFile extends File {
-  async start (): Promise<boolean> {
+  public async start (): Promise<boolean> {
     if (!this.data.useNyc && !this.data.useC8) return log.debug('does not use nyc/c8')
     const hasRc = await this.fileExists('.nycrc')
     const hasRcJson = await this.fileExists('.nycrc.json')

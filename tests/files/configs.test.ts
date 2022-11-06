@@ -3,6 +3,7 @@ import { equal } from 'uvu/assert'
 import { ProjectData } from '../../src/constants'
 import { ConfigsFile } from '../../src/files'
 import { join } from '../../src/utils'
+import { promiseValue } from '../utils'
 
 // base project folder
 const testFolder = __dirname
@@ -19,7 +20,7 @@ test('configs can detect a missing git ignore', async function () {
 
 test('configs can detect fix a missing tailwind type', async function () {
   const instance = new ConfigsFile(vueProjectFolder, new ProjectData({ quiet: true, useTailwind: true }), true)
-  instance.initFile = async (fileName: string): Promise<string> => fileName // prevent file creation
+  instance.initFile = promiseValue // prevent file creation
   await instance.start()
   instance.fileName = '' // prevent file update
   equal(instance.fileContent.includes('@type'), true, 'fileContent contains @type')

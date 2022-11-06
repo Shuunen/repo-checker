@@ -5,24 +5,26 @@ import { log } from '../logger'
 import { join } from '../utils'
 
 class Thanks {
-  markdown = ''
-  // eslint-disable-next-line max-params
-  constructor (public label = '', public link = '', public description = '', public expected = false, public fixable = true) {
+  public markdown = ''
+
+  // eslint-disable-next-line max-params, @typescript-eslint/parameter-properties
+  public constructor (public label = '', public link = '', public description = '', public expected = false, public fixable = true) {
     this.markdown = `- [${label}](${link}) : ${description}`
   }
 }
 
 class Badge {
-  markdown = ''
-  // eslint-disable-next-line max-params
-  constructor (public label = '', public link = '', public image = '', public expected = true, public fixable = true) {
+  public markdown = ''
+
+  // eslint-disable-next-line max-params, @typescript-eslint/parameter-properties
+  public constructor (public label = '', public link = '', public image = '', public expected = true, public fixable = true) {
     this.markdown = `[![${label}](${image})](${link})`
   }
 }
 
 /* c8 ignore start */
 export class ReadmeFile extends File {
-  async start (): Promise<void> {
+  public async start (): Promise<void> {
     const exists = await this.checkFileExists('README.md')
     if (!exists) return
     await this.inspectFile('README.md')
@@ -33,11 +35,11 @@ export class ReadmeFile extends File {
     this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
     this.checkMarkdown()
     this.checkTodos()
-    await this.checkBadges()
-    await this.checkThanks()
+    this.checkBadges()
+    this.checkThanks()
   }
 
-  checkMarkdown (): void {
+  private checkMarkdown (): void {
     let ok = this.shouldContains('no CRLF Windows carriage return', /\r/, 0, false, 'prefer Unix LF', true)
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\r\n/g, '\n')
     const starLists = /\n\*\s([\w[])/g
@@ -45,13 +47,13 @@ export class ReadmeFile extends File {
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\n\*\s([\w[])/g, '\n- $1')
   }
 
-  addBadge (line = ''): void {
+  private addBadge (line = ''): void {
     // just after project title
     this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/, `$1${line}\n`)
   }
 
-  async checkBadges (): Promise<void> {
-    const badges = await this.getBadges()
+  private checkBadges (): void {
+    const badges = this.getBadges()
     for (const badge of badges) {
       const message = `${badge.expected ? 'a' : 'no'} "${badge.label}" badge`
       const regex = new RegExp(`\\(${badge.link.replace('?', '\\?')}\\)`)
@@ -60,32 +62,32 @@ export class ReadmeFile extends File {
     }
   }
 
-  async getBadges (): Promise<Badge[]> {
-    const userRepo = `${this.data.user_id}/${this.data.repo_id}`
+  private getBadges (): Badge[] {
+    const userRepo = `${this.data.userId}/${this.data.repoId}`
     const list = [
       new Badge('Project license', `https://github.com/${userRepo}/blob/master/LICENSE`, `https://img.shields.io/github/license/${userRepo}.svg?color=informational`),
     ]
-    if (this.data.web_published && !this.fileContent.includes('shields.io/website/'))
-      list.push(new Badge('Website up', this.data.web_url, `https://img.shields.io/website/https/${this.data.web_url.replace('https://', '')}.svg`, true, this.data.web_url !== dataDefaults.web_url))
-    if (this.data.npm_package) list.push(
-      new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/dm/${this.data.package_name}.svg?color=informational`),
-      new Badge('Npm version', `https://www.npmjs.com/package/${this.data.package_name}`, `https://img.shields.io/npm/v/${this.data.package_name}.svg?color=informational`),
-      new Badge('Publish size', `https://bundlephobia.com/package/${this.data.package_name}`, `https://img.shields.io/bundlephobia/min/${this.data.package_name}?label=publish%20size`),
-      new Badge('Install size', `https://packagephobia.com/result?p=${this.data.package_name}`, `https://badgen.net/packagephobia/install/${this.data.package_name}`),
+    if (this.data.webPublished && !this.fileContent.includes('shields.io/website/'))
+      list.push(new Badge('Website up', this.data.webUrl, `https://img.shields.io/website/https/${this.data.webUrl.replace('https://', '')}.svg`, true, this.data.webUrl !== dataDefaults.webUrl))
+    if (this.data.npmPackage) list.push(
+      new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.packageName}`, `https://img.shields.io/npm/dm/${this.data.packageName}.svg?color=informational`),
+      new Badge('Npm version', `https://www.npmjs.com/package/${this.data.packageName}`, `https://img.shields.io/npm/v/${this.data.packageName}.svg?color=informational`),
+      new Badge('Publish size', `https://bundlephobia.com/package/${this.data.packageName}`, `https://img.shields.io/bundlephobia/min/${this.data.packageName}?label=publish%20size`),
+      new Badge('Install size', `https://packagephobia.com/result?p=${this.data.packageName}`, `https://badgen.net/packagephobia/install/${this.data.packageName}`),
     )
     return list
   }
 
-  addThanks (line = ''): void {
+  private addThanks (line = ''): void {
     // just after Thank title
     this.fileContent = this.fileContent.replace(/(## Thank.*\n\n)/, `$1${line}\n`)
     log.debug('added line', line)
   }
 
-  async checkThanks (): Promise<void> {
+  private checkThanks (): void {
     const hasSection = this.couldContains('a thanks section', /## Thanks/)
     if (!hasSection) return
-    const thanks = await this.getThanks()
+    const thanks = this.getThanks()
     for (const thank of thanks) {
       const message = `${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`
       const regex = new RegExp(`\\[${thank.label}]`, 'i')
@@ -96,7 +98,7 @@ export class ReadmeFile extends File {
     }
   }
 
-  async getThanks (): Promise<Thanks[]> {
+  private getThanks (): Thanks[] {
     const list = [
       new Thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme', this.fileContent.includes('shields')),
       new Thanks('Travis-ci.com', 'https://travis-ci.com', 'for providing free continuous deployments', this.fileContent.includes('travis-ci')),
@@ -108,7 +110,7 @@ export class ReadmeFile extends File {
     const json = readFileSync(filePath, 'utf8')
     if (json === '') return list
     list.push(
-      new Thanks('Arg', 'https://github.com/vercel/arg', 'unopinionated, no-frills CLI argument parser', json.includes('"arg":')),
+      new Thanks('Arg', 'https://github.com/vercel/arg', 'un-opinionated, no-frills CLI argument parser', json.includes('"arg":')),
       new Thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use', json.includes('ava"')),
       new Thanks('C8', 'https://github.com/bcoe/c8', 'simple & effective cli for code coverage', json.includes('c8"')),
       new Thanks('Chokidar', 'https://github.com/paulmillr/chokidar', 'minimal and efficient cross-platform file watching library', json.includes('"chokidar"')),
@@ -118,7 +120,7 @@ export class ReadmeFile extends File {
       new Thanks('Mocha', 'https://github.com/mochajs/mocha', 'great test runner easy to setup & use', json.includes('mocha"')),
       new Thanks('Npm-run-all', 'https://github.com/mysticatea/npm-run-all', 'to keep my npm scripts clean & readable', json.includes('npm-run-all"')),
       new Thanks('Npm-parallel', 'https://github.com/spion/npm-parallel', 'to keep my npm scripts clean & readable', json.includes('npm-parallel"')),
-      new Thanks('Nuxt', 'https://github.com/nuxt/nuxt.js', 'minimalistic framework for server-rendered Vue.js applications', json.includes('"nuxt"')),
+      new Thanks('Nuxt', 'https://github.com/nuxt/nuxt.js', 'minimalist framework for server-rendered Vue.js applications', json.includes('"nuxt"')),
       new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'simple & effective cli for code coverage', json.includes('nyc"')),
       new Thanks('Reef', 'https://github.com/cferdinandi/reef', 'a lightweight library for creating reactive, state-based components and UI', json.includes('reefjs"')),
       new Thanks('Repo-checker', 'https://github.com/Shuunen/repo-checker', 'eslint cover /src code and this tool the rest ^^', json.includes('repo-check"')),
@@ -138,7 +140,7 @@ export class ReadmeFile extends File {
     return list
   }
 
-  checkTodos (): void {
+  private checkTodos (): void {
     const matches = this.fileContent.match(/- \[ ] (.*)/g)
     if (matches === null) return
     for (const line of matches) {

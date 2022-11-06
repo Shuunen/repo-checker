@@ -1,7 +1,7 @@
 import { File } from '../file'
 
 export class EditorConfigFile extends File {
-  async start (): Promise<void> {
+  public async start (): Promise<void> {
     const exists = await this.checkFileExists('.editorconfig')
     if (!exists) return
     await this.inspectFile('.editorconfig')

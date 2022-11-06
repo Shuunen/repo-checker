@@ -3,7 +3,7 @@ import { ConfigsFile, EditorConfigFile, EsLintFile, GithubWorkflowFile, LicenseF
 import { log } from './logger'
 import { augmentData, getGitFolders } from './utils'
 
-const Checkers = [ConfigsFile, EditorConfigFile, EsLintFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TravisFile, TsConfigFile]
+const CHECKERS = [ConfigsFile, EditorConfigFile, EsLintFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TravisFile, TsConfigFile]
 
 export function report (nbPassed = 0, nbFailed = 0): void {
   log.info('Report :')
@@ -26,8 +26,8 @@ export async function check (folderPath: string, data: ProjectData, doFix = fals
     log.info('Checking folder :', folder)
     log.setIndentLevel(1)
     const dataFolder = await augmentData(folder, data, folders.length > 1)
-    for (const Checker of Checkers) {
-      const instance = new Checker(folder, dataFolder, doFix, doForce)
+    for (const checker of CHECKERS) {
+      const instance = new checker(folder, dataFolder, doFix, doForce)
       await instance.start()
       await instance.end()
       nbPassed += instance.nbPassed

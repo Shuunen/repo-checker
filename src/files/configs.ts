@@ -2,25 +2,25 @@ import { File } from '../file'
 import { log } from '../logger'
 
 export class ConfigsFile extends File {
-  async start (): Promise<void> {
+  public async start (): Promise<void> {
     await this.checkGitIgnore()
     if (this.data.useTailwind) await this.checkTailwind()
   }
 
-  async checkGitIgnore (): Promise<void> {
+  private async checkGitIgnore (): Promise<void> {
     const ok = await this.checkFileExists('.gitignore')
     if (!ok) return
     await this.inspectFile('.gitignore')
     this.couldContains('node_modules', /node_modules/)
   }
 
-  async checkTailwind (): Promise<void> {
+  private async checkTailwind (): Promise<void> {
     const jsExists = await this.fileExists('tailwind.config.js')
     const tsExists = await this.fileExists('tailwind.config.ts')
     const mjsExists = await this.fileExists('tailwind.config.mjs')
     /* c8 ignore next 2 */
     // eslint-disable-next-line unicorn/no-nested-ternary
-    const fileName = 'tailwind.config.' + (mjsExists ? 'mjs' : (tsExists ? 'ts' : (jsExists ? 'js' : 'cjs')))
+    const fileName = 'tailwind.config.' + (mjsExists ? 'mjs' : tsExists ? 'ts' : jsExists ? 'js' : 'cjs')
     await this.checkFileExists(fileName)
     log.debug('found tailwind config file :', fileName)
     await this.inspectFile(fileName)

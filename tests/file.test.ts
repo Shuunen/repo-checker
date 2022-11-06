@@ -13,7 +13,7 @@ const fakeContent = 'zorglub'
 
 test('simple validator', async function () {
   class MyFile extends File {
-    async start (): Promise<void> {
+    public async start (): Promise<void> {
       writeFileSync(missingFilepath, 'Foobar content')
       await this.inspectFile(missingFilename)
       equal(this.nbPassed, 0)
@@ -41,7 +41,7 @@ test('simple validator', async function () {
 
 test('validator with fix', async function () {
   class MyFileFix extends File {
-    async start (): Promise<void> {
+    public async start (): Promise<void> {
       await this.checkFileExists(existingFilename)
       unlinkSync(existingFilepath)
       await this.checkFileExists(existingFilename)
@@ -60,7 +60,7 @@ test('validator with fix', async function () {
 
 test('validator with fix & force, overwrite a problematic file with template', async function () {
   class MyFileFixForce extends File {
-    async start (): Promise<void> {
+    public async start (): Promise<void> {
       await this.inspectFile(existingFilename)
       this.shouldContains('two dots', /\./g, 2)
       this.shouldContains('a regular nvmrc file content', /travers/)
@@ -99,7 +99,7 @@ test('validator with fix & force, update a problematic file on the go', async fu
 test('validator without force cannot fix a problematic file on the go', async function () {
   let originalContent = ''
   class MyFileFixForce extends File {
-    async start (): Promise<void> {
+    public async start (): Promise<void> {
       await this.inspectFile(existingFilename)
       originalContent = this.fileContent
       this.shouldContains('a weird stuff', /zorglub/)
@@ -138,7 +138,8 @@ test('validator can detect a missing schema', async function () {
 
 test('validator can detect an existing schema', async function () {
   class MyFileFix extends File {
-    async start (): Promise<void> {
+    public async start (): Promise<void> {
+      await sleep(1)
       this.fileContent = `{
         "something": "else",
         "$schema": "https://json.schemastore.org/does-exist",
@@ -155,7 +156,8 @@ test('validator can detect an existing schema', async function () {
 
 test('validator can fix a missing schema', async function () {
   class MyFileFix extends File {
-    async start (): Promise<void> {
+    public async start (): Promise<void> {
+      await sleep(1)
       this.fileContent = `{
         "something": "else",
         "age": 42

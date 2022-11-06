@@ -4,7 +4,7 @@ import { File } from '../file'
 import { log } from '../logger'
 import { readFileInFolder } from '../utils'
 
-type EslintConfigRules = Record<string, string | string[]>
+type EslintConfigRules = Record<string, string[] | string>
 
 interface EslintConfigOverride {
   files: string[]
@@ -13,49 +13,51 @@ interface EslintConfigOverride {
 }
 
 class EslintRcJsonFile {
-  rules: EslintConfigRules = {}
-  overrides: EslintConfigOverride[] = []
-  constructor (data: Partial<EslintRcJsonFile> = {}) {
+  public overrides: EslintConfigOverride[] = []
+
+  public rules: EslintConfigRules = {}
+
+  public constructor (data: Partial<EslintRcJsonFile> = {}) {
     Object.assign(this, data)
   }
 }
 
 export class EsLintFile extends File {
-  async start (): Promise<boolean> {
+  public async start (): Promise<boolean> {
     await this.checkNoFileExists('xo.config.js')
     return this.checkEslint()
   }
 
-  async checkEslint (): Promise<boolean> {
+  private async checkEslint (): Promise<boolean> {
     const filename = '.eslintrc.json'
     const exists = await this.fileExists(filename)
     if (!exists) return log.debug('skipping eslintrc checks')
     await this.inspectFile(filename)
     this.couldContains('eslint recommended rules extend', /"eslint:recommended"/)
-    this.couldContains('unicorn rules extend', /plugin:unicorn\/recommended/)
-    this.couldContains('unicorn plugin', /"unicorn"/)
+    this.couldContains('unicorn rules extend', /plugin:unicorn\/all/)
     this.shouldContains('no promise plugin (require eslint 7)', /(plugin:promise\/recommended)|("promise")/, 0)
     await this.checkRules()
-    if (this.data.use_vue) await this.checkVue()
-    if (this.data.use_typescript) return this.checkTs()
+    if (this.data.useTailwind) this.shouldContains('tailwind rules extend', /plugin:tailwindcss\/recommended/)
+    if (this.data.useVue) this.checkVue()
+    if (this.data.useTypescript) return this.checkTs()
     return this.checkJs()
   }
 
-  findRules (config: EslintRcJsonFile): EslintConfigRules {
-    const override = config.overrides.find(override => override.files.find(file => file.endsWith('.ts')))
+  private findRules (config: EslintRcJsonFile): EslintConfigRules | undefined {
+    const override = config.overrides.find(anOverride => anOverride.files.find(file => file.endsWith('.ts')))
     if (override && Object.keys(override.rules).length > 0) {
       log.debug(`found ${Object.keys(override.rules).length} override rules`)
       return override.rules
     }
-    if (config.rules && Object.keys(config.rules).length > 0) {
+    if (Object.keys(config.rules).length > 0) {
       log.debug(`found no override rules but ${Object.keys(config.rules).length} root/global rules`)
       return config.rules
     }
     log.error('failed to find rules in eslint config')
-    return {}
+    return
   }
 
-  async checkRules (): Promise<boolean> {
+  private async checkRules (): Promise<boolean> {
     let data = parseJson<EslintRcJsonFile>(this.fileContent)
     if (data.error) return log.warn('cannot check empty or invalid .eslintrc.json file')
     const content = new EslintRcJsonFile(data.value)
@@ -69,7 +71,7 @@ export class EsLintFile extends File {
     /* c8 ignore next */
     if (!expectedRules) return log.error('failed to found repo checker eslint rules')
     const missingRules = Object.keys(expectedRules).filter(rule => {
-      if (rule.startsWith('@typescript') && !this.data.use_typescript) return false
+      if (rule.startsWith('@typescript') && !this.data.useTypescript) return false
       return !(rule in rules)
     })
     const total = Object.keys(expectedRules).length
@@ -78,20 +80,23 @@ export class EsLintFile extends File {
     return true
   }
 
-  async checkJs (): Promise<boolean> {
+  private checkJs (): boolean {
     return this.shouldContains('eslint recommended rules extend', /eslint:recommended/)
   }
 
-  async checkTs (): Promise<boolean> {
+  private checkTs (): boolean {
     // check here ts & vue ts projects
-    if (this.data.use_vue) return true
+    if (this.data.useVue) return true
     // check here ts only projects
-    this.shouldContains('typescript eslint extend', /plugin:@typescript-eslint\/recommended/)
-    this.shouldContains('typescript eslint plugin', /"@typescript-eslint"/)
+    const ok = this.fileContent.includes('plugin:@typescript-eslint')
+    if (!ok) {
+      this.shouldContains('typescript eslint extend', /plugin:@typescript-eslint\/recommended/)
+      this.couldContains('a stricter typescript eslint extend', /plugin:@typescript-eslint\/all/)
+    }
     return true
   }
 
-  async checkVue (): Promise<void> {
+  private checkVue (): void {
     this.shouldContains('vue recommended rules extends', /plugin:vue\/vue3-recommended/)
     this.shouldContains('no easy vue essential rules set', /plugin:vue\/essential/, 0)
     this.shouldContains('vue ts recommended rules extends', /@vue\/typescript\/recommended/)
