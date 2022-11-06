@@ -72,7 +72,7 @@ test('eslint config partial file for js project', async function () {
 test('eslint config partial file for ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new EsLintFile('', new ProjectData({ use_typescript: true }))
+  const instance = new EsLintFile('', new ProjectData({ useTypescript: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
   instance.fileContent = `{
@@ -96,7 +96,7 @@ test('eslint config partial file for ts project', async function () {
 test('eslint config partial file for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new EsLintFile('', new ProjectData({ use_vue: true, use_typescript: true }))
+  const instance = new EsLintFile('', new ProjectData({ useVue: true, useTypescript: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
   instance.fileContent = `{
@@ -127,7 +127,7 @@ test('eslint config partial file for vue ts project', async function () {
 test('eslint up to date config file for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new EsLintFile('', new ProjectData({ use_vue: true, use_typescript: true }))
+  const instance = new EsLintFile('', new ProjectData({ useVue: true, useTypescript: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
   instance.fileContent = `{

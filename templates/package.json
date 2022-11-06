@@ -1,20 +1,20 @@
 {
   "$schema": "https://json.schemastore.org/package",
-  "author": "{{ user_name }} <{{ user_mail }}>",
-  "bugs": "https://github.com/{{ user_id }}/{{ repo_id }}/issues",
+  "author": "{{ userName }} <{{ userMail }}>",
+  "bugs": "https://github.com/{{ userId }}/{{ repoId }}/issues",
   "description": "",
   "files": [
     "public",
     "src"
   ],
-  "homepage": "https://github.com/{{ user_id }}/{{ repo_id }}",
+  "homepage": "https://github.com/{{ userId }}/{{ repoId }}",
   "keywords": [],
   "license": "{{ license }}",
-  "name": "@{{ user_id_lowercase }}/{{ repo_id }}",
+  "name": "@{{ userIdLowercase }}/{{ repoId }}",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/{{ user_id }}/{{ repo_id }}.git"
+    "url": "https://github.com/{{ userId }}/{{ repoId }}.git"
   },
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/my-app.min.cjs",

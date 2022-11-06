@@ -30,7 +30,7 @@ Choose your favorite method :
 
 1. Via npx : `npx repo-check`
 2. Via npm locally : `npm install repo-check` then run `npx repo-check` or use it in your `package.json` scripts
-3. Via local installation : clone this repository, cd into the folder and use `node .`
+3. Via local installation : clone this repository, cd into the folder and use `pnpm start`, `pnpm start -- --target=../my-other-project` for single run or `pnpm dev`, `pnpm dev -- --target=../my-other-project`
 
 Pro tip : [init](#init) repo-checker before [fixing](#fix) files.
 
@@ -72,15 +72,23 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] check `width` and `height` attributes to any `<img` or `<video` to ensures that the browser can allocate the correct amount of space in the document
 - [ ] add nbFixes to the report
 - [ ] check last tag, suggest to tag if last one is old
-- [ ] get rid of eslint-disable : camelcase, no-await-in-loop
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
+- [ ] try to benchmark the use of existsSync, writeFileSync, ... vs async versions
+- [ ] check old naming convention inside repo-checker.config.js
+- [ ] handle a repo-checker.json config file
 
 ## Benchmarks
 
 Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
 
-| command alias      | date       | main lib targeted   | seconds | comment                                  |
+| command alias      | date       | main lib targeted   | delay   | comment                                  |
 | ------------------ | ---------- | ------------------- | ------- | ---------------------------------------- |
+| uvu                | 2022-11-05 | uvu                 | 1 sec   | I mean, I'm adding tests over time so... |
+| c8-uvu             | 2022-11-05 | c8 & uvu            | 1,6 sec | 600 ms too for coverage, pretty good     |
+| eslint             | 2022-11-05 | eslint              | 5,6 sec |                                          |
+| esbuild            | 2022-11-05 | esbuild             | 100 ms  |                                          |
+| tsc-no-emit        | 2022-11-05 | typescript          | 1,3 sec | way better :) no idea why                |
+| repo-check         | 2022-11-05 | node & repo-checker | 90 ms   | way better :) no idea why                |
 | repo-check         | 2022-03-12 | node & repo-checker | 160 ms  | pretty cool before any optimisations     |
 | repo-check-no-out  | 2022-03-12 | node & repo-checker | 140 ms  | 20 ms dedicated to console/file output   |
 | esbuild            | 2022-03-12 | esbuild             | 170 ms  |                                          |

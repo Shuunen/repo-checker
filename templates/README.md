@@ -1,12 +1,12 @@
-# {{ repo_id }}
+# {{ repoId }}
 
-[![GitHub license](<https://img.shields.io/github/license/{{> user_id_lowercase }}/{{ repo_id }}.svg?color=informational)](<https://github.com/{{> user_id }}/{{ repo_id }}/blob/master/LICENSE)
+[![GitHub license](<https://img.shields.io/github/license/{{> userIdLowercase }}/{{ repoId }}.svg?color=informational)](<https://github.com/{{> userId }}/{{ repoId }}/blob/master/LICENSE)
 
-[![David](<https://img.shields.io/david/{{> user_id_lowercase }}/{{ repo_id }}.svg)](<https://david-dm.org/{{> user_id_lowercase }}/{{ repo_id }})
-[![LGTM Grade](<https://img.shields.io/lgtm/grade/javascript/github/{{> user_id }}/{{ repo_id }}.svg)](<https://lgtm.com/projects/g/{{> user_id }}/{{ repo_id }})
-[![Scrutinizer Score](<https://scrutinizer-ci.com/g/{{> user_id }}/{{ repo_id }}/badges/quality-score.png?b=master)](<https://scrutinizer-ci.com/g/{{> user_id }}/{{ repo_id }})
+[![David](<https://img.shields.io/david/{{> userIdLowercase }}/{{ repoId }}.svg)](<https://david-dm.org/{{> userIdLowercase }}/{{ repoId }})
+[![LGTM Grade](<https://img.shields.io/lgtm/grade/javascript/github/{{> userId }}/{{ repoId }}.svg)](<https://lgtm.com/projects/g/{{> userId }}/{{ repoId }})
+[![Scrutinizer Score](<https://scrutinizer-ci.com/g/{{> userId }}/{{ repoId }}/badges/quality-score.png?b=master)](<https://scrutinizer-ci.com/g/{{> userId }}/{{ repoId }})
 
-> {{ repo_id }} is a great project !
+> {{ repoId }} is a great project !
 
 ## Thanks
 

@@ -4,7 +4,7 @@ import { check, report } from '../src/check'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 
 test('repo-checker folder fails with low max size', async function () {
-  const message = await check(repoCheckerPath, new ProjectData({ max_size_ko: 2, npm_package: true, quiet: true })).catch(() => 'failed')
+  const message = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 2, npmPackage: true, quiet: true })).catch(() => 'failed')
   equal(message, 'failed')
 })
 

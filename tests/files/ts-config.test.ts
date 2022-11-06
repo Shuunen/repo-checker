@@ -8,7 +8,7 @@ import { promiseTrue, promiseVoid } from '../utils'
 test('ts config file no check', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new TsConfigFile('', new ProjectData({ use_typescript: false }))
+  const instance = new TsConfigFile('', new ProjectData({ useTypescript: false }))
   await instance.start()
   await instance.end()
   equal(instance.nbPassed, 0)
@@ -60,7 +60,7 @@ test('ts config file fix', async function () {
 test('ts config malformed', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new TsConfigFile('', new ProjectData({ use_typescript: true }))
+  const instance = new TsConfigFile('', new ProjectData({ useTypescript: true }))
   const fileInitial = '"name": "John" }'
   instance.inspectFile = promiseVoid
   instance.fileContent = fileInitial
