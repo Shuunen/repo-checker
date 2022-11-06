@@ -26,6 +26,7 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'eslintrc-json-has-eslint-recommended-rules-extend',
     'eslintrc-json-has-unicorn-rules-extend',
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
+    'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
     'current-eslintrc-json-has-only-34-of-the-34-custom-rules-in-repo-checker-eslintrc-json',
     'github-workflows-ci-yml-has-a-checkout-step-in-ci-workflow',
     'github-workflows-ci-yml-has-a-node-step-in-ci-workflow',
