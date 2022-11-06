@@ -4,7 +4,7 @@ import { equal } from 'uvu/assert'
 import { config } from '../package.json'
 import { log } from '../src/logger'
 
-test('log correctly', function () {
+test('logger log correctly', function () {
   log.consoleLog = false
   log.fileLog = true
   equal(log.start(), true)
@@ -20,11 +20,11 @@ test('log correctly', function () {
   equal(log.fix('damn-fix'), true)
 })
 
-test('can set indentation level', function () {
+test('logger can set indentation level', function () {
   equal(log.setIndentLevel(2), 2)
 })
 
-test('can prevent log file generation', function () {
+test('logger can prevent log file generation', function () {
   log.fileLog = false
   log.consoleLog = false
   unlinkSync(config.logFile)
@@ -35,6 +35,16 @@ test('can prevent log file generation', function () {
   equal(log.success(false, 'damn-success not in console'), false)
   equal(log.fix('damn-fix'), false)
   equal(existsSync(config.logFile), false)
+})
+
+test('logger can log unknown errors', function () {
+  log.fileLog = false
+  log.consoleLog = false
+  equal(log.unknownError('damn-err'), false)
+  equal(log.unknownError(new Error('damn-err')), false)
+  equal(log.unknownError({}), false)
+  equal(log.unknownError([]), false)
+  equal(log.unknownError(0), false)
 })
 
 test.run()

@@ -3,7 +3,7 @@ import { bgYellow, black } from 'shuutils/dist/colors'
 import { fillTemplate } from 'shuutils/dist/strings'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
-import { getFileSizeInKo, join, readFileInFolder } from './utils'
+import { getFileSizeInKo, join, messageToCode, readFileInFolder } from './utils'
 
 const MORE_THAN_ONE = 99
 
@@ -113,6 +113,9 @@ export class File {
   }
 
   public test (isValid: boolean, message: string, justWarn = false): boolean {
+    const code = messageToCode(message)
+    if (isValid) this.passed.push(code)
+    else if (!justWarn) this.failed.push(code)
     log.test(isValid, message, justWarn)
     return isValid
   }

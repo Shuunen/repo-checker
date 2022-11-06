@@ -8,18 +8,22 @@ test('nyc rc file exists', async function () {
   const instance = new NycRcFile(repoCheckerPath, new ProjectData({ useNyc: true, quiet: true }))
   await instance.start()
   await instance.end()
-  const { nbPassed, nbFailed } = instance
-  equal(nbPassed, 3, 'nbPassed')
-  equal(nbFailed, 0, 'nbFailed')
+  const { passed, failed } = instance
+  equal(passed, [
+    'nycrc-file-exists',
+    'has-a-nycrc-json-file',
+    'nycrc-json-has-a-schema-declaration',
+  ], 'passed')
+  equal(failed, [], 'failed')
 })
 
 test('nyc rc check skip on a non nyc/c8 project', async function () {
   const instance = new NycRcFile(repoCheckerPath, new ProjectData({ quiet: true }))
   await instance.start()
   await instance.end()
-  const { nbPassed, nbFailed } = instance
-  equal(nbPassed, 0, 'nbPassed')
-  equal(nbFailed, 0, 'nbFailed')
+  const { passed, failed } = instance
+  equal(passed, [], 'passed')
+  equal(failed, [], 'failed')
 })
 
 test('nyc rc file missing', async function () {
@@ -27,7 +31,7 @@ test('nyc rc file missing', async function () {
   instance.fileExists = promiseFalse
   await instance.start()
   await instance.end()
-  const { nbPassed, nbFailed } = instance
-  equal(nbPassed, 0, 'nbPassed')
-  equal(nbFailed, 1, 'nbFailed')
+  const { passed, failed } = instance
+  equal(passed, [], 'passed')
+  equal(failed, ['nycrc-file-exists'], 'failed')
 })

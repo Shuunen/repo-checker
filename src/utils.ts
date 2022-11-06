@@ -131,3 +131,7 @@ export async function findStringInFolder (folderPath: string, pattern: string, i
   }
   return matches
 }
+
+export const messageToCode = (message: string): string => {
+  return slugify(message.replace(/[,./:\\_]/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2'))
+}

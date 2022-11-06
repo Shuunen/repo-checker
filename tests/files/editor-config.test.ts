@@ -11,8 +11,8 @@ test('editor config missing file', async function () {
   instance.checkFileExists = promiseFalse
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 0)
-  equal(instance.nbFailed, 0)
+  equal(instance.passed, [])
+  equal(instance.failed, [])
 })
 
 test('editor config file', async function () {
@@ -24,8 +24,15 @@ test('editor config file', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 1)
-  equal(instance.nbFailed, 4)
+  equal(instance.passed, [
+    'has-no-specific-html-indent-rule',
+  ])
+  equal(instance.failed, [
+    'does-not-have-space-indent-indent-style-space',
+    'does-not-have-indent-size-of-2-indent-size-2',
+    'does-not-have-unix-style-line-endings-end-of-line-lf',
+    'does-not-have-utf-8-encoding-charset-utf-8',
+  ])
 })
 
 test.run()

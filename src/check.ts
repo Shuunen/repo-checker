@@ -5,20 +5,20 @@ import { augmentData, getGitFolders } from './utils'
 
 const CHECKERS = [ConfigsFile, EditorConfigFile, EsLintFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TravisFile, TsConfigFile]
 
-export function report (nbPassed = 0, nbFailed = 0): void {
+export function report (passed = 0, failed = 0): void {
   log.info('Report :')
   log.setIndentLevel(1)
-  log.test(nbPassed > 0, `${nbPassed} test(s) passed successfully`, false, true)
-  log.test(nbFailed === 0, `${nbFailed} test(s) failed`, false, true)
+  log.test(passed > 0, `${passed} test(s) passed successfully`, false, true)
+  log.test(failed === 0, `${failed} test(s) failed`, false, true)
   log.line()
   log.setIndentLevel(0)
-  if (nbFailed > 0) throw new Error('failed at validating at least one rule in one folder')
+  if (failed > 0) throw new Error('failed at validating at least one rule in one folder')
 }
 
-export async function check (folderPath: string, data: ProjectData, doFix = false, doForce = false): Promise<{ nbPassed: number; nbFailed: number }> {
+export async function check (folderPath: string, data: ProjectData, doFix = false, doForce = false): Promise<{ passed: string[]; failed: string[] }> {
   const folders = await getGitFolders(folderPath)
-  let nbPassed = 0
-  let nbFailed = 0
+  let passed: string[] = []
+  let failed: string[] = []
   log.consoleLog = !data.quiet
   log.fileLog = !data.noReport
   /* eslint-disable no-await-in-loop */
@@ -30,13 +30,13 @@ export async function check (folderPath: string, data: ProjectData, doFix = fals
       const instance = new checker(folder, dataFolder, doFix, doForce)
       await instance.start()
       await instance.end()
-      nbPassed += instance.nbPassed
-      nbFailed += instance.nbFailed
+      passed = [...passed, ...instance.passed]
+      failed = [...failed, ...instance.failed]
     }
     log.line()
     log.setIndentLevel(0)
   }
   /* eslint-enable no-await-in-loop */
-  report(nbPassed, nbFailed)
-  return { nbPassed, nbFailed }
+  report(passed.length, failed.length)
+  return { passed, failed }
 }
