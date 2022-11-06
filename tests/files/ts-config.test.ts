@@ -3,6 +3,7 @@ import { equal } from 'uvu/assert'
 import { ProjectData } from '../../src/constants'
 import { TsConfigFile } from '../../src/files'
 import { log } from '../../src/logger'
+import { promiseTrue, promiseVoid } from '../utils'
 
 test('ts config file no check', async function () {
   log.consoleLog = false
@@ -45,9 +46,9 @@ test('ts config file fix', async function () {
       target: 'ES2020',
     },
   }, undefined, 2)
-  instance.inspectFile = async (): Promise<undefined> => void 0
+  instance.inspectFile = promiseVoid
   instance.fileContent = fileInitial
-  instance.updateFile = async (): Promise<true> => true
+  instance.updateFile = promiseTrue
   equal(instance.fileContent, fileInitial)
   await instance.start()
   await instance.end()
@@ -61,7 +62,7 @@ test('ts config malformed', async function () {
   log.fileLog = false
   const instance = new TsConfigFile('', new ProjectData({ use_typescript: true }))
   const fileInitial = '"name": "John" }'
-  instance.inspectFile = async (): Promise<undefined> => void 0
+  instance.inspectFile = promiseVoid
   instance.fileContent = fileInitial
   equal(instance.fileContent, fileInitial)
   await instance.start()

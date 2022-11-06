@@ -23,7 +23,7 @@ test('git folders listing', async function () {
   })
   const folders = await getGitFolders(testFolder)
   equal(folders.length >= 2, true)
-  projects.forEach(name => rmSync(join(testFolder, name), { recursive: true }))
+  projects.forEach(name => { rmSync(join(testFolder, name), { recursive: true }) })
 })
 
 test('file creation, detection, read', async function () {

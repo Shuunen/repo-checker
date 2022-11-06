@@ -2,7 +2,7 @@ import { File } from '../file'
 
 /* c8 ignore start */
 export class LicenseFile extends File {
-  async start (): Promise<void> {
+  public async start (): Promise<void> {
     const exists = await this.checkFileExists('LICENSE')
     if (!exists) return
     await this.inspectFile('LICENSE')

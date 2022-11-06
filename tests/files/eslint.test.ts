@@ -4,21 +4,17 @@ import { ProjectData } from '../../src/constants'
 import { EsLintFile } from '../../src/files'
 import { log } from '../../src/logger'
 import { join } from '../../src/utils'
+import { promiseFalse, promiseTrue, promiseVoid } from '../utils'
 
 const testFolder = join(__dirname, '..')
 const vueProjectFolder = join(testFolder, 'data', 'vueProject')
 const tsProjectFolder = join(testFolder, 'data', 'tsProject')
 
-const fileExists = async (path: string): Promise<boolean> => {
-  if (path === '.eslintrc.json') return true
-  return false
-}
-
 test('eslint config missing file', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile()
-  instance.fileExists = async (): Promise<false> => false
+  instance.fileExists = promiseFalse
   await instance.start()
   await instance.end()
   equal(instance.nbPassed, 1, 'nbPassed')
@@ -29,8 +25,8 @@ test('eslint config file empty', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile()
-  instance.fileExists = fileExists
-  instance.inspectFile = async (): Promise<undefined> => void 0
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
   instance.fileContent = ''
   await instance.start()
   await instance.end()
@@ -41,9 +37,9 @@ test('eslint config file empty', async function () {
 test('eslint config file empty for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new EsLintFile('', new ProjectData({ use_vue: true, use_typescript: true }))
-  instance.fileExists = fileExists
-  instance.inspectFile = async (): Promise<undefined> => void 0
+  const instance = new EsLintFile('', new ProjectData({ useVue: true, useTypescript: true }))
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
   instance.fileContent = ''
   await instance.start()
   await instance.end()
@@ -55,8 +51,8 @@ test('eslint config partial file for js project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile()
-  instance.fileExists = fileExists
-  instance.inspectFile = async (): Promise<undefined> => void 0
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
   instance.fileContent = `{
     "extends": [
       "eslint:recommended",
@@ -77,8 +73,8 @@ test('eslint config partial file for ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ use_typescript: true }))
-  instance.fileExists = fileExists
-  instance.inspectFile = async (): Promise<undefined> => void 0
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
   instance.fileContent = `{
     "extends": [
       "eslint:recommended",
@@ -101,8 +97,8 @@ test('eslint config partial file for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ use_vue: true, use_typescript: true }))
-  instance.fileExists = fileExists
-  instance.inspectFile = async (): Promise<undefined> => void 0
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
   instance.fileContent = `{
     "extends": [
       "eslint:recommended",
@@ -132,8 +128,8 @@ test('eslint up to date config file for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ use_vue: true, use_typescript: true }))
-  instance.fileExists = fileExists
-  instance.inspectFile = async (): Promise<undefined> => void 0
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
   instance.fileContent = `{
     "extends": [
       "plugin:vue/vue3-recommended",
@@ -159,7 +155,7 @@ test('eslint config file with no rules', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile(vueProjectFolder, new ProjectData({}))
-  instance.fileExists = fileExists
+  instance.fileExists = promiseTrue
   await instance.start()
   await instance.end()
   equal(instance.nbPassed, 2, 'nbPassed')
@@ -170,7 +166,7 @@ test('eslint config file with just rules (no override)', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile(tsProjectFolder, new ProjectData({}))
-  instance.fileExists = fileExists
+  instance.fileExists = promiseTrue
   await instance.start()
   await instance.end()
   equal(instance.nbPassed, 2, 'nbPassed')

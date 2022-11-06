@@ -1,10 +1,10 @@
-/* eslint-disable unicorn/no-process-exit */
 import arg from 'arg'
 import { existsSync, writeFileSync } from 'fs'
 import requireFromString from 'require-from-string'
 import { version } from '../package.json'
 import { check } from './check'
-import { dataDefaults, dataFileHomePath, dataFileName, home, ProjectData, repoCheckerPath, templatePath } from './constants'
+import type { ProjectData } from './constants'
+import { dataDefaults, dataFileHomePath, dataFileName, home, repoCheckerPath, templatePath } from './constants'
 import { log } from './logger'
 import { join, readFileInFolder, resolve } from './utils'
 
@@ -22,13 +22,7 @@ async function initDataFile (doForce = false): Promise<void> {
   else log.error('repo-checker failed at creating this file :', dataFileHomePath)
 }
 
-async function getData (argument = '', target = ''): Promise<ProjectData> {
-  const dataPath = await getDataPath(argument, target)
-  if (dataPath.length === 0) return dataDefaults
-  log.info('loading data from', dataPath)
-  return requireFromString(await readFileInFolder(dataPath, ''))
-}
-
+// eslint-disable-next-line @typescript-eslint/require-await
 async function getDataPath (argument = '', target = ''): Promise<string> {
   const fileExists = existsSync(join(repoCheckerPath, argument))
   if (argument.length > 0 && fileExists) return join(repoCheckerPath, argument)
@@ -40,6 +34,13 @@ async function getDataPath (argument = '', target = ''): Promise<string> {
   return ''
 }
 
+async function getData (argument = '', target = ''): Promise<ProjectData> {
+  const dataPath = await getDataPath(argument, target)
+  if (dataPath.length === 0) return dataDefaults
+  log.info('loading data from', dataPath)
+  return requireFromString(await readFileInFolder(dataPath, '')) as ProjectData
+}
+
 function getTarget (argument = ''): string {
   if (argument.length > 0) return resolve(argument)
   log.line()
@@ -49,6 +50,7 @@ function getTarget (argument = ''): string {
 }
 
 export async function start (): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--data': String, '--fix': Boolean, '--quiet': Boolean, '--no-report': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
   if ((options['--version'] ?? false) || (options['-v'] ?? false)) {
     console.log(version)
@@ -56,7 +58,7 @@ export async function start (): Promise<void> {
   }
   const doForce = options['--force']
   if (options['--init'] ?? false) {
-    await initDataFile(doForce).catch(error => log.error(error))
+    await initDataFile(doForce).catch(error => log.unknownError(error))
     return
   }
   const doFix = options['--fix']

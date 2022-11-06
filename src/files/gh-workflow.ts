@@ -2,7 +2,7 @@ import { File } from '../file'
 
 /* c8 ignore start */
 export class GithubWorkflowFile extends File {
-  async start (): Promise<void> {
+  public async start (): Promise<void> {
     const filePath = '.github/workflows/ci.yml'
     const exists = await this.fileExists(filePath)
     if (!exists) return
