@@ -2,7 +2,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'fs'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { dataDefaults, dataFileName, ProjectData } from '../src/constants'
-import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findStringInFolder, getFileSizeInKo, getGitFolders, isGitFolder, join, readFileInFolder } from '../src/utils'
+import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findStringInFolder, getFileSizeInKo, getGitFolders, isGitFolder, join, messageToCode, readFileInFolder } from '../src/utils'
 
 // base project folder
 const testFolder = __dirname
@@ -136,6 +136,12 @@ test('find no string in folder', async function () {
 test('find is skipped when scanning node_modules or git folders', async function () {
   const result = await findStringInFolder(rootFolder, 'blob volley')
   equal(result, ['utils.test.ts'])
+})
+
+test('message to code', function () {
+  equal(messageToCode('hello world'), 'hello-world', 'test 1')
+  equal(messageToCode('hello/world::!'), 'hello-world', 'test 2')
+  equal(messageToCode('Hey this is :)the _Hello/world::!'), 'hey-this-is-the-hello-world', 'test 3')
 })
 
 test.run()

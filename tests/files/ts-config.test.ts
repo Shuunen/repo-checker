@@ -11,14 +11,14 @@ test('ts config file no check', async function () {
   const instance = new TsConfigFile('', new ProjectData({ useTypescript: false }))
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 0)
-  equal(instance.nbFailed, 0)
+  equal(instance.passed, [])
+  equal(instance.failed, [])
 })
 
 test('ts config file fix', async function () {
   log.consoleLog = false
   log.fileLog = false
-  const instance = new TsConfigFile('', new ProjectData({ use_typescript: true }), true)
+  const instance = new TsConfigFile('', new ProjectData({ useTypescript: true }), true)
   const fileInitial = '{ "name": "John" }'
   const fileFixed = JSON.stringify({
     name: 'John',
@@ -53,8 +53,8 @@ test('ts config file fix', async function () {
   await instance.start()
   await instance.end()
   equal(instance.fileContent, fileFixed)
-  equal(instance.nbPassed, 0)
-  equal(instance.nbFailed, 0)
+  equal(instance.passed, [])
+  equal(instance.failed, [])
 })
 
 test('ts config malformed', async function () {
@@ -67,8 +67,8 @@ test('ts config malformed', async function () {
   equal(instance.fileContent, fileInitial)
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 0)
-  equal(instance.nbFailed, 0)
+  equal(instance.passed, [])
+  equal(instance.failed, [])
 })
 
 test.run()

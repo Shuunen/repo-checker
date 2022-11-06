@@ -17,8 +17,8 @@ test('eslint config missing file', async function () {
   instance.fileExists = promiseFalse
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 1, 'nbPassed')
-  equal(instance.nbFailed, 0, 'nbFailed')
+  equal(instance.passed, ['has-no-xo-config-js-file'], 'passed')
+  equal(instance.failed, [], 'failed')
 })
 
 test('eslint config file empty', async function () {
@@ -30,8 +30,31 @@ test('eslint config file empty', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 2, 'nbPassed')
-  equal(instance.nbFailed, 1, 'nbFailed')
+  equal(instance.passed, [
+    'has-no-promise-plugin-require-eslint-7',
+  ], 'passed')
+  equal(instance.failed, [
+    'has-no-xo-config-js-file',
+    'does-not-have-eslint-recommended-rules-extend-eslint-recommended',
+  ], 'failed')
+})
+
+test('eslint config file empty for ts project', async function () {
+  log.consoleLog = false
+  log.fileLog = false
+  const instance = new EsLintFile('', new ProjectData({ useTypescript: true }))
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
+  instance.fileContent = ''
+  await instance.start()
+  await instance.end()
+  equal(instance.passed, [
+    'has-no-promise-plugin-require-eslint-7',
+  ], 'passed')
+  equal(instance.failed, [
+    'has-no-xo-config-js-file',
+    'does-not-have-typescript-eslint-extend-plugin-typescript-eslint-recommended',
+  ], 'failed')
 })
 
 test('eslint config file empty for vue ts project', async function () {
@@ -43,8 +66,32 @@ test('eslint config file empty for vue ts project', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 3, 'nbPassed')
-  equal(instance.nbFailed, 2, 'nbFailed')
+  equal(instance.passed, [
+    'has-no-promise-plugin-require-eslint-7',
+    'has-no-easy-vue-essential-rules-set',
+  ], 'passed')
+  equal(instance.failed, [
+    'has-no-xo-config-js-file',
+    'does-not-have-vue-recommended-rules-extends-plugin-vue-vue3-recommended',
+    'does-not-have-vue-ts-recommended-rules-extends-vue-typescript-recommended',
+  ], 'failed')
+})
+
+test('eslint config file empty for tailwind project', async function () {
+  log.consoleLog = false
+  log.fileLog = false
+  const instance = new EsLintFile('', new ProjectData({ useTailwind: true }))
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
+  instance.fileContent = ''
+  await instance.start()
+  await instance.end()
+  equal(instance.passed, ['has-no-promise-plugin-require-eslint-7'], 'passed')
+  equal(instance.failed, [
+    'has-no-xo-config-js-file',
+    'does-not-have-tailwind-rules-extend-plugin-tailwindcss-recommended',
+    'does-not-have-eslint-recommended-rules-extend-eslint-recommended',
+  ], 'failed')
 })
 
 test('eslint config partial file for js project', async function () {
@@ -65,8 +112,12 @@ test('eslint config partial file for js project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 6, 'nbPassed')
-  equal(instance.nbFailed, 0, 'nbFailed')
+  equal(instance.passed, [
+    'has-eslint-recommended-rules-extend',
+    'has-no-promise-plugin-require-eslint-7',
+    'has-eslint-recommended-rules-extend',
+  ], 'passed')
+  equal(instance.failed, ['has-no-xo-config-js-file'], 'failed')
 })
 
 test('eslint config partial file for ts project', async function () {
@@ -81,16 +132,15 @@ test('eslint config partial file for ts project', async function () {
       "plugin:@typescript-eslint/recommended",
       "plugin:unicorn/recommended"
     ],
-    "plugins": [
-      "@typescript-eslint",
-      "unicorn"
-    ],
     "rules": {}
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 7, 'nbPassed')
-  equal(instance.nbFailed, 0, 'nbFailed')
+  equal(instance.passed, [
+    'has-eslint-recommended-rules-extend',
+    'has-no-promise-plugin-require-eslint-7',
+  ], 'passed')
+  equal(instance.failed, ['has-no-xo-config-js-file'], 'failed')
 })
 
 test('eslint config partial file for vue ts project', async function () {
@@ -120,8 +170,16 @@ test('eslint config partial file for vue ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 7, 'nbPassed')
-  equal(instance.nbFailed, 1, 'nbFailed')
+  equal(instance.passed, [
+    'has-eslint-recommended-rules-extend',
+    'has-no-promise-plugin-require-eslint-7',
+    'has-vue-recommended-rules-extends',
+    'has-no-easy-vue-essential-rules-set',
+  ], 'passed')
+  equal(instance.failed, [
+    'has-no-xo-config-js-file',
+    'does-not-have-vue-ts-recommended-rules-extends-vue-typescript-recommended',
+  ], 'failed')
 })
 
 test('eslint up to date config file for vue ts project', async function () {
@@ -147,8 +205,14 @@ test('eslint up to date config file for vue ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 8, 'nbPassed')
-  equal(instance.nbFailed, 0, 'nbFailed')
+  equal(instance.passed, [
+    'has-eslint-recommended-rules-extend',
+    'has-no-promise-plugin-require-eslint-7',
+    'has-vue-recommended-rules-extends',
+    'has-no-easy-vue-essential-rules-set',
+    'has-vue-ts-recommended-rules-extends',
+  ], 'passed')
+  equal(instance.failed, ['has-no-xo-config-js-file'], 'failed')
 })
 
 test('eslint config file with no rules', async function () {
@@ -158,8 +222,13 @@ test('eslint config file with no rules', async function () {
   instance.fileExists = promiseTrue
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 2, 'nbPassed')
-  equal(instance.nbFailed, 1, 'nbFailed')
+  equal(instance.passed, [
+    'eslintrc-json-has-no-promise-plugin-require-eslint-7',
+  ], 'passed')
+  equal(instance.failed, [
+    'has-no-xo-config-js-file',
+    'eslintrc-json-does-not-have-eslint-recommended-rules-extend-eslint-recommended',
+  ], 'failed')
 })
 
 test('eslint config file with just rules (no override)', async function () {
@@ -169,8 +238,13 @@ test('eslint config file with just rules (no override)', async function () {
   instance.fileExists = promiseTrue
   await instance.start()
   await instance.end()
-  equal(instance.nbPassed, 2, 'nbPassed')
-  equal(instance.nbFailed, 1, 'nbFailed')
+  equal(instance.passed, [
+    'eslintrc-json-has-no-promise-plugin-require-eslint-7',
+  ], 'passed')
+  equal(instance.failed, [
+    'has-no-xo-config-js-file',
+    'eslintrc-json-does-not-have-eslint-recommended-rules-extend-eslint-recommended',
+  ], 'failed')
 })
 
 test.run()
