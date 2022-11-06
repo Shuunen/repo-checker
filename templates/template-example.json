@@ -1,4 +1,4 @@
 {
   "description": "a great description",
-  "name": "{{ template_name }}"
+  "name": "{{ templateName }}"
 }

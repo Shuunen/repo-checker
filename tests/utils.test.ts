@@ -43,9 +43,9 @@ test('file size calculation', async function () {
 
 test('data augment with git : repo-check & no-local', async function () {
   const expectedDataFromGit = new ProjectData({
-    user_id: 'Shuunen',
-    user_id_lowercase: 'shuunen',
-    repo_id: 'repo-checker',
+    userId: 'Shuunen',
+    userIdLowercase: 'shuunen',
+    repoId: 'repo-checker',
   })
   const dataFromGit = await augmentDataWithGit(rootFolder, dataDefaults)
   equal(dataFromGit, expectedDataFromGit)
@@ -53,13 +53,13 @@ test('data augment with git : repo-check & no-local', async function () {
 
 test('data augment : repo-check & local', async function () {
   const expectedAugmentedData = new ProjectData({
-    auto_merge: true,
-    is_module: false,
-    max_size_ko: 40,
-    npm_package: true,
-    package_name: 'repo-check',
-    repo_id: 'repo-checker',
-    use_typescript: true,
+    autoMerge: true,
+    isModule: false,
+    maxSizeKo: 40,
+    npmPackage: true,
+    packageName: 'repo-check',
+    repoId: 'repo-checker',
+    useTypescript: true,
     useC8: true,
     useEslint: true,
   })
@@ -75,10 +75,10 @@ test('data augment : test folder', async function () {
 test('data augment with package : rootFolder', async function () {
   const data = await augmentDataWithPackageJson(rootFolder, dataDefaults)
   const expectedData = new ProjectData({
-    is_module: false,
-    npm_package: true,
-    package_name: 'repo-check',
-    use_typescript: true,
+    isModule: false,
+    npmPackage: true,
+    packageName: 'repo-check',
+    useTypescript: true,
     useC8: true,
     useEslint: true,
   })
@@ -88,11 +88,11 @@ test('data augment with package : rootFolder', async function () {
 test('data augment with package : vueProject', async function () {
   const vueData = await augmentDataWithPackageJson(join(testFolder, 'data', 'vueProject'), dataDefaults)
   const expectedVueData = new ProjectData({
-    package_name: 'name',
-    use_vue: true,
-    user_id_lowercase: 'kevin_malone',
-    user_id: 'Kevin_Malone',
-    web_published: true,
+    packageName: 'name',
+    useVue: true,
+    userIdLowercase: 'kevin_malone',
+    userId: 'Kevin_Malone',
+    webPublished: true,
     useTailwind: true,
     useEslint: false,
   })
@@ -102,12 +102,12 @@ test('data augment with package : vueProject', async function () {
 test('data augment with package : tsProject', async function () {
   const tsData = await augmentData(join(testFolder, 'data', 'tsProject'), dataDefaults, true)
   const expectedTsData = new ProjectData({
-    ban_sass: false,
+    banSass: false,
     license: 'MIT',
-    package_name: '',
-    use_typescript: true,
-    user_name: 'Dwight Schrute',
-    web_url: 'https://my-website.com',
+    packageName: '',
+    useTypescript: true,
+    userName: 'Dwight Schrute',
+    webUrl: 'https://my-website.com',
   })
   equal(tsData, expectedTsData)
 })
