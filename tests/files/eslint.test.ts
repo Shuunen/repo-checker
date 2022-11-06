@@ -32,6 +32,7 @@ test('eslint config file empty', async function () {
   await instance.end()
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
+    'has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
@@ -50,6 +51,7 @@ test('eslint config file empty for ts project', async function () {
   await instance.end()
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
+    'has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
@@ -68,6 +70,7 @@ test('eslint config file empty for vue ts project', async function () {
   await instance.end()
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
+    'has-no-plugin-section-since-plugin-are-included-by-extends',
     'has-no-easy-vue-essential-rules-set',
   ], 'passed')
   equal(instance.failed, [
@@ -86,7 +89,10 @@ test('eslint config file empty for tailwind project', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.passed, ['has-no-promise-plugin-require-eslint-7'], 'passed')
+  equal(instance.passed, [
+    'has-no-promise-plugin-require-eslint-7',
+    'has-no-plugin-section-since-plugin-are-included-by-extends',
+  ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
     'does-not-have-tailwind-rules-extend-plugin-tailwindcss-recommended',
@@ -139,6 +145,7 @@ test('eslint config partial file for ts project', async function () {
   equal(instance.passed, [
     'has-eslint-recommended-rules-extend',
     'has-no-promise-plugin-require-eslint-7',
+    'has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, ['has-no-xo-config-js-file'], 'failed')
 })
@@ -224,6 +231,7 @@ test('eslint config file with no rules', async function () {
   await instance.end()
   equal(instance.passed, [
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
+    'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
@@ -240,6 +248,7 @@ test('eslint config file with just rules (no override)', async function () {
   await instance.end()
   equal(instance.passed, [
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
+    'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',

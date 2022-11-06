@@ -36,6 +36,7 @@ export class EsLintFile extends File {
     this.couldContains('eslint recommended rules extend', /"eslint:recommended"/)
     this.couldContains('unicorn rules extend', /plugin:unicorn\/all/)
     this.shouldContains('no promise plugin (require eslint 7)', /(plugin:promise\/recommended)|("promise")/, 0)
+    this.couldContains('no plugin section since plugin are included by extends', /"plugins":/, 0)
     await this.checkRules()
     if (this.data.useTailwind) this.shouldContains('tailwind rules extend', /plugin:tailwindcss\/recommended/)
     if (this.data.useVue) this.checkVue()
