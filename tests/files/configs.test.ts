@@ -28,7 +28,7 @@ test('configs can detect fix a missing tailwind type', async function () {
   const { passed, failed } = instance
   equal(passed, [
     'has-a-gitignore-file',
-    'has-a-tailwind-config-cjs-file',
+    'gitignore-has-a-tailwind-config-cjs-file',
   ], 'passed')
   equal(failed, ['tailwind-config-cjs-does-not-have-a-content-previously-named-purge-option-like-content-src-vue-js-ts-jsx-tsx'], 'failed')
 })

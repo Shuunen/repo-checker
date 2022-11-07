@@ -113,10 +113,11 @@ export class File {
   }
 
   public test (isValid: boolean, message: string, justWarn = false): boolean {
-    const code = messageToCode(message)
+    const finalMessage = message.startsWith(this.fileName) ? message : `${this.fileName} ${message}`
+    const code = messageToCode(finalMessage)
     if (isValid) this.passed.push(code)
     else if (!justWarn) this.failed.push(code)
-    log.test(isValid, message, justWarn)
+    log.test(isValid, finalMessage, justWarn)
     return isValid
   }
 
