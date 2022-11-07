@@ -25,9 +25,9 @@ test('file : simple validator', async function () {
       this.couldContains('world')
       equal(this.passed, ['some-file-log-has-foobar'], 'test 4')
       await this.checkFileExists('package.json')
-      equal(this.passed, ['some-file-log-has-foobar', 'has-a-package-json-file'], 'test 5')
+      equal(this.passed, ['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file'], 'test 5')
       await this.checkNoFileExists('zorglub.exe')
-      equal(this.passed, ['some-file-log-has-foobar', 'has-a-package-json-file', 'has-no-zorglub-exe-file'], 'test 6')
+      equal(this.passed, ['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file', 'some-file-log-has-no-zorglub-exe-file'], 'test 6')
       unlinkSync(missingFilepath)
       this.shouldContains('two dots', /\./g, 2, true, 'hehe 2 dots', true)
     }
@@ -36,7 +36,7 @@ test('file : simple validator', async function () {
   await instance.start()
   await instance.end()
   const { passed, failed } = instance
-  equal(passed, ['some-file-log-has-foobar', 'has-a-package-json-file', 'has-no-zorglub-exe-file'], 'passed')
+  equal(passed, ['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file', 'some-file-log-has-no-zorglub-exe-file'], 'passed')
   equal(failed, ['some-file-log-does-not-have-plop-plop'], 'failed')
 })
 
