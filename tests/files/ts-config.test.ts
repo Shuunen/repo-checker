@@ -19,9 +19,10 @@ test('ts config file fix', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new TsConfigFile('', new ProjectData({ useTypescript: true }), true)
-  const fileInitial = '{ "name": "John" }'
+  const fileInitial = '{ "name": "John", "files": ["src/main.ts"] }'
   const fileFixed = JSON.stringify({
     name: 'John',
+    files: ['src/main.ts'],
     include: ['src'],
     compilerOptions: {
       allowUnreachableCode: false,
@@ -44,6 +45,8 @@ test('ts config file fix', async function () {
       outDir: './dist',
       moduleResolution: 'Node',
       target: 'ES2020',
+      lib: ['ESNext'],
+      types: [],
     },
   }, undefined, 2)
   instance.inspectFile = promiseVoid
@@ -53,8 +56,11 @@ test('ts config file fix', async function () {
   await instance.start()
   await instance.end()
   equal(instance.fileContent, fileFixed)
-  equal(instance.passed, [])
-  equal(instance.failed, [])
+  equal(instance.passed, [
+    'does-not-use-wildcard-in-files-section',
+    'my-folder-is-not-needed-in-include-section-my-folder-is-enough',
+  ], 'passed')
+  equal(instance.failed, [], 'failed')
 })
 
 test('ts config malformed', async function () {

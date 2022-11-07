@@ -151,6 +151,9 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'tsconfig-json-has-a-out-dir-compiler-option',
     'tsconfig-json-has-a-module-resolution-compiler-option',
     'tsconfig-json-has-a-target-compiler-option',
+    'tsconfig-json-has-a-non-empty-lib-compiler-option',
+    'tsconfig-json-has-a-non-empty-types-compiler-option',
+    'tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough',
   ])
   equal(failed, [], 'failed')
 })
