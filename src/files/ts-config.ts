@@ -25,18 +25,46 @@ const recommendedCompilerOptions = {
 }
 
 interface TsConfigJsonFile {
-  compilerOptions?: Record<string, boolean | string | undefined> & typeof recommendedCompilerOptions
+  compilerOptions?: Record<string, string[] | boolean | string | undefined> & typeof recommendedCompilerOptions
   include: string[]
+  exclude: string[]
+  files: string[]
 }
 
 export class TsConfigFile extends File {
+
+  private fileContentObject: TsConfigJsonFile | undefined
+
   public async start (): Promise<boolean> {
     if (!this.data.useTypescript) return log.debug('does not use typescript, skipping tsconfig.json checks')
     await this.inspectFile('tsconfig.json')
-    this.couldContainsSchema('https://json.schemastore.org/tsconfig')
     const data = parseJson<TsConfigJsonFile>(this.fileContent)
     if (data.error) return log.error('cannot check empty or invalid tsconfig.json file')
-    const json = data.value
+    this.fileContentObject = data.value
+    this.couldContainsSchema('https://json.schemastore.org/tsconfig')
+    this.checkCompilerOptions()
+    this.checkFileManagement()
+    return log.debug('tsconfig.json file checked')
+  }
+
+  private checkFileManagement (): void {
+    const files = this.fileContentObject?.files ?? []
+    if (files.length > 0) {
+      const ok = !files.some(file => file.includes('*'))
+      this.test(ok, 'does not use wildcard in files section')
+    }
+    /* c8 ignore next */
+    const include = this.fileContentObject?.include ?? []
+    if (include.length > 0) {
+      const ok = !include.some(file => file.endsWith('**/*'))
+      this.test(ok, '"my-folder/**/*" is not needed in include section, "my-folder" is enough', true)
+    }
+  }
+
+  private checkCompilerOptions (): boolean {
+    /* c8 ignore next */
+    if (this.fileContentObject === undefined) return log.error('cannot check compiler options without file content')
+    const json = this.fileContentObject
     let ok = this.couldContains('an include section', /"include"/, 1, undefined, true)
     if (!ok && this.doFix) json.include = ['src']
     if (this.doFix && json.compilerOptions === undefined) json.compilerOptions = copy(recommendedCompilerOptions)
@@ -54,7 +82,11 @@ export class TsConfigFile extends File {
     if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['moduleResolution'] = 'Node'
     ok = this.couldContains('a target compiler option', /"target": "/, 1, 'ex : "target": "ES2020",', true)
     if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['target'] = 'ES2020'
+    ok = this.couldContains('a non-empty lib compiler option', /"lib":\s\[\n/, 1, 'ex : "lib": [ "ESNext" ],', true)
+    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['lib'] = ['ESNext']
+    ok = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/, 1, 'ex : "types": [ "node/fs/promises" ],', true)
+    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['types'] = []
     if (this.doFix) this.fileContent = JSON.stringify(json, undefined, 2)
-    return log.debug('tsconfig.json file checked')
+    return true
   }
 }

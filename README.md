@@ -76,6 +76,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] try to benchmark the use of existsSync, writeFileSync, ... vs async versions
 - [ ] check old naming convention inside repo-checker.config.js
 - [ ] handle a repo-checker.json config file
+- [ ] avoid generic config file, use a ts file per file checked
 
 ## Benchmarks
 
@@ -83,6 +84,9 @@ Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
 
 | command alias      | date       | main lib targeted   | delay   | comment                                  |
 | ------------------ | ---------- | ------------------- | ------- | ---------------------------------------- |
+| tsc-no-emit        | 2022-11-07 | typescript          | 950 ms  | with restricted node types & ES2020 lib  |
+| tsc-no-emit        | 2022-11-07 | typescript          | 1,1 sec | with restricted node types & all lib     |
+| eslint             | 2022-11-07 | eslint              | 4,8 sec | with restricted node types & ES2020 lib  |
 | uvu                | 2022-11-05 | uvu                 | 1 sec   | I mean, I'm adding tests over time so... |
 | c8-uvu             | 2022-11-05 | c8 & uvu            | 1,6 sec | 600 ms too for coverage, pretty good     |
 | eslint             | 2022-11-05 | eslint              | 5,6 sec |                                          |
