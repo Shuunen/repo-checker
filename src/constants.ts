@@ -24,30 +24,29 @@ export class ProjectData {
 
   public maxSizeKo = 1
 
+  /**
+   * Tells repo-checker to generate a report for the given project
+   */
+  public noReport = false
+
   public npmPackage = false
 
   public packageName = ''
 
   public quiet = false
 
+  public repoId = 'a-great-repo'
+
   /**
-   * Tells repo-checker to generate a report for the given project
+   * C8 is a code coverage tool that is used to generate the coverage report based on the unit tests
    */
-  public noReport = false
+  public useC8 = false
 
   public repoId = 'a-great-repo'
 
-  public useTailwind = false
-
-  public useNyc = false
-
-  public useC8 = false
-
   public useEslint = false
 
-  public useTypescript = false
-
-  public useVue = false
+  public useNyc = false
 
   public userId = 'Shuunen'
 
@@ -56,6 +55,12 @@ export class ProjectData {
   public userMail = 'romain.racamier@gmail.com'
 
   public userName = 'Romain Racamier-Lafon'
+
+  public useTailwind = false
+
+  public useTypescript = false
+
+  public useVue = false
 
   public webPublished = false
 
