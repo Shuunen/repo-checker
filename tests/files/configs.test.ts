@@ -2,12 +2,7 @@ import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { ProjectData } from '../../src/constants'
 import { ConfigsFile } from '../../src/files'
-import { join } from '../../src/utils'
-import { promiseValue } from '../utils'
-
-// base project folder
-const testFolder = __dirname
-const vueProjectFolder = join(testFolder, 'data', 'vueProject')
+import { promiseValue, vueProjectFolder } from '../utils'
 
 test('configs can detect a missing git ignore', async function () {
   const instance = new ConfigsFile(vueProjectFolder, new ProjectData({ quiet: true }))
@@ -28,7 +23,8 @@ test('configs can detect fix a missing tailwind type', async function () {
   const { passed, failed } = instance
   equal(passed, [
     'has-a-gitignore-file',
-    'gitignore-has-a-tailwind-config-cjs-file',
+    'gitignore-has-a-tailwind-config-js-file',
+    'tailwind-config-js-has-a-content-previously-named-purge-option',
   ], 'passed')
-  equal(failed, ['tailwind-config-cjs-does-not-have-a-content-previously-named-purge-option-like-content-src-vue-js-ts-jsx-tsx'], 'failed')
+  equal(failed, [], 'failed')
 })

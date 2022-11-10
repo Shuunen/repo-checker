@@ -1,20 +1,16 @@
 import { mkdirSync, rmSync, writeFileSync } from 'fs'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
-import { dataDefaults, dataFileName, ProjectData } from '../src/constants'
+import { dataDefaults, dataFileName, ProjectData, repoCheckerPath } from '../src/constants'
 import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findStringInFolder, getFileSizeInKo, getGitFolders, isGitFolder, join, messageToCode, readFileInFolder } from '../src/utils'
-
-// base project folder
-const testFolder = __dirname
-const rootFolder = join(testFolder, '..')
-const filename = 'test-file.log'
+import { testFolder } from './utils'
 
 test('git folder detection', async function () {
-  equal(await isGitFolder(rootFolder), true)
+  equal(await isGitFolder(repoCheckerPath), true)
 })
 
 test('git folders listing', async function () {
-  equal(await getGitFolders(rootFolder), [rootFolder])
+  equal(await getGitFolders(repoCheckerPath), [repoCheckerPath])
   const projects = ['anotherProject', 'sampleProject']
   projects.forEach(name => {
     const folderPath = join(testFolder, name, '.git')
@@ -26,12 +22,14 @@ test('git folders listing', async function () {
   projects.forEach(name => { rmSync(join(testFolder, name), { recursive: true }) })
 })
 
-test('file creation, detection, read', async function () {
-  equal(await readFileInFolder('/', filename).catch(() => 'failed'), 'failed')
-})
-
 test('read folder instead of file', async function () {
   equal(await readFileInFolder(testFolder, '').catch(() => 'failed'), 'failed')
+})
+
+const filename = 'test-file.log'
+
+test('file creation, detection, read', async function () {
+  equal(await readFileInFolder('/', filename).catch(() => 'failed'), 'failed')
 })
 
 test('file size calculation', async function () {
@@ -47,7 +45,7 @@ test('data augment with git : repo-check & no-local', async function () {
     userIdLowercase: 'shuunen',
     repoId: 'repo-checker',
   })
-  const dataFromGit = await augmentDataWithGit(rootFolder, dataDefaults)
+  const dataFromGit = await augmentDataWithGit(repoCheckerPath, dataDefaults)
   equal(dataFromGit, expectedDataFromGit)
 })
 
@@ -62,8 +60,9 @@ test('data augment : repo-check & local', async function () {
     useTypescript: true,
     useC8: true,
     useEslint: true,
+    useDependencyCruiser: true,
   })
-  const augmentedData = await augmentData(rootFolder, dataDefaults, true)
+  const augmentedData = await augmentData(repoCheckerPath, dataDefaults, true)
   equal(augmentedData, expectedAugmentedData)
 })
 
@@ -73,7 +72,7 @@ test('data augment : test folder', async function () {
 })
 
 test('data augment with package : rootFolder', async function () {
-  const data = await augmentDataWithPackageJson(rootFolder, dataDefaults)
+  const data = await augmentDataWithPackageJson(repoCheckerPath, dataDefaults)
   const expectedData = new ProjectData({
     isModule: false,
     npmPackage: true,
@@ -81,6 +80,7 @@ test('data augment with package : rootFolder', async function () {
     useTypescript: true,
     useC8: true,
     useEslint: true,
+    useDependencyCruiser: true,
   })
   equal(data, expectedData)
 })
@@ -134,7 +134,7 @@ test('find no string in folder', async function () {
 })
 
 test('find is skipped when scanning node_modules or git folders', async function () {
-  const result = await findStringInFolder(rootFolder, 'blob volley')
+  const result = await findStringInFolder(repoCheckerPath, 'blob volley')
   equal(result, ['utils.test.ts'])
 })
 

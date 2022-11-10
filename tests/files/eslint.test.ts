@@ -3,12 +3,7 @@ import { equal } from 'uvu/assert'
 import { ProjectData } from '../../src/constants'
 import { EsLintFile } from '../../src/files'
 import { log } from '../../src/logger'
-import { join } from '../../src/utils'
-import { promiseFalse, promiseTrue, promiseVoid } from '../utils'
-
-const testFolder = join(__dirname, '..')
-const vueProjectFolder = join(testFolder, 'data', 'vueProject')
-const tsProjectFolder = join(testFolder, 'data', 'tsProject')
+import { promiseFalse, promiseTrue, promiseVoid, tsProjectFolder, vueProjectFolder } from '../utils'
 
 test('eslint config missing file', async function () {
   log.consoleLog = false
