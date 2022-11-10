@@ -66,7 +66,6 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'package-json-has-a-typescript-runner',
     'package-json-has-watchlist-eager-param',
     'package-json-has-a-ci-script',
-    'package-json-has-only-dev-dependencies-for-build-able-projects',
     'package-json-has-no-sass-dependency-fat-useless',
     'package-json-has-no-cross-var-dependency-old-deprecated',
     'package-json-has-no-tslint-dependency-deprecated',
