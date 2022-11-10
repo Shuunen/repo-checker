@@ -44,7 +44,7 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100',
     'package-json-has-a-dist-repo-check-min-cjs-file',
     'package-json-main-file-specified-in-package-json-dist-repo-check-min-cjs-exists-on-disk-be-sure-to-build-before-run-repo-check',
-    'package-json-main-file-size-38ko-should-be-less-or-equal-to-max-size-allowed-120ko',
+    'package-json-main-file-size-37ko-should-be-less-or-equal-to-max-size-allowed-120ko',
     'package-json-has-a-schema-declaration',
     'package-json-has-a-bugs-property',
     'package-json-has-a-description-property',
