@@ -42,7 +42,7 @@ export class ProjectData {
    */
   public useC8 = false
 
-  public repoId = 'a-great-repo'
+  public useDependencyCruiser = false
 
   public useEslint = false
 

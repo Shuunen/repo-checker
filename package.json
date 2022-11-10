@@ -6,19 +6,22 @@
   "config": {
     "logFile": "repo-check.log"
   },
+  "dependencies": {
+    "arg": "5",
+    "require-from-string": "2",
+    "shuutils": "6.3"
+  },
   "description": "Repo cleaning made easy",
   "devDependencies": {
     "@types/node": "18",
     "@types/require-from-string": "1.2",
     "@typescript-eslint/eslint-plugin": "5.42",
     "@typescript-eslint/parser": "5.42",
-    "arg": "5",
     "c8": "7",
+    "dependency-cruiser": "latest",
     "esbuild": "0.15",
     "eslint": "8.27",
     "eslint-plugin-unicorn": "44",
-    "require-from-string": "2",
-    "shuutils": "6.3",
     "tsm": "2.2",
     "typescript": "4.8",
     "typescript-run": "0",
@@ -48,7 +51,7 @@
     "build": "esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs",
     "ci": "npm run build && npm run lint && npm start && npm test",
     "dev": "ts-run src -w src",
-    "lint": "tsc --noEmit && eslint --fix --ignore-path .gitignore --ext .js,.ts .",
+    "lint": "tsc --noEmit && eslint --fix --ignore-path .gitignore --ext .js,.ts . && depcruise src --config",
     "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run ci",
     "start": "ts-run src",

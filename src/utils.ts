@@ -74,6 +74,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   if (author[2] !== undefined) data.userMail = author[2]
   data.isModule = content.includes('"type": "module"')
   data.useTailwind = content.includes('"tailwindcss"')
+  data.useDependencyCruiser = content.includes('"dependency-cruiser"')
   data.useNyc = content.includes('"nyc"')
   data.useC8 = content.includes('"c8"')
   data.useEslint = content.includes('"eslint"')

@@ -13,6 +13,8 @@ test('repo-checker folder succeed with acceptable max size', async function () {
   equal(passed, [
     'has-a-gitignore-file',
     'gitignore-has-node-modules',
+    'use-dependency-cruiser',
+    'has-a-dependency-cruiser-js-file',
     'has-a-editorconfig-file',
     'editorconfig-has-space-indent',
     'editorconfig-has-indent-size-of-2',
@@ -156,18 +158,6 @@ test('repo-checker folder succeed with acceptable max size', async function () {
   ])
   equal(failed, [], 'failed')
 })
-
-// const folder = join(__dirname, 'checkFolder')
-// test('check & fix test folder', async function () {
-//   const gitConfig = join(folder, '.git', 'config')
-//   await ensureFile(gitConfig)
-//   const data = new ProjectData({ quiet: true })
-//   const status = await check(folder, data, true)
-//   equal(status.failed, [])
-//   console.log('clearing folder', folder)
-//   // status = await check(folder, data, true, true)
-//   // equal(status.failed, [])
-// })
 
 test('report does nothing by default', function () {
   report()

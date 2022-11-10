@@ -1,4 +1,5 @@
 export * from './configs'
+export * from './dependency-cruiser'
 export * from './editor-config'
 export * from './eslint'
 export * from './gh-workflow'
