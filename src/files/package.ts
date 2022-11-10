@@ -68,7 +68,6 @@ export class PackageJsonFile extends File {
 
   private checkBuild (): void {
     if (!this.fileContent.includes('"build":')) return
-    if (this.data.devDepsOnly) this.shouldContains('only dev dependencies for build-able projects', this.regexForObjectProp('dependencies'), 0)
     if (this.fileContent.includes('parcel build')) this.shouldContains('a parcel build with report enabled', /"parcel build.*--detailed-report",/)
   }
 
