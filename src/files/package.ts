@@ -49,7 +49,8 @@ export class PackageJsonFile extends File {
     if (!exists) return
     const sizeKo = await this.getFileSizeInKo(mainFilePath)
     const sizeOk = sizeKo <= maxSizeKo
-    this.test(sizeOk, `main file size (${sizeKo}Ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
+    log.debug(`main file size is ${sizeKo}ko (max ${maxSizeKo}ko)`)
+    this.test(sizeOk, `main file size should be less or equal to max size allowed (${maxSizeKo}Ko)`)
   }
 
   private checkScripts (): void {
