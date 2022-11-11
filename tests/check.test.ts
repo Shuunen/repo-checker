@@ -75,6 +75,7 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'package-json-has-no-patch-precision',
     'package-json-one-unit-testing-dependency-from-mocha-uvu',
     'package-json-one-coverage-dependency-from-nyc-c8',
+    'package-json-has-eslint-cache-flag',
     'package-json-assert-dependency-used-in-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative',
     'package-json-has-no-fat-color-dependency-use-shuutils-or-nanocolors',
     'package-json-has-no-fat-fs-extra-dependency-use-native-fs',

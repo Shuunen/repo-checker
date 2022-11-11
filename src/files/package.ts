@@ -89,10 +89,15 @@ export class PackageJsonFile extends File {
     this.test(hasUt, 'one unit testing dependency from : mocha, uvu', true)
     const hasCoverage = /"(nyc|c8)"/.exec(this.fileContent)?.[1] !== undefined
     this.test(hasCoverage, 'one coverage dependency from : nyc, c8', true)
-    /* suggestions */
-    if (this.data.useTailwind && this.data.useEslint) this.couldContains('an eslint tailwindcss plugin', /"eslint-plugin-tailwindcss"/)
     /* usages */
+    if (this.data.useEslint) this.checkEslintUsages()
     if (this.fileContent.includes('"uvu"')) await this.checkUvuUsages()
+  }
+
+  private checkEslintUsages (): void {
+    if (this.data.useTailwind) this.couldContains('an eslint tailwindcss plugin', /"eslint-plugin-tailwindcss"/)
+    const ok = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/, 1, 'like "eslint --cache ..."', true)
+    if (!ok && this.doFix) this.fileContent = this.fileContent.replace('eslint ', 'eslint --cache ')
   }
 
   private async checkUvuUsages (): Promise<void> {
