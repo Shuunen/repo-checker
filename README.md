@@ -74,7 +74,6 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
 - [ ] try to benchmark the use of existsSync, writeFileSync, ... vs async versions
-- [ ] check old naming convention inside repo-checker.config.js
 - [ ] handle a repo-checker.json config file
 
 ## Benchmarks

@@ -131,6 +131,7 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'renovate-json-has-a-preserve-semver-ranges-preset',
     'has-no-repo-checker-js-file',
     'has-a-repo-checker-config-js-file',
+    'repo-checker-config-js-has-no-more-snake-case',
     'tsconfig-json-has-a-schema-declaration',
     'tsconfig-json-has-an-include-section',
     'tsconfig-json-has-a-allow-unreachable-code-compiler-option',
