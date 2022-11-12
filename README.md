@@ -76,7 +76,6 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] try to benchmark the use of existsSync, writeFileSync, ... vs async versions
 - [ ] check old naming convention inside repo-checker.config.js
 - [ ] handle a repo-checker.json config file
-- [ ] avoid generic config file, use a ts file per file checked
 
 ## Benchmarks
 

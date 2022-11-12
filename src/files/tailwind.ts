@@ -1,20 +1,9 @@
 import { File } from '../file'
 import { log } from '../logger'
 
-export class ConfigsFile extends File {
+export class TailwindFile extends File {
   public async start (): Promise<void> {
-    await this.checkGitIgnore()
-    if (this.data.useTailwind) await this.checkTailwind()
-  }
-
-  private async checkGitIgnore (): Promise<void> {
-    const ok = await this.checkFileExists('.gitignore')
-    if (!ok) return
-    await this.inspectFile('.gitignore')
-    this.couldContains('node_modules', /node_modules/)
-  }
-
-  private async checkTailwind (): Promise<void> {
+    if (!this.data.useTailwind) return
     const jsExists = await this.fileExists('tailwind.config.js')
     const tsExists = await this.fileExists('tailwind.config.ts')
     const mjsExists = await this.fileExists('tailwind.config.mjs')

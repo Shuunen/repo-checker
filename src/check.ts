@@ -1,9 +1,25 @@
 import type { ProjectData } from './constants'
-import { ConfigsFile, DependencyCruiserFile, EditorConfigFile, EsLintFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TravisFile, TsConfigFile } from './files'
+import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files'
 import { log } from './logger'
 import { augmentData, getGitFolders } from './utils'
 
-const CHECKERS = [ConfigsFile, DependencyCruiserFile, EditorConfigFile, EsLintFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TravisFile, TsConfigFile]
+const CHECKERS = [
+  DependencyCruiserFile,
+  EditorConfigFile,
+  EsLintFile,
+  GitFile,
+  GithubWorkflowFile,
+  LicenseFile,
+  NvmrcFile,
+  NycRcFile,
+  PackageJsonFile,
+  ReadmeFile,
+  RenovateFile,
+  RepoCheckerConfigFile,
+  TailwindFile,
+  TravisFile,
+  TsConfigFile,
+]
 
 export function report (passed = 0, failed = 0): void {
   log.info('Report :')

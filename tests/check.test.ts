@@ -11,8 +11,6 @@ test('repo-checker folder fails with low max size', async function () {
 test('repo-checker folder succeed with acceptable max size', async function () {
   const { passed, failed } = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 120, npmPackage: true, quiet: true }))
   equal(passed, [
-    'has-a-gitignore-file',
-    'gitignore-has-node-modules',
     'use-dependency-cruiser',
     'has-a-dependency-cruiser-js-file',
     'has-a-editorconfig-file',
@@ -30,6 +28,8 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
     'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
     'eslintrc-json-current-eslintrc-json-has-only-34-of-the-34-custom-rules-in-repo-checker-eslintrc-json',
+    'has-a-gitignore-file',
+    'gitignore-has-node-modules',
     'github-workflows-ci-yml-has-a-checkout-step-in-ci-workflow',
     'github-workflows-ci-yml-has-a-node-step-in-ci-workflow',
     'github-workflows-ci-yml-a-install-step-in-ci-workflow',
