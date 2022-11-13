@@ -1,6 +1,7 @@
 .cache
 .DS_Store
 .env
+.eslintcache
 .nyc_output
 *.log
 *.tgz
