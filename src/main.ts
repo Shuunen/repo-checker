@@ -1,34 +1,31 @@
 import arg from 'arg'
-import { existsSync, writeFileSync } from 'fs'
 import requireFromString from 'require-from-string'
 import { version } from '../package.json'
 import { check } from './check'
 import type { ProjectData } from './constants'
 import { dataDefaults, dataFileHomePath, dataFileName, home, repoCheckerPath, templatePath } from './constants'
 import { log } from './logger'
-import { join, readFileInFolder, resolve } from './utils'
+import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils'
 
 async function initDataFile (doForce = false): Promise<void> {
   log.line()
-  const fileExists = existsSync(dataFileHomePath)
-  if (fileExists && !doForce) {
+  const exists = await fileExists(dataFileHomePath)
+  if (exists && !doForce) {
     log.warn('repo-checker data file', dataFileHomePath, 'already exists, use --force to overwrite it')
     return
   }
   const fileContent = await readFileInFolder(templatePath, dataFileName)
   const filePath = join(home, dataFileName)
-  writeFileSync(filePath, fileContent)
-  if (existsSync(filePath)) log.info('repo-checker data file successfully init, you should edit :', dataFileHomePath)
-  else log.error('repo-checker failed at creating this file :', dataFileHomePath)
+  void writeFile(filePath, fileContent)
+  log.info('repo-checker data file successfully init, you should edit :', dataFileHomePath)
 }
 
-// eslint-disable-next-line @typescript-eslint/require-await
 async function getDataPath (argument = '', target = ''): Promise<string> {
-  const fileExists = existsSync(join(repoCheckerPath, argument))
-  if (argument.length > 0 && fileExists) return join(repoCheckerPath, argument)
+  const exists = await fileExists(join(repoCheckerPath, argument))
+  if (argument.length > 0 && exists) return join(repoCheckerPath, argument)
   const dataFileTargetPath = join(target, dataFileName)
-  if (existsSync(dataFileTargetPath)) return dataFileTargetPath
-  if (existsSync(dataFileHomePath)) return dataFileHomePath
+  if (await fileExists(dataFileTargetPath)) return dataFileTargetPath
+  if (await fileExists(dataFileHomePath)) return dataFileHomePath
   log.warn('you should use --init to prepare a data file to enhance fix')
   log.info('because no custom data file has been found, default data will be used')
   return ''

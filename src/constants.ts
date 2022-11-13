@@ -1,5 +1,5 @@
 /* c8 ignore next 3 */
-import path from 'path'
+import path from 'path' // eslint-disable-line no-restricted-imports
 
 export const home = process.env['HOME'] ?? '' // when does HOME is not defined ?
 /**

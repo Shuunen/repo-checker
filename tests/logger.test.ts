@@ -1,8 +1,8 @@
-import { existsSync, unlinkSync } from 'fs'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { config } from '../package.json'
 import { log } from '../src/logger'
+import { deleteFile, fileExists } from '../src/utils'
 
 test('logger log correctly', function () {
   log.consoleLog = false
@@ -24,17 +24,17 @@ test('logger can set indentation level', function () {
   equal(log.setIndentLevel(2), 2)
 })
 
-test('logger can prevent log file generation', function () {
+test('logger can prevent log file generation', async function () {
   log.fileLog = false
   log.consoleLog = false
-  unlinkSync(config.logFile)
+  await deleteFile(config.logFile)
   equal(log.start(), false)
   equal(log.write('damn-write'), false)
   equal(log.error('damn-err'), false)
   equal(log.warn('damn-warn'), false)
   equal(log.success(false, 'damn-success not in console'), false)
   equal(log.fix('damn-fix'), false)
-  equal(existsSync(config.logFile), false)
+  equal(await fileExists(config.logFile), false)
 })
 
 test('logger can log unknown errors', function () {

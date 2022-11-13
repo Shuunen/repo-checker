@@ -27,7 +27,7 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'eslintrc-json-has-unicorn-rules-extend',
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
     'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
-    'eslintrc-json-current-eslintrc-json-has-only-34-of-the-34-custom-rules-in-repo-checker-eslintrc-json',
+    'eslintrc-json-current-eslintrc-json-has-only-35-of-the-35-custom-rules-in-repo-checker-eslintrc-json',
     'has-a-gitignore-file',
     'gitignore-has-node-modules',
     'github-workflows-ci-yml-has-a-checkout-step-in-ci-workflow',
@@ -157,7 +157,7 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'tsconfig-json-has-a-non-empty-lib-compiler-option',
     'tsconfig-json-has-a-non-empty-types-compiler-option',
     'tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough',
-  ])
+  ], 'passed')
   equal(failed, [], 'failed')
 })
 

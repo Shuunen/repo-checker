@@ -1,25 +1,30 @@
 /* c8 ignore next */
-import { existsSync, readFileSync } from 'fs'
-import { readdir, stat } from 'fs/promises'
-import path from 'path'
+import { readdir, readFile as nodeReadFile, stat as nodeStat } from 'fs/promises' // eslint-disable-line no-restricted-imports
+import path from 'path' // eslint-disable-line no-restricted-imports
 import requireFromString from 'require-from-string'
 import { arrayUnique } from 'shuutils/dist/arrays'
 import { slugify } from 'shuutils/dist/strings'
 import { dataDefaults, dataFileName, ProjectData } from './constants'
 import { log } from './logger'
 
-const statAsync = stat
+const statAsync = nodeStat
 
 const readDirectoryAsync = readdir
 
-export const join = path.join.bind(path)
+// eslint-disable-next-line @typescript-eslint/require-await
+export const fileExists = async (filePath: string): Promise<boolean> => nodeStat(filePath).then(() => true).catch(() => false)
 
-export const resolve = path.resolve.bind(path)
 
+export const readFile = async (filePath: string): Promise<string> => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const fileContent = await nodeReadFile(filePath, { encoding: 'utf8' })
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+  return Buffer.from(fileContent).toString()
+}
 export async function isGitFolder (folderPath: string): Promise<boolean> {
   const statData = await statAsync(folderPath)
   if (!statData.isDirectory()) return false
-  return existsSync(join(folderPath, '.git', 'config'))
+  return fileExists(path.join(folderPath, '.git', 'config'))
 }
 
 export async function getGitFolders (folderPath: string): Promise<string[]> {
@@ -27,24 +32,24 @@ export async function getGitFolders (folderPath: string): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
   const gitDirectories = []
   for (const filePath of filePaths) {
-    const p = join(folderPath, filePath)
+    const p = path.join(folderPath, filePath)
     if (await isGitFolder(p)) gitDirectories.push(p) // eslint-disable-line no-await-in-loop
   }
   return gitDirectories
 }
 
 export async function readFileInFolder (folderPath: string, fileName: string): Promise<string> {
-  const filePath = join(folderPath, fileName)
-  if (!existsSync(filePath)) throw new Error(`file "${filePath}" does not exists`)
+  const filePath = path.join(folderPath, fileName)
+  if (!await fileExists(filePath)) throw new Error(`file "${filePath}" does not exists`)
   const statData = await statAsync(filePath)
   if (statData.isDirectory()) throw new Error(`filepath "${filePath}" is a directory`)
-  return readFileSync(filePath, 'utf8')
+  return readFile(filePath)
 }
 
 export async function augmentDataWithGit (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
-  const gitFolder = join(folderPath, '.git')
-  if (!existsSync(join(gitFolder, 'config'))) return data
+  const gitFolder = path.join(folderPath, '.git')
+  if (!await fileExists(path.join(gitFolder, 'config'))) return data
   const gitConfigContent = await readFileInFolder(gitFolder, 'config')
   const matches = /url = .*[/:]([\w-]+)\/([\w-]+)/.exec(gitConfigContent)
   if (matches?.[1] !== undefined) {
@@ -61,7 +66,7 @@ export async function augmentDataWithGit (folderPath: string, dataSource: Projec
 
 export async function augmentDataWithPackageJson (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
-  if (!existsSync(join(folderPath, 'package.json'))) {
+  if (!await fileExists(path.join(folderPath, 'package.json'))) {
     log.debug('cannot augment, no package.json found in', folderPath)
     return data
   }
@@ -91,7 +96,7 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
   let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
   data = await augmentDataWithPackageJson(folderPath, data)
-  const localDataExists = shouldLoadLocal ? existsSync(join(folderPath, dataFileName)) : false
+  const localDataExists = shouldLoadLocal ? await fileExists(path.join(folderPath, dataFileName)) : false
   if (localDataExists) { // local data overwrite the rest
     // should use something else than requireFromString
     const localData = requireFromString(await readFileInFolder(folderPath, dataFileName)) as ProjectData
@@ -101,7 +106,7 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
 }
 
 export async function getFileSizeInKo (filePath: string): Promise<number> {
-  if (!existsSync(filePath)) return 0
+  if (!await fileExists(filePath)) return 0
   const statData = await statAsync(filePath)
   const size = Math.round(statData.size / 1024)
   log.debug('found that file', filePath, 'has a size of :', `${size}`, 'Ko')
@@ -120,7 +125,7 @@ export async function findStringInFolder (folderPath: string, pattern: string, i
     count++
     /* c8 ignore next */
     if (count > 1000) throw new Error('too many files to scan, please reduce the scope')
-    const target = join(folderPath, filePath)
+    const target = path.join(folderPath, filePath)
     const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null
     if (!statData) continue
     if (statData.isDirectory()) {
@@ -136,3 +141,7 @@ export async function findStringInFolder (folderPath: string, pattern: string, i
 export const messageToCode = (message: string): string => {
   return slugify(message.replace(/[,./:\\_]/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2'))
 }
+
+export { rmdir as deleteFolder, unlink as deleteFile, writeFile } from 'fs/promises' // eslint-disable-line no-restricted-imports
+export { join, resolve } from 'path' // eslint-disable-line no-restricted-imports
+

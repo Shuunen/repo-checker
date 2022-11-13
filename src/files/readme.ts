@@ -1,8 +1,7 @@
-import { existsSync, readFileSync } from 'fs'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
-import { join } from '../utils'
+import { fileExists, join, readFile } from '../utils'
 
 class Thanks {
   public markdown = ''
@@ -36,7 +35,7 @@ export class ReadmeFile extends File {
     this.checkMarkdown()
     this.checkTodos()
     this.checkBadges()
-    this.checkThanks()
+    await this.checkThanks()
   }
 
   private checkMarkdown (): void {
@@ -84,10 +83,10 @@ export class ReadmeFile extends File {
     log.debug('added line', line)
   }
 
-  private checkThanks (): void {
+  private async checkThanks (): Promise<void> {
     const hasSection = this.couldContains('a thanks section', /## Thanks/)
     if (!hasSection) return
-    const thanks = this.getThanks()
+    const thanks = await this.getThanks()
     for (const thank of thanks) {
       const message = `${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`
       const regex = new RegExp(`\\[${thank.label}]`, 'i')
@@ -98,7 +97,7 @@ export class ReadmeFile extends File {
     }
   }
 
-  private getThanks (): Thanks[] {
+  private async getThanks (): Promise<Thanks[]> {
     const list = [
       new Thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme', this.fileContent.includes('shields')),
       new Thanks('Travis-ci.com', 'https://travis-ci.com', 'for providing free continuous deployments', this.fileContent.includes('travis-ci')),
@@ -106,8 +105,8 @@ export class ReadmeFile extends File {
       new Thanks('Netlify', 'https://netlify.com', 'awesome company that offers free CI & hosting for OSS projects', this.fileContent.includes('netlify')),
     ]
     const filePath = join(this.folderPath, 'package.json')
-    if (!existsSync(filePath)) return list
-    const json = readFileSync(filePath, 'utf8')
+    if (!await fileExists(filePath)) return list
+    const json = await readFile(filePath)
     if (json === '') return list
     list.push(
       new Thanks('Arg', 'https://github.com/vercel/arg', 'un-opinionated, no-frills CLI argument parser', json.includes('"arg":')),

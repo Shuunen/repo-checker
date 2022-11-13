@@ -62,7 +62,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 
 ### quiet
 
-`--quiet` repo-checker will works silently without output-ing to console, will keep output to logfile.
+`--quiet` repo-checker will works silently without output-ing to console, will only output to log file.
 
 ## Todo
 
@@ -73,33 +73,34 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] add nbFixes to the report
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
-- [ ] try to benchmark the use of existsSync, writeFileSync, ... vs async versions
 - [ ] handle a repo-checker.json config file
 
 ## Benchmarks
 
 Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
 
-| command alias      | date       | main lib targeted   | delay   | comment                                  |
-| ------------------ | ---------- | ------------------- | ------- | ---------------------------------------- |
-| tsc-no-emit        | 2022-11-07 | typescript          | 950 ms  | with restricted node types & ES2020 lib  |
-| tsc-no-emit        | 2022-11-07 | typescript          | 1,1 sec | with restricted node types & all lib     |
-| eslint             | 2022-11-07 | eslint              | 4,8 sec | with restricted node types & ES2020 lib  |
-| uvu                | 2022-11-05 | uvu                 | 1 sec   | I mean, I'm adding tests over time so... |
-| c8-uvu             | 2022-11-05 | c8 & uvu            | 1,6 sec | 600 ms too for coverage, pretty good     |
-| eslint             | 2022-11-05 | eslint              | 5,6 sec |                                          |
-| esbuild            | 2022-11-05 | esbuild             | 100 ms  |                                          |
-| tsc-no-emit        | 2022-11-05 | typescript          | 1,3 sec | way better :) no idea why                |
-| repo-check         | 2022-11-05 | node & repo-checker | 90 ms   | way better :) no idea why                |
-| repo-check         | 2022-03-12 | node & repo-checker | 160 ms  | pretty cool before any optimisations     |
-| repo-check-no-out  | 2022-03-12 | node & repo-checker | 140 ms  | 20 ms dedicated to console/file output   |
-| esbuild            | 2022-03-12 | esbuild             | 170 ms  |                                          |
-| ts-run             | 2022-03-12 | typescript-run      | 420 ms  | it's faster to build & run ^^'           |
-| tsc-no-emit        | 2022-03-12 | typescript          | 3,5 sec |                                          |
-| eslint             | 2022-03-12 | eslint              | 6,5 sec | damn slow, seems slower than old benches |
-| eslint-ts-src-only | 2022-03-12 | eslint              | 5,5 sec | 1 sec diff, still slow IMHO              |
-| uvu                | 2022-03-12 | uvu                 | 820 ms  | pretty good                              |
-| c8-uvu             | 2022-03-12 | c8 & uvu            | 1,6 sec | 800 ms too for coverage, still good      |
+| command alias      | date       | main lib targeted   | delay   | comment                                                               |
+| ------------------ | ---------- | ------------------- | ------- | --------------------------------------------------------------------- |
+| repo-check         | 2022-11-13 | node & repo-checker | 101 ms  | +2% slower when using fs/promises over fs (keeping createWriteStream) |
+| repo-check         | 2022-11-13 | node & repo-checker | 135 ms  | +30% slower when using async writeFile instead of createWriteStream   |
+| tsc-no-emit        | 2022-11-07 | typescript          | 950 ms  | with restricted node types & ES2020 lib                               |
+| tsc-no-emit        | 2022-11-07 | typescript          | 1,1 sec | with restricted node types & all lib                                  |
+| eslint             | 2022-11-07 | eslint              | 4,8 sec | with restricted node types & ES2020 lib                               |
+| uvu                | 2022-11-05 | uvu                 | 1 sec   | I mean, I'm adding tests over time so...                              |
+| c8-uvu             | 2022-11-05 | c8 & uvu            | 1,6 sec | 600 ms too for coverage, pretty good                                  |
+| eslint             | 2022-11-05 | eslint              | 5,6 sec |                                                                       |
+| esbuild            | 2022-11-05 | esbuild             | 100 ms  |                                                                       |
+| tsc-no-emit        | 2022-11-05 | typescript          | 1,3 sec | way better :) no idea why                                             |
+| repo-check         | 2022-11-05 | node & repo-checker | 90 ms   | way better :) no idea why                                             |
+| repo-check         | 2022-03-12 | node & repo-checker | 160 ms  | pretty cool before any optimisations                                  |
+| repo-check-no-out  | 2022-03-12 | node & repo-checker | 140 ms  | 20 ms dedicated to console/file output                                |
+| esbuild            | 2022-03-12 | esbuild             | 170 ms  |                                                                       |
+| ts-run             | 2022-03-12 | typescript-run      | 420 ms  | it's faster to build & run ^^'                                        |
+| tsc-no-emit        | 2022-03-12 | typescript          | 3,5 sec |                                                                       |
+| eslint             | 2022-03-12 | eslint              | 6,5 sec | damn slow, seems slower than old benches                              |
+| eslint-ts-src-only | 2022-03-12 | eslint              | 5,5 sec | 1 sec diff, still slow IMHO                                           |
+| uvu                | 2022-03-12 | uvu                 | 820 ms  | pretty good                                                           |
+| c8-uvu             | 2022-03-12 | c8 & uvu            | 1,6 sec | 800 ms too for coverage, still good                                   |
 
 Command aliases :
 
@@ -136,7 +137,7 @@ Each task is run 3 times via `time npm run <task>` to get the average execution 
 
 ## Thanks
 
-- [Arg](https://github.com/vercel/arg) : unopinionated, no-frills CLI argument parser
+- [Arg](https://github.com/vercel/arg) : un-opinionated, no-frills CLI argument parser
 - [C8](https://github.com/bcoe/c8) : simple & effective cli for code coverage
 - [Esbuild](https://github.com/evanw/esbuild) : an extremely fast JavaScript bundler and minifier
 - [Eslint](https://eslint.org) : super tool to find & fix problems

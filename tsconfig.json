@@ -26,6 +26,7 @@
     "strict": true,
     "target": "ES2020",
     "types": [
+      "node/buffer",
       "node/console",
       "node/fs",
       "node/fs/promises",

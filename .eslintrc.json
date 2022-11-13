@@ -91,6 +91,12 @@
         "lines-between-class-members": "off",
         "max-statements-per-line": "off",
         "no-console": "off",
+        "no-restricted-imports": [
+          "error",
+          "fs/promises",
+          "fs",
+          "path"
+        ],
         "object-curly-spacing": [
           "error",
           "always"

@@ -1,5 +1,5 @@
-import path from 'path'
 import { sleep } from 'shuutils/dist/functions'
+import { join } from '../src/utils'
 
 export const promiseValue = async <T> (value: T): Promise<T> => {
   await sleep(1)
@@ -23,8 +23,8 @@ export const promiseVoid = async (): Promise<void> => {
 
 export const testFolder = __dirname
 
-export const vueProjectFolder = path.join(testFolder, 'data', 'vueProject')
+export const vueProjectFolder = join(testFolder, 'data', 'vueProject')
 
-export const tsProjectFolder = path.join(testFolder, 'data', 'tsProject')
+export const tsProjectFolder = join(testFolder, 'data', 'tsProject')
 
 

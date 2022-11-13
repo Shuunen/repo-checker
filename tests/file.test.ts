@@ -1,10 +1,9 @@
-import { readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { sleep } from 'shuutils/dist/functions'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 import { File } from '../src/file'
-import { join } from '../src/utils'
+import { deleteFile, join, readFile, writeFile } from '../src/utils'
 
 const existingFilename = '.nvmrc'
 const existingFilepath = join(repoCheckerPath, existingFilename)
@@ -15,7 +14,7 @@ const fakeContent = 'zorglub'
 test('file : simple validator', async function () {
   class MyFile extends File {
     public async start (): Promise<void> {
-      writeFileSync(missingFilepath, 'Foobar content')
+      await writeFile(missingFilepath, 'Foobar content')
       await this.inspectFile(missingFilename)
       equal(this.passed, [], 'test 1')
       this.shouldContains('Foobar')
@@ -28,7 +27,7 @@ test('file : simple validator', async function () {
       equal(this.passed, ['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file'], 'test 5')
       await this.checkNoFileExists('zorglub.exe')
       equal(this.passed, ['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file', 'some-file-log-has-no-zorglub-exe-file'], 'test 6')
-      unlinkSync(missingFilepath)
+      await deleteFile(missingFilepath)
       this.shouldContains('two dots', /\./g, 2, true, 'hehe 2 dots', true)
     }
   }
@@ -44,7 +43,7 @@ test('file : validator with fix', async function () {
   class MyFileFix extends File {
     public async start (): Promise<void> {
       await this.checkFileExists(existingFilename)
-      unlinkSync(existingFilepath)
+      await deleteFile(existingFilepath)
       await this.checkFileExists(existingFilename)
       await this.checkFileExists('missing-template.csv')
       const sizeKo = await this.getFileSizeInKo(existingFilename)
@@ -97,8 +96,8 @@ test('file : validator with fix & force, update a problematic file on the go', a
   const { passed, failed } = instance
   equal(passed, [], 'passed')
   equal(failed, [], 'failed')
-  equal(readFileSync(existingFilepath, 'utf8'), fakeContent)
-  writeFileSync(existingFilepath, originalContent) // restore the file
+  equal(await readFile(existingFilepath), fakeContent, 'file content updated')
+  await writeFile(existingFilepath, originalContent) // restore the file
 })
 
 test('file : validator without force cannot fix a problematic file on the go', async function () {
@@ -114,7 +113,7 @@ test('file : validator without force cannot fix a problematic file on the go', a
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ quiet: true }), true, false)
   await instance.start()
   await instance.end()
-  equal(readFileSync(existingFilepath, 'utf8'), originalContent)
+  equal(await readFile(existingFilepath), originalContent)
 })
 
 test('file : validator with fix cannot fix if the template require data that is missing', async function () {

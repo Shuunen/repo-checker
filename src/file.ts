@@ -1,9 +1,8 @@
-import { existsSync, writeFileSync } from 'fs'
 import { bgYellow, black } from 'shuutils/dist/colors'
 import { fillTemplate } from 'shuutils/dist/strings'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
-import { getFileSizeInKo, join, messageToCode, readFileInFolder } from './utils'
+import { fileExists, getFileSizeInKo, join, messageToCode, readFileInFolder, writeFile } from './utils'
 
 const MORE_THAN_ONE = 99
 
@@ -51,13 +50,12 @@ export class File {
     if (!this.doFix) return log.debug('cant update file if fix not active')
     if (this.failed.length > 0 && !this.doForce) return log.debug('cant update file without force if some checks failed')
     if (this.fileName.length === 0) return log.debug('cant update file without a file name, probably running tests')
-    writeFileSync(join(this.folderPath, this.fileName), this.fileContent) // TODO: use async ?
+    await writeFile(join(this.folderPath, this.fileName), this.fileContent) // if you don't await, the file is updated after the end of the process and tests are failing
     return log.debug('updated', this.fileName, 'with the new content')
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public async fileExists (fileName: string): Promise<boolean> {
-    return existsSync(join(this.folderPath, fileName)) // TODO: use async ?
+    return fileExists(join(this.folderPath, fileName))
   }
 
   /**
@@ -67,18 +65,18 @@ export class File {
    * @returns true if the file is found
    */
   public async checkFileExists (fileName: string, justWarn = false): Promise<boolean> {
-    let fileExists = await this.fileExists(fileName)
-    if (!fileExists && this.doFix) {
+    let exists = await this.fileExists(fileName)
+    if (!exists && this.doFix) {
       const fileContent = await this.initFile(fileName)
-      fileExists = fileContent.length > 0
+      exists = fileContent.length > 0
     }
-    this.test(fileExists, `has a ${fileName} file`, justWarn)
+    this.test(exists, `has a ${fileName} file`, justWarn)
     return Boolean(fileExists)
   }
 
   public async checkNoFileExists (fileName: string): Promise<void> {
-    const fileExists = await this.fileExists(fileName)
-    this.test(!fileExists, `has no ${fileName} file`)
+    const exists = await this.fileExists(fileName)
+    this.test(!exists, `has no ${fileName} file`)
   }
 
   public async getFileSizeInKo (filePath: string): Promise<number> {
@@ -144,7 +142,7 @@ export class File {
 
   // eslint-disable-next-line @typescript-eslint/require-await
   private async createFile (fileName: string, fileContent: string): Promise<void> {
-    writeFileSync(join(this.folderPath, fileName), fileContent) // TODO: use async ?
+    void writeFile(join(this.folderPath, fileName), fileContent)
     log.fix('created', fileName)
   }
 

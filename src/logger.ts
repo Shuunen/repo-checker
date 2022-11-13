@@ -1,5 +1,5 @@
-import type { WriteStream } from 'fs'
-import { createWriteStream } from 'fs'
+import type { WriteStream } from 'fs' // eslint-disable-line no-restricted-imports
+import { createWriteStream } from 'fs' // eslint-disable-line no-restricted-imports
 import { bgBlue, black, blue, green, red, yellow } from 'shuutils/dist/colors'
 import { config, name, version } from '../package.json'
 
