@@ -30,6 +30,7 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'eslintrc-json-current-eslintrc-json-has-only-35-of-the-35-custom-rules-in-repo-checker-eslintrc-json',
     'has-a-gitignore-file',
     'gitignore-has-node-modules',
+    'gitignore-has-no-pnpm-lock-exclusion',
     'github-workflows-ci-yml-has-a-checkout-step-in-ci-workflow',
     'github-workflows-ci-yml-has-a-node-step-in-ci-workflow',
     'github-workflows-ci-yml-a-install-step-in-ci-workflow',

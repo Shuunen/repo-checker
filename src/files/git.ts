@@ -7,5 +7,6 @@ export class GitFile extends File {
     if (!ok) return
     await this.inspectFile('.gitignore')
     this.couldContains('node_modules', /node_modules/)
+    this.couldContains('no pnpm-lock exclusion', /pnpm-lock\.yaml/, 0)
   }
 }
