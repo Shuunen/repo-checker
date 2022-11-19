@@ -20,7 +20,7 @@
     "c8": "7",
     "dependency-cruiser": "latest",
     "esbuild": "0.15",
-    "eslint": "8.27",
+    "eslint": "8.28",
     "eslint-plugin-unicorn": "44",
     "tsm": "2.2",
     "typescript": "4.9",
