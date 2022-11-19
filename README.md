@@ -74,6 +74,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
 - [ ] handle a repo-checker.json config file
+- [ ] bundle types definitions to allow typings in repo-checker.config.js
 
 ## Benchmarks
 
