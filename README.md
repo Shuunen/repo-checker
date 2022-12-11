@@ -75,6 +75,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
 - [ ] handle a repo-checker.json config file
 - [ ] bundle types definitions to allow typings in repo-checker.config.js
+- [ ] recommend && echo TASK success at the end of npm task
 
 ## Benchmarks
 
