@@ -15,8 +15,8 @@
   "devDependencies": {
     "@types/node": "18",
     "@types/require-from-string": "1.2",
-    "@typescript-eslint/eslint-plugin": "5.47",
-    "@typescript-eslint/parser": "5.47",
+    "@typescript-eslint/eslint-plugin": "5.48",
+    "@typescript-eslint/parser": "5.48",
     "c8": "7",
     "dependency-cruiser": "latest",
     "esbuild": "0.16",
