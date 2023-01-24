@@ -2,7 +2,6 @@ lockfileVersion: 5.4
 
 specifiers:
   '@types/node': '18'
-  '@types/require-from-string': '1.2'
   '@typescript-eslint/eslint-plugin': '5.49'
   '@typescript-eslint/parser': '5.49'
   arg: '5'
@@ -11,7 +10,6 @@ specifiers:
   esbuild: '0.17'
   eslint: '8.33'
   eslint-plugin-unicorn: '45'
-  require-from-string: '2'
   shuutils: '7.1'
   tsm: '2.3'
   typescript: '4.9'
@@ -21,12 +19,10 @@ specifiers:
 
 dependencies:
   arg: 5.0.2
-  require-from-string: 2.0.2
   shuutils: 7.1.0
 
 devDependencies:
   '@types/node': 18.11.9
-  '@types/require-from-string': 1.2.1
   '@typescript-eslint/eslint-plugin': 5.49.0_qpj4o7hgm43lt6bwgrwt732jse
   '@typescript-eslint/parser': 5.49.0_zmyfsul77535b2d7nzuoiqkehy
   c8: 7.12.0
@@ -386,10 +382,6 @@ packages:
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
-    dev: true
-
-  /@types/require-from-string/1.2.1:
-    resolution: {integrity: sha512-mIDK7lTHc0uW67SxPIqkwCrxmdKBV5aAET560hyZnT8c6Ekp9Aah3GPqe8Pl1Yzn/i2NMYmYv+HiMLwjGDCIAQ==}
     dev: true
 
   /@types/semver/7.3.13:
@@ -1975,6 +1967,7 @@ packages:
   /require-from-string/2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
+    dev: true
 
   /resolve-from/4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}

@@ -17,7 +17,6 @@
     - [target](#target)
     - [fix](#fix)
     - [init](#init)
-    - [data](#data)
     - [quiet](#quiet)
   - [Todo](#todo)
   - [Benchmarks](#benchmarks)
@@ -47,18 +46,13 @@ Target can be a relative or absolute path, can contain one project or more.
 `--fix` kindly ask repo-checker to try to create missing files or update problematic ones.
 For example, repo-checker will check for a `README.md`, if it does not exists, the file will be created and filled with data accordingly to the README.md template (`templates/README.md`).
 Repo-checker will try to grab as much info as possible from the project folder to create this file.
-If it's not enough, you'll be prompt to [init](#init) or provide [data](#data).
+If it's not enough, you'll be prompt to [init](#init).
 If you want to fix already existing files, use `--force` to overwrite it.
 
 ### init
 
-`--init` ask repo-checker to initialize a data config file in the current user directory (`~/repo-checker.config.js`).
+`--init` ask repo-checker to initialize a data config file in the current directory.
 If file already exists, use `--force` to overwrite it.
-
-### data
-
-`--data=path/to/my/data` gives repo-checker data to fill templates files in this repo (`templates/**`)
-If you don't give this parameter, repo-checker will try to load data from `~/repo-checker.config.js`.
 
 ### quiet
 
@@ -73,9 +67,7 @@ If you don't give this parameter, repo-checker will try to load data from `~/rep
 - [ ] add nbFixes to the report
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
-- [ ] handle a repo-checker.json config file
-- [ ] bundle types definitions to allow typings in repo-checker.config.js
-- [ ] recommend && echo TASK success at the end of npm task
+- [ ] prepare a json schema for .repo-checker.json
 
 ## Benchmarks
 

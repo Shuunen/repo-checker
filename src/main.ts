@@ -1,41 +1,39 @@
 import arg from 'arg'
-import requireFromString from 'require-from-string'
+import { parseJson } from 'shuutils'
 import { version } from '../package.json'
 import { check } from './check'
 import type { ProjectData } from './constants'
-import { dataDefaults, dataFileHomePath, dataFileName, home, repoCheckerPath, templatePath } from './constants'
+import { dataDefaults, dataFileName, home, templatePath } from './constants'
 import { log } from './logger'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils'
 
 async function initDataFile (doForce = false): Promise<void> {
-  log.line()
-  const exists = await fileExists(dataFileHomePath)
+  const exists = await fileExists(dataFileName)
   if (exists && !doForce) {
-    log.warn('repo-checker data file', dataFileHomePath, 'already exists, use --force to overwrite it')
+    log.warn('repo-checker data file', dataFileName, 'already exists, use --force to overwrite it')
     return
   }
   const fileContent = await readFileInFolder(templatePath, dataFileName)
   const filePath = join(home, dataFileName)
   void writeFile(filePath, fileContent)
-  log.info('repo-checker data file successfully init, you should edit :', dataFileHomePath)
+  log.info('repo-checker data file successfully init, you should edit :', dataFileName)
 }
 
-async function getDataPath (argument = '', target = ''): Promise<string> {
-  const exists = await fileExists(join(repoCheckerPath, argument))
-  if (argument.length > 0 && exists) return join(repoCheckerPath, argument)
+async function getDataPath (target = ''): Promise<string> {
   const dataFileTargetPath = join(target, dataFileName)
   if (await fileExists(dataFileTargetPath)) return dataFileTargetPath
-  if (await fileExists(dataFileHomePath)) return dataFileHomePath
   log.warn('you should use --init to prepare a data file to enhance fix')
   log.info('because no custom data file has been found, default data will be used')
   return ''
 }
 
-async function getData (argument = '', target = ''): Promise<ProjectData> {
-  const dataPath = await getDataPath(argument, target)
+async function getData (target = ''): Promise<ProjectData> {
+  const dataPath = await getDataPath(target)
   if (dataPath.length === 0) return dataDefaults
   log.info('loading data from', dataPath)
-  return requireFromString(await readFileInFolder(dataPath, '')) as ProjectData
+  const { error, value } = parseJson<ProjectData>(await readFileInFolder(dataPath, ''))
+  if (error) log.error('error while parsing data file', dataPath, error)
+  return value
 }
 
 function getTarget (argument = ''): string {
@@ -48,7 +46,7 @@ function getTarget (argument = ''): string {
 
 export async function start (): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--data': String, '--fix': Boolean, '--quiet': Boolean, '--no-report': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
+  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--no-report': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
   if ((options['--version'] ?? false) || (options['-v'] ?? false)) {
     console.log(version)
     process.exit(0)
@@ -64,7 +62,7 @@ export async function start (): Promise<void> {
   log.consoleLog = !quiet
   log.fileLog = !noReport
   const target = getTarget(options['--target'])
-  const data = await getData(options['--data'], target)
+  const data = await getData(target)
   data.quiet = data.quiet || quiet
   data.noReport = data.noReport || noReport
   log.start(doFix)
