@@ -1,4 +1,4 @@
-import { sleep } from 'shuutils/dist/functions'
+import { sleep } from 'shuutils'
 import { join } from '../src/utils'
 
 export const promiseValue = async <T> (value: T): Promise<T> => {

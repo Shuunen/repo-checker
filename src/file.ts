@@ -1,5 +1,4 @@
-import { bgYellow, black } from 'shuutils/dist/colors'
-import { fillTemplate } from 'shuutils/dist/strings'
+import { bgYellow, black, fillTemplate } from 'shuutils'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
 import { fileExists, getFileSizeInKo, join, messageToCode, readFileInFolder, writeFile } from './utils'
@@ -135,8 +134,8 @@ export class File {
       return ''
     }
     const fileContent = fillTemplate(template, this.data as unknown as Record<string, string>)
-    if (!fileContent.includes('{{')) void this.createFile(fileName, fileContent)
-    else log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
+    if (fileContent.includes('{{')) log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
+    else void this.createFile(fileName, fileContent)
     return fileContent
   }
 

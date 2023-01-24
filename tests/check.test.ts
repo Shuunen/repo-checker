@@ -27,7 +27,7 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'eslintrc-json-has-unicorn-rules-extend',
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
     'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
-    'eslintrc-json-current-eslintrc-json-has-only-35-of-the-35-custom-rules-in-repo-checker-eslintrc-json',
+    'eslintrc-json-current-eslintrc-json-has-only-36-of-the-36-custom-rules-in-repo-checker-eslintrc-json',
     'has-a-gitignore-file',
     'gitignore-has-node-modules',
     'gitignore-has-no-pnpm-lock-exclusion',
