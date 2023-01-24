@@ -1,4 +1,4 @@
-import { parseJson } from 'shuutils/dist/strings'
+import { parseJson } from 'shuutils'
 import { repoCheckerPath } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'

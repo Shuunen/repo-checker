@@ -1,5 +1,4 @@
-import { copy } from 'shuutils/dist/objects'
-import { parseJson } from 'shuutils/dist/strings'
+import { parseJson, clone } from 'shuutils'
 import { File } from '../file'
 import { log } from '../logger'
 
@@ -67,7 +66,7 @@ export class TsConfigFile extends File {
     const json = this.fileContentObject
     let ok = this.couldContains('an include section', /"include"/, 1, undefined, true)
     if (!ok && this.doFix) json.include = ['src']
-    if (this.doFix && json.compilerOptions === undefined) json.compilerOptions = copy(recommendedCompilerOptions)
+    if (this.doFix && json.compilerOptions === undefined) json.compilerOptions = clone(recommendedCompilerOptions)
     for (const inputKey in recommendedCompilerOptions) {
       const key = inputKey as keyof typeof recommendedCompilerOptions
       const value = recommendedCompilerOptions[key]

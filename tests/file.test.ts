@@ -1,4 +1,4 @@
-import { sleep } from 'shuutils/dist/functions'
+import { sleep } from 'shuutils'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { ProjectData, repoCheckerPath } from '../src/constants'

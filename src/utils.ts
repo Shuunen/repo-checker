@@ -2,8 +2,7 @@
 import { readdir, readFile as nodeReadFile, stat as nodeStat } from 'fs/promises' // eslint-disable-line no-restricted-imports
 import path from 'path' // eslint-disable-line no-restricted-imports
 import requireFromString from 'require-from-string'
-import { arrayUnique } from 'shuutils/dist/arrays'
-import { slugify } from 'shuutils/dist/strings'
+import { arrayUnique, slugify } from 'shuutils'
 import { dataDefaults, dataFileName, ProjectData } from './constants'
 import { log } from './logger'
 
