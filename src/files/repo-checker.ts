@@ -1,11 +1,21 @@
 import { dataFileName } from '../constants'
 import { File } from '../file'
+import { deleteFile, join, jsToJson, readFileInFolder, writeFile } from '../utils'
 
 export class RepoCheckerConfigFile extends File {
   public async start (): Promise<void> {
-    await this.checkNoFileExists('.repo-checker.js')
+    await this.migrateOldConfig('.repo-checker.js')
+    await this.migrateOldConfig('repo-checker.config.js')
     await this.checkFileExists(dataFileName, true)
     await this.inspectFile(dataFileName)
-    this.couldContains('no more snake case', /[a-z]+_[a-z]+/, 0, 'use camelCase instead')
+  }
+
+  private async migrateOldConfig (fileName: string): Promise<void> {
+    const exists = await this.fileExists(fileName)
+    /* c8 ignore next 4 */
+    if (!exists) return
+    const oldConfig = await readFileInFolder(this.folderPath, fileName)
+    await writeFile(join(this.folderPath, dataFileName), jsToJson(oldConfig))
+    await deleteFile(join(this.folderPath, fileName))
   }
 }

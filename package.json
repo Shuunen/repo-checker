@@ -8,13 +8,11 @@
   },
   "dependencies": {
     "arg": "5",
-    "require-from-string": "2",
     "shuutils": "7.1"
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {
     "@types/node": "18",
-    "@types/require-from-string": "1.2",
     "@typescript-eslint/eslint-plugin": "5.49",
     "@typescript-eslint/parser": "5.49",
     "c8": "7",

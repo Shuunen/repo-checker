@@ -1,8 +1,7 @@
 /* c8 ignore next */
 import { readdir, readFile as nodeReadFile, stat as nodeStat } from 'fs/promises' // eslint-disable-line no-restricted-imports
 import path from 'path' // eslint-disable-line no-restricted-imports
-import requireFromString from 'require-from-string'
-import { arrayUnique, slugify } from 'shuutils'
+import { arrayUnique, parseJson, slugify } from 'shuutils'
 import { dataDefaults, dataFileName, ProjectData } from './constants'
 import { log } from './logger'
 
@@ -97,9 +96,10 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
   data = await augmentDataWithPackageJson(folderPath, data)
   const localDataExists = shouldLoadLocal ? await fileExists(path.join(folderPath, dataFileName)) : false
   if (localDataExists) { // local data overwrite the rest
-    // should use something else than requireFromString
-    const localData = requireFromString(await readFileInFolder(folderPath, dataFileName)) as ProjectData
-    Object.assign(data, localData)
+    const { error, value } = parseJson<ProjectData>(await readFileInFolder(folderPath, dataFileName))
+    /* c8 ignore next */
+    if (error) log.error('error while parsing data file', folderPath, dataFileName, error)
+    Object.assign(data, value)
   }
   return data
 }
@@ -139,6 +139,14 @@ export async function findStringInFolder (folderPath: string, pattern: string, i
 
 export const messageToCode = (message: string): string => {
   return slugify(message.replace(/[,./:\\_]/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2'))
+}
+
+export const jsToJson = (js: string): string => {
+  return js.replace(/\/\*[^*]+\*\/\n?/g, '') // remove comments
+    .replace('module.exports = ', '') // remove module.exports
+    .replace(/ {2,}(\w+):/g, '  "$1":') // add quotes to keys
+    .replace(/,\n}/g, '\n}') // remove last comma
+    .replace(/'/g, '"') // replace single quotes with double quotes
 }
 
 export { rmdir as deleteFolder, unlink as deleteFile, writeFile } from 'fs/promises' // eslint-disable-line no-restricted-imports

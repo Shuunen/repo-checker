@@ -5,10 +5,9 @@ export const home = process.env['HOME'] ?? '' // when does HOME is not defined ?
 /**
  * The name of the file that contains the configuration for repo-checker
  */
-export const dataFileName = 'repo-checker.config.js'
+export const dataFileName = '.repo-checker.json'
 export const repoCheckerPath = path.join(__dirname, '..')
 export const templatePath = path.join(repoCheckerPath, 'templates')
-export const dataFileHomePath = path.join(home, dataFileName)
 
 export class ProjectData {
 

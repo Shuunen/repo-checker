@@ -1,8 +1,9 @@
 import { mkdirSync, rmSync } from 'fs' // eslint-disable-line no-restricted-imports
+import { check } from 'shuutils'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { dataDefaults, dataFileName, ProjectData, repoCheckerPath } from '../src/constants'
-import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findStringInFolder, getFileSizeInKo, getGitFolders, isGitFolder, join, messageToCode, readFileInFolder, writeFile } from '../src/utils'
+import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findStringInFolder, getFileSizeInKo, getGitFolders, isGitFolder, join, jsToJson, messageToCode, readFileInFolder, writeFile } from '../src/utils'
 import { testFolder } from './utils'
 
 test('git folder detection', async function () {
@@ -143,5 +144,15 @@ test('message to code', function () {
   equal(messageToCode('hello/world::!'), 'hello-world', 'test 2')
   equal(messageToCode('Hey this is :)the _Hello/world::!'), 'hey-this-is-the-hello-world', 'test 3')
 })
+
+check('jsToJson A', jsToJson('a'), 'a')
+check('jsToJson B', jsToJson(`/* some comment */
+module.exports = {
+  userName: 'Dwight Schrute',
+  banSass: false,
+}`), `{
+  "userName": "Dwight Schrute",
+  "banSass": false
+}`)
 
 test.run()
