@@ -1,23 +1,23 @@
-import { sleep } from 'shuutils'
+import { Nb, sleep } from 'shuutils'
 import { join } from '../src/utils'
 
 export const promiseValue = async <T> (value: T): Promise<T> => {
-  await sleep(1)
+  await sleep(Nb.One)
   return value
 }
 
 export const promiseTrue = async (): Promise<true> => {
-  await sleep(1)
+  await sleep(Nb.One)
   return true
 }
 
 export const promiseFalse = async (): Promise<false> => {
-  await sleep(1)
+  await sleep(Nb.One)
   return false
 }
 
 export const promiseVoid = async (): Promise<void> => {
-  await sleep(1)
+  await sleep(Nb.One)
   return
 }
 

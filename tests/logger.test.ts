@@ -1,3 +1,4 @@
+import { Nb } from 'shuutils'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { config } from '../package.json'
@@ -21,7 +22,7 @@ test('logger log correctly', function () {
 })
 
 test('logger can set indentation level', function () {
-  equal(log.setIndentLevel(2), 2)
+  equal(log.setIndentLevel(Nb.Two), Nb.Two)
 })
 
 test('logger can prevent log file generation', async function () {
@@ -44,7 +45,7 @@ test('logger can log unknown errors', function () {
   equal(log.unknownError(new Error('damn-err')), false)
   equal(log.unknownError({}), false)
   equal(log.unknownError([]), false)
-  equal(log.unknownError(0), false)
+  equal(log.unknownError(Nb.Zero), false)
 })
 
 test.run()

@@ -1,3 +1,4 @@
+import { Nb } from 'shuutils'
 import { File } from '../file'
 
 export class EditorConfigFile extends File {
@@ -12,6 +13,6 @@ export class EditorConfigFile extends File {
     this.couldContains('whitespace trailing', /trim_trailing_whitespace = true/)
     this.couldContains('final new line rule', /insert_final_newline = true/)
     this.couldContains('specific markdown trailing rule', /\[\*\.md]\ntrim_trailing_whitespace = false/)
-    this.couldContains('no specific html indent rule', /\[\*\.html]\nindent_size = 4/, 0)
+    this.couldContains('no specific html indent rule', /\[\*\.html]\nindent_size = 4/, Nb.None)
   }
 }

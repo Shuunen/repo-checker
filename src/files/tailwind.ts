@@ -1,3 +1,4 @@
+import { Nb } from 'shuutils'
 import { File } from '../file'
 import { log } from '../logger'
 
@@ -14,9 +15,9 @@ export class TailwindFile extends File {
     log.debug('found tailwind config file :', fileName)
     await this.inspectFile(fileName)
     if (!tsExists) {
-      const ok = this.shouldContains('type definitions', /@type/, 1, true, 'like : /** @type {import(\'tailwindcss\').Config} */', true)
+      const ok = this.shouldContains('type definitions', /@type/, Nb.One, true, 'like : /** @type {import(\'tailwindcss\').Config} */', true)
       if (!ok && this.doFix) this.fileContent = `/** @type {import('tailwindcss').Config} */\n${this.fileContent}`
     }
-    this.shouldContains('a content (previously named purge) option', /content/, 1, false, 'like : content: [\'./src/**/*.{vue,js,ts,jsx,tsx}\']')
+    this.shouldContains('a content (previously named purge) option', /content/, Nb.One, false, 'like : content: [\'./src/**/*.{vue,js,ts,jsx,tsx}\']')
   }
 }

@@ -1,4 +1,4 @@
-import { bgYellow, black, fillTemplate } from 'shuutils'
+import { bgYellow, black, fillTemplate, Nb } from 'shuutils'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
 import { fileExists, getFileSizeInKo, join, messageToCode, readFileInFolder, writeFile } from './utils'
@@ -47,8 +47,8 @@ export class File {
   public async updateFile (): Promise<boolean> {
     if (this.originalFileContent.trim() === this.fileContent.trim()) return log.debug('avoid file update when updated content is the same')
     if (!this.doFix) return log.debug('cant update file if fix not active')
-    if (this.failed.length > 0 && !this.doForce) return log.debug('cant update file without force if some checks failed')
-    if (this.fileName.length === 0) return log.debug('cant update file without a file name, probably running tests')
+    if (this.failed.length > Nb.Zero && !this.doForce) return log.debug('cant update file without force if some checks failed')
+    if (this.fileName.length === Nb.Zero) return log.debug('cant update file without a file name, probably running tests')
     await writeFile(join(this.folderPath, this.fileName), this.fileContent) // if you don't await, the file is updated after the end of the process and tests are failing
     return log.debug('updated', this.fileName, 'with the new content')
   }
@@ -67,7 +67,7 @@ export class File {
     let exists = await this.fileExists(fileName)
     if (!exists && this.doFix) {
       const fileContent = await this.initFile(fileName)
-      exists = fileContent.length > 0
+      exists = fileContent.length > Nb.None
     }
     this.test(exists, `has a ${fileName} file`, justWarn)
     return Boolean(fileExists)
@@ -89,7 +89,7 @@ export class File {
     const fix = this.doFix && canFix && !ok
     // console.table({ doFix: this.doFix, doForce: this.doForce, canFix, ok, fix })
     const regexString = regex.toString().replace(/\\/g, '') // eslint-disable-line unicorn/prefer-string-replace-all
-    name += ok || fix ? '' : ` -- ${helpMessage.length > 0 ? helpMessage : regexString} ${canFix ? bgYellow(black('[ fixable ]')) : ''}`
+    name += ok || fix ? '' : ` -- ${helpMessage.length > Nb.Zero ? helpMessage : regexString} ${canFix ? bgYellow(black('[ fixable ]')) : ''}`
     const have = justWarn ? 'could have' : 'does not have'
     const message = `${this.fileName} ${ok ? 'has' : have} ${name} `
     if (fix) log.fix(message)
@@ -104,7 +104,7 @@ export class File {
 
   public checkContains (regex: RegExp, nbMatchExpected = MORE_THAN_ONE): boolean {
     const matches = this.fileContent.match(regex) ?? [] // eslint-disable-line @typescript-eslint/prefer-regexp-exec
-    const ok = nbMatchExpected === MORE_THAN_ONE ? matches.length > 0 : nbMatchExpected === matches.length
+    const ok = nbMatchExpected === MORE_THAN_ONE ? matches.length > Nb.Zero : nbMatchExpected === matches.length
     if (!ok) log.debug(regex.toString().replace('\n', ''), `matched ${matches.length} instead of ${nbMatchExpected === MORE_THAN_ONE ? 'one or more' : nbMatchExpected}`)
     return ok
   }
@@ -120,7 +120,7 @@ export class File {
 
   public couldContainsSchema (url: string): boolean {
     const line = `"$schema": "${url}",`
-    const ok = this.couldContains('a $schema declaration', /"\$schema": "/, 1, `like ${line}`, true)
+    const ok = this.couldContains('a $schema declaration', /"\$schema": "/, Nb.One, `like ${line}`, true)
     if (ok) return true
     if (!this.doFix) return ok
     this.fileContent = this.fileContent.replace(/(^{\n)(\s+)/, `$1$2${line}\n$2`)
@@ -146,7 +146,7 @@ export class File {
   }
 
   private async checkIssues (): Promise<void> {
-    if (this.failed.length > 0 && this.doFix) {
+    if (this.failed.length > Nb.Zero && this.doFix) {
       if (this.doForce) {
         await this.initFile(this.fileName)
         return

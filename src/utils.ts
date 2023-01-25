@@ -1,7 +1,7 @@
 /* c8 ignore next */
 import { readdir, readFile as nodeReadFile, stat as nodeStat } from 'fs/promises' // eslint-disable-line no-restricted-imports
 import path from 'path' // eslint-disable-line no-restricted-imports
-import { arrayUnique, parseJson, slugify } from 'shuutils'
+import { arrayUnique, Nb, parseJson, slugify } from 'shuutils'
 import { dataDefaults, dataFileName, ProjectData } from './constants'
 import { log } from './logger'
 
@@ -28,7 +28,7 @@ export async function isGitFolder (folderPath: string): Promise<boolean> {
 export async function getGitFolders (folderPath: string): Promise<string[]> {
   if (await isGitFolder(folderPath)) return [folderPath]
   const filePaths = await readDirectoryAsync(folderPath)
-  const gitDirectories = []
+  const gitDirectories: string[] = []
   for (const filePath of filePaths) {
     const p = path.join(folderPath, filePath)
     if (await isGitFolder(p)) gitDirectories.push(p) // eslint-disable-line no-await-in-loop
@@ -50,13 +50,13 @@ export async function augmentDataWithGit (folderPath: string, dataSource: Projec
   if (!await fileExists(path.join(gitFolder, 'config'))) return data
   const gitConfigContent = await readFileInFolder(gitFolder, 'config')
   const matches = /url = .*[/:]([\w-]+)\/([\w-]+)/.exec(gitConfigContent)
-  if (matches?.[1] !== undefined) {
-    data.userId = matches[1]
+  if (matches?.[Nb.Second] !== undefined) {
+    data.userId = matches[Nb.Second]
     log.debug('found userId in git config :', data.userId)
     data.userIdLowercase = data.userId.toLowerCase()
   }
-  if (matches?.[2] !== undefined) {
-    data.repoId = matches[2]
+  if (matches?.[Nb.Third] !== undefined) {
+    data.repoId = matches[Nb.Third]
     log.debug('found repoId in git config :', data.repoId)
   }
   return data
@@ -69,19 +69,19 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
     return data
   }
   const content = await readFileInFolder(folderPath, 'package.json')
-  data.packageName = /"name": "([\w+/@-]+)"/.exec(content)?.[1] ?? dataDefaults.packageName
-  data.license = /"license": "([\w+-.]+)"/.exec(content)?.[1] ?? dataDefaults.license
+  data.packageName = /"name": "([\w+/@-]+)"/.exec(content)?.[Nb.Second] ?? dataDefaults.packageName
+  data.license = /"license": "([\w+-.]+)"/.exec(content)?.[Nb.Second] ?? dataDefaults.license
   // eslint-disable-next-line unicorn/no-unsafe-regex
   const author = /"author": "([\s\w/@-]+)\b[\s<]*([\w-.@]+)?>?"/.exec(content) ?? []
-  if (author[1] !== undefined) data.userName = author[1]
-  if (author[2] !== undefined) data.userMail = author[2]
+  if (author[Nb.Second] !== undefined) data.userName = author[Nb.Second]
+  if (author[Nb.Third] !== undefined) data.userMail = author[Nb.Third]
   data.isModule = content.includes('"type": "module"')
   data.useTailwind = content.includes('"tailwindcss"')
   data.useDependencyCruiser = content.includes('"dependency-cruiser"')
   data.useNyc = content.includes('"nyc"')
   data.useC8 = content.includes('"c8"')
   data.useEslint = content.includes('"eslint"')
-  data.userId = /github\.com\/([\w-]+)\//.exec(content)?.[1] ?? dataDefaults.userId
+  data.userId = /github\.com\/([\w-]+)\//.exec(content)?.[Nb.Second] ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()
   if (/"(vue|vitepress|nuxt)"/.test(content)) data.useVue = true
   if (/(ts-node|typescript|@types)/.test(content)) data.useTypescript = true
@@ -105,14 +105,15 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
 }
 
 export async function getFileSizeInKo (filePath: string): Promise<number> {
-  if (!await fileExists(filePath)) return 0
+  if (!await fileExists(filePath)) return Nb.Zero
   const statData = await statAsync(filePath)
-  const size = Math.round(statData.size / 1024)
+  const kb = 1024
+  const size = Math.round(statData.size / kb)
   log.debug('found that file', filePath, 'has a size of :', `${size}`, 'Ko')
   return size
 }
 
-export async function findStringInFolder (folderPath: string, pattern: string, ignored = ['node_modules', '.git'], count = 0): Promise<string[]> {
+export async function findStringInFolder (folderPath: string, pattern: string, ignored = ['node_modules', '.git'], count = Nb.None): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
   const matches: string[] = []
   if (filePaths.includes('.gitignore')) {
@@ -123,7 +124,7 @@ export async function findStringInFolder (folderPath: string, pattern: string, i
     if (ignored.includes(filePath)) continue
     count++
     /* c8 ignore next */
-    if (count > 1000) throw new Error('too many files to scan, please reduce the scope')
+    if (count > Nb.Thousand) throw new Error('too many files to scan, please reduce the scope')
     const target = path.join(folderPath, filePath)
     const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null
     if (!statData) continue
