@@ -1,4 +1,4 @@
-import { ellipsis } from 'shuutils'
+import { ellipsis, Nb } from 'shuutils'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
@@ -32,12 +32,12 @@ export class PackageJsonFile extends File {
     this.shouldContains('a "version" property', this.regexForStringProp('version'))
     const hasLicence = this.shouldContains('a "license" property', this.regexForStringProp('license'))
     if (hasLicence) this.shouldContains(`a ${this.data.license} license`, this.regexForStringValueProp('license', this.data.license))
-    this.couldContains('no engines section', /"engines"/, 0)
+    this.couldContains('no engines section', /"engines"/, Nb.None)
   }
 
   private async checkMainFile (): Promise<void> {
-    const mainFilePath = /"main": "(.*)"/.exec(this.fileContent)?.[1] ?? ''
-    if (mainFilePath.length === 0) {
+    const mainFilePath = /"main": "(.*)"/.exec(this.fileContent)?.[Nb.One] ?? ''
+    if (mainFilePath.length === Nb.Zero) {
       log.debug('no main file specified in package.json')
       return
     }
@@ -55,15 +55,15 @@ export class PackageJsonFile extends File {
 
   private checkScripts (): void {
     this.shouldContains('a script section', this.regexForObjectProp('scripts'))
-    this.couldContains('a pre-script for version automation', /"preversion": "/, 1, 'like : "preversion": "npm run ci",')
-    if (this.data.npmPackage) this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags && npm publish",')
-    else this.couldContains('a post-script for version automation', /"postversion": "/, 1, 'like : "postversion": "git push && git push --tags",')
-    if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/, 0)
+    this.couldContains('a pre-script for version automation', /"preversion": "/, Nb.One, 'like : "preversion": "npm run ci",')
+    if (this.data.npmPackage) this.couldContains('a post-script for version automation', /"postversion": "/, Nb.One, 'like : "postversion": "git push && git push --tags && npm publish",')
+    else this.couldContains('a post-script for version automation', /"postversion": "/, Nb.One, 'like : "postversion": "git push && git push --tags",')
+    if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/, Nb.None)
     if (this.data.useTypescript) this.shouldContains('a typescript build or check', /(tsc)|(tsc --noEmit)/)
-    if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/, 1, 'like watchlist src tests -eager -- npm run test')
+    if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/, Nb.One, 'like watchlist src tests -eager -- npm run test')
     if (!this.fileContent.includes('github.com/Shuunen')) return
-    if (this.data.packageName !== 'repo-check') this.couldContains('a repo-check script', /"check": "repo-check"/, 1, '(don\'t forget to npm i repo-check)')
-    this.couldContains('a ci script', /"ci": "/, 1, 'like "ci": "npm run build && npm run lint ...')
+    if (this.data.packageName !== 'repo-check') this.couldContains('a repo-check script', /"check": "repo-check"/, Nb.One, '(don\'t forget to npm i repo-check)')
+    this.couldContains('a ci script', /"ci": "/, Nb.One, 'like "ci": "npm run build && npm run lint ...')
   }
 
   private checkBuild (): void {
@@ -76,17 +76,17 @@ export class PackageJsonFile extends File {
     const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
     if (!hasDependencies && !hasDevelopmentDependencies) return
     /* annoying deps */
-    if (this.data.banSass) this.shouldContains('no sass dependency (fat & useless)', /sass/, 0)
-    this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, 0)
-    this.shouldContains('no tslint dependency (deprecated)', /tslint/, 0)
-    this.shouldContains('no eslint-plugin-promise 5 dependency (require eslint 7)', /"eslint-plugin-promise": "\^?5/, 0)
+    if (this.data.banSass) this.shouldContains('no sass dependency (fat & useless)', /sass/, Nb.None)
+    this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/, Nb.None)
+    this.shouldContains('no tslint dependency (deprecated)', /tslint/, Nb.None)
+    this.shouldContains('no eslint-plugin-promise 5 dependency (require eslint 7)', /"eslint-plugin-promise": "\^?5/, Nb.None)
     /* useless precision in deps versions */
-    const ok = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+"/g, 0, 'patch precision is rarely useful', true)
+    const ok = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+"/g, Nb.None, 'patch precision is rarely useful', true)
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)(\.\d+)/g, '$1')
     /* duplicates */
-    const hasUt = /"(mocha|uvu)"/.exec(this.fileContent)?.[1] !== undefined
+    const hasUt = /"(mocha|uvu)"/.exec(this.fileContent)?.[Nb.Second] !== undefined
     this.test(hasUt, 'one unit testing dependency from : mocha, uvu', true)
-    const hasCoverage = /"(nyc|c8)"/.exec(this.fileContent)?.[1] !== undefined
+    const hasCoverage = /"(nyc|c8)"/.exec(this.fileContent)?.[Nb.Second] !== undefined
     this.test(hasCoverage, 'one coverage dependency from : nyc, c8', true)
     /* usages */
     if (this.data.useEslint) this.checkEslintUsages()
@@ -95,20 +95,20 @@ export class PackageJsonFile extends File {
 
   private checkEslintUsages (): void {
     if (this.data.useTailwind) this.couldContains('an eslint tailwindcss plugin', /"eslint-plugin-tailwindcss"/)
-    const ok = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/, 1, 'like "eslint --cache ..."', true)
+    const ok = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/, Nb.One, 'like "eslint --cache ..."', true)
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace('eslint ', 'eslint --cache ')
   }
 
   private async checkUvuUsages (): Promise<void> {
     const badAssert = await findStringInFolder(join(this.folderPath, 'tests'), 'from \'assert\'')
-    this.test(badAssert.length === 0, `assert dependency used in "${ellipsis(badAssert.join(','), 50)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
+    this.test(badAssert.length === Nb.Zero, `assert dependency used in "${ellipsis(badAssert.join(','), Nb.OneHalf * Nb.Hundred)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
   }
 
   private suggestAlternatives (): void {
-    this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(colorette|chalk|colors)"/, 0)
-    this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, 0)
-    this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/, 0)
-    this.couldContains('no fat task runner, use npm run xyz && npm run abc for sequential or zero-deps package : npm-parallel', /"npm-run-all"/, 0)
+    this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(colorette|chalk|colors)"/, Nb.None)
+    this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/, Nb.None)
+    this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/, Nb.None)
+    this.couldContains('no fat task runner, use npm run xyz && npm run abc for sequential or zero-deps package : npm-parallel', /"npm-run-all"/, Nb.None)
     if (this.fileContent.includes('esbuild-plugin-run')) this.couldContains('not fat ts runner, use "typescript-run" like "dev": "ts-run src --watch" or "ts-run src -w src another-folder"')
   }
 

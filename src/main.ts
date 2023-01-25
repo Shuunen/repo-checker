@@ -1,5 +1,5 @@
 import arg from 'arg'
-import { parseJson } from 'shuutils'
+import { Nb, parseJson } from 'shuutils'
 import { version } from '../package.json'
 import { check } from './check'
 import type { ProjectData } from './constants'
@@ -29,7 +29,7 @@ async function getDataPath (target = ''): Promise<string> {
 
 async function getData (target = ''): Promise<ProjectData> {
   const dataPath = await getDataPath(target)
-  if (dataPath.length === 0) return dataDefaults
+  if (dataPath.length === Nb.Zero) return dataDefaults
   log.info('loading data from', dataPath)
   const { error, value } = parseJson<ProjectData>(await readFileInFolder(dataPath, ''))
   if (error) log.error('error while parsing data file', dataPath, error)
@@ -37,7 +37,7 @@ async function getData (target = ''): Promise<ProjectData> {
 }
 
 function getTarget (argument = ''): string {
-  if (argument.length > 0) return resolve(argument)
+  if (argument.length > Nb.Zero) return resolve(argument)
   log.line()
   log.info('no target specified via : --target=path/to/directory')
   log.info('targeting current directory...')
@@ -46,10 +46,10 @@ function getTarget (argument = ''): string {
 
 export async function start (): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--no-report': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(2) })
+  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--no-report': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(Nb.Two) })
   if ((options['--version'] ?? false) || (options['-v'] ?? false)) {
     console.log(version)
-    process.exit(0)
+    process.exit(Nb.Zero)
   }
   const doForce = options['--force']
   if (options['--init'] ?? false) {

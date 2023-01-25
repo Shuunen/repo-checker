@@ -1,5 +1,5 @@
 import { mkdirSync, rmSync } from 'fs' // eslint-disable-line no-restricted-imports
-import { check } from 'shuutils'
+import { check, Nb } from 'shuutils'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { dataDefaults, dataFileName, ProjectData, repoCheckerPath } from '../src/constants'
@@ -19,7 +19,7 @@ test('git folders listing', async function () {
     await writeFile(join(folderPath, 'config'), '', 'utf8')
   }
   const folders = await getGitFolders(testFolder)
-  equal(folders.length >= 2, true)
+  equal(folders.length >= Nb.Two, true)
   projects.forEach(name => { rmSync(join(testFolder, name), { recursive: true }) })
 })
 
@@ -35,9 +35,9 @@ test('file creation, detection, read', async function () {
 
 test('file size calculation', async function () {
   const nonExistingFileSize = await getFileSizeInKo(filename)
-  equal(nonExistingFileSize, 0)
+  equal(nonExistingFileSize, Nb.None)
   const existingFileSize = await getFileSizeInKo('package.json')
-  equal(existingFileSize >= 1, true)
+  equal(existingFileSize >= Nb.One, true)
 })
 
 test('data augment with git : repo-check & no-local', async function () {
@@ -117,21 +117,21 @@ test('find string in folder', async function () {
   const folder = join(testFolder, 'data', 'tsProject')
   const string = 'Dwight Schrute'
   const result = await findStringInFolder(folder, string)
-  equal(result[0], dataFileName)
+  equal(result[Nb.First], dataFileName)
 })
 
 test('find string in sub folder', async function () {
   const folder = join(testFolder, 'data', 'tsProject')
   const string = 'Alice'
   const result = await findStringInFolder(folder, string)
-  equal(result[0], 'here.txt')
+  equal(result[Nb.First], 'here.txt')
 })
 
 test('find no string in folder', async function () {
   const folder = join(testFolder, 'data', 'tsProject')
   const string = 'Bob'
   const result = await findStringInFolder(folder, string)
-  equal(result.length, 0)
+  equal(result.length, Nb.None)
 })
 
 test('find is skipped when scanning node_modules or git folders', async function () {

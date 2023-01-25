@@ -1,3 +1,4 @@
+import { Nb } from 'shuutils'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { ProjectData } from '../../src/constants'
@@ -36,7 +37,7 @@ test('ts config file fix', async function () {
       noImplicitAny: true,
       noImplicitOverride: true,
       noImplicitReturns: true,
-      noPropertyAccessFromIndexSignature: true,
+      noPropertyAccessFromIndexSignature: false,
       noUncheckedIndexedAccess: true,
       noUnusedLocals: true,
       noUnusedParameters: true,
@@ -48,7 +49,7 @@ test('ts config file fix', async function () {
       lib: ['ESNext'],
       types: [],
     },
-  }, undefined, 2)
+  }, undefined, Nb.Two)
   instance.inspectFile = promiseVoid
   instance.fileContent = fileInitial
   instance.updateFile = promiseTrue

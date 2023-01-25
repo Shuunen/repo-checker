@@ -1,4 +1,4 @@
-import { sleep } from 'shuutils'
+import { Nb, sleep } from 'shuutils'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { ProjectData, repoCheckerPath } from '../src/constants'
@@ -28,7 +28,7 @@ test('file : simple validator', async function () {
       await this.checkNoFileExists('zorglub.exe')
       equal(this.passed, ['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file', 'some-file-log-has-no-zorglub-exe-file'], 'test 6')
       await deleteFile(missingFilepath)
-      this.shouldContains('two dots', /\./g, 2, true, 'hehe 2 dots', true)
+      this.shouldContains('two dots', /\./g, Nb.Two, true, 'hehe 2 dots', true)
     }
   }
   const instance = new MyFile(repoCheckerPath, new ProjectData({ quiet: true }))
@@ -47,7 +47,7 @@ test('file : validator with fix', async function () {
       await this.checkFileExists(existingFilename)
       await this.checkFileExists('missing-template.csv')
       const sizeKo = await this.getFileSizeInKo(existingFilename)
-      this.test(sizeKo < 2, 'nvmrc should be a small text file')
+      this.test(sizeKo < Nb.Two, 'nvmrc should be a small text file')
     }
   }
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ quiet: true }), true)
@@ -66,10 +66,10 @@ test('file : validator with fix & force, overwrite a problematic file with templ
   class MyFileFixForce extends File {
     public async start (): Promise<void> {
       await this.inspectFile(existingFilename)
-      this.shouldContains('two dots', /\./g, 2)
+      this.shouldContains('two dots', /\./g, Nb.Two)
       this.shouldContains('a regular nvmrc file content', /travers/)
-      this.shouldContains('a super nvmrc file content', /travers is super/, 1, true, 'just say it', true)
-      this.shouldContains('an extra nvmrc file content', /travers is extra/, 2, true, undefined, true)
+      this.shouldContains('a super nvmrc file content', /travers is super/, Nb.One, true, 'just say it', true)
+      this.shouldContains('an extra nvmrc file content', /travers is extra/, Nb.Two, true, undefined, true)
       this.checkContains(/travers is extra/)
     }
   }
@@ -130,7 +130,7 @@ test('file : validator with fix cannot fix if the template require data that is 
 test('file : validator can detect a missing schema', async function () {
   class MyFileFix extends File {
     public async start (): Promise<void> {
-      await sleep(1)
+      await sleep(Nb.One)
       this.fileContent = '{}'
       const ok = this.couldContainsSchema('does-not-exist')
       equal(ok, false)
@@ -144,7 +144,7 @@ test('file : validator can detect a missing schema', async function () {
 test('file : validator can detect an existing schema', async function () {
   class MyFileFix extends File {
     public async start (): Promise<void> {
-      await sleep(1)
+      await sleep(Nb.One)
       this.fileContent = `{
         "something": "else",
         "$schema": "https://json.schemastore.org/does-exist",
@@ -162,7 +162,7 @@ test('file : validator can detect an existing schema', async function () {
 test('file : validator can fix a missing schema', async function () {
   class MyFileFix extends File {
     public async start (): Promise<void> {
-      await sleep(1)
+      await sleep(Nb.One)
       this.fileContent = `{
         "something": "else",
         "age": 42

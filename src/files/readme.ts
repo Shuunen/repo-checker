@@ -1,3 +1,4 @@
+import { Nb } from 'shuutils'
 import { dataDefaults } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
@@ -28,10 +29,10 @@ export class ReadmeFile extends File {
     if (!exists) return
     await this.inspectFile('README.md')
     this.shouldContains('a title', /^#\s\w+/)
-    this.couldContains('a svg logo', /\/logo\.svg\)/, 1, '![logo](folder/logo.svg)')
-    this.couldContains('a demo screen or gif', /demo\./, 1, '![demo](folder/demo.gif)')
-    this.shouldContains('no link to deprecated *.netlify.com', /(.*)\.netlify\.com/, 0)
-    this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
+    this.couldContains('a svg logo', /\/logo\.svg\)/, Nb.One, '![logo](folder/logo.svg)')
+    this.couldContains('a demo screen or gif', /demo\./, Nb.One, '![demo](folder/demo.gif)')
+    this.shouldContains('no link to deprecated *.netlify.com', /(.*)\.netlify\.com/, Nb.None)
+    this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, Nb.None) // https://stackoverflow.com/questions/9161769/url-without-httphttps
     this.checkMarkdown()
     this.checkTodos()
     this.checkBadges()
@@ -39,10 +40,10 @@ export class ReadmeFile extends File {
   }
 
   private checkMarkdown (): void {
-    let ok = this.shouldContains('no CRLF Windows carriage return', /\r/, 0, false, 'prefer Unix LF', true)
+    let ok = this.shouldContains('no CRLF Windows carriage return', /\r/, Nb.None, false, 'prefer Unix LF', true)
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\r\n/g, '\n')
     const starLists = /\n\*\s([\w[])/g
-    ok = this.couldContains('no star flavored list', starLists, 0, 'should use dash flavor', true)
+    ok = this.couldContains('no star flavored list', starLists, Nb.None, 'should use dash flavor', true)
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\n\*\s([\w[])/g, '\n- $1')
   }
 
@@ -56,7 +57,7 @@ export class ReadmeFile extends File {
     for (const badge of badges) {
       const message = `${badge.expected ? 'a' : 'no'} "${badge.label}" badge`
       const regex = new RegExp(`\\(${badge.link.replace('?', '\\?')}\\)`)
-      const ok = this.couldContains(message, regex, badge.expected ? 1 : 0, badge.markdown, badge.expected)
+      const ok = this.couldContains(message, regex, badge.expected ? Nb.One : Nb.None, badge.markdown, badge.expected)
       if (!ok && badge.expected && badge.fixable && this.doFix) this.addBadge(badge.markdown)
     }
   }
@@ -90,7 +91,7 @@ export class ReadmeFile extends File {
     for (const thank of thanks) {
       const message = `${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`
       const regex = new RegExp(`\\[${thank.label}]`, 'i')
-      const ok = this.couldContains(message, regex, thank.expected ? 1 : 0, thank.markdown, thank.expected)
+      const ok = this.couldContains(message, regex, thank.expected ? Nb.One : Nb.None, thank.markdown, thank.expected)
       const shouldAdd = !ok && thank.expected && thank.fixable && this.doFix
       // if (thank.label === 'Mocha') console.table({ ok, expected: thank.expected, fixable: thank.fixable, doFix: this.doFix, shouldAdd })
       if (shouldAdd) this.addThanks(thank.markdown)

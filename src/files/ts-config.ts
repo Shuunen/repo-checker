@@ -1,4 +1,4 @@
-import { parseJson, clone } from 'shuutils'
+import { clone, Nb, parseJson } from 'shuutils'
 import { File } from '../file'
 import { log } from '../logger'
 
@@ -14,7 +14,7 @@ const recommendedCompilerOptions = {
   noImplicitAny: true,
   noImplicitOverride: true,
   noImplicitReturns: true,
-  noPropertyAccessFromIndexSignature: true,
+  noPropertyAccessFromIndexSignature: false,
   noUncheckedIndexedAccess: true,
   noUnusedLocals: true,
   noUnusedParameters: true,
@@ -48,13 +48,13 @@ export class TsConfigFile extends File {
 
   private checkFileManagement (): void {
     const files = this.fileContentObject?.files ?? []
-    if (files.length > 0) {
+    if (files.length > Nb.Zero) {
       const ok = !files.some(file => file.includes('*'))
       this.test(ok, 'does not use wildcard in files section')
     }
     /* c8 ignore next */
     const include = this.fileContentObject?.include ?? []
-    if (include.length > 0) {
+    if (include.length > Nb.Zero) {
       const ok = !include.some(file => file.endsWith('**/*'))
       this.test(ok, '"my-folder/**/*" is not needed in include section, "my-folder" is enough', true)
     }
@@ -64,7 +64,7 @@ export class TsConfigFile extends File {
     /* c8 ignore next */
     if (this.fileContentObject === undefined) return log.error('cannot check compiler options without file content')
     const json = this.fileContentObject
-    let ok = this.couldContains('an include section', /"include"/, 1, undefined, true)
+    let ok = this.couldContains('an include section', /"include"/, Nb.One, undefined, true)
     if (!ok && this.doFix) json.include = ['src']
     if (this.doFix && json.compilerOptions === undefined) json.compilerOptions = clone(recommendedCompilerOptions)
     for (const inputKey in recommendedCompilerOptions) {
@@ -72,20 +72,20 @@ export class TsConfigFile extends File {
       const value = recommendedCompilerOptions[key]
       if (value === undefined) continue
       const regex = typeof value === 'string' ? new RegExp(`"${key}": "${value}"`) : new RegExp(`"${key}": ${String(value)}`)
-      ok = this.couldContains(`a ${key} compiler option`, regex, 1, undefined, true)
+      ok = this.couldContains(`a ${key} compiler option`, regex, Nb.One, undefined, true)
       if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions[key] = value as never
     }
-    ok = this.couldContains('a outDir compiler option', /"outDir": "/, 1, 'ex : "outDir": "./dist",', true)
+    ok = this.couldContains('a outDir compiler option', /"outDir": "/, Nb.One, 'ex : "outDir": "./dist",', true)
     if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['outDir'] = './dist'
-    ok = this.couldContains('a moduleResolution compiler option', /"moduleResolution": "/, 1, 'ex : "moduleResolution": "Node",', true)
+    ok = this.couldContains('a moduleResolution compiler option', /"moduleResolution": "/, Nb.One, 'ex : "moduleResolution": "Node",', true)
     if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['moduleResolution'] = 'Node'
-    ok = this.couldContains('a target compiler option', /"target": "/, 1, 'ex : "target": "ES2020",', true)
+    ok = this.couldContains('a target compiler option', /"target": "/, Nb.One, 'ex : "target": "ES2020",', true)
     if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['target'] = 'ES2020'
-    ok = this.couldContains('a non-empty lib compiler option', /"lib":\s\[\n/, 1, 'ex : "lib": [ "ESNext" ],', true)
+    ok = this.couldContains('a non-empty lib compiler option', /"lib":\s\[\n/, Nb.One, 'ex : "lib": [ "ESNext" ],', true)
     if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['lib'] = ['ESNext']
-    ok = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/, 1, 'ex : "types": [ "node/fs/promises" ],', true)
+    ok = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/, Nb.One, 'ex : "types": [ "node/fs/promises" ],', true)
     if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['types'] = []
-    if (this.doFix) this.fileContent = JSON.stringify(json, undefined, 2)
+    if (this.doFix) this.fileContent = JSON.stringify(json, undefined, Nb.Two)
     return true
   }
 }

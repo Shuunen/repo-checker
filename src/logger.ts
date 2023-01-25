@@ -1,6 +1,6 @@
 import type { WriteStream } from 'fs' // eslint-disable-line no-restricted-imports
 import { createWriteStream } from 'fs' // eslint-disable-line no-restricted-imports
-import { bgBlue, black, blue, green, red, yellow } from 'shuutils'
+import { bgBlue, black, blue, green, Nb, red, yellow } from 'shuutils'
 import { config, name, version } from '../package.json'
 
 class Logger {
@@ -11,7 +11,7 @@ class Logger {
 
   private readonly forceLog = false
 
-  private indentLevel = 0
+  private indentLevel = Nb.None
 
   private file?: WriteStream
 

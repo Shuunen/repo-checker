@@ -1,3 +1,4 @@
+import { Nb } from 'shuutils'
 import { File } from '../file'
 
 /* c8 ignore start */
@@ -11,7 +12,7 @@ export class RenovateFile extends File {
     this.shouldContains('a base config', /"config:base"/)
     this.shouldContains('a dashboard setting to false', /"dependencyDashboard": false/)
     if (this.data.autoMerge) this.shouldContains('an auto merge preset', /":automergeAll"/)
-    const ok = this.shouldContains('a preserve semver ranges preset', /":preserveSemverRanges"/, 1, true, undefined, true)
+    const ok = this.shouldContains('a preserve semver ranges preset', /":preserveSemverRanges"/, Nb.One, true, undefined, true)
     if (!ok && this.doFix) this.fileContent = this.fileContent.replace('":automergeAll"', '":automergeAll",\n    ":preserveSemverRanges"')
   }
 }

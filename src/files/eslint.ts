@@ -1,4 +1,4 @@
-import { parseJson } from 'shuutils'
+import { Nb, parseJson } from 'shuutils'
 import { repoCheckerPath } from '../constants'
 import { File } from '../file'
 import { log } from '../logger'
@@ -35,8 +35,8 @@ export class EsLintFile extends File {
     await this.inspectFile(filename)
     this.couldContains('eslint recommended rules extend', /"eslint:recommended"/)
     this.couldContains('unicorn rules extend', /plugin:unicorn\/all/)
-    this.shouldContains('no promise plugin (require eslint 7)', /(plugin:promise\/recommended)|("promise")/, 0)
-    this.couldContains('no plugin section since plugin are included by extends', /"plugins":/, 0)
+    this.shouldContains('no promise plugin (require eslint 7)', /(plugin:promise\/recommended)|("promise")/, Nb.None)
+    this.couldContains('no plugin section since plugin are included by extends', /"plugins":/, Nb.None)
     await this.checkRules()
     if (this.data.useTailwind) this.shouldContains('tailwind rules extend', /plugin:tailwindcss\/recommended/)
     if (this.data.useVue) this.checkVue()
@@ -46,11 +46,11 @@ export class EsLintFile extends File {
 
   private findRules (config: EslintRcJsonFile): EslintConfigRules | undefined {
     const override = config.overrides.find(anOverride => anOverride.files.find(file => file.endsWith('.ts')))
-    if (override && Object.keys(override.rules).length > 0) {
+    if (override && Object.keys(override.rules).length > Nb.Zero) {
       log.debug(`found ${Object.keys(override.rules).length} override rules`)
       return override.rules
     }
-    if (Object.keys(config.rules).length > 0) {
+    if (Object.keys(config.rules).length > Nb.Zero) {
       log.debug(`found no override rules but ${Object.keys(config.rules).length} root/global rules`)
       return config.rules
     }
@@ -76,7 +76,7 @@ export class EsLintFile extends File {
       return !(rule in rules)
     })
     const total = Object.keys(expectedRules).length
-    const ok = this.test(missingRules.length === 0, `current .eslintrc.json has only ${total - missingRules.length} of the ${total} custom rules in repo-checker .eslintrc.json`, true)
+    const ok = this.test(missingRules.length === Nb.Zero, `current .eslintrc.json has only ${total - missingRules.length} of the ${total} custom rules in repo-checker .eslintrc.json`, true)
     if (!ok) log.warn('missing rules :', missingRules.map(rule => `"${rule}": ${JSON.stringify(expectedRules[rule])}`).join(', '))
     return true
   }
@@ -99,7 +99,7 @@ export class EsLintFile extends File {
 
   private checkVue (): void {
     this.shouldContains('vue recommended rules extends', /plugin:vue\/vue3-recommended/)
-    this.shouldContains('no easy vue essential rules set', /plugin:vue\/essential/, 0)
+    this.shouldContains('no easy vue essential rules set', /plugin:vue\/essential/, Nb.None)
     this.shouldContains('vue ts recommended rules extends', /@vue\/typescript\/recommended/)
     this.couldContains('"vue/max-attributes-per-line": "off"')
     this.couldContains('"vue/html-self-closing": "off"')

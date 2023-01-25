@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { Nb } from 'shuutils'
 import { log } from './logger'
 import { start } from './main'
 
@@ -7,5 +8,5 @@ import { start } from './main'
 start().catch(error => {
   log.unknownError(error)
   log.line()
-  process.exit(1)
+  process.exit(Nb.One)
 })

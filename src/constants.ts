@@ -1,5 +1,6 @@
-/* c8 ignore next 3 */
+/* c8 ignore next 4 */
 import path from 'path' // eslint-disable-line no-restricted-imports
+import { Nb } from 'shuutils'
 
 export const home = process.env['HOME'] ?? '' // when does HOME is not defined ?
 /**
@@ -21,7 +22,7 @@ export class ProjectData {
 
   public license = 'GPL-3.0'
 
-  public maxSizeKo = 1
+  public maxSizeKo = Nb.One
 
   /**
    * Tells repo-checker to generate a report for the given project
