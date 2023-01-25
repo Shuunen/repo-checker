@@ -143,5 +143,10 @@
         "func-names": "off"
       }
     }
-  ]
+  ],
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
+    }
+  }
 }

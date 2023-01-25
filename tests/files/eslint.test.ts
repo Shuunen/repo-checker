@@ -5,7 +5,7 @@ import { EsLintFile } from '../../src/files'
 import { log } from '../../src/logger'
 import { promiseFalse, promiseTrue, promiseVoid, tsProjectFolder, vueProjectFolder } from '../utils'
 
-test('eslint config missing file', async function () {
+test('eslint A config missing file', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile()
@@ -16,7 +16,7 @@ test('eslint config missing file', async function () {
   equal(instance.failed, [], 'failed')
 })
 
-test('eslint config file empty', async function () {
+test('eslint B config file empty', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile()
@@ -35,7 +35,7 @@ test('eslint config file empty', async function () {
   ], 'failed')
 })
 
-test('eslint config file empty for ts project', async function () {
+test('eslint C config file empty for ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ useTypescript: true }))
@@ -50,11 +50,11 @@ test('eslint config file empty for ts project', async function () {
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
-    'does-not-have-typescript-eslint-extend-plugin-typescript-eslint-recommended',
+    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
   ], 'failed')
 })
 
-test('eslint config file empty for vue ts project', async function () {
+test('eslint D config file empty for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ useVue: true, useTypescript: true }))
@@ -66,16 +66,15 @@ test('eslint config file empty for vue ts project', async function () {
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
     'has-no-plugin-section-since-plugin-are-included-by-extends',
-    'has-no-easy-vue-essential-rules-set',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
-    'does-not-have-vue-recommended-rules-extends-plugin-vue-vue3-recommended',
-    'does-not-have-vue-ts-recommended-rules-extends-vue-typescript-recommended',
+    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
+    'does-not-have-hardcore-vue-rules-extend-hardcore-vue',
   ], 'failed')
 })
 
-test('eslint config file empty for tailwind project', async function () {
+test('eslint E config file empty for tailwind project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ useTailwind: true }))
@@ -95,7 +94,7 @@ test('eslint config file empty for tailwind project', async function () {
   ], 'failed')
 })
 
-test('eslint config partial file for js project', async function () {
+test('eslint F config partial file for js project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile()
@@ -121,7 +120,7 @@ test('eslint config partial file for js project', async function () {
   equal(instance.failed, ['has-no-xo-config-js-file'], 'failed')
 })
 
-test('eslint config partial file for ts project', async function () {
+test('eslint G config partial file for ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ useTypescript: true }))
@@ -142,10 +141,13 @@ test('eslint config partial file for ts project', async function () {
     'has-no-promise-plugin-require-eslint-7',
     'has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
-  equal(instance.failed, ['has-no-xo-config-js-file'], 'failed')
+  equal(instance.failed, [
+    'has-no-xo-config-js-file',
+    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
+  ], 'failed')
 })
 
-test('eslint config partial file for vue ts project', async function () {
+test('eslint H config partial file for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ useVue: true, useTypescript: true }))
@@ -175,16 +177,15 @@ test('eslint config partial file for vue ts project', async function () {
   equal(instance.passed, [
     'has-eslint-recommended-rules-extend',
     'has-no-promise-plugin-require-eslint-7',
-    'has-vue-recommended-rules-extends',
-    'has-no-easy-vue-essential-rules-set',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
-    'does-not-have-vue-ts-recommended-rules-extends-vue-typescript-recommended',
+    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
+    'does-not-have-hardcore-vue-rules-extend-hardcore-vue',
   ], 'failed')
 })
 
-test('eslint up to date config file for vue ts project', async function () {
+test('eslint I up to date config file for vue ts project', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile('', new ProjectData({ useVue: true, useTypescript: true }))
@@ -210,14 +211,15 @@ test('eslint up to date config file for vue ts project', async function () {
   equal(instance.passed, [
     'has-eslint-recommended-rules-extend',
     'has-no-promise-plugin-require-eslint-7',
-    'has-vue-recommended-rules-extends',
-    'has-no-easy-vue-essential-rules-set',
-    'has-vue-ts-recommended-rules-extends',
   ], 'passed')
-  equal(instance.failed, ['has-no-xo-config-js-file'], 'failed')
+  equal(instance.failed, [
+    'has-no-xo-config-js-file',
+    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
+    'does-not-have-hardcore-vue-rules-extend-hardcore-vue',
+  ], 'failed')
 })
 
-test('eslint config file with no rules', async function () {
+test('eslint J config file with no rules', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile(vueProjectFolder, new ProjectData({}))
@@ -225,6 +227,7 @@ test('eslint config file with no rules', async function () {
   await instance.start()
   await instance.end()
   equal(instance.passed, [
+    'eslintrc-json-has-hardcore-rules-extend',
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
     'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
@@ -234,7 +237,7 @@ test('eslint config file with no rules', async function () {
   ], 'failed')
 })
 
-test('eslint config file with just rules (no override)', async function () {
+test('eslint K config file with just rules (no override)', async function () {
   log.consoleLog = false
   log.fileLog = false
   const instance = new EsLintFile(tsProjectFolder, new ProjectData({}))
@@ -242,6 +245,7 @@ test('eslint config file with just rules (no override)', async function () {
   await instance.start()
   await instance.end()
   equal(instance.passed, [
+    'eslintrc-json-has-hardcore-rules-extend',
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
     'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')

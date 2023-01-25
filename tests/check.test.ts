@@ -3,12 +3,12 @@ import { equal } from 'uvu/assert'
 import { check, report } from '../src/check'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 
-test('repo-checker folder fails with low max size', async function () {
+test('repo-checker A folder fails with low max size', async function () {
   const message = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 2, npmPackage: true, quiet: true })).catch(() => 'failed')
   equal(message, 'failed')
 })
 
-test('repo-checker folder succeed with acceptable max size', async function () {
+test('repo-checker B folder succeed', async function () {
   const { passed, failed } = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 120, npmPackage: true, quiet: true }))
   equal(passed, [
     'use-dependency-cruiser',
@@ -23,11 +23,12 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'editorconfig-has-specific-markdown-trailing-rule',
     'editorconfig-has-no-specific-html-indent-rule',
     'has-no-xo-config-js-file',
-    'eslintrc-json-has-eslint-recommended-rules-extend',
+    'eslintrc-json-has-hardcore-rules-extend',
     'eslintrc-json-has-unicorn-rules-extend',
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
     'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
     'eslintrc-json-current-eslintrc-json-has-only-35-of-the-35-custom-rules-in-repo-checker-eslintrc-json',
+    'eslintrc-json-has-hardcore-typescript-rules-extend',
     'has-a-gitignore-file',
     'gitignore-has-node-modules',
     'gitignore-has-no-pnpm-lock-exclusion',
@@ -142,6 +143,7 @@ test('repo-checker folder succeed with acceptable max size', async function () {
     'tsconfig-json-has-a-no-implicit-any-compiler-option',
     'tsconfig-json-has-a-no-implicit-override-compiler-option',
     'tsconfig-json-has-a-no-implicit-returns-compiler-option',
+    'tsconfig-json-has-a-no-property-access-from-index-signature-compiler-option',
     'tsconfig-json-has-a-no-unchecked-indexed-access-compiler-option',
     'tsconfig-json-has-a-no-unused-locals-compiler-option',
     'tsconfig-json-has-a-no-unused-parameters-compiler-option',
