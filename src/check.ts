@@ -1,4 +1,4 @@
-import { Nb } from 'shuutils'
+import { ellipsis, Nb } from 'shuutils'
 import type { ProjectData } from './constants'
 import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files'
 import { log } from './logger'
@@ -22,14 +22,16 @@ const CHECKERS = [
   TsConfigFile,
 ]
 
-export function report (passed = Nb.None, failed = Nb.None): void {
+export function report (passed: string[] = [], failed: string[] = []): void {
+  const nbPassed = passed.length
+  const nbFailed = failed.length
   log.info('Report :')
   log.setIndentLevel(Nb.One)
-  log.test(passed > Nb.None, `${passed} test(s) passed successfully`, false, true)
-  log.test(failed === Nb.None, `${failed} test(s) failed`, false, true)
+  log.test(nbPassed > Nb.None, `${nbPassed} test(s) passed successfully`, false, true)
+  log.test(nbFailed === Nb.None, `${nbFailed} test(s) failed`, false, true)
   log.line()
   log.setIndentLevel(Nb.None)
-  if (failed > Nb.None) throw new Error('failed at validating at least one rule in one folder')
+  if (nbFailed > Nb.None) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), Nb.Hundred)}`)
 }
 
 export async function check (folderPath: string, data: ProjectData, doFix = false, doForce = false): Promise<{ passed: string[]; failed: string[] }> {
@@ -54,6 +56,6 @@ export async function check (folderPath: string, data: ProjectData, doFix = fals
     log.setIndentLevel(Nb.Zero)
   }
   /* eslint-enable no-await-in-loop */
-  report(passed.length, failed.length)
+  report(passed, failed)
   return { passed, failed }
 }

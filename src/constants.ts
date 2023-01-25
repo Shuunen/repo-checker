@@ -2,7 +2,7 @@
 import path from 'path' // eslint-disable-line no-restricted-imports
 import { Nb } from 'shuutils'
 
-export const home = process.env['HOME'] ?? '' // when does HOME is not defined ?
+export const home = process.env.HOME ?? '' // when does HOME is not defined ?
 /**
  * The name of the file that contains the configuration for repo-checker
  */

@@ -4,5 +4,10 @@
   },
   "rules": {
     "no-console": "off"
+  },
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
+    }
   }
 }

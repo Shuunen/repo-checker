@@ -76,15 +76,15 @@ export class TsConfigFile extends File {
       if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions[key] = value as never
     }
     ok = this.couldContains('a outDir compiler option', /"outDir": "/, Nb.One, 'ex : "outDir": "./dist",', true)
-    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['outDir'] = './dist'
+    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions.outDir = './dist'
     ok = this.couldContains('a moduleResolution compiler option', /"moduleResolution": "/, Nb.One, 'ex : "moduleResolution": "Node",', true)
-    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['moduleResolution'] = 'Node'
+    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions.moduleResolution = 'Node'
     ok = this.couldContains('a target compiler option', /"target": "/, Nb.One, 'ex : "target": "ES2020",', true)
-    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['target'] = 'ES2020'
+    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions.target = 'ES2020'
     ok = this.couldContains('a non-empty lib compiler option', /"lib":\s\[\n/, Nb.One, 'ex : "lib": [ "ESNext" ],', true)
-    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['lib'] = ['ESNext']
+    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions.lib = ['ESNext']
     ok = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/, Nb.One, 'ex : "types": [ "node/fs/promises" ],', true)
-    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions['types'] = []
+    if (!ok && this.doFix && json.compilerOptions !== undefined) json.compilerOptions.types = []
     if (this.doFix) this.fileContent = JSON.stringify(json, undefined, Nb.Two)
     return true
   }

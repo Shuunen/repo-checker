@@ -22,6 +22,9 @@ class EslintRcJsonFile {
   }
 }
 
+const specificRepoCheckerRules = new Set(['no-restricted-imports'])
+const emptyRules: EslintConfigRules = {}
+
 export class EsLintFile extends File {
   public async start (): Promise<boolean> {
     await this.checkNoFileExists('xo.config.js')
@@ -33,7 +36,8 @@ export class EsLintFile extends File {
     const exists = await this.fileExists(filename)
     if (!exists) return log.debug('skipping eslintrc checks')
     await this.inspectFile(filename)
-    this.couldContains('eslint recommended rules extend', /"eslint:recommended"/)
+    const hasHardcore = this.couldContains('hardcore rules extend', /hardcore/)
+    if (!hasHardcore) this.couldContains('eslint recommended rules extend', /"eslint:recommended"/)
     this.couldContains('unicorn rules extend', /plugin:unicorn\/all/)
     this.shouldContains('no promise plugin (require eslint 7)', /(plugin:promise\/recommended)|("promise")/, Nb.None)
     this.couldContains('no plugin section since plugin are included by extends', /"plugins":/, Nb.None)
@@ -68,10 +72,10 @@ export class EsLintFile extends File {
     const expectedJsonString = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
     data = parseJson<EslintRcJsonFile>(expectedJsonString)
     const expectedContent = new EslintRcJsonFile(data.value)
-    const expectedRules = this.findRules(expectedContent)
     /* c8 ignore next */
-    if (!expectedRules) return log.error('failed to found repo checker eslint rules')
+    const expectedRules = this.findRules(expectedContent) ?? emptyRules
     const missingRules = Object.keys(expectedRules).filter(rule => {
+      if (specificRepoCheckerRules.has(rule)) return false
       if (rule.startsWith('@typescript') && !this.data.useTypescript) return false
       return !(rule in rules)
     })
@@ -85,24 +89,26 @@ export class EsLintFile extends File {
     return this.shouldContains('eslint recommended rules extend', /eslint:recommended/)
   }
 
+  private checkTsVue (): boolean {
+    this.shouldContains('hardcore typescript rules extend', /hardcore\/ts/)
+    this.shouldContains('hardcore vue rules extend', /hardcore\/vue/)
+    return true
+  }
+
   private checkTs (): boolean {
     // check here ts & vue ts projects
-    if (this.data.useVue) return true
+    if (this.data.useVue) return this.checkTsVue()
     // check here ts only projects
-    const ok = this.fileContent.includes('plugin:@typescript-eslint')
-    if (!ok) {
-      this.shouldContains('typescript eslint extend', /plugin:@typescript-eslint\/recommended/)
-      this.couldContains('a stricter typescript eslint extend', /plugin:@typescript-eslint\/all/)
-    }
+    this.shouldContains('hardcore typescript rules extend', /hardcore\/ts/)
     return true
   }
 
   private checkVue (): void {
-    this.shouldContains('vue recommended rules extends', /plugin:vue\/vue3-recommended/)
-    this.shouldContains('no easy vue essential rules set', /plugin:vue\/essential/, Nb.None)
-    this.shouldContains('vue ts recommended rules extends', /@vue\/typescript\/recommended/)
-    this.couldContains('"vue/max-attributes-per-line": "off"')
+    this.couldContains('"vue/first-attribute-linebreak": "off"')
+    this.couldContains('"vue/html-closing-bracket-newline": "off"')
+    this.couldContains('"vue/html-indent": "off"')
     this.couldContains('"vue/html-self-closing": "off"')
+    this.couldContains('"vue/max-attributes-per-line": "off"')
     this.couldContains('"vue/no-multiple-template-root": "off"')
     this.couldContains('"vue/singleline-html-element-content-newline": "off"')
     // this.shouldContains('"parser": "vue-eslint-parser"')
