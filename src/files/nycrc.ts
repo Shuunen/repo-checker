@@ -12,13 +12,12 @@ export class NycRcFile extends FileBase {
     return hasRc ? '.nycrc' : '.nycrc.json'
   }
 
-  public async start (): Promise<boolean> {
-    if (!this.data.isUsingNyc && !this.data.isUsingC8) return log.debug('does not use nyc/c8')
+  public async start (): Promise<void> {
+    if (!this.data.isUsingNyc && !this.data.isUsingC8) { log.debug('does not use nyc/c8'); return }
     const fileName = await this.getConfigFileName()
-    if (fileName === '') return false
+    if (fileName === '') return
     await this.checkFileExists(fileName)
     await this.inspectFile(fileName)
     this.couldContainsSchema('https://json.schemastore.org/nycrc')
-    return true
   }
 }

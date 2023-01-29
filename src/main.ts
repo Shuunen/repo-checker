@@ -1,9 +1,9 @@
 import arg from 'arg'
-import { Nb, parseJson } from 'shuutils'
-import { version } from '../package.json'  
+import { LogLevel, Nb, parseJson } from 'shuutils'
+import { name, version } from '../package.json'
 import { check } from './check'
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import { dataDefaults, dataFileName, home, templatePath, ProjectData } from './constants'
+import { dataDefaults, dataFileName, home, ProjectData, templatePath } from './constants'
 import { log } from './logger'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils'
 
@@ -17,6 +17,7 @@ async function initDataFile (shouldForce = false): Promise<void> {
   const filePath = join(home, dataFileName)
   void writeFile(filePath, fileContent)
   log.info('repo-checker data file successfully init, you should edit :', dataFileName)
+  process.exit(Nb.Zero)
 }
 
 async function getDataPath (target = ''): Promise<string> {
@@ -38,36 +39,38 @@ async function getData (target = ''): Promise<ProjectData> {
 
 function getTarget (argument = ''): string {
   if (argument.length > Nb.Zero) return resolve(argument)
-  log.line()
   log.info('no target specified via : --target=path/to/directory')
   log.info('targeting current directory...')
   return process.cwd()
 }
 
-// eslint-disable-next-line max-statements, complexity
-export async function start (): Promise<void> {
+function showVersion (): void {
+  log.info(version)
+  process.exit(Nb.Zero)
+}
+
+function parseOptions (): { willShowVersion: boolean; willInit: boolean; willForce: boolean; target: string; willFix: boolean; isQuiet: boolean; isVerbose: boolean } {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--no-report': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(Nb.Two) })
-  if ((options['--version'] ?? false) || (options['-v'] ?? false)) {
-    // eslint-disable-next-line no-console
-    console.log(version)
-    process.exit(Nb.Zero)
+  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean }, { argv: process.argv.slice(Nb.Two) })
+  return {
+    willShowVersion: (options['--version'] ?? false) || (options['-v'] ?? false),
+    willInit: options['--init'] ?? false,
+    willForce: options['--force'] ?? false,
+    target: getTarget(options['--target']),
+    willFix: options['--fix'] ?? false,
+    isQuiet: options['--quiet'] ?? false,
+    isVerbose: options['--verbose'] ?? false,
   }
-  const shouldForce = options['--force']
-  if (options['--init'] ?? false) {
-    await initDataFile(shouldForce) // .catch(error => log.unknownError(error))
-    return
-  }
-  const willFix = options['--fix']
-  const isQuiet = options['--quiet'] ?? false
-  const isReportDisabled = options['--no-report'] ?? false
-  log.canConsoleLog = !isQuiet
-  log.willLogToFile = !isReportDisabled
-  const target = getTarget(options['--target'])
+}
+
+export async function start (): Promise<void> {
+  const { willShowVersion, willInit, willForce, target, willFix, isQuiet, isVerbose } = parseOptions()
+  if (willShowVersion) showVersion()
+  if (willInit) void initDataFile()
   const data = await getData(target)
-  data.isQuiet = data.isQuiet || isQuiet
-  if (isReportDisabled) data.willGenerateReport = false
-  log.start(willFix)
-  await check(target, data, willFix, shouldForce)
+  log.options.isActive = !isQuiet
+  log.options.minimumLevel = isVerbose ? LogLevel.Debug : LogLevel.Info
+  log.info(`${String(name)} v${String(version)} is starting ${willFix ? '(fix enabled)' : ''}`)
+  await check(target, data, willFix, willForce)
 }
 

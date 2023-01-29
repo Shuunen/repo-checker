@@ -5,8 +5,7 @@ import { log } from '../../src/logger'
 import { promiseFalse } from '../utils'
 
 test('dependency cruiser config missing file', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new DependencyCruiserFile()
   instance.checkFileExists = promiseFalse
   await instance.start()

@@ -97,8 +97,7 @@ export class PackageJsonFile extends FileBase {
     if (!hasFile) return
     const sizeKo = await this.getFileSizeInKo(filePath)
     const isSizeOk = sizeKo <= maxSizeKo
-    log.debug(`main file size is ${sizeKo}ko (max ${maxSizeKo}ko)`)
-    this.test(isSizeOk, `main file size should be less or equal to max size allowed (${maxSizeKo}Ko)`)
+    this.test(isSizeOk, `main file size (${sizeKo}ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
   }
 
   private async checkMainFile (): Promise<void> {

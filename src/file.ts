@@ -65,7 +65,9 @@ export class FileBase {
     if (isValid) this.passed.push(code)
     // eslint-disable-next-line sonarjs/elseif-without-else
     else if (!willJustWarn) this.failed.push(code)
-    log.test(isValid, finalMessage, willJustWarn)
+    if (isValid) log.test(isValid, finalMessage)
+    else if (willJustWarn) log.warn(finalMessage)
+    else log.error(finalMessage)
     return isValid
   }
 
@@ -90,13 +92,14 @@ export class FileBase {
     this.fileContent = this.originalFileContent
   }
 
-  public async updateFile (): Promise<boolean> {
-    if (this.originalFileContent.trim() === this.fileContent.trim()) return log.debug('avoid file update when updated content is the same')
-    if (!this.canFix) return log.debug('cant update file if fix not active')
-    if (this.failed.length > Nb.Zero && !this.canForce) return log.debug('cant update file without force if some checks failed')
-    if (this.fileName.length === Nb.Zero) return log.debug('cant update file without a file name, probably running tests')
+  // eslint-disable-next-line max-statements
+  public async updateFile (): Promise<void> {
+    if (this.originalFileContent.trim() === this.fileContent.trim()) { log.debug('avoid file update when updated content is the same'); return }
+    if (!this.canFix) { log.debug('cant update file if fix not active'); return }
+    if (this.failed.length > Nb.Zero && !this.canForce) { log.debug('cant update file without force if some checks failed'); return }
+    if (this.fileName.length === Nb.Zero) { log.debug('cant update file without a file name, probably running tests'); return }
     await writeFile(join(this.folderPath, this.fileName), this.fileContent) // if you don't await, the file is updated after the end of the process and tests are failing
-    return log.debug('updated', this.fileName, 'with the new content')
+    log.debug('updated', this.fileName, 'with the new content')
   }
 
   public async fileExists (fileName: string): Promise<boolean> {

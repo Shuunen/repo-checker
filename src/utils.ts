@@ -126,6 +126,7 @@ export async function findStringInFolder (folderPath: string, pattern: string, i
     if (count > Nb.Thousand) throw new Error('too many files to scan, please reduce the scope')
     const target = path.join(folderPath, filePath)
     const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null, no-await-in-loop
+    /* c8 ignore next */
     if (!statData) continue  // eslint-disable-line no-continue
     if (statData.isDirectory()) {
       matches.push(...await findStringInFolder(target, pattern, ignored, count + 1)) // eslint-disable-line no-await-in-loop
