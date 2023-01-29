@@ -25,6 +25,13 @@ export class PackageJsonFile extends FileBase {
     if (hasLicence) this.shouldContains(`a ${this.data.license} license`, this.regexForStringValueProp('license', this.data.license))
   }
 
+  private checkEchoes (): void {
+    ['build', 'ci', 'lint', 'test'].forEach(task => {
+      if (!this.fileContent.includes(`"${task}":`)) return
+      this.couldContains(`a final echo for task "${task}"`, new RegExp(`"${task}": ".+ && echo [\\w\\s]*${task} \\w+"`, 'u'))
+    })
+  }
+
   private checkScripts (): void {
     this.shouldContains('a script section', this.regexForObjectProp('scripts'))
     this.couldContains('a pre-script for version automation', /"preversion": "/u, Nb.One, 'like : "preversion": "npm run ci",')
@@ -58,11 +65,11 @@ export class PackageJsonFile extends FileBase {
   }
 
   private regexForStringProp (name = ''): RegExp {
-    return new RegExp(`"${name}":\\s".+"`, 'u')
+    return new RegExp(`"${name}": ".+"`, 'u')
   }
 
   private regexForStringValueProp (name = '', value = ''): RegExp {
-    return new RegExp(`"${name}":\\s"${value}"`, 'u')
+    return new RegExp(`"${name}": "${value}"`, 'u')
   }
 
   private regexForObjectProp (name = ''): RegExp {
@@ -70,11 +77,11 @@ export class PackageJsonFile extends FileBase {
   }
 
   private regexForArrayProp (name = ''): RegExp {
-    return new RegExp(`"${name}":\\s\\[\n`, 'u')
+    return new RegExp(`"${name}": \\[\n`, 'u')
   }
 
   private regexForBooleanProp (name = ''): RegExp {
-    return new RegExp(`"${name}":\\s(?:false|true),\n`, 'u')
+    return new RegExp(`"${name}": (?:false|true),\n`, 'u')
   }
 
   public async start (): Promise<void> {
@@ -84,6 +91,7 @@ export class PackageJsonFile extends FileBase {
     await this.checkMainFile()
     this.checkProperties()
     this.checkScripts()
+    this.checkEchoes()
     this.checkBuild()
     await this.checkDependencies()
     this.suggestAlternatives()
