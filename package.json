@@ -9,7 +9,7 @@
   "dependencies": {
     "arg": "5",
     "require-from-string": "2",
-    "shuutils": "6.3"
+    "shuutils": "7.1"
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {
