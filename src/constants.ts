@@ -7,16 +7,18 @@ export const home = process.env.HOME ?? '' // when does HOME is not defined ?
  * The name of the file that contains the configuration for repo-checker
  */
 export const dataFileName = '.repo-checker.json'
+// eslint-disable-next-line putout/putout
 export const repoCheckerPath = path.join(__dirname, '..')
 export const templatePath = path.join(repoCheckerPath, 'templates')
 
 export class ProjectData {
 
-  public autoMerge = true
+  /**
+   * Renovate auto-merge feature
+   */
+  public canAutoMergeDeps = true
 
-  public banSass = true
-
-  public devDepsOnly = true
+  public shouldAvoidSass = true
 
   public isModule = false
 
@@ -27,26 +29,26 @@ export class ProjectData {
   /**
    * Tells repo-checker to generate a report for the given project
    */
-  public noReport = false
+  public willGenerateReport = true
 
-  public npmPackage = false
+  public isPublishedPackage = false
 
   public packageName = ''
 
-  public quiet = false
+  public isQuiet = false
 
   public repoId = 'a-great-repo'
 
   /**
    * C8 is a code coverage tool that is used to generate the coverage report based on the unit tests
    */
-  public useC8 = false
+  public isUsingC8 = false
 
-  public useDependencyCruiser = false
+  public isUsingDependencyCruiser = false
 
-  public useEslint = false
+  public isUsingEslint = false
 
-  public useNyc = false
+  public isUsingNyc = false
 
   public userId = 'Shuunen'
 
@@ -56,13 +58,13 @@ export class ProjectData {
 
   public userName = 'Romain Racamier-Lafon'
 
-  public useTailwind = false
+  public isUsingTailwind = false
 
-  public useTypescript = false
+  public isUsingTypescript = false
 
-  public useVue = false
+  public isUsingVue = false
 
-  public webPublished = false
+  public isWebPublished = false
 
   public webUrl = 'https://my-website.com'
 

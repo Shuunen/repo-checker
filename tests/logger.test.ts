@@ -6,8 +6,8 @@ import { log } from '../src/logger'
 import { deleteFile, fileExists } from '../src/utils'
 
 test('logger log correctly', function () {
-  log.consoleLog = false
-  log.fileLog = true
+  log.canConsoleLog = false
+  log.willLogToFile = true
   equal(log.start(), true)
   equal(log.start(true), true)
   equal(log.error('damn-err'), false)
@@ -26,8 +26,8 @@ test('logger can set indentation level', function () {
 })
 
 test('logger can prevent log file generation', async function () {
-  log.fileLog = false
-  log.consoleLog = false
+  log.willLogToFile = false
+  log.canConsoleLog = false
   await deleteFile(config.logFile)
   equal(log.start(), false)
   equal(log.write('damn-write'), false)
@@ -39,8 +39,8 @@ test('logger can prevent log file generation', async function () {
 })
 
 test('logger can log unknown errors', function () {
-  log.fileLog = false
-  log.consoleLog = false
+  log.willLogToFile = false
+  log.canConsoleLog = false
   equal(log.unknownError('damn-err'), false)
   equal(log.unknownError(new Error('damn-err')), false)
   equal(log.unknownError({}), false)

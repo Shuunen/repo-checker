@@ -1,9 +1,9 @@
-import { File } from '../file'
+import { FileBase } from '../file'
 
-export class DependencyCruiserFile extends File {
+export class DependencyCruiserFile extends FileBase {
   public async start (): Promise<void> {
-    const ok = this.test(this.data.useDependencyCruiser, 'use dependency cruiser', true)
-    if (!ok) return
+    const hasFile = this.test(this.data.isUsingDependencyCruiser, 'use dependency cruiser', true)
+    if (!hasFile) return
     await this.checkFileExists('.dependency-cruiser.js')
   }
 }

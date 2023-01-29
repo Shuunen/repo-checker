@@ -5,7 +5,7 @@ import { GitFile } from '../../src/files'
 import { vueProjectFolder } from '../utils'
 
 test('git : detect a missing git ignore', async function () {
-  const instance = new GitFile(vueProjectFolder, new ProjectData({ quiet: true }))
+  const instance = new GitFile(vueProjectFolder, new ProjectData({ isQuiet: true }))
   await instance.start()
   await instance.end()
   const { passed, failed } = instance

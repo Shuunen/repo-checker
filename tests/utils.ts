@@ -1,30 +1,30 @@
+// eslint-disable-next-line no-restricted-imports, unicorn/import-style
+import { dirname } from 'path'
 import { Nb, sleep } from 'shuutils'
 import { join } from '../src/utils'
 
-export const promiseValue = async <T> (value: T): Promise<T> => {
+export async function promiseValue<Type> (value: Type): Promise<Type> {
   await sleep(Nb.One)
   return value
 }
 
-export const promiseTrue = async (): Promise<true> => {
+export async function promiseTrue (): Promise<true> {
   await sleep(Nb.One)
   return true
 }
 
-export const promiseFalse = async (): Promise<false> => {
+export async function promiseFalse (): Promise<false> {
   await sleep(Nb.One)
   return false
 }
 
-export const promiseVoid = async (): Promise<void> => {
+export async function promiseVoid (): Promise<void> {
   await sleep(Nb.One)
-  return
 }
 
-export const testFolder = __dirname
+// eslint-disable-next-line putout/putout
+export const testFolder = dirname(__filename)
 
 export const vueProjectFolder = join(testFolder, 'data', 'vueProject')
 
 export const tsProjectFolder = join(testFolder, 'data', 'tsProject')
-
-

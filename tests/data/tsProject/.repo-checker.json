@@ -1,4 +1,4 @@
 {
-  "banSass": false,
+  "shouldAvoidSass": false,
   "userName": "Dwight Schrute"
 }

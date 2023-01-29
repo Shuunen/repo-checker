@@ -1,10 +1,10 @@
 import { ellipsis, Nb } from 'shuutils'
 import type { ProjectData } from './constants'
-import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files'
+import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files/index.js'
 import { log } from './logger'
 import { augmentData, getGitFolders } from './utils'
 
-const CHECKERS = [
+const checkers = [
   DependencyCruiserFile,
   EditorConfigFile,
   EsLintFile,
@@ -34,19 +34,20 @@ export function report (passed: string[] = [], failed: string[] = []): void {
   if (nbFailed > Nb.None) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), Nb.Hundred)}`)
 }
 
-export async function check (folderPath: string, data: ProjectData, doFix = false, doForce = false): Promise<{ passed: string[]; failed: string[] }> {
+// eslint-disable-next-line max-params, max-statements
+export async function check (folderPath: string, data: ProjectData, canFix = false, canForce = false): Promise<{ passed: string[]; failed: string[] }> {
   const folders = await getGitFolders(folderPath)
   let passed: string[] = []
   let failed: string[] = []
-  log.consoleLog = !data.quiet
-  log.fileLog = !data.noReport
+  log.canConsoleLog = !data.isQuiet
+  log.willLogToFile = data.willGenerateReport
   /* eslint-disable no-await-in-loop */
   for (const folder of folders) {
     log.info('Checking folder :', folder)
     log.setIndentLevel(Nb.One)
     const dataFolder = await augmentData(folder, data, folders.length > Nb.One)
-    for (const checker of CHECKERS) {
-      const instance = new checker(folder, dataFolder, doFix, doForce)
+    for (const Checker of checkers) { // eslint-disable-line @typescript-eslint/naming-convention
+      const instance = new Checker(folder, dataFolder, canFix, canForce)
       await instance.start()
       await instance.end()
       passed = [...passed, ...instance.passed]

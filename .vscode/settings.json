@@ -4,8 +4,10 @@
     "colorette",
     "fillcolor",
     "nycrc",
+    "penwidth",
     "repo",
     "simplegit",
+    "sonarjs",
     "vitepress"
   ],
   "workbench.colorCustomizations": {

@@ -1,28 +1,24 @@
 /* c8 ignore next */
-import { readdir, readFile as nodeReadFile, stat as nodeStat } from 'fs/promises' // eslint-disable-line no-restricted-imports
-import path from 'path' // eslint-disable-line no-restricted-imports
+/* eslint-disable no-restricted-imports */
+import { readdir as readDirectoryAsync, readFile as nodeReadFile, stat as statAsync } from 'fs/promises'
+import path from 'path'
 import { arrayUnique, Nb, parseJson, slugify } from 'shuutils'
 import { dataDefaults, dataFileName, ProjectData } from './constants'
 import { log } from './logger'
 
-const statAsync = nodeStat
+export async function fileExists (filePath: string): Promise<boolean> {
+  return await statAsync(filePath).then(() => true).catch(() => false)
+}
 
-const readDirectoryAsync = readdir
-
-// eslint-disable-next-line @typescript-eslint/require-await
-export const fileExists = async (filePath: string): Promise<boolean> => nodeStat(filePath).then(() => true).catch(() => false)
-
-
-export const readFile = async (filePath: string): Promise<string> => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+export async function readFile (filePath: string): Promise<string> {
   const fileContent = await nodeReadFile(filePath, { encoding: 'utf8' })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   return Buffer.from(fileContent).toString()
 }
+
 export async function isGitFolder (folderPath: string): Promise<boolean> {
   const statData = await statAsync(folderPath)
   if (!statData.isDirectory()) return false
-  return fileExists(path.join(folderPath, '.git', 'config'))
+  return await fileExists(path.join(folderPath, '.git', 'config'))
 }
 
 export async function getGitFolders (folderPath: string): Promise<string[]> {
@@ -30,8 +26,8 @@ export async function getGitFolders (folderPath: string): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
   const gitDirectories: string[] = []
   for (const filePath of filePaths) {
-    const p = path.join(folderPath, filePath)
-    if (await isGitFolder(p)) gitDirectories.push(p) // eslint-disable-line no-await-in-loop
+    const folder = path.join(folderPath, filePath)
+    if (await isGitFolder(folder)) gitDirectories.push(folder) // eslint-disable-line no-await-in-loop
   }
   return gitDirectories
 }
@@ -41,27 +37,29 @@ export async function readFileInFolder (folderPath: string, fileName: string): P
   if (!await fileExists(filePath)) throw new Error(`file "${filePath}" does not exists`)
   const statData = await statAsync(filePath)
   if (statData.isDirectory()) throw new Error(`filepath "${filePath}" is a directory`)
-  return readFile(filePath)
+  return await readFile(filePath)
 }
 
+// eslint-disable-next-line max-statements
 export async function augmentDataWithGit (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
   const gitFolder = path.join(folderPath, '.git')
   if (!await fileExists(path.join(gitFolder, 'config'))) return data
   const gitConfigContent = await readFileInFolder(gitFolder, 'config')
-  const matches = /url = .*[/:]([\w-]+)\/([\w-]+)/.exec(gitConfigContent)
-  if (matches?.[Nb.Second] !== undefined) {
-    data.userId = matches[Nb.Second]
+  const matches = /url = .*[/:](?<userId>[\w-]+)\/(?<repoId>[\w-]+)/u.exec(gitConfigContent)
+  if (matches?.groups?.userId !== undefined) {
+    data.userId = matches.groups.userId
     log.debug('found userId in git config :', data.userId)
     data.userIdLowercase = data.userId.toLowerCase()
   }
-  if (matches?.[Nb.Third] !== undefined) {
-    data.repoId = matches[Nb.Third]
+  if (matches?.groups?.repoId !== undefined) {
+    data.repoId = matches.groups.repoId
     log.debug('found repoId in git config :', data.repoId)
   }
   return data
 }
 
+// eslint-disable-next-line max-statements, complexity, sonarjs/cognitive-complexity
 export async function augmentDataWithPackageJson (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
   if (!await fileExists(path.join(folderPath, 'package.json'))) {
@@ -69,24 +67,24 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
     return data
   }
   const content = await readFileInFolder(folderPath, 'package.json')
-  data.packageName = /"name": "([\w+/@-]+)"/.exec(content)?.[Nb.Second] ?? dataDefaults.packageName
-  data.license = /"license": "([\w+-.]+)"/.exec(content)?.[Nb.Second] ?? dataDefaults.license
-  // eslint-disable-next-line unicorn/no-unsafe-regex
-  const author = /"author": "([\s\w/@-]+)\b[\s<]*([\w-.@]+)?>?"/.exec(content) ?? []
-  if (author[Nb.Second] !== undefined) data.userName = author[Nb.Second]
-  if (author[Nb.Third] !== undefined) data.userMail = author[Nb.Third]
+  data.packageName = /"name": "(?<packageName>[\w+/@-]+)"/u.exec(content)?.groups?.packageName ?? dataDefaults.packageName
+  data.license = /"license": "(?<license>[\w+\-.]+)"/u.exec(content)?.groups?.license ?? dataDefaults.license
+  // eslint-disable-next-line unicorn/no-unsafe-regex, security/detect-unsafe-regex
+  const author = /"author": "(?<userName>[\s\w/@-]+)\b[\s<]*(?<userMail>[\w.@-]+)?>?"/u.exec(content)
+  data.userName = author?.groups?.userName ?? data.userName
+  data.userMail = author?.groups?.userMail ?? data.userMail
   data.isModule = content.includes('"type": "module"')
-  data.useTailwind = content.includes('"tailwindcss"')
-  data.useDependencyCruiser = content.includes('"dependency-cruiser"')
-  data.useNyc = content.includes('"nyc"')
-  data.useC8 = content.includes('"c8"')
-  data.useEslint = content.includes('"eslint"')
-  data.userId = /github\.com\/([\w-]+)\//.exec(content)?.[Nb.Second] ?? dataDefaults.userId
+  data.isUsingTailwind = content.includes('"tailwindcss"')
+  data.isUsingDependencyCruiser = content.includes('"dependency-cruiser"')
+  data.isUsingNyc = content.includes('"nyc"')
+  data.isUsingC8 = content.includes('"c8"')
+  data.isUsingEslint = content.includes('"eslint"')
+  data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()
-  if (/"(vue|vitepress|nuxt)"/.test(content)) data.useVue = true
-  if (/(ts-node|typescript|@types)/.test(content)) data.useTypescript = true
-  if (/(webcomponent|css|website|webapp)/.test(content) || data.useVue) data.webPublished = true
-  if (content.includes('npm publish')) data.npmPackage = true
+  if (/"(?:nuxt|vitepress|vue)"/u.test(content)) data.isUsingVue = true
+  if (/ts-node|typescript|@types/u.test(content)) data.isUsingTypescript = true
+  if (/css|webapp|webcomponent|website/u.test(content) || data.isUsingVue) data.isWebPublished = true
+  if (content.includes('npm publish')) data.isPublishedPackage = true
   return data
 }
 
@@ -94,8 +92,8 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
   let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
   data = await augmentDataWithPackageJson(folderPath, data)
-  const localDataExists = shouldLoadLocal ? await fileExists(path.join(folderPath, dataFileName)) : false
-  if (localDataExists) { // local data overwrite the rest
+  const hasLocalData = shouldLoadLocal ? await fileExists(path.join(folderPath, dataFileName)) : false
+  if (hasLocalData) { // local data overwrite the rest
     const { error, value } = parseJson<ProjectData>(await readFileInFolder(folderPath, dataFileName))
     /* c8 ignore next */
     if (error) log.error('error while parsing data file', folderPath, dataFileName, error)
@@ -109,47 +107,55 @@ export async function getFileSizeInKo (filePath: string): Promise<number> {
   const statData = await statAsync(filePath)
   const kb = 1024
   const size = Math.round(statData.size / kb)
-  log.debug('found that file', filePath, 'has a size of :', `${size}`, 'Ko')
+  log.debug('found that file', filePath, 'has a size of :', String(size), 'Ko')
   return size
 }
 
-export async function findStringInFolder (folderPath: string, pattern: string, ignored = ['node_modules', '.git'], count = Nb.None): Promise<string[]> {
+// eslint-disable-next-line max-params, max-statements, sonarjs/cognitive-complexity
+export async function findStringInFolder (folderPath: string, pattern: string, ignoredInput = ['node_modules', '.git'], count = Nb.None): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
   const matches: string[] = []
+  let ignored = arrayUnique(ignoredInput)
   if (filePaths.includes('.gitignore')) {
     const content = await readFileInFolder(folderPath, '.gitignore')
     ignored = arrayUnique([...ignored, ...content.split('\n')])
   }
   for (const filePath of filePaths) {
-    if (ignored.includes(filePath)) continue
-    count++
+    if (ignored.includes(filePath)) continue  // eslint-disable-line no-continue
     /* c8 ignore next */
     if (count > Nb.Thousand) throw new Error('too many files to scan, please reduce the scope')
     const target = path.join(folderPath, filePath)
-    const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null
-    if (!statData) continue
+    const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null, no-await-in-loop
+    if (!statData) continue  // eslint-disable-line no-continue
     if (statData.isDirectory()) {
-      matches.push(...await findStringInFolder(target, pattern, ignored, count))
-      continue
+      matches.push(...await findStringInFolder(target, pattern, ignored, count + 1)) // eslint-disable-line no-await-in-loop
+      continue  // eslint-disable-line no-continue
     }
+    // eslint-disable-next-line no-await-in-loop
     const content = await readFileInFolder(folderPath, filePath)
     if (content.includes(pattern)) matches.push(filePath)
   }
   return matches
 }
 
-export const messageToCode = (message: string): string => {
-  return slugify(message.replace(/[,./:\\_]/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2'))
+export function messageToCode (message: string): string {
+  return slugify(message.replace(/[,./:\\_]/gu, '-').replace(/(?<=[a-z])(?=[A-Z])/gu, '-'))
 }
 
-export const jsToJson = (js: string): string => {
-  return js.replace(/\/\*[^*]+\*\/\n?/g, '') // remove comments
+export function jsToJson (js: string): string {
+  return js.replace(/\/\*[^*]+\*\/\n?/gu, '') // remove comments
     .replace('module.exports = ', '') // remove module.exports
-    .replace(/ {2,}(\w+):/g, '  "$1":') // add quotes to keys
-    .replace(/,\n}/g, '\n}') // remove last comma
-    .replace(/'/g, '"') // replace single quotes with double quotes
+    .replace(/ {2,4}(?<key>\w+):/gu, '  "$<key>":') // add quotes to keys
+    .replace(/,\n\}/gu, '\n}') // remove last comma
+    .replace(/'/gu, '"') // replace single quotes with double quotes
 }
 
-export { rmdir as deleteFolder, unlink as deleteFile, writeFile } from 'fs/promises' // eslint-disable-line no-restricted-imports
-export { join, resolve } from 'path' // eslint-disable-line no-restricted-imports
+export function readableRegex (regex: RegExp): string {
+  return regex.toString()
+    .replace(/\/[gui]\b/giu, '')
+    .replace(/\\/gu, '')
+}
+
+export { unlink as deleteFile, writeFile } from 'fs/promises'
+export { join, resolve } from 'path'
 

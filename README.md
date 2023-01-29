@@ -75,6 +75,12 @@ Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
 
 | command alias      | date       | main lib targeted   | delay   | comment                                                               |
 | ------------------ | ---------- | ------------------- | ------- | --------------------------------------------------------------------- |
+| eslint             | 2023-01-29 | eslint              | 7,6 sec | + no overrides                                                        |
+| eslint             | 2023-01-29 | eslint              | 7,5 sec | + test/**/* glob converted into *.test.ts                             |
+| eslint             | 2023-01-29 | eslint              | 8,0 sec | + all import rules disabled                                           |
+| eslint             | 2023-01-29 | eslint              | 8,8 sec | + overrides                                                           |
+| eslint             | 2023-01-29 | eslint              | 9,0 sec | new cpu + hardcore 26 :'( no overrides                                |
+| eslint             | 2023-01-25 | eslint              | 3,8 sec | 1 sec faster, maybe because of my new cpu                             |
 | repo-check         | 2022-11-13 | node & repo-checker | 101 ms  | +2% slower when using fs/promises over fs (keeping createWriteStream) |
 | repo-check         | 2022-11-13 | node & repo-checker | 135 ms  | +30% slower when using async writeFile instead of createWriteStream   |
 | tsc-no-emit        | 2022-11-07 | typescript          | 950 ms  | with restricted node types & ES2020 lib                               |

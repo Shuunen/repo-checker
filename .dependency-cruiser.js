@@ -1,7 +1,5 @@
-/* eslint-disable putout/putout */
 /* eslint-disable max-lines */
-/* eslint-disable import/no-commonjs */
-/* eslint-disable import/unambiguous */
+/* eslint-disable multiline-comment-style */
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
   forbidden: [
@@ -15,8 +13,8 @@ module.exports = {
       from: {},
       to: {
         circular: true,
-        dependencyTypesNot: ['type-only']
-      }
+        dependencyTypesNot: ['type-only'],
+      },
     },
     {
       name: 'no-orphans',
@@ -235,7 +233,7 @@ module.exports = {
     // includeOnly : '',
 
     // dependency-cruiser will include modules matching against the focus
-    // regular expression in its output, as well as their neighbours (direct
+    // regular expression in its output, as well as their neighbors (direct
     // dependencies and dependents)
     //
     // focus : '',
@@ -262,7 +260,7 @@ module.exports = {
     //
     // extraExtensionsToScan: [".json", ".jpg", ".png", ".svg", ".webp"],
 
-    // if true combines the package.jsons found from the module up to the base
+    // if true combines the package.json found from the module up to the base
     // folder the cruise is initiated from. Useful for how (some) mono-repos
     // manage dependencies & dependency definitions.
     //
@@ -342,16 +340,15 @@ module.exports = {
       // have precedence over the one specified here.
       //
       conditionNames: ['import', 'require', 'node', 'default'],
-
-      //
-      // The extensions, by default are the same as the ones dependency-cruiser
-      // can access (run `npx depcruise --info` to see which ones that are in
-      // _your_ environment. If that list is larger than what you need (e.g.
-      // it contains .js, .jsx, .ts, .tsx, .cts, .mts - but you don't use
-      // TypeScript you can pass just the extensions you actually use (e.g.
-      // [".js", ".jsx"]). This can speed up the most expensive step in
-      // dependency cruising (module resolution) quite a bit.
-      //
+      /*
+         The extensions, by default are the same as the ones dependency-cruiser
+         can access (run `npx depcruise --info` to see which ones that are in
+         _your_ environment. If that list is larger than what you need (e.g.
+         it contains .js, .jsx, .ts, .tsx, .cts, .mts - but you don't use
+         TypeScript you can pass just the extensions you actually use (e.g.
+         [".js", ".jsx"]). This can speed up the most expensive step in
+         dependency cruising (module resolution) quite a bit.
+       */
       // extensions: [".js", ".jsx", ".ts", ".tsx", ".d.ts"]
     },
     reporterOptions: {
@@ -371,7 +368,7 @@ module.exports = {
         // theme: {
         //   graph: {
         //     /* use splines: "ortho" for straight lines. Be aware though
-        //       graphviz might take a long time calculating ortho(gonal)
+        //       graphviz might take a long time calculating orthogonal
         //       routings.
         //    */
         //     splines: "true"

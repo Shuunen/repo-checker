@@ -5,8 +5,8 @@ import { log } from '../../src/logger'
 import { promiseFalse, promiseTrue, promiseVoid } from '../utils'
 
 test('editor config missing file', async function () {
-  log.consoleLog = false
-  log.fileLog = false
+  log.canConsoleLog = false
+  log.willLogToFile = false
   const instance = new EditorConfigFile()
   instance.checkFileExists = promiseFalse
   await instance.start()
@@ -16,8 +16,8 @@ test('editor config missing file', async function () {
 })
 
 test('editor config file', async function () {
-  log.consoleLog = false
-  log.fileLog = false
+  log.canConsoleLog = false
+  log.willLogToFile = false
   const instance = new EditorConfigFile()
   instance.checkFileExists = promiseTrue
   instance.inspectFile = promiseVoid

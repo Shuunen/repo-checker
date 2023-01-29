@@ -1,19 +1,19 @@
 import { Nb } from 'shuutils'
-import { File } from '../file'
+import { FileBase } from '../file'
 
 /* c8 ignore start */
-export class RenovateFile extends File {
+export class RenovateFile extends FileBase {
   public async start (): Promise<void> {
-    const exists = await this.checkFileExists('renovate.json', true)
-    if (!exists) return
+    const hasFile = await this.checkFileExists('renovate.json', true)
+    if (!hasFile) return
     await this.inspectFile('renovate.json')
     this.couldContainsSchema('https://docs.renovatebot.com/renovate-schema.json')
-    this.shouldContains('an extends section', /"extends"/)
-    this.shouldContains('a base config', /"config:base"/)
-    this.shouldContains('a dashboard setting to false', /"dependencyDashboard": false/)
-    if (this.data.autoMerge) this.shouldContains('an auto merge preset', /":automergeAll"/)
-    const ok = this.shouldContains('a preserve semver ranges preset', /":preserveSemverRanges"/, Nb.One, true, undefined, true)
-    if (!ok && this.doFix) this.fileContent = this.fileContent.replace('":automergeAll"', '":automergeAll",\n    ":preserveSemverRanges"')
+    this.shouldContains('an extends section', /"extends"/u)
+    this.shouldContains('a base config', /"config:base"/u)
+    this.shouldContains('a dashboard setting to false', /"dependencyDashboard": false/u)
+    if (this.data.canAutoMergeDeps) this.shouldContains('an auto merge preset', /":automergeAll"/u)
+    const hasPreserveSemver = this.shouldContains('a preserve semver ranges preset', /":preserveSemverRanges"/u, Nb.One, true, undefined, true)
+    if (!hasPreserveSemver && this.canFix) this.fileContent = this.fileContent.replace('":automergeAll"', '":automergeAll",\n    ":preserveSemverRanges"')
   }
 }
 /* c8 ignore stop */

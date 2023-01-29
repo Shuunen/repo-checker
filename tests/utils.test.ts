@@ -15,11 +15,14 @@ test('git folders listing', async function () {
   const projects = ['anotherProject', 'sampleProject']
   for (const name of projects) {
     const folderPath = join(testFolder, name, '.git')
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     mkdirSync(folderPath, { recursive: true })
+    // eslint-disable-next-line no-await-in-loop
     await writeFile(join(folderPath, 'config'), '', 'utf8')
   }
   const folders = await getGitFolders(testFolder)
   equal(folders.length >= Nb.Two, true)
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   projects.forEach(name => { rmSync(join(testFolder, name), { recursive: true }) })
 })
 
@@ -52,16 +55,16 @@ test('data augment with git : repo-check & no-local', async function () {
 
 test('data augment : repo-check & local', async function () {
   const expectedAugmentedData = new ProjectData({
-    autoMerge: true,
+    canAutoMergeDeps: true,
     isModule: false,
     maxSizeKo: 40,
-    npmPackage: true,
+    isPublishedPackage: true,
     packageName: 'repo-check',
     repoId: 'repo-checker',
-    useTypescript: true,
-    useC8: true,
-    useEslint: true,
-    useDependencyCruiser: true,
+    isUsingTypescript: true,
+    isUsingC8: true,
+    isUsingEslint: true,
+    isUsingDependencyCruiser: true,
   })
   const augmentedData = await augmentData(repoCheckerPath, dataDefaults, true)
   equal(augmentedData, expectedAugmentedData)
@@ -76,12 +79,12 @@ test('data augment with package : rootFolder', async function () {
   const data = await augmentDataWithPackageJson(repoCheckerPath, dataDefaults)
   const expectedData = new ProjectData({
     isModule: false,
-    npmPackage: true,
+    isPublishedPackage: true,
     packageName: 'repo-check',
-    useTypescript: true,
-    useC8: true,
-    useEslint: true,
-    useDependencyCruiser: true,
+    isUsingTypescript: true,
+    isUsingC8: true,
+    isUsingEslint: true,
+    isUsingDependencyCruiser: true,
   })
   equal(data, expectedData)
 })
@@ -90,12 +93,12 @@ test('data augment with package : vueProject', async function () {
   const vueData = await augmentDataWithPackageJson(join(testFolder, 'data', 'vueProject'), dataDefaults)
   const expectedVueData = new ProjectData({
     packageName: 'name',
-    useVue: true,
+    isUsingVue: true,
     userIdLowercase: 'kevin_malone',
     userId: 'Kevin_Malone',
-    webPublished: true,
-    useTailwind: true,
-    useEslint: false,
+    isWebPublished: true,
+    isUsingTailwind: true,
+    isUsingEslint: false,
   })
   equal(vueData, expectedVueData)
 })
@@ -103,10 +106,10 @@ test('data augment with package : vueProject', async function () {
 test('data augment with package : tsProject', async function () {
   const tsData = await augmentData(join(testFolder, 'data', 'tsProject'), dataDefaults, true)
   const expectedTsData = new ProjectData({
-    banSass: false,
+    shouldAvoidSass: false,
     license: 'MIT',
     packageName: '',
-    useTypescript: true,
+    isUsingTypescript: true,
     userName: 'Dwight Schrute',
     webUrl: 'https://my-website.com',
   })
