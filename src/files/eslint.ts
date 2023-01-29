@@ -37,35 +37,33 @@ export class EsLintFile extends FileBase {
 
   private findRules (config: EslintRcJsonFile): EslintConfigRules {
     const override = config.overrides.find(anOverride => anOverride.files.find(file => file.endsWith('.ts')))
+    if (Object.keys(config.rules).length > Nb.Zero) {
+      log.debug(`found no override rules but ${Object.keys(config.rules).length} root/global rules`)
+      return config.rules
+    }
     /* c8 ignore next 4 */
     if (override && Object.keys(override.rules).length > Nb.Zero) {
       log.debug(`found ${Object.keys(override.rules).length} override rules`)
       return override.rules
     }
-    if (Object.keys(config.rules).length > Nb.Zero) {
-      log.debug(`found no override rules but ${Object.keys(config.rules).length} root/global rules`)
-      return config.rules
-    }
     log.error('failed to find rules in eslint config')
     return emptyRules
   }
 
-  private checkJs (): boolean {
-    return this.shouldContains('eslint recommended rules extend', /eslint:recommended/u)
+  private checkJs (): void {
+    this.shouldContains('eslint recommended rules extend', /eslint:recommended/u)
   }
 
-  private checkTsVue (): boolean {
+  private checkTsVue (): void {
     this.shouldContains('hardcore typescript rules extend', /hardcore\/ts/u)
     this.shouldContains('hardcore vue rules extend', /hardcore\/vue/u)
-    return true
   }
 
-  private checkTs (): boolean {
+  private checkTs (): void {
     // check here ts & vue ts projects
-    if (this.data.isUsingVue) return this.checkTsVue()
+    if (this.data.isUsingVue) { this.checkTsVue(); return }
     // check here ts only projects
     this.shouldContains('hardcore typescript rules extend', /hardcore\/ts/u)
-    return true
   }
 
   private checkVue (): void {
@@ -86,28 +84,29 @@ export class EsLintFile extends FileBase {
     })
   }
 
-  public async start (): Promise<boolean> {
+  public async start (): Promise<void> {
     await this.checkNoFileExists('xo.config.js')
-    return await this.checkEslint()
+    await this.checkEslint()
   }
 
-  private async checkEslint (): Promise<boolean> {
+  // eslint-disable-next-line max-statements
+  private async checkEslint (): Promise<void> {
     const filename = '.eslintrc.json'
     const hasFile = await this.fileExists(filename)
-    if (!hasFile) return log.debug('skipping eslintrc checks')
+    if (!hasFile) { log.debug('skipping eslintrc checks'); return }
     await this.inspectFile(filename)
     this.checkExtends()
     await this.checkRules()
     if (this.data.isUsingTailwind) this.shouldContains('tailwind rules extend', /plugin:tailwindcss\/recommended/u)
     if (this.data.isUsingVue) this.checkVue()
-    if (this.data.isUsingTypescript) return this.checkTs()
-    return this.checkJs()
+    if (this.data.isUsingTypescript) { this.checkTs(); return }
+    this.checkJs()
   }
 
   // eslint-disable-next-line max-statements
-  private async checkRules (): Promise<boolean> {
+  private async checkRules (): Promise<void> {
     let data = parseJson<EslintRcJsonFile>(this.fileContent)
-    if (data.error) return log.warn('cannot check empty or invalid .eslintrc.json file')
+    if (data.error) { log.warn('cannot check empty or invalid .eslintrc.json file'); return }
     const content = new EslintRcJsonFile(data.value)
     const rules = this.findRules(content)
     const expectedJsonString = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
@@ -115,10 +114,11 @@ export class EsLintFile extends FileBase {
     const expectedContent = new EslintRcJsonFile(data.value)
     /* c8 ignore next */
     const expectedRules = this.findRules(expectedContent)
+    log.debug('found', Object.keys(expectedRules).length, 'expected rules')
     const missingRules = this.getMissingRules(expectedRules, rules)
+    log.debug('found', missingRules.length, 'missing rules')
     const total = Object.keys(expectedRules).length
     const isOk = this.test(missingRules.length === Nb.Zero, `current .eslintrc.json has only ${total - missingRules.length} of the ${total} custom rules in repo-checker .eslintrc.json`, true)
     if (!isOk) log.warn('missing rules :', missingRules.map(rule => `"${rule}": ${JSON.stringify(expectedRules[rule])}`).join(', '))
-    return true
   }
 }

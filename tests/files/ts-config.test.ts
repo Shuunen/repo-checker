@@ -4,11 +4,10 @@ import { equal } from 'uvu/assert'
 import { ProjectData } from '../../src/constants'
 import { TsConfigFile } from '../../src/files'
 import { log } from '../../src/logger'
-import { promiseTrue, promiseVoid } from '../utils'
+import { promiseVoid } from '../utils'
 
 test('ts config file no check', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new TsConfigFile('', new ProjectData({ isUsingTypescript: false }))
   await instance.start()
   await instance.end()
@@ -17,8 +16,7 @@ test('ts config file no check', async function () {
 })
 
 test('ts config file fix', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new TsConfigFile('', new ProjectData({ isUsingTypescript: true }), true)
   const fileInitial = '{ "name": "John", "files": ["src/main.ts"] }'
   const fileFixed = JSON.stringify({
@@ -54,7 +52,7 @@ test('ts config file fix', async function () {
   }, undefined, Nb.Two)
   instance.inspectFile = promiseVoid
   instance.fileContent = fileInitial
-  instance.updateFile = promiseTrue
+  instance.updateFile = promiseVoid
   equal(instance.fileContent, fileInitial)
   await instance.start()
   await instance.end()
@@ -67,8 +65,7 @@ test('ts config file fix', async function () {
 })
 
 test('ts config malformed', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new TsConfigFile('', new ProjectData({ isUsingTypescript: true }))
   const fileInitial = '"name": "John" }'
   instance.inspectFile = promiseVoid

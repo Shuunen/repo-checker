@@ -6,8 +6,7 @@ import { log } from '../../src/logger'
 import { promiseFalse, promiseTrue, promiseVoid, tsProjectFolder, vueProjectFolder } from '../utils'
 
 test('eslint A config missing file', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile()
   instance.fileExists = promiseFalse
   await instance.start()
@@ -17,8 +16,7 @@ test('eslint A config missing file', async function () {
 })
 
 test('eslint B config file empty', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile()
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
@@ -36,8 +34,7 @@ test('eslint B config file empty', async function () {
 })
 
 test('eslint C config file empty for ts project', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingTypescript: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
@@ -55,8 +52,7 @@ test('eslint C config file empty for ts project', async function () {
 })
 
 test('eslint D config file empty for vue ts project', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingVue: true, isUsingTypescript: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
@@ -75,8 +71,7 @@ test('eslint D config file empty for vue ts project', async function () {
 })
 
 test('eslint E config file empty for tailwind project', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingTailwind: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
@@ -95,8 +90,7 @@ test('eslint E config file empty for tailwind project', async function () {
 })
 
 test('eslint F config partial file for js project', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile()
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
@@ -121,8 +115,7 @@ test('eslint F config partial file for js project', async function () {
 })
 
 test('eslint G config partial file for ts project', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingTypescript: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
@@ -148,8 +141,7 @@ test('eslint G config partial file for ts project', async function () {
 })
 
 test('eslint H config partial file for vue ts project', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingVue: true, isUsingTypescript: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
@@ -186,8 +178,7 @@ test('eslint H config partial file for vue ts project', async function () {
 })
 
 test('eslint I up to date config file for vue ts project', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingVue: true, isUsingTypescript: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
@@ -220,8 +211,7 @@ test('eslint I up to date config file for vue ts project', async function () {
 })
 
 test('eslint J config file with no rules', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile(vueProjectFolder, new ProjectData({}))
   instance.fileExists = promiseTrue
   await instance.start()
@@ -238,8 +228,7 @@ test('eslint J config file with no rules', async function () {
 })
 
 test('eslint K config file with just rules (no override)', async function () {
-  log.canConsoleLog = false
-  log.willLogToFile = false
+  log.disable()
   const instance = new EsLintFile(tsProjectFolder, new ProjectData({}))
   instance.fileExists = promiseTrue
   await instance.start()

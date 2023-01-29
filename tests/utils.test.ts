@@ -57,7 +57,7 @@ test('data augment : repo-check & local', async function () {
   const expectedAugmentedData = new ProjectData({
     canAutoMergeDeps: true,
     isModule: false,
-    maxSizeKo: 40,
+    maxSizeKo: 45,
     isPublishedPackage: true,
     packageName: 'repo-check',
     repoId: 'repo-checker',

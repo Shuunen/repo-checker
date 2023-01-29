@@ -51,9 +51,9 @@ export class TsConfigFile extends FileBase {
   }
 
   // eslint-disable-next-line max-statements, complexity, sonarjs/cognitive-complexity
-  private checkCompilerOptions (): boolean {
+  private checkCompilerOptions (): void {
     /* c8 ignore next */
-    if (this.fileContentObject === undefined) return log.error('cannot check compiler options without file content')
+    if (this.fileContentObject === undefined) { log.error('cannot check compiler options without file content'); return }
     const json = this.fileContentObject
     let isOk = this.couldContains('an include section', /"include"/u, Nb.One, undefined, true)
     if (!isOk && this.canFix) json.include = ['src']
@@ -82,18 +82,18 @@ export class TsConfigFile extends FileBase {
     isOk = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/u, Nb.One, 'ex : "types": [ "node/fs/promises" ],', true)
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.types = []
     if (this.canFix) this.fileContent = JSON.stringify(json, undefined, Nb.Two)
-    return true
   }
 
-  public async start (): Promise<boolean> {
-    if (!this.data.isUsingTypescript) return log.debug('does not use typescript, skipping tsconfig.json checks')
+  // eslint-disable-next-line max-statements
+  public async start (): Promise<void> {
+    if (!this.data.isUsingTypescript) { log.debug('does not use typescript, skipping tsconfig.json checks'); return }
     await this.inspectFile('tsconfig.json')
     const data = parseJson<TsConfigJsonFile>(this.fileContent)
-    if (data.error) return log.error('cannot check empty or invalid tsconfig.json file')
+    if (data.error) { log.error('cannot check empty or invalid tsconfig.json file'); return }
     this.fileContentObject = data.value
     this.couldContainsSchema('https://json.schemastore.org/tsconfig')
     this.checkCompilerOptions()
     this.checkFileManagement()
-    return log.debug('tsconfig.json file checked')
+    log.debug('tsconfig.json file checked')
   }
 }
