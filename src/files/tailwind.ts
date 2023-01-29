@@ -1,23 +1,26 @@
 import { Nb } from 'shuutils'
-import { File } from '../file'
-import { log } from '../logger'
+import { FileBase } from '../file'
 
-export class TailwindFile extends File {
+export class TailwindFile extends FileBase {
   public async start (): Promise<void> {
-    if (!this.data.useTailwind) return
-    const jsExists = await this.fileExists('tailwind.config.js')
-    const tsExists = await this.fileExists('tailwind.config.ts')
-    const mjsExists = await this.fileExists('tailwind.config.mjs')
-    /* c8 ignore next 2 */
-    // eslint-disable-next-line unicorn/no-nested-ternary
-    const fileName = 'tailwind.config.' + (mjsExists ? 'mjs' : tsExists ? 'ts' : jsExists ? 'js' : 'cjs')
+    if (!this.data.isUsingTailwind) return
+    const { fileName, hasTsFile } = await this.detectContext()
     await this.checkFileExists(fileName)
-    log.debug('found tailwind config file :', fileName)
     await this.inspectFile(fileName)
-    if (!tsExists) {
-      const ok = this.shouldContains('type definitions', /@type/, Nb.One, true, 'like : /** @type {import(\'tailwindcss\').Config} */', true)
-      if (!ok && this.doFix) this.fileContent = `/** @type {import('tailwindcss').Config} */\n${this.fileContent}`
+    if (!hasTsFile) {
+      const hasTypes = this.shouldContains('type definitions', /@type/u, Nb.One, true, 'like : /** @type {import(\'tailwindcss\').Config} */', true)
+      if (!hasTypes && this.canFix) this.fileContent = `/** @type {import('tailwindcss').Config} */\n${this.fileContent}`
     }
-    this.shouldContains('a content (previously named purge) option', /content/, Nb.One, false, 'like : content: [\'./src/**/*.{vue,js,ts,jsx,tsx}\']')
+    this.shouldContains('a content (previously named purge) option', /content/u, Nb.One, false, 'like : content: [\'./src/**/*.{vue,js,ts,jsx,tsx}\']')
+  }
+
+  private async detectContext (): Promise<{ fileName: string; hasTsFile: boolean }> {
+    const hasJsFile = await this.fileExists('tailwind.config.js')
+    const hasTsFile = await this.fileExists('tailwind.config.ts')
+    const hasMjsFile = await this.fileExists('tailwind.config.mjs')
+    /* c8 ignore next 2 */
+    // eslint-disable-next-line no-nested-ternary
+    const fileName = `tailwind.config.${hasMjsFile ? 'mjs' : hasTsFile ? 'ts' : hasJsFile ? 'js' : 'cjs'}`
+    return { fileName, hasTsFile }
   }
 }

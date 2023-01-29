@@ -1,6 +1,11 @@
+/* eslint-disable putout/putout */
+/* eslint-disable regexp/no-unused-capturing-group */
+/* eslint-disable regexp/prefer-named-capture-group */
+/* eslint-disable prefer-named-capture-group */
+/* eslint-disable max-classes-per-file */
 import { Nb } from 'shuutils'
 import { dataDefaults } from '../constants'
-import { File } from '../file'
+import { FileBase } from '../file'
 import { log } from '../logger'
 import { fileExists, join, readFile } from '../utils'
 
@@ -23,42 +28,28 @@ class Badge {
 }
 
 /* c8 ignore start */
-export class ReadmeFile extends File {
-  public async start (): Promise<void> {
-    const exists = await this.checkFileExists('README.md')
-    if (!exists) return
-    await this.inspectFile('README.md')
-    this.shouldContains('a title', /^#\s\w+/)
-    this.couldContains('a svg logo', /\/logo\.svg\)/, Nb.One, '![logo](folder/logo.svg)')
-    this.couldContains('a demo screen or gif', /demo\./, Nb.One, '![demo](folder/demo.gif)')
-    this.shouldContains('no link to deprecated *.netlify.com', /(.*)\.netlify\.com/, Nb.None)
-    this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/, Nb.None) // https://stackoverflow.com/questions/9161769/url-without-httphttps
-    this.checkMarkdown()
-    this.checkTodos()
-    this.checkBadges()
-    await this.checkThanks()
-  }
-
+export class ReadmeFile extends FileBase {
   private checkMarkdown (): void {
-    let ok = this.shouldContains('no CRLF Windows carriage return', /\r/, Nb.None, false, 'prefer Unix LF', true)
-    if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\r\n/g, '\n')
-    const starLists = /\n\*\s([\w[])/g
-    ok = this.couldContains('no star flavored list', starLists, Nb.None, 'should use dash flavor', true)
-    if (!ok && this.doFix) this.fileContent = this.fileContent.replace(/\n\*\s([\w[])/g, '\n- $1')
+    let hasNoCrLf = this.shouldContains('no CRLF Windows carriage return', /\r/u, Nb.None, false, 'prefer Unix LF', true)
+    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\r\n/gu, '\n')
+    const starLists = /\n\*\s[\w[]/gu
+    hasNoCrLf = this.couldContains('no star flavored list', starLists, Nb.None, 'should use dash flavor', true)
+    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\n\*\s(?=[\w[])/gu, '\n- ')
   }
 
   private addBadge (line = ''): void {
     // just after project title
-    this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/, `$1${line}\n`)
+    this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/u, `$1${line}\n`)
   }
 
   private checkBadges (): void {
     const badges = this.getBadges()
     for (const badge of badges) {
       const message = `${badge.expected ? 'a' : 'no'} "${badge.label}" badge`
-      const regex = new RegExp(`\\(${badge.link.replace('?', '\\?')}\\)`)
-      const ok = this.couldContains(message, regex, badge.expected ? Nb.One : Nb.None, badge.markdown, badge.expected)
-      if (!ok && badge.expected && badge.fixable && this.doFix) this.addBadge(badge.markdown)
+      // eslint-disable-next-line security/detect-non-literal-regexp
+      const regex = new RegExp(`\\(${badge.link.replace('?', '\\?')}\\)`, 'u')
+      const isOk = this.couldContains(message, regex, badge.expected ? Nb.One : Nb.None, badge.markdown, badge.expected)
+      if (!isOk && badge.expected && badge.fixable && this.canFix) this.addBadge(badge.markdown)
     }
   }
 
@@ -67,9 +58,9 @@ export class ReadmeFile extends File {
     const list = [
       new Badge('Project license', `https://github.com/${userRepo}/blob/master/LICENSE`, `https://img.shields.io/github/license/${userRepo}.svg?color=informational`),
     ]
-    if (this.data.webPublished && !this.fileContent.includes('shields.io/website/'))
+    if (this.data.isWebPublished && !this.fileContent.includes('shields.io/website/'))
       list.push(new Badge('Website up', this.data.webUrl, `https://img.shields.io/website/https/${this.data.webUrl.replace('https://', '')}.svg`, true, this.data.webUrl !== dataDefaults.webUrl))
-    if (this.data.npmPackage) list.push(
+    if (this.data.isPublishedPackage) list.push(
       new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.packageName}`, `https://img.shields.io/npm/dm/${this.data.packageName}.svg?color=informational`),
       new Badge('Npm version', `https://www.npmjs.com/package/${this.data.packageName}`, `https://img.shields.io/npm/v/${this.data.packageName}.svg?color=informational`),
       new Badge('Publish size', `https://bundlephobia.com/package/${this.data.packageName}`, `https://img.shields.io/bundlephobia/min/${this.data.packageName}?label=publish%20size`),
@@ -80,20 +71,46 @@ export class ReadmeFile extends File {
 
   private addThanks (line = ''): void {
     // just after Thank title
-    this.fileContent = this.fileContent.replace(/(## Thank.*\n\n)/, `$1${line}\n`)
+    this.fileContent = this.fileContent.replace(/(## Thank.*\n{2})/u, `$1${line}\n`)
     log.debug('added line', line)
   }
 
+  private checkTodos (): void {
+    const matches = this.fileContent.match(/- \[ \] (.*)/gu)
+    if (matches === null) return
+    for (const line of matches) {
+      // a todo line in markdown is like "- [ ] add some fancy gifs"
+      const todo = line.replace('- [ ] ', '')
+      log.info(`TODO : ${todo}`)
+    }
+  }
+
+  // eslint-disable-next-line max-statements
+  public async start (): Promise<void> {
+    const hasFile = await this.checkFileExists('README.md')
+    if (!hasFile) return
+    await this.inspectFile('README.md')
+    this.shouldContains('a title', /^#\s\w+/u)
+    this.couldContains('a svg logo', /\/logo\.svg\)/u, Nb.One, '![logo](folder/logo.svg)')
+    this.couldContains('a demo screen or gif', /demo\./u, Nb.One, '![demo](folder/demo.gif)')
+    this.shouldContains('no link to deprecated *.netlify.com', /\.netlify\.com/u, Nb.None)
+    this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/u, Nb.None) // https://stackoverflow.com/questions/9161769/url-without-httphttps
+    this.checkMarkdown()
+    this.checkTodos()
+    this.checkBadges()
+    await this.checkThanks()
+  }
+
   private async checkThanks (): Promise<void> {
-    const hasSection = this.couldContains('a thanks section', /## Thanks/)
+    const hasSection = this.couldContains('a thanks section', /## Thanks/u)
     if (!hasSection) return
     const thanks = await this.getThanks()
     for (const thank of thanks) {
       const message = `${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`
-      const regex = new RegExp(`\\[${thank.label}]`, 'i')
-      const ok = this.couldContains(message, regex, thank.expected ? Nb.One : Nb.None, thank.markdown, thank.expected)
-      const shouldAdd = !ok && thank.expected && thank.fixable && this.doFix
-      // if (thank.label === 'Mocha') console.table({ ok, expected: thank.expected, fixable: thank.fixable, doFix: this.doFix, shouldAdd })
+      // eslint-disable-next-line security/detect-non-literal-regexp
+      const regex = new RegExp(`\\[${thank.label}\\]`, 'iu')
+      const hasThanks = this.couldContains(message, regex, thank.expected ? Nb.One : Nb.None, thank.markdown, thank.expected)
+      const shouldAdd = !hasThanks && thank.expected && thank.fixable && this.canFix
       if (shouldAdd) this.addThanks(thank.markdown)
     }
   }
@@ -106,7 +123,7 @@ export class ReadmeFile extends File {
       new Thanks('Netlify', 'https://netlify.com', 'awesome company that offers free CI & hosting for OSS projects', this.fileContent.includes('netlify')),
     ]
     const filePath = join(this.folderPath, 'package.json')
-    if (!await fileExists(filePath)) return list
+    if (!(await fileExists(filePath))) return list
     const json = await readFile(filePath)
     if (json === '') return list
     list.push(
@@ -139,15 +156,6 @@ export class ReadmeFile extends File {
     )
     return list
   }
-
-  private checkTodos (): void {
-    const matches = this.fileContent.match(/- \[ ] (.*)/g)
-    if (matches === null) return
-    for (const line of matches) {
-      // a todo line in markdown is like "- [ ] add some fancy gifs"
-      const todo = line.replace('- [ ] ', '')
-      log.info('TODO : ' + todo)
-    }
-  }
 }
 /* c8 ignore stop */
+

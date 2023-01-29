@@ -4,12 +4,12 @@ import { check, report } from '../src/check'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 
 test('repo-checker A folder fails with low max size', async function () {
-  const message = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 2, npmPackage: true, quiet: true })).catch(() => 'failed')
+  const message = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 2, isPublishedPackage: true, isQuiet: true })).catch(() => 'failed')
   equal(message, 'failed')
 })
 
 test('repo-checker B folder succeed', async function () {
-  const { passed, failed } = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 120, npmPackage: true, quiet: true }))
+  const { passed, failed } = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 120, isPublishedPackage: true, isQuiet: true }))
   equal(passed, [
     'use-dependency-cruiser',
     'has-a-dependency-cruiser-js-file',
@@ -20,14 +20,13 @@ test('repo-checker B folder succeed', async function () {
     'editorconfig-has-utf-8-encoding',
     'editorconfig-has-whitespace-trailing',
     'editorconfig-has-final-new-line-rule',
-    'editorconfig-has-specific-markdown-trailing-rule',
     'editorconfig-has-no-specific-html-indent-rule',
     'has-no-xo-config-js-file',
     'eslintrc-json-has-hardcore-rules-extend',
     'eslintrc-json-has-unicorn-rules-extend',
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
     'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
-    'eslintrc-json-current-eslintrc-json-has-only-35-of-the-35-custom-rules-in-repo-checker-eslintrc-json',
+    'eslintrc-json-current-eslintrc-json-has-only-50-of-the-50-custom-rules-in-repo-checker-eslintrc-json',
     'eslintrc-json-has-hardcore-typescript-rules-extend',
     'has-a-gitignore-file',
     'gitignore-has-node-modules',
@@ -61,7 +60,6 @@ test('repo-checker B folder succeed', async function () {
     'package-json-has-a-version-property',
     'package-json-has-a-license-property',
     'package-json-has-a-gpl-3-0-license',
-    'package-json-has-no-engines-section',
     'package-json-has-a-script-section',
     'package-json-has-a-pre-script-for-version-automation',
     'package-json-has-a-post-script-for-version-automation',

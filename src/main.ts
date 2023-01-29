@@ -1,15 +1,15 @@
 import arg from 'arg'
 import { Nb, parseJson } from 'shuutils'
-import { version } from '../package.json'
+import { version } from '../package.json'  
 import { check } from './check'
-import type { ProjectData } from './constants'
-import { dataDefaults, dataFileName, home, templatePath } from './constants'
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { dataDefaults, dataFileName, home, templatePath, ProjectData } from './constants'
 import { log } from './logger'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils'
 
-async function initDataFile (doForce = false): Promise<void> {
-  const exists = await fileExists(dataFileName)
-  if (exists && !doForce) {
+async function initDataFile (shouldForce = false): Promise<void> {
+  const isPresent = await fileExists(dataFileName)
+  if (isPresent && !shouldForce) {
     log.warn('repo-checker data file', dataFileName, 'already exists, use --force to overwrite it')
     return
   }
@@ -44,27 +44,30 @@ function getTarget (argument = ''): string {
   return process.cwd()
 }
 
+// eslint-disable-next-line max-statements, complexity
 export async function start (): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--no-report': Boolean, '--version': Boolean, '-v': Boolean }, { argv: process.argv.slice(Nb.Two) })
   if ((options['--version'] ?? false) || (options['-v'] ?? false)) {
+    // eslint-disable-next-line no-console
     console.log(version)
     process.exit(Nb.Zero)
   }
-  const doForce = options['--force']
+  const shouldForce = options['--force']
   if (options['--init'] ?? false) {
-    await initDataFile(doForce).catch(error => log.unknownError(error))
+    await initDataFile(shouldForce) // .catch(error => log.unknownError(error))
     return
   }
-  const doFix = options['--fix']
-  const quiet = options['--quiet'] ?? false
-  const noReport = options['--no-report'] ?? false
-  log.consoleLog = !quiet
-  log.fileLog = !noReport
+  const willFix = options['--fix']
+  const isQuiet = options['--quiet'] ?? false
+  const isReportDisabled = options['--no-report'] ?? false
+  log.canConsoleLog = !isQuiet
+  log.willLogToFile = !isReportDisabled
   const target = getTarget(options['--target'])
   const data = await getData(target)
-  data.quiet = data.quiet || quiet
-  data.noReport = data.noReport || noReport
-  log.start(doFix)
-  await check(target, data, doFix, doForce)
+  data.isQuiet = data.isQuiet || isQuiet
+  if (isReportDisabled) data.willGenerateReport = false
+  log.start(willFix)
+  await check(target, data, willFix, shouldForce)
 }
+

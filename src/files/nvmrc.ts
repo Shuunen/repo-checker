@@ -1,12 +1,13 @@
-import { File } from '../file'
+import { FileBase } from '../file'
 
 /* c8 ignore start */
-export class NvmrcFile extends File {
+export class NvmrcFile extends FileBase {
   public async start (): Promise<void> {
-    const exists = await this.checkFileExists('.nvmrc')
-    if (!exists) return
+    const hasFile = await this.checkFileExists('.nvmrc')
+    if (!hasFile) return
     await this.inspectFile('.nvmrc')
-    this.couldContains('a recent lts node version', /1(6|8)\.\d+\.\d+/)
+    this.couldContains('a recent lts node version', /1[68]\.\d+\.\d+/u)
   }
 }
 /* c8 ignore stop */
+

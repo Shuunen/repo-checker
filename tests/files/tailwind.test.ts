@@ -5,7 +5,7 @@ import { TailwindFile } from '../../src/files'
 import { promiseValue, vueProjectFolder } from '../utils'
 
 test('tailwind : can detect valid config', async function () {
-  const instance = new TailwindFile(vueProjectFolder, new ProjectData({ quiet: true, useTailwind: true }), true)
+  const instance = new TailwindFile(vueProjectFolder, new ProjectData({ isQuiet: true, isUsingTailwind: true }), true)
   instance.initFile = promiseValue // prevent file creation
   await instance.start()
   instance.fileName = '' // prevent file update

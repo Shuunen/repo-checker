@@ -7,9 +7,9 @@ import { log } from '../../src/logger'
 import { promiseTrue, promiseVoid } from '../utils'
 
 test('ts config file no check', async function () {
-  log.consoleLog = false
-  log.fileLog = false
-  const instance = new TsConfigFile('', new ProjectData({ useTypescript: false }))
+  log.canConsoleLog = false
+  log.willLogToFile = false
+  const instance = new TsConfigFile('', new ProjectData({ isUsingTypescript: false }))
   await instance.start()
   await instance.end()
   equal(instance.passed, [])
@@ -17,15 +17,16 @@ test('ts config file no check', async function () {
 })
 
 test('ts config file fix', async function () {
-  log.consoleLog = false
-  log.fileLog = false
-  const instance = new TsConfigFile('', new ProjectData({ useTypescript: true }), true)
+  log.canConsoleLog = false
+  log.willLogToFile = false
+  const instance = new TsConfigFile('', new ProjectData({ isUsingTypescript: true }), true)
   const fileInitial = '{ "name": "John", "files": ["src/main.ts"] }'
   const fileFixed = JSON.stringify({
     name: 'John',
     files: ['src/main.ts'],
     include: ['src'],
     compilerOptions: {
+      /* eslint-disable @typescript-eslint/naming-convention */
       allowUnreachableCode: false,
       allowUnusedLabels: false,
       checkJs: true,
@@ -48,6 +49,7 @@ test('ts config file fix', async function () {
       target: 'ES2020',
       lib: ['ESNext'],
       types: [],
+      /* eslint-enable @typescript-eslint/naming-convention */
     },
   }, undefined, Nb.Two)
   instance.inspectFile = promiseVoid
@@ -65,9 +67,9 @@ test('ts config file fix', async function () {
 })
 
 test('ts config malformed', async function () {
-  log.consoleLog = false
-  log.fileLog = false
-  const instance = new TsConfigFile('', new ProjectData({ useTypescript: true }))
+  log.canConsoleLog = false
+  log.willLogToFile = false
+  const instance = new TsConfigFile('', new ProjectData({ isUsingTypescript: true }))
   const fileInitial = '"name": "John" }'
   instance.inspectFile = promiseVoid
   instance.fileContent = fileInitial

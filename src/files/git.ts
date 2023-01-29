@@ -1,13 +1,13 @@
 import { Nb } from 'shuutils'
-import { File } from '../file'
+import { FileBase } from '../file'
 
-export class GitFile extends File {
+export class GitFile extends FileBase {
   public async start (): Promise<void> {
-    const ok = await this.checkFileExists('.gitignore')
+    const hasFile = await this.checkFileExists('.gitignore')
     /* c8 ignore next */
-    if (!ok) return
+    if (!hasFile) return
     await this.inspectFile('.gitignore')
-    this.couldContains('node_modules', /node_modules/)
-    this.couldContains('no pnpm-lock exclusion', /pnpm-lock\.yaml/, Nb.None)
+    this.couldContains('node_modules', /node_modules/u)
+    this.couldContains('no pnpm-lock exclusion', /pnpm-lock\.yaml/u, Nb.None)
   }
 }
