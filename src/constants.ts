@@ -68,6 +68,8 @@ export class ProjectData {
 
   public webUrl = 'https://my-website.com'
 
+  public hasMainBranch = false
+
   public constructor (data: Partial<ProjectData> = {}) {
     Object.assign(this, data)
   }

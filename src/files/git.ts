@@ -3,6 +3,7 @@ import { FileBase } from '../file'
 
 export class GitFile extends FileBase {
   public async start (): Promise<void> {
+    this.test(!this.data.hasMainBranch, 'avoid "main" branch reference, use master instead & git bclean', true)
     const hasFile = await this.checkFileExists('.gitignore')
     /* c8 ignore next */
     if (!hasFile) return

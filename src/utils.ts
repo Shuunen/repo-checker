@@ -46,6 +46,7 @@ export async function augmentDataWithGit (folderPath: string, dataSource: Projec
   const gitFolder = path.join(folderPath, '.git')
   if (!await fileExists(path.join(gitFolder, 'config'))) return data
   const gitConfigContent = await readFileInFolder(gitFolder, 'config')
+  data.hasMainBranch = gitConfigContent.includes('branch "main"')
   const matches = /url = .*[/:](?<userId>[\w-]+)\/(?<repoId>[\w-]+)/u.exec(gitConfigContent)
   if (matches?.groups?.userId !== undefined) {
     data.userId = matches.groups.userId
