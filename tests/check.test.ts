@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
-import { check, report } from '../src/check'
+import { check } from '../src/check'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 
 test('repo-checker A folder fails with low max size', async function () {
@@ -48,7 +48,7 @@ test('repo-checker B folder succeed', async function () {
     'package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100',
     'package-json-has-a-dist-repo-check-min-cjs-file',
     'package-json-main-file-specified-in-package-json-dist-repo-check-min-cjs-exists-on-disk-be-sure-to-build-before-run-repo-check',
-    'package-json-main-file-size-42ko-should-be-less-or-equal-to-max-size-allowed-120ko',
+    'package-json-main-file-size-43ko-should-be-less-or-equal-to-max-size-allowed-120ko',
     'package-json-has-a-schema-declaration',
     'package-json-has-a-bugs-property',
     'package-json-has-a-description-property',
@@ -161,10 +161,6 @@ test('repo-checker B folder succeed', async function () {
     'tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough',
   ], 'passed')
   equal(failed, [], 'failed')
-})
-
-test('report does nothing by default', function () {
-  report()
 })
 
 test.run()

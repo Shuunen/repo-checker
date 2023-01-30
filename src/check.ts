@@ -1,8 +1,11 @@
-import { ellipsis, LogLevel, Nb } from 'shuutils'
+/* c8 ignore next */
+import { ellipsis, green, Nb, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants'
 import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files/index.js'
 import { log } from './logger'
 import { augmentData, getGitFolders } from './utils'
+
+interface Indicators { passed: string[]; warnings: string[]; failed: string[] }
 
 const checkers = [
   DependencyCruiserFile,
@@ -22,23 +25,24 @@ const checkers = [
   TsConfigFile,
 ]
 
-export function report (passed: string[] = [], failed: string[] = []): void {
-  const nbPassed = passed.length
-  const nbFailed = failed.length
-  const initialLevel = log.options.minimumLevel
-  log.options.minimumLevel = LogLevel.Test
+function reportLog (color: (string: string) => string, count: number, message: string): void {
+  const line = `‣ ${count} check${count > 1 ? 's' : ''} ${message}`
+  log.info(count === Nb.None ? line : color(line))
+}
+
+export function report ({ passed = [], warnings = [], failed = [] }: Indicators): void {
   log.info('Report :')
-  log.test(nbPassed > Nb.None, `${nbPassed.toString().padStart(Nb.Three)} test${nbPassed > 1 ? 's' : ''} passed successfully`)
-  /* c8 ignore next */
-  log.test(nbFailed === Nb.None, `${nbFailed.toString().padStart(Nb.Three)} test${nbFailed > 1 ? 's' : ''} failed`)
-  log.options.minimumLevel = initialLevel
-  if (nbFailed > Nb.None) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), Nb.Hundred)}`)
+  reportLog(green, passed.length, 'are successful')
+  reportLog(yellow, warnings.length, 'triggered warnings')
+  reportLog(red, failed.length, 'are problematic')
+  if (failed.length > Nb.None) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), Nb.Hundred)}`)
 }
 
 // eslint-disable-next-line max-params, max-statements
-export async function check (folderPath: string, data: ProjectData, canFix = false, canForce = false): Promise<{ passed: string[]; failed: string[] }> {
+export async function check (folderPath: string, data: ProjectData, canFix = false, canForce = false): Promise<Indicators> {
   const folders = await getGitFolders(folderPath)
   let passed: string[] = []
+  let warnings: string[] = []
   let failed: string[] = []
   log.options.isActive = !data.isQuiet
   /* eslint-disable no-await-in-loop */
@@ -50,10 +54,11 @@ export async function check (folderPath: string, data: ProjectData, canFix = fal
       await instance.start()
       await instance.end()
       passed = [...passed, ...instance.passed]
+      warnings = [...warnings, ...instance.warnings]
       failed = [...failed, ...instance.failed]
     }
   }
   /* eslint-enable no-await-in-loop */
-  report(passed, failed)
-  return { passed, failed }
+  report({ passed, warnings, failed })
+  return { passed, warnings, failed }
 }
