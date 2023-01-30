@@ -7,6 +7,8 @@ export class FileBase {
 
   public passed: string[] = []
 
+  public warnings: string[] = []
+
   public failed: string[] = []
 
   public folderPath = ''
@@ -62,12 +64,9 @@ export class FileBase {
   public test (isValid: boolean, message: string, willJustWarn = false): boolean {
     const finalMessage = message.startsWith(this.fileName) ? message : `${this.fileName} ${message}`
     const code = messageToCode(finalMessage)
-    if (isValid) this.passed.push(code)
-    // eslint-disable-next-line sonarjs/elseif-without-else
-    else if (!willJustWarn) this.failed.push(code)
-    if (isValid) log.test(isValid, finalMessage)
-    else if (willJustWarn) log.warn(finalMessage)
-    else log.error(finalMessage)
+    if (isValid) { this.passed.push(code); log.test(isValid, finalMessage) } // eslint-disable-line @typescript-eslint/brace-style
+    else if (willJustWarn) { this.warnings.push(code); log.warn(finalMessage) } // eslint-disable-line @typescript-eslint/brace-style
+    else { this.failed.push(code); log.error(finalMessage) }
     return isValid
   }
 
