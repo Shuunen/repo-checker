@@ -12,7 +12,7 @@ test('repo-checker B folder succeed', async function () {
   const { passed, failed } = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 120, isPublishedPackage: true, isQuiet: true }))
   equal(passed, [
     'use-dependency-cruiser',
-    'has-a-dependency-cruiser-js-file',
+    'has-a-dependency-cruiser-config-file',
     'has-a-editorconfig-file',
     'editorconfig-has-space-indent',
     'editorconfig-has-indent-size-of-2',

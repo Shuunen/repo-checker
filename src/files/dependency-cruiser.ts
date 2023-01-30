@@ -2,8 +2,10 @@ import { FileBase } from '../file'
 
 export class DependencyCruiserFile extends FileBase {
   public async start (): Promise<void> {
-    const hasFile = this.test(this.data.isUsingDependencyCruiser, 'use dependency cruiser', true)
-    if (!hasFile) return
-    await this.checkFileExists('.dependency-cruiser.js')
+    const isUsingDepCruiser = this.test(this.data.isUsingDependencyCruiser, 'use dependency cruiser', true)
+    if (!isUsingDepCruiser) return
+    const hasJsFile = await this.fileExists('.dependency-cruiser.js')
+    const hasCjsFile = await this.fileExists('.dependency-cruiser.cjs')
+    this.test(hasJsFile || hasCjsFile, 'has a .dependency-cruiser config file')
   }
 }
