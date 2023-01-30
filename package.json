@@ -55,5 +55,5 @@
     "test": "c8 uvu -r tsm tests && echo test success",
     "test:watch": "watchlist src tests -eager -- npm test"
   },
-  "version": "1.29.0"
+  "version": "1.30.0"
 }
