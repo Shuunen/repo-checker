@@ -67,6 +67,7 @@ test('repo-checker B folder succeed', async function () {
     'package-json-has-a-post-script-for-version-automation',
     'package-json-has-a-typescript-build-or-check',
     'package-json-has-watchlist-eager-param',
+    'package-json-has-a-depcruise-usage',
     'package-json-has-a-ci-script',
     'package-json-has-a-final-echo-for-task-build',
     'package-json-has-a-final-echo-for-task-ci',

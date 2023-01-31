@@ -40,6 +40,7 @@ export class PackageJsonFile extends FileBase {
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/u, Nb.None)
     if (this.data.isUsingTypescript) this.shouldContains('a typescript build or check', /\btsc\b/u)
     if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/u, Nb.One, 'like watchlist src tests -eager -- npm run test')
+    if (this.data.isUsingDependencyCruiser) this.shouldContains('a depcruise usage', /depcruise\s/u, Nb.One, false, 'like "depcruise src --config"')
     if (!this.fileContent.includes('github.com/Shuunen')) return
     if (this.data.packageName !== 'repo-check') this.couldContains('a repo-check script', /"check": "repo-check"/u, Nb.One, '(don\'t forget to npm i repo-check)')
     this.couldContains('a ci script', /"ci": "/u, Nb.One, 'like "ci": "npm run build && npm run lint ...')
