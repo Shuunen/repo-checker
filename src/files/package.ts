@@ -32,17 +32,23 @@ export class PackageJsonFile extends FileBase {
     })
   }
 
+  private checkTsScripts (): void {
+    if (!this.data.isUsingTypescript) return
+    this.shouldContains('a typescript build or check', /\btsc\b/u)
+    this.shouldContains('a typescript lint', /eslint [^"]+\.ts/u)
+  }
+
   private checkScripts (): void {
+    this.checkTsScripts()
     this.shouldContains('a script section', this.regexForObjectProp('scripts'))
     this.couldContains('a pre-script for version automation', /"preversion": "/u, Nb.One, 'like : "preversion": "npm run ci",')
     if (this.data.isPublishedPackage) this.couldContains('a post-script for version automation', /"postversion": "/u, Nb.One, 'like : "postversion": "git push && git push --tags && npm publish",')
     else this.couldContains('a post-script for version automation', /"postversion": "/u, Nb.One, 'like : "postversion": "git push && git push --tags",')
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/u, Nb.None)
-    if (this.data.isUsingTypescript) this.shouldContains('a typescript build or check', /\btsc\b/u)
     if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/u, Nb.One, 'like watchlist src tests -eager -- npm run test')
     if (this.data.isUsingDependencyCruiser) this.shouldContains('a depcruise usage', /depcruise\s/u, Nb.One, false, 'like "depcruise src --config"')
     if (!this.fileContent.includes('github.com/Shuunen')) return
-    if (this.data.packageName !== 'repo-check') this.couldContains('a repo-check script', /"check": "repo-check"/u, Nb.One, '(don\'t forget to npm i repo-check)')
+    if (this.data.packageName !== 'repo-check') this.couldContains('a repo-check script', /"check": "repo-check/u, Nb.One, '(don\'t forget to npm i repo-check)')
     this.couldContains('a ci script', /"ci": "/u, Nb.One, 'like "ci": "npm run build && npm run lint ...')
   }
 
