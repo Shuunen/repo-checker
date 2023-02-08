@@ -54,15 +54,16 @@ export class EsLintFile extends FileBase {
   }
 
   private checkTsVue (): void {
-    this.shouldContains('hardcore typescript rules extend', /hardcore\/ts/u)
     this.shouldContains('hardcore vue rules extend', /hardcore\/vue/u)
   }
 
   private checkTs (): void {
     // check here ts & vue ts projects
+    this.couldContains('hardcore typescript rules extend', /hardcore\/ts/u)
+    this.couldContains('a disabled explicit function return type', /"@typescript-eslint\/explicit-function-return-type": "error"/u, Nb.None)
+    // eslint-disable-next-line sonarjs/no-redundant-jump, no-useless-return
     if (this.data.isUsingVue) { this.checkTsVue(); return }
     // check here ts only projects
-    this.shouldContains('hardcore typescript rules extend', /hardcore\/ts/u)
   }
 
   private checkVue (): void {

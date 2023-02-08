@@ -42,10 +42,10 @@ test('eslint C config file empty for ts project', async function () {
   await instance.end()
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
+    'has-a-disabled-explicit-function-return-type',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
-    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
   ], 'failed')
 })
 
@@ -59,10 +59,10 @@ test('eslint D config file empty for vue ts project', async function () {
   await instance.end()
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
+    'has-a-disabled-explicit-function-return-type',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
-    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
     'does-not-have-hardcore-vue-rules-extend-hardcore-vue',
   ], 'failed')
 })
@@ -128,10 +128,10 @@ test('eslint G config partial file for ts project', async function () {
   equal(instance.passed, [
     'has-eslint-recommended-rules-extend',
     'has-no-promise-plugin-require-eslint-7',
+    'has-a-disabled-explicit-function-return-type',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
-    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
   ], 'failed')
 })
 
@@ -164,10 +164,10 @@ test('eslint H config partial file for vue ts project', async function () {
   equal(instance.passed, [
     'has-eslint-recommended-rules-extend',
     'has-no-promise-plugin-require-eslint-7',
+    'has-a-disabled-explicit-function-return-type',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
-    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
     'does-not-have-hardcore-vue-rules-extend-hardcore-vue',
   ], 'failed')
 })
@@ -197,10 +197,10 @@ test('eslint I up to date config file for vue ts project', async function () {
   equal(instance.passed, [
     'has-eslint-recommended-rules-extend',
     'has-no-promise-plugin-require-eslint-7',
+    'has-a-disabled-explicit-function-return-type',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
-    'does-not-have-hardcore-typescript-rules-extend-hardcore-ts',
     'does-not-have-hardcore-vue-rules-extend-hardcore-vue',
   ], 'failed')
 })

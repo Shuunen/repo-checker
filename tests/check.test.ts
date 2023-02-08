@@ -27,6 +27,7 @@ test('repo-checker B folder succeed', async function () {
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
     'eslintrc-json-current-eslintrc-json-has-only-74-of-the-74-custom-rules-in-repo-checker-eslintrc-json',
     'eslintrc-json-has-hardcore-typescript-rules-extend',
+    'eslintrc-json-has-a-disabled-explicit-function-return-type',
     'avoid-main-branch-reference-use-master-instead-git-bclean',
     'has-a-gitignore-file',
     'gitignore-has-node-modules',
