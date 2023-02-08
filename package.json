@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "arg": "5",
-    "shuutils": "7.1"
+    "shuutils": "7.2"
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {
