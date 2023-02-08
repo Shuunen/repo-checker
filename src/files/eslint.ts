@@ -32,7 +32,6 @@ export class EsLintFile extends FileBase {
     if (!hasHardcore) this.couldContains('eslint recommended rules extend', /"eslint:recommended"/u)
     this.couldContains('unicorn rules extend', /plugin:unicorn\/all/u)
     this.shouldContains('no promise plugin (require eslint 7)', /plugin:promise\/recommended|"promise"/u, Nb.None)
-    this.couldContains('no plugin section since plugin are included by extends', /"plugins":/u, Nb.None)
   }
 
   private findRules (config: EslintRcJsonFile): EslintConfigRules {

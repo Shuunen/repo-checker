@@ -25,7 +25,6 @@ test('eslint B config file empty', async function () {
   await instance.end()
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
-    'has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
@@ -43,7 +42,6 @@ test('eslint C config file empty for ts project', async function () {
   await instance.end()
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
-    'has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
@@ -61,7 +59,6 @@ test('eslint D config file empty for vue ts project', async function () {
   await instance.end()
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
-    'has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
@@ -80,7 +77,6 @@ test('eslint E config file empty for tailwind project', async function () {
   await instance.end()
   equal(instance.passed, [
     'has-no-promise-plugin-require-eslint-7',
-    'has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
@@ -132,7 +128,6 @@ test('eslint G config partial file for ts project', async function () {
   equal(instance.passed, [
     'has-eslint-recommended-rules-extend',
     'has-no-promise-plugin-require-eslint-7',
-    'has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
@@ -219,7 +214,6 @@ test('eslint J config file with no rules', async function () {
   equal(instance.passed, [
     'eslintrc-json-has-hardcore-rules-extend',
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
-    'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
@@ -236,7 +230,6 @@ test('eslint K config file with just rules (no override)', async function () {
   equal(instance.passed, [
     'eslintrc-json-has-hardcore-rules-extend',
     'eslintrc-json-has-no-promise-plugin-require-eslint-7',
-    'eslintrc-json-has-no-plugin-section-since-plugin-are-included-by-extends',
   ], 'passed')
   equal(instance.failed, [
     'has-no-xo-config-js-file',
