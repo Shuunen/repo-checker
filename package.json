@@ -16,7 +16,7 @@
     "c8": "7",
     "dependency-cruiser": "latest",
     "esbuild": "0.17",
-    "eslint": "8.35",
+    "eslint": "8.36",
     "eslint-config-hardcore": "33",
     "eslint-plugin-unicorn": "46",
     "tsm": "2.3",
