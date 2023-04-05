@@ -90,6 +90,11 @@ export class PackageJsonFile extends FileBase {
     return new RegExp(`"${name}": (?:false|true),\n`, 'u')
   }
 
+  private async checkTsNodeUsages () {
+    const badUsages = await findInFolder(this.folderPath, /ts-node(?:-esm)? (?:(?!transpileOnly).)*$/gmu)
+    this.test(badUsages.length === 0, `ts-node without --transpileOnly detected in file(s) : ${badUsages.join(', ')}`, true)
+  }
+
   public async start (): Promise<void> {
     const hasFile = await this.checkFileExists('package.json')
     if (!hasFile) return
@@ -146,6 +151,7 @@ export class PackageJsonFile extends FileBase {
     /* usages */
     if (this.data.isUsingEslint) this.checkEslintUsages()
     if (this.fileContent.includes('"uvu"')) await this.checkUvuUsages()
+    if (this.fileContent.includes('ts-node')) await this.checkTsNodeUsages()
   }
 
   private async checkUvuUsages (): Promise<void> {
