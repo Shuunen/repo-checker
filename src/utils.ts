@@ -15,19 +15,21 @@ export async function readFile (filePath: string): Promise<string> {
   return Buffer.from(fileContent).toString()
 }
 
-export async function isGitFolder (folderPath: string): Promise<boolean> {
+export async function isProjectFolder (folderPath: string): Promise<boolean> {
   const statData = await statAsync(folderPath)
   if (!statData.isDirectory()) return false
-  return await fileExists(path.join(folderPath, '.git', 'config'))
+  const hasGitConfig = await fileExists(path.join(folderPath, '.git', 'config'))
+  if (hasGitConfig) return true
+  return await fileExists(path.join(folderPath, 'package.json'))
 }
 
-export async function getGitFolders (folderPath: string): Promise<string[]> {
-  if (await isGitFolder(folderPath)) return [folderPath]
+export async function getProjectFolders (folderPath: string): Promise<string[]> {
+  if (await isProjectFolder(folderPath)) return [folderPath]
   const filePaths = await readDirectoryAsync(folderPath)
   const gitDirectories: string[] = []
   for (const filePath of filePaths) {
     const folder = path.join(folderPath, filePath)
-    if (await isGitFolder(folder)) gitDirectories.push(folder) // eslint-disable-line no-await-in-loop
+    if (await isProjectFolder(folder)) gitDirectories.push(folder) // eslint-disable-line no-await-in-loop
   }
   return gitDirectories
 }
