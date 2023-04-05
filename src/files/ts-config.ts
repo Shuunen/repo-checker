@@ -10,7 +10,6 @@ const recommendedCompilerOptions = {
   esModuleInterop: true,
   exactOptionalPropertyTypes: true,
   forceConsistentCasingInFileNames: true,
-  importsNotUsedAsValues: 'error',
   noFallthroughCasesInSwitch: true,
   noImplicitAny: true,
   noImplicitOverride: true,
@@ -62,11 +61,10 @@ export class TsConfigFile extends FileBase {
     for (const inputKey in recommendedCompilerOptions) {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const key = inputKey as keyof typeof recommendedCompilerOptions
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const value = recommendedCompilerOptions[key]
-      // eslint-disable-next-line no-continue
-      if (value === undefined) continue
       // eslint-disable-next-line security/detect-non-literal-regexp
-      const regex = typeof value === 'string' ? new RegExp(`"${key}": "${value}"`, 'u') : new RegExp(`"${key}": ${String(value)}`, 'u')
+      const regex = new RegExp(`"${key}": ${String(value)}`, 'u')
       isOk = this.couldContains(`a ${key} compiler option`, regex, Nb.One, undefined, true)
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions[key] = value as never
