@@ -20,7 +20,6 @@ const recommendedCompilerOptions = {
   noUnusedParameters: true,
   skipLibCheck: true,
   strict: true,
-  zob: undefined, // zob is not a recommended option ^^' just to please tsConfig/tsc
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 
