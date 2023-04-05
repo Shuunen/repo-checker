@@ -26,7 +26,7 @@ export class PackageJsonFile extends FileBase {
   }
 
   private checkEchoes (): void {
-    ['build', 'ci', 'lint', 'test'].forEach(task => {
+    ['build', 'check', 'lint', 'test'].forEach(task => {
       if (!this.fileContent.includes(`"${task}":`)) return
       this.couldContains(`a final echo for task "${task}"`, new RegExp(`"${task}": ".+ && echo [\\w\\s]*${task} \\w+"`, 'u'))
     })
@@ -41,15 +41,14 @@ export class PackageJsonFile extends FileBase {
   private checkScripts (): void {
     this.checkTsScripts()
     this.shouldContains('a script section', this.regexForObjectProp('scripts'))
-    this.couldContains('a pre-script for version automation', /"preversion": "/u, Nb.One, 'like : "preversion": "npm run ci",')
+    this.couldContains('a pre-script for version automation', /"preversion": "/u, Nb.One, 'like : "preversion": "npm run check",')
     if (this.data.isPublishedPackage) this.couldContains('a post-script for version automation', /"postversion": "/u, Nb.One, 'like : "postversion": "git push && git push --tags && npm publish",')
     else this.couldContains('a post-script for version automation', /"postversion": "/u, Nb.One, 'like : "postversion": "git push && git push --tags",')
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/u, Nb.None)
     if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/u, Nb.One, 'like watchlist src tests -eager -- npm run test')
     if (this.data.isUsingDependencyCruiser) this.shouldContains('a depcruise usage', /depcruise\s/u, Nb.One, false, 'like "depcruise src --config"')
     if (!this.fileContent.includes('github.com/Shuunen')) return
-    if (this.data.packageName !== 'repo-check') this.couldContains('a repo-check script', /"check": "repo-check/u, Nb.One, '(don\'t forget to npm i repo-check)')
-    this.couldContains('a ci script', /"ci": "/u, Nb.One, 'like "ci": "npm run build && npm run lint ...')
+    this.couldContains('a check script', /"check": "/u, Nb.One, 'like "check": "npm run build && npm run lint ...')
   }
 
   private checkBuild (): void {
