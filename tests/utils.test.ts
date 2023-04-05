@@ -1,17 +1,17 @@
 import { mkdirSync, rmSync } from 'fs' // eslint-disable-line no-restricted-imports
-import { check, Nb } from 'shuutils'
+import { Nb, check } from 'shuutils'
 import { test } from 'uvu'
 import { equal } from 'uvu/assert'
-import { dataDefaults, dataFileName, ProjectData, repoCheckerPath } from '../src/constants'
-import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findStringInFolder, getFileSizeInKo, getGitFolders, isGitFolder, join, jsToJson, messageToCode, readFileInFolder, writeFile } from '../src/utils'
+import { ProjectData, dataDefaults, dataFileName, repoCheckerPath } from '../src/constants'
+import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findInFolder, getFileSizeInKo, getProjectFolders, isProjectFolder, join, jsToJson, messageToCode, readFileInFolder, writeFile } from '../src/utils'
 import { testFolder } from './utils'
 
-test('git folder detection', async function () {
-  equal(await isGitFolder(repoCheckerPath), true)
+test('isProjectFolder A', async function () {
+  equal(await isProjectFolder(repoCheckerPath), true)
 })
 
-test('git folders listing', async function () {
-  equal(await getGitFolders(repoCheckerPath), [repoCheckerPath])
+test('isProjectFolder B folders listing', async function () {
+  equal(await getProjectFolders(repoCheckerPath), [repoCheckerPath])
   const projects = ['anotherProject', 'sampleProject']
   for (const name of projects) {
     const folderPath = join(testFolder, name, '.git')
@@ -20,7 +20,7 @@ test('git folders listing', async function () {
     // eslint-disable-next-line no-await-in-loop
     await writeFile(join(folderPath, 'config'), '', 'utf8')
   }
-  const folders = await getGitFolders(testFolder)
+  const folders = await getProjectFolders(testFolder)
   equal(folders.length >= Nb.Two, true)
   // eslint-disable-next-line @typescript-eslint/naming-convention
   projects.forEach(name => { rmSync(join(testFolder, name), { recursive: true }) })

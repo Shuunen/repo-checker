@@ -3,7 +3,7 @@ import { ellipsis, green, Nb, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants'
 import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files/index.js'
 import { log } from './logger'
-import { augmentData, getGitFolders } from './utils'
+import { augmentData, getProjectFolders } from './utils'
 
 interface Indicators { passed: string[]; warnings: string[]; failed: string[] }
 
@@ -40,11 +40,12 @@ export function report ({ passed = [], warnings = [], failed = [] }: Indicators)
 
 // eslint-disable-next-line max-params, max-statements
 export async function check (folderPath: string, data: ProjectData, canFix = false, canForce = false): Promise<Indicators> {
-  const folders = await getGitFolders(folderPath)
+  const folders = await getProjectFolders(folderPath)
   let passed: string[] = []
   let warnings: string[] = []
   let failed: string[] = []
   log.options.isActive = !data.isQuiet
+  if (folders.length === Nb.Zero) log.warn('no folder to check', folderPath)
   /* eslint-disable no-await-in-loop */
   for (const folder of folders) {
     log.info('Checking folder :', folder)
