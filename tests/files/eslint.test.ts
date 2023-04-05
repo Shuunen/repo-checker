@@ -1,21 +1,21 @@
-import { test } from 'uvu'
-import { equal } from 'uvu/assert'
+import { expect, it } from 'vitest'
 import { ProjectData } from '../../src/constants'
 import { EsLintFile } from '../../src/files'
 import { log } from '../../src/logger'
 import { promiseFalse, promiseTrue, promiseVoid, tsProjectFolder, vueProjectFolder } from '../utils'
 
-test('eslint A config missing file', async function () {
+it('eslint A config missing file', async () => {
   log.disable()
   const instance = new EsLintFile()
   instance.fileExists = promiseFalse
   await instance.start()
   await instance.end()
-  equal(instance.passed, ['has-no-xo-config-js-file'], 'passed')
-  equal(instance.failed, [], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint B config file empty', async function () {
+it('eslint B config file empty', async () => {
   log.disable()
   const instance = new EsLintFile()
   instance.fileExists = promiseTrue
@@ -23,16 +23,12 @@ test('eslint B config file empty', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'has-no-promise-plugin-require-eslint-7',
-  ], 'passed')
-  equal(instance.failed, [
-    'has-no-xo-config-js-file',
-    'does-not-have-eslint-recommended-rules-extend-eslint-recommended',
-  ], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint C config file empty for ts project', async function () {
+it('eslint C config file empty for ts project', async () => {
   log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingTypescript: true }))
   instance.fileExists = promiseTrue
@@ -40,16 +36,12 @@ test('eslint C config file empty for ts project', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'has-no-promise-plugin-require-eslint-7',
-    'has-a-disabled-explicit-function-return-type',
-  ], 'passed')
-  equal(instance.failed, [
-    'has-no-xo-config-js-file',
-  ], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint D config file empty for vue ts project', async function () {
+it('eslint D config file empty for vue ts project', async () => {
   log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingVue: true, isUsingTypescript: true }))
   instance.fileExists = promiseTrue
@@ -57,17 +49,12 @@ test('eslint D config file empty for vue ts project', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'has-no-promise-plugin-require-eslint-7',
-    'has-a-disabled-explicit-function-return-type',
-  ], 'passed')
-  equal(instance.failed, [
-    'has-no-xo-config-js-file',
-    'does-not-have-hardcore-vue-rules-extend-hardcore-vue',
-  ], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint E config file empty for tailwind project', async function () {
+it('eslint E config file empty for tailwind project', async () => {
   log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingTailwind: true }))
   instance.fileExists = promiseTrue
@@ -75,17 +62,12 @@ test('eslint E config file empty for tailwind project', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'has-no-promise-plugin-require-eslint-7',
-  ], 'passed')
-  equal(instance.failed, [
-    'has-no-xo-config-js-file',
-    'does-not-have-tailwind-rules-extend-plugin-tailwindcss-recommended',
-    'does-not-have-eslint-recommended-rules-extend-eslint-recommended',
-  ], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint F config partial file for js project', async function () {
+it('eslint F config partial file for js project', async () => {
   log.disable()
   const instance = new EsLintFile()
   instance.fileExists = promiseTrue
@@ -102,15 +84,12 @@ test('eslint F config partial file for js project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'has-eslint-recommended-rules-extend',
-    'has-no-promise-plugin-require-eslint-7',
-    'has-eslint-recommended-rules-extend',
-  ], 'passed')
-  equal(instance.failed, ['has-no-xo-config-js-file'], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint G config partial file for ts project', async function () {
+it('eslint G config partial file for ts project', async () => {
   log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingTypescript: true }))
   instance.fileExists = promiseTrue
@@ -125,17 +104,12 @@ test('eslint G config partial file for ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'has-eslint-recommended-rules-extend',
-    'has-no-promise-plugin-require-eslint-7',
-    'has-a-disabled-explicit-function-return-type',
-  ], 'passed')
-  equal(instance.failed, [
-    'has-no-xo-config-js-file',
-  ], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint H config partial file for vue ts project', async function () {
+it('eslint H config partial file for vue ts project', async () => {
   log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingVue: true, isUsingTypescript: true }))
   instance.fileExists = promiseTrue
@@ -161,18 +135,12 @@ test('eslint H config partial file for vue ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'has-eslint-recommended-rules-extend',
-    'has-no-promise-plugin-require-eslint-7',
-    'has-a-disabled-explicit-function-return-type',
-  ], 'passed')
-  equal(instance.failed, [
-    'has-no-xo-config-js-file',
-    'does-not-have-hardcore-vue-rules-extend-hardcore-vue',
-  ], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint I up to date config file for vue ts project', async function () {
+it('eslint I up to date config file for vue ts project', async () => {
   log.disable()
   const instance = new EsLintFile('', new ProjectData({ isUsingVue: true, isUsingTypescript: true }))
   instance.fileExists = promiseTrue
@@ -194,47 +162,29 @@ test('eslint I up to date config file for vue ts project', async function () {
   }`
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'has-eslint-recommended-rules-extend',
-    'has-no-promise-plugin-require-eslint-7',
-    'has-a-disabled-explicit-function-return-type',
-  ], 'passed')
-  equal(instance.failed, [
-    'has-no-xo-config-js-file',
-    'does-not-have-hardcore-vue-rules-extend-hardcore-vue',
-  ], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint J config file with no rules', async function () {
+it('eslint J config file with no rules', async () => {
   log.disable()
   const instance = new EsLintFile(vueProjectFolder, new ProjectData({}))
   instance.fileExists = promiseTrue
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'eslintrc-json-has-hardcore-rules-extend',
-    'eslintrc-json-has-no-promise-plugin-require-eslint-7',
-  ], 'passed')
-  equal(instance.failed, [
-    'has-no-xo-config-js-file',
-    'eslintrc-json-does-not-have-eslint-recommended-rules-extend-eslint-recommended',
-  ], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('eslint K config file with just rules (no override)', async function () {
+it('eslint K config file with just rules (no override)', async () => {
   log.disable()
   const instance = new EsLintFile(tsProjectFolder, new ProjectData({}))
   instance.fileExists = promiseTrue
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'eslintrc-json-has-hardcore-rules-extend',
-    'eslintrc-json-has-no-promise-plugin-require-eslint-7',
-  ], 'passed')
-  equal(instance.failed, [
-    'has-no-xo-config-js-file',
-    'eslintrc-json-does-not-have-eslint-recommended-rules-extend-eslint-recommended',
-  ], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
-
-test.run()

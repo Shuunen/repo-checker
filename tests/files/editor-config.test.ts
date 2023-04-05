@@ -1,20 +1,20 @@
-import { test } from 'uvu'
-import { equal } from 'uvu/assert'
+import { expect, it } from 'vitest'
 import { EditorConfigFile } from '../../src/files'
 import { log } from '../../src/logger'
 import { promiseFalse, promiseTrue, promiseVoid } from '../utils'
 
-test('editor config missing file', async function () {
+it('editor config A missing file', async () => {
   log.disable()
   const instance = new EditorConfigFile()
   instance.checkFileExists = promiseFalse
   await instance.start()
   await instance.end()
-  equal(instance.passed, [])
-  equal(instance.failed, [])
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('editor config file', async function () {
+it('editor config B file', async () => {
   log.disable()
   const instance = new EditorConfigFile()
   instance.checkFileExists = promiseTrue
@@ -22,15 +22,7 @@ test('editor config file', async function () {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  equal(instance.passed, [
-    'has-no-specific-html-indent-rule',
-  ])
-  equal(instance.failed, [
-    'does-not-have-space-indent-indent-style-space',
-    'does-not-have-indent-size-of-2-indent-size-2',
-    'does-not-have-unix-style-line-endings-end-of-line-lf',
-    'does-not-have-utf-8-encoding-charset-utf-8',
-  ])
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
-
-test.run()

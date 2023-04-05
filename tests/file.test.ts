@@ -1,6 +1,5 @@
 import { Nb, sleep } from 'shuutils'
-import { test } from 'uvu'
-import { equal } from 'uvu/assert'
+import { expect, it } from 'vitest'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 import { FileBase } from '../src/file'
 import { deleteFile, join, readFile, writeFile } from '../src/utils'
@@ -11,22 +10,22 @@ const missingFilename = 'some-file.log'
 const missingFilepath = join(repoCheckerPath, missingFilename)
 const fakeContent = 'zorglub'
 
-test('file : simple validator', async function () {
+it('file : simple validator', async () => {
   class MyFile extends FileBase {
     public async start (): Promise<void> {
       await writeFile(missingFilepath, 'Foobar content')
       await this.inspectFile(missingFilename)
-      equal(this.passed, [], 'test 1')
+      expect(this.passed, 'test 1').toStrictEqual([])
       this.shouldContains('Foobar')
-      equal(this.passed, ['some-file-log-has-foobar'], 'test 2')
+      expect(this.passed, 'test 2').toStrictEqual(['some-file-log-has-foobar'])
       this.shouldContains('plop')
-      equal(this.passed, ['some-file-log-has-foobar'], 'test 3')
+      expect(this.passed, 'test 3').toStrictEqual(['some-file-log-has-foobar'])
       this.couldContains('world')
-      equal(this.passed, ['some-file-log-has-foobar'], 'test 4')
+      expect(this.passed, 'test 4').toStrictEqual(['some-file-log-has-foobar'])
       await this.checkFileExists('package.json')
-      equal(this.passed, ['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file'], 'test 5')
+      expect(this.passed, 'test 5').toStrictEqual(['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file'])
       await this.checkNoFileExists('zorglub.exe')
-      equal(this.passed, ['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file', 'some-file-log-has-no-zorglub-exe-file'], 'test 6')
+      expect(this.passed, 'test 6').toStrictEqual(['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file', 'some-file-log-has-no-zorglub-exe-file'])
       await deleteFile(missingFilepath)
       this.shouldContains('two dots', /\./gu, Nb.Two, true, 'hehe 2 dots', true)
     }
@@ -34,12 +33,12 @@ test('file : simple validator', async function () {
   const instance = new MyFile(repoCheckerPath, new ProjectData({ isQuiet: true }))
   await instance.start()
   await instance.end()
-  const { passed, failed } = instance
-  equal(passed, ['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file', 'some-file-log-has-no-zorglub-exe-file'], 'passed')
-  equal(failed, ['some-file-log-does-not-have-plop-plop'], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('file : validator with fix', async function () {
+it('file : validator with fix', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await this.checkFileExists(existingFilename)
@@ -53,16 +52,12 @@ test('file : validator with fix', async function () {
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }), true)
   await instance.start()
   await instance.end()
-  const { passed, failed } = instance
-  equal(passed, [
-    'has-a-nvmrc-file',
-    'has-a-nvmrc-file',
-    'nvmrc-should-be-a-small-text-file',
-  ], 'passed')
-  equal(failed, ['has-a-missing-template-csv-file'], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('file : validator with fix & force, overwrite a problematic file with template', async function () {
+it('file : validator with fix & force, overwrite a problematic file with template', async () => {
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
       await this.inspectFile(existingFilename)
@@ -76,12 +71,12 @@ test('file : validator with fix & force, overwrite a problematic file with templ
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ isQuiet: true }), true, true)
   await instance.start()
   await instance.end()
-  const { passed, failed } = instance
-  equal(passed, ['nvmrc-has-two-dots'], 'passed')
-  equal(failed, ['nvmrc-does-not-have-a-regular-nvmrc-file-content-travers'], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('file : validator with fix & force, update a problematic file on the go', async function () {
+it('file : validator with fix & force, update a problematic file on the go', async () => {
   let originalContent = ''
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
@@ -93,14 +88,14 @@ test('file : validator with fix & force, update a problematic file on the go', a
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ isQuiet: true }), true, true)
   await instance.start()
   await instance.end()
-  const { passed, failed } = instance
-  equal(passed, [], 'passed')
-  equal(failed, [], 'failed')
-  equal(await readFile(existingFilepath), fakeContent, 'file content updated')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(await readFile(existingFilepath), 'file content updated').toBe(fakeContent)
   await writeFile(existingFilepath, originalContent) // restore the file
 })
 
-test('file : validator without force cannot fix a problematic file on the go', async function () {
+it('file : validator without force cannot fix a problematic file on the go', async () => {
   let originalContent = ''
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
@@ -113,10 +108,13 @@ test('file : validator without force cannot fix a problematic file on the go', a
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ isQuiet: true }), true, false)
   await instance.start()
   await instance.end()
-  equal(await readFile(existingFilepath), originalContent)
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(await readFile(existingFilepath)).toBe(originalContent)
 })
 
-test('file : validator with fix cannot fix if the template require data that is missing', async function () {
+it('file : validator with fix cannot fix if the template require data that is missing', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await this.checkFileExists('template-example.json')
@@ -125,22 +123,28 @@ test('file : validator with fix cannot fix if the template require data that is 
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }), true)
   await instance.start()
   await instance.end()
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('file : validator can detect a missing schema', async function () {
+it('file : validator can detect a missing schema', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await sleep(Nb.One)
       this.fileContent = '{}'
-      equal(this.couldContainsSchema('does-not-exist'), false)
+      expect(this.couldContainsSchema('does-not-exist')).toBe(false)
     }
   }
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }))
   await instance.start()
   await instance.end()
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('file : validator can detect an existing schema', async function () {
+it('file : validator can detect an existing schema', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await sleep(Nb.One)
@@ -149,15 +153,18 @@ test('file : validator can detect an existing schema', async function () {
         "$schema": "https://json.schemastore.org/does-exist",
         "age": 42
       }`
-      equal(this.couldContainsSchema('https://json.schemastore.org/does-exist'), true)
+      expect(this.couldContainsSchema('https://json.schemastore.org/does-exist')).toBe(true)
     }
   }
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }))
   await instance.start()
   await instance.end()
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('file : validator can fix a missing schema', async function () {
+it('file : validator can fix a missing schema', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await sleep(Nb.One)
@@ -165,8 +172,8 @@ test('file : validator can fix a missing schema', async function () {
         "something": "else",
         "age": 42
       }`
-      equal(this.couldContainsSchema('https://json.schemastore.org/does-exist-too'), true)
-      equal(this.fileContent, `{
+      expect(this.couldContainsSchema('https://json.schemastore.org/does-exist-too')).toBe(true)
+      expect(this.fileContent).toBe(`{
         "$schema": "https://json.schemastore.org/does-exist-too",
         "something": "else",
         "age": 42
@@ -176,6 +183,9 @@ test('file : validator can fix a missing schema', async function () {
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }), true)
   await instance.start()
   await instance.end()
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test.run()
+

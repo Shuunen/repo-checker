@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`git : detect a missing git ignore 1`] = `
+[
+  "avoid-main-branch-reference-use-master-instead-git-bclean",
+  "gitignore-has-no-pnpm-lock-exclusion",
+]
+`;
+
+exports[`git : detect a missing git ignore 2`] = `
+[
+  "has-a-gitignore-file",
+]
+`;
+
+exports[`git : detect a missing git ignore 3`] = `
+[
+  "gitignore-could-have-node-modules-node-modules",
+]
+`;

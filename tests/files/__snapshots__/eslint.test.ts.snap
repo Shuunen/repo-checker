@@ -1,0 +1,258 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`eslint A config missing file 1`] = `
+[
+  "has-no-xo-config-js-file",
+]
+`;
+
+exports[`eslint A config missing file 2`] = `[]`;
+
+exports[`eslint A config missing file 3`] = `[]`;
+
+exports[`eslint B config file empty 1`] = `
+[
+  "has-no-promise-plugin-require-eslint-7",
+]
+`;
+
+exports[`eslint B config file empty 2`] = `
+[
+  "has-no-xo-config-js-file",
+  "does-not-have-eslint-recommended-rules-extend-eslint-recommended",
+]
+`;
+
+exports[`eslint B config file empty 3`] = `
+[
+  "could-have-hardcore-rules-extend-hardcore",
+  "could-have-eslint-recommended-rules-extend-eslint-recommended",
+  "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "current-eslintrc-json-has-only-15-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+]
+`;
+
+exports[`eslint C config file empty for ts project 1`] = `
+[
+  "has-no-promise-plugin-require-eslint-7",
+  "has-a-disabled-explicit-function-return-type",
+]
+`;
+
+exports[`eslint C config file empty for ts project 2`] = `
+[
+  "has-no-xo-config-js-file",
+]
+`;
+
+exports[`eslint C config file empty for ts project 3`] = `
+[
+  "could-have-hardcore-rules-extend-hardcore",
+  "could-have-eslint-recommended-rules-extend-eslint-recommended",
+  "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "current-eslintrc-json-has-only-1-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+]
+`;
+
+exports[`eslint D config file empty for vue ts project 1`] = `
+[
+  "has-no-promise-plugin-require-eslint-7",
+  "has-a-disabled-explicit-function-return-type",
+]
+`;
+
+exports[`eslint D config file empty for vue ts project 2`] = `
+[
+  "has-no-xo-config-js-file",
+  "does-not-have-hardcore-vue-rules-extend-hardcore-vue",
+]
+`;
+
+exports[`eslint D config file empty for vue ts project 3`] = `
+[
+  "could-have-hardcore-rules-extend-hardcore",
+  "could-have-eslint-recommended-rules-extend-eslint-recommended",
+  "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "current-eslintrc-json-has-only-1-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "could-have-vue-first-attribute-linebreak-off-vue-first-attribute-linebreak-off",
+  "could-have-vue-html-closing-bracket-newline-off-vue-html-closing-bracket-newline-off",
+  "could-have-vue-html-indent-off-vue-html-indent-off",
+  "could-have-vue-html-self-closing-off-vue-html-self-closing-off",
+  "could-have-vue-max-attributes-per-line-off-vue-max-attributes-per-line-off",
+  "could-have-vue-no-multiple-template-root-off-vue-no-multiple-template-root-off",
+  "could-have-vue-singleline-html-element-content-newline-off-vue-singleline-html-element-content-newline-off",
+  "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+]
+`;
+
+exports[`eslint E config file empty for tailwind project 1`] = `
+[
+  "has-no-promise-plugin-require-eslint-7",
+]
+`;
+
+exports[`eslint E config file empty for tailwind project 2`] = `
+[
+  "has-no-xo-config-js-file",
+  "does-not-have-tailwind-rules-extend-plugin-tailwindcss-recommended",
+  "does-not-have-eslint-recommended-rules-extend-eslint-recommended",
+]
+`;
+
+exports[`eslint E config file empty for tailwind project 3`] = `
+[
+  "could-have-hardcore-rules-extend-hardcore",
+  "could-have-eslint-recommended-rules-extend-eslint-recommended",
+  "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "current-eslintrc-json-has-only-15-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+]
+`;
+
+exports[`eslint F config partial file for js project 1`] = `
+[
+  "has-eslint-recommended-rules-extend",
+  "has-no-promise-plugin-require-eslint-7",
+  "has-eslint-recommended-rules-extend",
+]
+`;
+
+exports[`eslint F config partial file for js project 2`] = `
+[
+  "has-no-xo-config-js-file",
+]
+`;
+
+exports[`eslint F config partial file for js project 3`] = `
+[
+  "could-have-hardcore-rules-extend-hardcore",
+  "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "current-eslintrc-json-has-only-15-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+]
+`;
+
+exports[`eslint G config partial file for ts project 1`] = `
+[
+  "has-eslint-recommended-rules-extend",
+  "has-no-promise-plugin-require-eslint-7",
+  "has-a-disabled-explicit-function-return-type",
+]
+`;
+
+exports[`eslint G config partial file for ts project 2`] = `
+[
+  "has-no-xo-config-js-file",
+]
+`;
+
+exports[`eslint G config partial file for ts project 3`] = `
+[
+  "could-have-hardcore-rules-extend-hardcore",
+  "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "current-eslintrc-json-has-only-1-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+]
+`;
+
+exports[`eslint H config partial file for vue ts project 1`] = `
+[
+  "has-eslint-recommended-rules-extend",
+  "has-no-promise-plugin-require-eslint-7",
+  "has-a-disabled-explicit-function-return-type",
+]
+`;
+
+exports[`eslint H config partial file for vue ts project 2`] = `
+[
+  "has-no-xo-config-js-file",
+  "does-not-have-hardcore-vue-rules-extend-hardcore-vue",
+]
+`;
+
+exports[`eslint H config partial file for vue ts project 3`] = `
+[
+  "could-have-hardcore-rules-extend-hardcore",
+  "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "current-eslintrc-json-has-only-1-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "could-have-vue-first-attribute-linebreak-off-vue-first-attribute-linebreak-off",
+  "could-have-vue-html-closing-bracket-newline-off-vue-html-closing-bracket-newline-off",
+  "could-have-vue-html-indent-off-vue-html-indent-off",
+  "could-have-vue-html-self-closing-off-vue-html-self-closing-off",
+  "could-have-vue-max-attributes-per-line-off-vue-max-attributes-per-line-off",
+  "could-have-vue-no-multiple-template-root-off-vue-no-multiple-template-root-off",
+  "could-have-vue-singleline-html-element-content-newline-off-vue-singleline-html-element-content-newline-off",
+  "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+]
+`;
+
+exports[`eslint I up to date config file for vue ts project 1`] = `
+[
+  "has-eslint-recommended-rules-extend",
+  "has-no-promise-plugin-require-eslint-7",
+  "has-a-disabled-explicit-function-return-type",
+]
+`;
+
+exports[`eslint I up to date config file for vue ts project 2`] = `
+[
+  "has-no-xo-config-js-file",
+  "does-not-have-hardcore-vue-rules-extend-hardcore-vue",
+]
+`;
+
+exports[`eslint I up to date config file for vue ts project 3`] = `
+[
+  "could-have-hardcore-rules-extend-hardcore",
+  "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "could-have-vue-first-attribute-linebreak-off-vue-first-attribute-linebreak-off",
+  "could-have-vue-html-closing-bracket-newline-off-vue-html-closing-bracket-newline-off",
+  "could-have-vue-html-indent-off-vue-html-indent-off",
+  "could-have-vue-html-self-closing-off-vue-html-self-closing-off",
+  "could-have-vue-max-attributes-per-line-off-vue-max-attributes-per-line-off",
+  "could-have-vue-no-multiple-template-root-off-vue-no-multiple-template-root-off",
+  "could-have-vue-singleline-html-element-content-newline-off-vue-singleline-html-element-content-newline-off",
+  "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+]
+`;
+
+exports[`eslint J config file with no rules 1`] = `
+[
+  "eslintrc-json-has-hardcore-rules-extend",
+  "eslintrc-json-has-no-promise-plugin-require-eslint-7",
+]
+`;
+
+exports[`eslint J config file with no rules 2`] = `
+[
+  "has-no-xo-config-js-file",
+  "eslintrc-json-does-not-have-eslint-recommended-rules-extend-eslint-recommended",
+]
+`;
+
+exports[`eslint J config file with no rules 3`] = `
+[
+  "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "eslintrc-json-current-eslintrc-json-has-only-15-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+]
+`;
+
+exports[`eslint K config file with just rules (no override) 1`] = `
+[
+  "eslintrc-json-has-hardcore-rules-extend",
+  "eslintrc-json-has-no-promise-plugin-require-eslint-7",
+]
+`;
+
+exports[`eslint K config file with just rules (no override) 2`] = `
+[
+  "has-no-xo-config-js-file",
+  "eslintrc-json-does-not-have-eslint-recommended-rules-extend-eslint-recommended",
+]
+`;
+
+exports[`eslint K config file with just rules (no override) 3`] = `
+[
+  "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
+  "eslintrc-json-current-eslintrc-json-has-only-16-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+]
+`;
