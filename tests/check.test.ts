@@ -1,173 +1,23 @@
-import { test } from 'uvu'
-import { equal } from 'uvu/assert'
+import { expect, it } from 'vitest'
 import { check } from '../src/check'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 import { tsProjectFolder } from './utils'
 
-test('check A folder fails with low max size', async function () {
-  const message = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 2, isPublishedPackage: true, isQuiet: true })).catch(() => 'failed')
-  equal(message, 'failed')
+it('check A folder fails with low max size', async () => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const message = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 2, isPublishedPackage: true, isQuiet: true })).catch((error: unknown) => (error as Error).message)
+  expect(message).toMatchSnapshot()
 })
 
-test('check B folder succeed', async function () {
-  const { passed, failed } = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 120, isPublishedPackage: true, isQuiet: true }))
-  equal(passed, [
-    'use-dependency-cruiser',
-    'has-a-dependency-cruiser-config-file',
-    'has-a-editorconfig-file',
-    'editorconfig-has-space-indent',
-    'editorconfig-has-indent-size-of-2',
-    'editorconfig-has-unix-style-line-endings',
-    'editorconfig-has-utf-8-encoding',
-    'editorconfig-has-whitespace-trailing',
-    'editorconfig-has-final-new-line-rule',
-    'editorconfig-has-no-specific-html-indent-rule',
-    'has-no-xo-config-js-file',
-    'eslintrc-json-has-hardcore-rules-extend',
-    'eslintrc-json-has-unicorn-rules-extend',
-    'eslintrc-json-has-no-promise-plugin-require-eslint-7',
-    'eslintrc-json-current-eslintrc-json-has-only-76-of-the-76-custom-rules-in-repo-checker-eslintrc-json',
-    'eslintrc-json-has-hardcore-typescript-rules-extend',
-    'eslintrc-json-has-a-disabled-explicit-function-return-type',
-    'avoid-main-branch-reference-use-master-instead-git-bclean',
-    'has-a-gitignore-file',
-    'gitignore-has-node-modules',
-    'gitignore-has-no-pnpm-lock-exclusion',
-    'github-workflows-ci-yml-has-a-checkout-step-in-ci-workflow',
-    'github-workflows-ci-yml-has-a-node-step-in-ci-workflow',
-    'github-workflows-ci-yml-has-a-pnpm-setup-step',
-    'github-workflows-ci-yml-has-no-main-branch-reference',
-    'has-a-license-file',
-    'license-has-a-gpl-title',
-    'license-has-a-version-3-subtitle',
-    'has-a-nvmrc-file',
-    'nvmrc-has-a-recent-lts-node-version',
-    'nycrc-file-exists',
-    'has-a-nycrc-json-file',
-    'nycrc-json-has-a-schema-declaration',
-    'has-a-package-json-file',
-    'package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100',
-    'package-json-has-a-dist-repo-check-min-cjs-file',
-    'package-json-main-file-specified-in-package-json-dist-repo-check-min-cjs-exists-on-disk-be-sure-to-build-before-run-repo-check',
-    'package-json-main-file-size-43ko-should-be-less-or-equal-to-max-size-allowed-120ko',
-    'package-json-has-a-schema-declaration',
-    'package-json-has-a-bugs-property',
-    'package-json-has-a-description-property',
-    'package-json-has-a-files-property',
-    'package-json-has-a-homepage-property',
-    'package-json-has-a-keywords-property',
-    'package-json-has-a-private-property',
-    'package-json-has-a-repository-property',
-    'package-json-has-a-author-property',
-    'package-json-has-a-name-property',
-    'package-json-has-a-version-property',
-    'package-json-has-a-license-property',
-    'package-json-has-a-gpl-3-0-license',
-    'package-json-has-a-typescript-build-or-check',
-    'package-json-has-a-typescript-lint',
-    'package-json-has-a-script-section',
-    'package-json-has-a-pre-script-for-version-automation',
-    'package-json-has-a-post-script-for-version-automation',
-    'package-json-has-watchlist-eager-param',
-    'package-json-has-a-depcruise-usage',
-    'package-json-has-a-check-script',
-    'package-json-has-a-final-echo-for-task-build',
-    'package-json-has-a-final-echo-for-task-check',
-    'package-json-has-a-final-echo-for-task-lint',
-    'package-json-has-a-final-echo-for-task-test',
-    'package-json-has-no-sass-dependency-fat-useless',
-    'package-json-has-no-cross-var-dependency-old-deprecated',
-    'package-json-has-no-tslint-dependency-deprecated',
-    'package-json-has-no-eslint-plugin-promise-5-dependency-require-eslint-7',
-    'package-json-has-no-patch-precision',
-    'package-json-one-unit-testing-dependency-from-mocha-uvu',
-    'package-json-one-coverage-dependency-from-nyc-c8',
-    'package-json-has-eslint-cache-flag',
-    'package-json-assert-dependency-used-in-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative',
-    'package-json-has-no-fat-color-dependency-use-shuutils-or-nanocolors',
-    'package-json-has-no-fat-fs-extra-dependency-use-native-fs',
-    'package-json-has-no-utopian-shuunen-stack-dependency',
-    'package-json-has-no-fat-task-runner-use-npm-run-xyz-npm-run-abc-for-sequential-or-zero-deps-package-npm-parallel',
-    'has-a-readme-md-file',
-    'readme-md-has-a-title',
-    'readme-md-has-no-link-to-deprecated-netlify-com',
-    'readme-md-has-no-links-without-https-scheme',
-    'readme-md-has-no-crlf-windows-carriage-return',
-    'readme-md-has-no-star-flavored-list',
-    'readme-md-has-a-project-license-badge',
-    'readme-md-has-a-npm-monthly-downloads-badge',
-    'readme-md-has-a-npm-version-badge',
-    'readme-md-has-a-publish-size-badge',
-    'readme-md-has-a-install-size-badge',
-    'readme-md-has-a-thanks-section',
-    'readme-md-has-a-thanks-to-shields-io',
-    'readme-md-has-no-remaining-thanks-to-travis-ci-com',
-    'readme-md-has-a-thanks-to-github',
-    'readme-md-has-no-remaining-thanks-to-netlify',
-    'readme-md-has-a-thanks-to-arg',
-    'readme-md-has-no-remaining-thanks-to-ava',
-    'readme-md-has-a-thanks-to-c8',
-    'readme-md-has-no-remaining-thanks-to-chokidar',
-    'readme-md-has-no-remaining-thanks-to-cypress-io',
-    'readme-md-has-a-thanks-to-esbuild',
-    'readme-md-has-a-thanks-to-eslint',
-    'readme-md-has-no-remaining-thanks-to-mocha',
-    'readme-md-has-no-remaining-thanks-to-npm-run-all',
-    'readme-md-has-no-remaining-thanks-to-npm-parallel',
-    'readme-md-has-no-remaining-thanks-to-nuxt',
-    'readme-md-has-no-remaining-thanks-to-nyc',
-    'readme-md-has-no-remaining-thanks-to-reef',
-    'readme-md-has-a-thanks-to-repo-checker',
-    'readme-md-has-no-remaining-thanks-to-rollup',
-    'readme-md-has-no-remaining-thanks-to-servor',
-    'readme-md-has-no-remaining-thanks-to-showdown',
-    'readme-md-has-a-thanks-to-shuutils',
-    'readme-md-has-no-remaining-thanks-to-tailwind-css',
-    'readme-md-has-no-remaining-thanks-to-tsup',
-    'readme-md-has-a-thanks-to-uv-u',
-    'readme-md-has-no-remaining-thanks-to-vite',
-    'readme-md-has-no-remaining-thanks-to-vue',
-    'readme-md-has-a-thanks-to-watchlist',
-    'readme-md-has-no-remaining-thanks-to-xo',
-    'has-a-renovate-json-file',
-    'renovate-json-has-a-schema-declaration',
-    'renovate-json-has-an-extends-section',
-    'renovate-json-has-a-base-config',
-    'renovate-json-has-a-dashboard-setting-to-false',
-    'renovate-json-has-an-auto-merge-preset',
-    'renovate-json-has-a-preserve-semver-ranges-preset',
-    'has-a-repo-checker-json-file',
-    'tsconfig-json-has-a-schema-declaration',
-    'tsconfig-json-has-an-include-section',
-    'tsconfig-json-has-a-allow-unreachable-code-compiler-option',
-    'tsconfig-json-has-a-allow-unused-labels-compiler-option',
-    'tsconfig-json-has-a-check-js-compiler-option',
-    'tsconfig-json-has-a-es-module-interop-compiler-option',
-    'tsconfig-json-has-a-exact-optional-property-types-compiler-option',
-    'tsconfig-json-has-a-force-consistent-casing-in-file-names-compiler-option',
-    'tsconfig-json-has-a-no-fallthrough-cases-in-switch-compiler-option',
-    'tsconfig-json-has-a-no-implicit-any-compiler-option',
-    'tsconfig-json-has-a-no-implicit-override-compiler-option',
-    'tsconfig-json-has-a-no-implicit-returns-compiler-option',
-    'tsconfig-json-has-a-no-property-access-from-index-signature-compiler-option',
-    'tsconfig-json-has-a-no-unchecked-indexed-access-compiler-option',
-    'tsconfig-json-has-a-no-unused-locals-compiler-option',
-    'tsconfig-json-has-a-no-unused-parameters-compiler-option',
-    'tsconfig-json-has-a-skip-lib-check-compiler-option',
-    'tsconfig-json-has-a-strict-compiler-option',
-    'tsconfig-json-has-a-out-dir-compiler-option',
-    'tsconfig-json-has-a-module-resolution-compiler-option',
-    'tsconfig-json-has-a-target-compiler-option',
-    'tsconfig-json-has-a-non-empty-lib-compiler-option',
-    'tsconfig-json-has-a-non-empty-types-compiler-option',
-    'tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough',
-  ], 'passed')
-  equal(failed, [], 'failed')
+it('check B folder succeed', async () => {
+  const { passed, failed, warnings } = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 120, isPublishedPackage: true, isQuiet: true }))
+  expect(passed, 'passed').toMatchSnapshot()
+  expect(failed, 'failed').toMatchSnapshot()
+  expect(warnings, 'warnings').toMatchSnapshot()
 })
 
-test('check C data/tsProject', async function () {
-  const message = await check(tsProjectFolder, new ProjectData({ isQuiet: true })).catch(() => 'failed')
-  equal(message, 'failed')
+it('check C data/tsProject', async () => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const message = await check(tsProjectFolder, new ProjectData({ isQuiet: true })).catch((error: unknown) => (error as Error).message)
+  expect(message).toMatchSnapshot()
 })
-
-test.run()

@@ -147,6 +147,7 @@ export class ReadmeFile extends FileBase {
       new Thanks('TailwindCss', 'https://tailwindcss.com', 'awesome lib to produce maintainable style', json.includes('tailwindcss"')),
       new Thanks('Tsup', 'https://github.com/egoist/tsup', 'super fast js/ts bundler with no config, powered by esbuild <3', json.includes('tsup"')),
       new Thanks('UvU', 'https://github.com/lukeed/uvu', 'extremely fast and lightweight test runner for Node.js and the browser', json.includes('"uvu":')),
+      new Thanks('Vitest', 'https://github.com/vitest-dev/vitest', 'super fast vite-native testing framework', json.includes('"vitest"')),
       new Thanks('Vite', 'https://github.com/vitejs/vite', 'super fast frontend tooling', json.includes('vitejs') || json.includes('"vite"')),
       new Thanks('Vue', 'https://vuejs.org', 'when I need a front framework, this is the one I choose <3', json.includes('vue"')),
       new Thanks('Watchlist', 'https://github.com/lukeed/watchlist', 'recursively watch a list of directories & run a command on any file system', json.includes('"watchlist"')),

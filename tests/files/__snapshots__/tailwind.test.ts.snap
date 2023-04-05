@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`tailwind : can detect valid config 1`] = `
+[
+  "has-a-tailwind-config-js-file",
+  "tailwind-config-js-has-a-content-previously-named-purge-option",
+]
+`;
+
+exports[`tailwind : can detect valid config 2`] = `[]`;
+
+exports[`tailwind : can detect valid config 3`] = `[]`;

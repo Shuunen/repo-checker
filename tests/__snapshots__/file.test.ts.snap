@@ -1,0 +1,104 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`file : simple validator 1`] = `
+[
+  "some-file-log-has-foobar",
+  "some-file-log-has-a-package-json-file",
+  "some-file-log-has-no-zorglub-exe-file",
+]
+`;
+
+exports[`file : simple validator 2`] = `
+[
+  "some-file-log-does-not-have-plop-plop",
+]
+`;
+
+exports[`file : simple validator 3`] = `
+[
+  "some-file-log-could-have-world-world",
+  "some-file-log-could-have-two-dots-hehe-2-dots-43m30m-fixable-39m49m",
+]
+`;
+
+exports[`file : validator can detect a missing schema 1`] = `[]`;
+
+exports[`file : validator can detect a missing schema 2`] = `[]`;
+
+exports[`file : validator can detect a missing schema 3`] = `
+[
+  "could-have-a-schema-declaration-like-schema-does-not-exist-43m30m-fixable-39m49m",
+]
+`;
+
+exports[`file : validator can detect an existing schema 1`] = `
+[
+  "has-a-schema-declaration",
+]
+`;
+
+exports[`file : validator can detect an existing schema 2`] = `[]`;
+
+exports[`file : validator can detect an existing schema 3`] = `[]`;
+
+exports[`file : validator can fix a missing schema 1`] = `[]`;
+
+exports[`file : validator can fix a missing schema 2`] = `[]`;
+
+exports[`file : validator can fix a missing schema 3`] = `[]`;
+
+exports[`file : validator with fix & force, overwrite a problematic file with template 1`] = `
+[
+  "nvmrc-has-two-dots",
+]
+`;
+
+exports[`file : validator with fix & force, overwrite a problematic file with template 2`] = `
+[
+  "nvmrc-does-not-have-a-regular-nvmrc-file-content-travers",
+]
+`;
+
+exports[`file : validator with fix & force, overwrite a problematic file with template 3`] = `[]`;
+
+exports[`file : validator with fix & force, update a problematic file on the go 1`] = `[]`;
+
+exports[`file : validator with fix & force, update a problematic file on the go 2`] = `[]`;
+
+exports[`file : validator with fix & force, update a problematic file on the go 3`] = `[]`;
+
+exports[`file : validator with fix 1`] = `
+[
+  "has-a-nvmrc-file",
+  "has-a-nvmrc-file",
+  "nvmrc-should-be-a-small-text-file",
+]
+`;
+
+exports[`file : validator with fix 2`] = `
+[
+  "has-a-missing-template-csv-file",
+]
+`;
+
+exports[`file : validator with fix 3`] = `[]`;
+
+exports[`file : validator with fix cannot fix if the template require data that is missing 1`] = `
+[
+  "has-a-template-example-json-file",
+]
+`;
+
+exports[`file : validator with fix cannot fix if the template require data that is missing 2`] = `[]`;
+
+exports[`file : validator with fix cannot fix if the template require data that is missing 3`] = `[]`;
+
+exports[`file : validator without force cannot fix a problematic file on the go 1`] = `[]`;
+
+exports[`file : validator without force cannot fix a problematic file on the go 2`] = `
+[
+  "nvmrc-does-not-have-a-weird-stuff-zorglub",
+]
+`;
+
+exports[`file : validator without force cannot fix a problematic file on the go 3`] = `[]`;

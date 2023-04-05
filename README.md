@@ -68,7 +68,7 @@ If file already exists, use `--force` to overwrite it.
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
 - [ ] prepare a json schema for .repo-checker.json
-- [ ] use vitest instead of uvu
+- [ ] check vitest config file
 - [ ] check method should take an object as parameter & handle a dontThrow boolean option, then enhance check C test case
 
 ## Benchmarks
@@ -147,5 +147,4 @@ Each task is run 3 times via `time npm run <task>` to get the average execution 
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
 - [Shuutils](https://github.com/Shuunen/shuutils) : collection of pure JS utils
-- [UvU](https://github.com/lukeed/uvu) : extremely fast and lightweight test runner for Node.js and the browser
-- [Watchlist](https://github.com/lukeed/watchlist) : recursively watch a list of directories & run a command on any file system
+- [Vitest](https://github.com/vitest-dev/vitest) : super fast vite-native testing framework

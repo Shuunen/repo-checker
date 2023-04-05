@@ -1,17 +1,16 @@
 import { mkdirSync, rmSync } from 'fs' // eslint-disable-line no-restricted-imports
-import { Nb, check } from 'shuutils'
-import { test } from 'uvu'
-import { equal } from 'uvu/assert'
+import { Nb } from 'shuutils'
+import { expect, it } from 'vitest'
 import { ProjectData, dataDefaults, dataFileName, repoCheckerPath } from '../src/constants'
 import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findInFolder, getFileSizeInKo, getProjectFolders, isProjectFolder, join, jsToJson, messageToCode, readFileInFolder, writeFile } from '../src/utils'
 import { testFolder } from './utils'
 
-test('isProjectFolder A', async function () {
-  equal(await isProjectFolder(repoCheckerPath), true)
+it('isProjectFolder A', async () => {
+  expect(await isProjectFolder(repoCheckerPath)).toBe(true)
 })
 
-test('isProjectFolder B folders listing', async function () {
-  equal(await getProjectFolders(repoCheckerPath), [repoCheckerPath])
+it('isProjectFolder B folders listing', async () => {
+  expect(await getProjectFolders(repoCheckerPath)).toStrictEqual([repoCheckerPath])
   const projects = ['anotherProject', 'sampleProject']
   for (const name of projects) {
     const folderPath = join(testFolder, name, '.git')
@@ -21,39 +20,39 @@ test('isProjectFolder B folders listing', async function () {
     await writeFile(join(folderPath, 'config'), '', 'utf8')
   }
   const folders = await getProjectFolders(testFolder)
-  equal(folders.length >= Nb.Two, true)
+  expect(folders.length >= Nb.Two).toBe(true)
   // eslint-disable-next-line @typescript-eslint/naming-convention
   projects.forEach(name => { rmSync(join(testFolder, name), { recursive: true }) })
 })
 
-test('read folder instead of file', async function () {
-  equal(await readFileInFolder(testFolder, '').catch(() => 'failed'), 'failed')
+it('read folder instead of file', async () => {
+  expect(await readFileInFolder(testFolder, '').catch(() => 'failed')).toBe('failed')
 })
 
 const filename = 'test-file.log'
 
-test('file creation, detection, read', async function () {
-  equal(await readFileInFolder('/', filename).catch(() => 'failed'), 'failed')
+it('file creation, detection, read', async () => {
+  expect(await readFileInFolder('/', filename).catch(() => 'failed')).toBe('failed')
 })
 
-test('file size calculation', async function () {
+it('file size calculation', async () => {
   const nonExistingFileSize = await getFileSizeInKo(filename)
-  equal(nonExistingFileSize, Nb.None)
+  expect(nonExistingFileSize).toBe(Nb.None)
   const existingFileSize = await getFileSizeInKo('package.json')
-  equal(existingFileSize >= Nb.One, true)
+  expect(existingFileSize >= Nb.One).toBe(true)
 })
 
-test('data augment with git : repo-check & no-local', async function () {
+it('data augment A with git : repo-check & no-local', async () => {
   const expectedDataFromGit = new ProjectData({
     userId: 'Shuunen',
     userIdLowercase: 'shuunen',
     repoId: 'repo-checker',
   })
   const dataFromGit = await augmentDataWithGit(repoCheckerPath, dataDefaults)
-  equal(dataFromGit, expectedDataFromGit)
+  expect(dataFromGit).toStrictEqual(expectedDataFromGit)
 })
 
-test('data augment : repo-check & local', async function () {
+it('data augment B repo-check & local', async () => {
   const expectedAugmentedData = new ProjectData({
     canAutoMergeDeps: true,
     isModule: false,
@@ -67,15 +66,15 @@ test('data augment : repo-check & local', async function () {
     isUsingDependencyCruiser: true,
   })
   const augmentedData = await augmentData(repoCheckerPath, dataDefaults, true)
-  equal(augmentedData, expectedAugmentedData)
+  expect(augmentedData).toStrictEqual(expectedAugmentedData)
 })
 
-test('data augment : test folder', async function () {
+it('data augment C test folder', async () => {
   const augmentedDataFromTestFolder = await augmentData(testFolder, dataDefaults)
-  equal(augmentedDataFromTestFolder, dataDefaults)
+  expect(augmentedDataFromTestFolder).toStrictEqual(dataDefaults)
 })
 
-test('data augment with package : rootFolder', async function () {
+it('data augment D with package : rootFolder', async () => {
   const data = await augmentDataWithPackageJson(repoCheckerPath, dataDefaults)
   const expectedData = new ProjectData({
     isModule: false,
@@ -86,10 +85,10 @@ test('data augment with package : rootFolder', async function () {
     isUsingEslint: true,
     isUsingDependencyCruiser: true,
   })
-  equal(data, expectedData)
+  expect(data).toStrictEqual(expectedData)
 })
 
-test('data augment with package : vueProject', async function () {
+it('data augment E with package : vueProject', async () => {
   const vueData = await augmentDataWithPackageJson(join(testFolder, 'data', 'vueProject'), dataDefaults)
   const expectedVueData = new ProjectData({
     packageName: 'name',
@@ -100,10 +99,10 @@ test('data augment with package : vueProject', async function () {
     isUsingTailwind: true,
     isUsingEslint: false,
   })
-  equal(vueData, expectedVueData)
+  expect(vueData).toStrictEqual(expectedVueData)
 })
 
-test('data augment with package : tsProject', async function () {
+it('data augment F with package : tsProject', async () => {
   const tsData = await augmentData(join(testFolder, 'data', 'tsProject'), dataDefaults, true)
   const expectedTsData = new ProjectData({
     shouldAvoidSass: false,
@@ -113,46 +112,47 @@ test('data augment with package : tsProject', async function () {
     userName: 'Dwight Schrute',
     webUrl: 'https://my-website.com',
   })
-  equal(tsData, expectedTsData)
+  expect(tsData).toStrictEqual(expectedTsData)
 })
 
-test('find pattern in folder', async function () {
+it('find pattern in folder', async () => {
   const folder = join(testFolder, 'data', 'tsProject')
   const result = await findInFolder(folder, /Dwight Schrute/u)
-  equal(result[Nb.First], dataFileName)
+  expect(result[Nb.First]).toBe(dataFileName)
 })
 
-test('find pattern in sub folder', async function () {
+it('find pattern in sub folder', async () => {
   const folder = join(testFolder, 'data', 'tsProject')
   const result = await findInFolder(folder, /Alice/u)
-  equal(result[Nb.First], 'here.txt')
+  expect(result[Nb.First]).toBe('here.txt')
 })
 
-test('find no pattern in folder', async function () {
+it('find no pattern in folder', async () => {
   const folder = join(testFolder, 'data', 'tsProject')
   const result = await findInFolder(folder, /Bob/u)
-  equal(result.length, Nb.None)
+  expect(result.length).toBe(Nb.None)
 })
 
-test('find is skipped when scanning node_modules or git folders', async function () {
+it('find is skipped when scanning node_modules or git folders', async () => {
   const result = await findInFolder(repoCheckerPath, /blob volley/u)
-  equal(result, ['utils.test.ts'])
+  expect(result).toStrictEqual(['utils.test.ts'])
 })
 
-test('message to code', function () {
-  equal(messageToCode('hello world'), 'hello-world', 'test 1')
-  equal(messageToCode('hello/world::!'), 'hello-world', 'test 2')
-  equal(messageToCode('Hey this is :)the _Hello/world::!'), 'hey-this-is-the-hello-world', 'test 3')
+it('message to code', () => {
+  expect(messageToCode('hello world')).toBe('hello-world')
+  expect(messageToCode('hello/world::!')).toBe('hello-world')
+  expect(messageToCode('Hey this is :)the _Hello/world::!')).toBe('hey-this-is-the-hello-world')
 })
 
-check('jsToJson A', jsToJson('a'), 'a')
-check('jsToJson B', jsToJson(`/* some comment */
+it('jsToJson A', () => { expect(jsToJson('a')).toBe('a') })
+
+it('jsToJson B', () => {
+  expect(jsToJson(`/* some comment */
 module.exports = {
   userName: 'Dwight Schrute',
   banSass: false,
-}`), `{
+}`)).toBe(`{
   "userName": "Dwight Schrute",
   "banSass": false
 }`)
-
-test.run()
+})

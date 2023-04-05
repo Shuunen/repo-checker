@@ -1,12 +1,12 @@
-import { check, checksRun, Nb } from 'shuutils'
+import { Nb } from 'shuutils'
+import { expect, it } from 'vitest'
 import { home, ProjectData, repoCheckerPath } from '../src/constants'
 
-check('home (process.env.HOME) is defined', home.length > Nb.Zero, true)
+it('home (process.env.HOME) is defined', () => { expect(home.length > Nb.Zero).toBe(true) })
 
-check('repoCheckerPath (process.env.pwd) is defined', repoCheckerPath.length > Nb.Zero, true)
+it('repoCheckerPath (process.env.pwd) is defined', () => { expect(repoCheckerPath.length > Nb.Zero).toBe(true) })
 
-check('ProjectData ban sass by default', new ProjectData().shouldAvoidSass, true)
+it('ProjectData ban sass by default', () => { expect(new ProjectData().shouldAvoidSass).toBe(true) })
 
-check('ProjectData assign', new ProjectData({ shouldAvoidSass: false }).shouldAvoidSass, false)
+it('ProjectData assign', () => { expect(new ProjectData({ shouldAvoidSass: false }).shouldAvoidSass).toBe(false) })
 
-checksRun()

@@ -1,52 +1,41 @@
-import { test } from 'uvu'
-import { equal } from 'uvu/assert'
+import { expect, it } from 'vitest'
 import { ProjectData, repoCheckerPath } from '../../src/constants'
 import { NycRcFile } from '../../src/files'
 import { promiseFalse, vueProjectFolder } from '../utils'
 
-test('nyc rc A file exists', async function () {
+it('nyc rc A file exists', async () => {
   const instance = new NycRcFile(repoCheckerPath, new ProjectData({ isUsingNyc: true, isQuiet: true }))
   await instance.start()
   await instance.end()
-  const { passed, failed } = instance
-  equal(passed, [
-    'nycrc-file-exists',
-    'has-a-nycrc-json-file',
-    'nycrc-json-has-a-schema-declaration',
-  ], 'passed')
-  equal(failed, [], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('nyc rc B check skip on a non nyc/c8 project', async function () {
+it('nyc rc B check skip on a non nyc/c8 project', async () => {
   const instance = new NycRcFile(repoCheckerPath, new ProjectData({ isQuiet: true }))
   await instance.start()
   await instance.end()
-  const { passed, failed } = instance
-  equal(passed, [], 'passed')
-  equal(failed, [], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('nyc rc C file missing', async function () {
+it('nyc rc C file missing', async () => {
   const instance = new NycRcFile(repoCheckerPath, new ProjectData({ isUsingNyc: true, isQuiet: true }))
   instance.fileExists = promiseFalse
   await instance.start()
   await instance.end()
-  const { passed, failed } = instance
-  equal(passed, [], 'passed')
-  equal(failed, ['nycrc-file-exists'], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
 
-test('nyc rc D file exists but not a json ext file', async function () {
+it('nyc rc D file exists but not a json ext file', async () => {
   const instance = new NycRcFile(vueProjectFolder, new ProjectData({ isUsingNyc: true, isQuiet: true }))
   await instance.start()
   await instance.end()
-  const { passed, failed } = instance
-  equal(passed, [
-    'nycrc-file-exists',
-    'has-a-nycrc-file',
-    'nycrc-has-a-schema-declaration',
-  ], 'passed')
-  equal(failed, [], 'failed')
+  expect(instance.passed, 'passed').toMatchSnapshot()
+  expect(instance.failed, 'failed').toMatchSnapshot()
+  expect(instance.warnings, 'warnings').toMatchSnapshot()
 })
-
-test.run()

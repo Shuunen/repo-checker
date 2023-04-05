@@ -144,9 +144,9 @@ export class PackageJsonFile extends FileBase {
     // eslint-disable-next-line prefer-named-capture-group, regexp/prefer-named-capture-group
     if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gu, '$1')
     /* duplicates */
-    const hasUt = /"(?<tool>mocha|uvu)"/u.exec(this.fileContent)?.groups?.tool !== undefined
-    this.test(hasUt, 'one unit testing dependency from : mocha, uvu', true)
-    const hasCoverage = /"(?<tool>c8|nyc)"/u.exec(this.fileContent)?.groups?.tool !== undefined
+    const hasUt = /"(?<tool>mocha|uvu|vitest)"/u.exec(this.fileContent)?.groups?.tool !== undefined
+    this.test(hasUt, 'one unit testing dependency from : vitest, mocha, uvu', true)
+    const hasCoverage = /"(?<tool>c8|nyc|@vitest\/coverage-c8)"/u.exec(this.fileContent)?.groups?.tool !== undefined
     this.test(hasCoverage, 'one coverage dependency from : nyc, c8', true)
     /* usages */
     if (this.data.isUsingEslint) this.checkEslintUsages()

@@ -9,11 +9,12 @@ export class NycRcFile extends FileBase {
     const hasConfigFile = hasRc || hasRcJson
     this.test(hasConfigFile, 'nycrc file exists')
     if (!hasConfigFile) return ''
+    /* c8 ignore next */
     return hasRc ? '.nycrc' : '.nycrc.json'
   }
 
   public async start (): Promise<void> {
-    if (!this.data.isUsingNyc && !this.data.isUsingC8) { log.debug('does not use nyc/c8'); return }
+    if (!this.data.isUsingNyc) { log.debug('does not use nyc'); return }
     const fileName = await this.getConfigFileName()
     if (fileName === '') return
     await this.checkFileExists(fileName)

@@ -13,17 +13,15 @@
   "description": "Repo cleaning made easy",
   "devDependencies": {
     "@types/node": "18",
-    "c8": "7",
+    "@vitest/coverage-c8": "0.29",
     "dependency-cruiser": "latest",
     "esbuild": "0.17",
     "eslint": "8.37",
     "eslint-config-hardcore": "35",
     "eslint-plugin-unicorn": "46",
-    "tsm": "2.3",
     "typescript": "5.0",
     "typescript-run": "0",
-    "uvu": "0.5",
-    "watchlist": "0.3"
+    "vitest": "0.29"
   },
   "files": [
     "dist/*.min.cjs",
@@ -52,8 +50,8 @@
     "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run check",
     "start": "ts-run src && echo start success",
-    "test": "c8 uvu -r tsm tests && echo test success",
-    "test:watch": "watchlist src tests -eager -- npm test"
+    "test": "npm run test:watch -- --run && echo test success",
+    "test:watch": "vitest --coverage"
   },
   "version": "1.30.1"
 }

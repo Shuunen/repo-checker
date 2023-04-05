@@ -24,8 +24,8 @@
     "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run ci",
     "start": "ts-run src",
-    "test": "c8 uvu -r tsm tests",
-    "test:watch": "watchlist src tests -eager -- npm test"
+    "test": "npm run test:watch -- --run && echo test success",
+    "test:watch": "vitest --coverage"
   },
   "version": "0.0.1"
 }

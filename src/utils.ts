@@ -80,7 +80,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   data.isUsingTailwind = content.includes('"tailwindcss"')
   data.isUsingDependencyCruiser = content.includes('"dependency-cruiser"')
   data.isUsingNyc = content.includes('"nyc"')
-  data.isUsingC8 = content.includes('"c8"')
+  data.isUsingC8 = content.includes('"c8"') || content.includes('coverage-c8')
   data.isUsingEslint = content.includes('"eslint"')
   data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()

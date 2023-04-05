@@ -27,6 +27,7 @@ const checkers = [
 
 function reportLog (color: (string: string) => string, count: number, message: string): void {
   const line = `‣ ${count} check${count > 1 ? 's' : ''} ${message}`
+  /* c8 ignore next */
   log.info(count === Nb.None ? line : color(line))
 }
 
@@ -36,6 +37,7 @@ export function report ({ passed = [], warnings = [], failed = [] }: Indicators)
   reportLog(yellow, warnings.length, 'triggered warnings')
   reportLog(red, failed.length, 'are problematic')
   if (failed.length > Nb.None) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), Nb.Hundred)}`)
+  /* c8 ignore next */
 }
 
 // eslint-disable-next-line max-params, max-statements
@@ -45,6 +47,7 @@ export async function check (folderPath: string, data: ProjectData, canFix = fal
   let warnings: string[] = []
   let failed: string[] = []
   log.options.isActive = !data.isQuiet
+  /* c8 ignore next */
   if (folders.length === Nb.Zero) log.warn('no folder to check', folderPath)
   /* eslint-disable no-await-in-loop */
   for (const folder of folders) {

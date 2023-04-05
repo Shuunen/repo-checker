@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`editor config A missing file 1`] = `[]`;
+
+exports[`editor config A missing file 2`] = `[]`;
+
+exports[`editor config A missing file 3`] = `[]`;
+
+exports[`editor config B file 1`] = `
+[
+  "has-no-specific-html-indent-rule",
+]
+`;
+
+exports[`editor config B file 2`] = `
+[
+  "does-not-have-space-indent-indent-style-space",
+  "does-not-have-indent-size-of-2-indent-size-2",
+  "does-not-have-unix-style-line-endings-end-of-line-lf",
+  "does-not-have-utf-8-encoding-charset-utf-8",
+]
+`;
+
+exports[`editor config B file 3`] = `
+[
+  "could-have-whitespace-trailing-trim-trailing-whitespace-true",
+  "could-have-final-new-line-rule-insert-final-newline-true",
+]
+`;

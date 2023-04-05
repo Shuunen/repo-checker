@@ -1,0 +1,61 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ts config file fix 1`] = `
+"{
+  \\"name\\": \\"John\\",
+  \\"files\\": [
+    \\"src/main.ts\\"
+  ],
+  \\"include\\": [
+    \\"src\\"
+  ],
+  \\"compilerOptions\\": {
+    \\"allowUnreachableCode\\": false,
+    \\"allowUnusedLabels\\": false,
+    \\"checkJs\\": true,
+    \\"esModuleInterop\\": true,
+    \\"exactOptionalPropertyTypes\\": true,
+    \\"forceConsistentCasingInFileNames\\": true,
+    \\"noFallthroughCasesInSwitch\\": true,
+    \\"noImplicitAny\\": true,
+    \\"noImplicitOverride\\": true,
+    \\"noImplicitReturns\\": true,
+    \\"noPropertyAccessFromIndexSignature\\": false,
+    \\"noUncheckedIndexedAccess\\": true,
+    \\"noUnusedLocals\\": true,
+    \\"noUnusedParameters\\": true,
+    \\"skipLibCheck\\": true,
+    \\"strict\\": true,
+    \\"outDir\\": \\"./dist\\",
+    \\"moduleResolution\\": \\"Node\\",
+    \\"target\\": \\"ES2020\\",
+    \\"lib\\": [
+      \\"ESNext\\"
+    ],
+    \\"types\\": []
+  }
+}"
+`;
+
+exports[`ts config file fix 2`] = `
+[
+  "does-not-use-wildcard-in-files-section",
+  "my-folder-is-not-needed-in-include-section-my-folder-is-enough",
+]
+`;
+
+exports[`ts config file fix 3`] = `[]`;
+
+exports[`ts config file fix 4`] = `[]`;
+
+exports[`ts config file no check 1`] = `[]`;
+
+exports[`ts config file no check 2`] = `[]`;
+
+exports[`ts config file no check 3`] = `[]`;
+
+exports[`ts config malformed 1`] = `[]`;
+
+exports[`ts config malformed 2`] = `[]`;
+
+exports[`ts config malformed 3`] = `[]`;
