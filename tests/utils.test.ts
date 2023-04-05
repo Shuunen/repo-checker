@@ -116,29 +116,26 @@ test('data augment with package : tsProject', async function () {
   equal(tsData, expectedTsData)
 })
 
-test('find string in folder', async function () {
+test('find pattern in folder', async function () {
   const folder = join(testFolder, 'data', 'tsProject')
-  const string = 'Dwight Schrute'
-  const result = await findStringInFolder(folder, string)
+  const result = await findInFolder(folder, /Dwight Schrute/u)
   equal(result[Nb.First], dataFileName)
 })
 
-test('find string in sub folder', async function () {
+test('find pattern in sub folder', async function () {
   const folder = join(testFolder, 'data', 'tsProject')
-  const string = 'Alice'
-  const result = await findStringInFolder(folder, string)
+  const result = await findInFolder(folder, /Alice/u)
   equal(result[Nb.First], 'here.txt')
 })
 
-test('find no string in folder', async function () {
+test('find no pattern in folder', async function () {
   const folder = join(testFolder, 'data', 'tsProject')
-  const string = 'Bob'
-  const result = await findStringInFolder(folder, string)
+  const result = await findInFolder(folder, /Bob/u)
   equal(result.length, Nb.None)
 })
 
 test('find is skipped when scanning node_modules or git folders', async function () {
-  const result = await findStringInFolder(repoCheckerPath, 'blob volley')
+  const result = await findInFolder(repoCheckerPath, /blob volley/u)
   equal(result, ['utils.test.ts'])
 })
 

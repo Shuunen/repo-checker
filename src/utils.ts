@@ -113,7 +113,7 @@ export async function getFileSizeInKo (filePath: string): Promise<number> {
 }
 
 // eslint-disable-next-line max-params, max-statements, sonarjs/cognitive-complexity
-export async function findStringInFolder (folderPath: string, pattern: string, ignoredInput = ['node_modules', '.git'], count = Nb.None): Promise<string[]> {
+export async function findInFolder (folderPath: string, pattern: RegExp, ignoredInput = ['node_modules', '.git'], count = Nb.None): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
   const matches: string[] = []
   let ignored = arrayUnique(ignoredInput)
@@ -130,12 +130,12 @@ export async function findStringInFolder (folderPath: string, pattern: string, i
     /* c8 ignore next */
     if (!statData) continue  // eslint-disable-line no-continue
     if (statData.isDirectory()) {
-      matches.push(...await findStringInFolder(target, pattern, ignored, count + 1)) // eslint-disable-line no-await-in-loop, total-functions/no-unsafe-enum-assignment
+      matches.push(...await findInFolder(target, pattern, ignored, count + 1)) // eslint-disable-line no-await-in-loop, total-functions/no-unsafe-enum-assignment
       continue  // eslint-disable-line no-continue
     }
     // eslint-disable-next-line no-await-in-loop
     const content = await readFileInFolder(folderPath, filePath)
-    if (content.includes(pattern)) matches.push(filePath)
+    if (pattern.test(content)) matches.push(filePath)
   }
   return matches
 }
