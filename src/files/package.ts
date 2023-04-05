@@ -3,7 +3,7 @@ import { ellipsis, Nb } from 'shuutils'
 import { dataDefaults } from '../constants'
 import { FileBase } from '../file'
 import { log } from '../logger'
-import { findStringInFolder, join } from '../utils'
+import { findInFolder, join } from '../utils'
 
 /* c8 ignore start */
 export class PackageJsonFile extends FileBase {
@@ -149,8 +149,8 @@ export class PackageJsonFile extends FileBase {
   }
 
   private async checkUvuUsages (): Promise<void> {
-    const badAssert = await findStringInFolder(join(this.folderPath, 'tests'), 'from \'assert\'')
-    this.test(badAssert.length === Nb.Zero, `assert dependency used in "${ellipsis(badAssert.join(','), Nb.OneHalf * Nb.Hundred)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
+    const badAsserts = await findInFolder(join(this.folderPath, 'tests'), /from 'assert'/u)
+    this.test(badAsserts.length === Nb.Zero, `assert dependency used in "${ellipsis(badAsserts.join(','), Nb.OneHalf * Nb.Hundred)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
   }
 }
 
