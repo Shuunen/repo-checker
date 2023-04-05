@@ -68,6 +68,8 @@ If file already exists, use `--force` to overwrite it.
 - [ ] check last tag, suggest to tag if last one is old
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
 - [ ] prepare a json schema for .repo-checker.json
+- [ ] use vitest instead of uvu
+- [ ] check method should take an object as parameter & handle a dontThrow boolean option, then enhance check C test case
 
 ## Benchmarks
 

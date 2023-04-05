@@ -1,10 +1,14 @@
 {
-  "description": "description",
   "author": "Michael Scott-Junior",
-  "version": "1.0.0",
-  "license": "MIT",
-  "main": "pathToMain",
   "dependencies": {
     "typescript": "latest"
-  }
+  },
+  "description": "description",
+  "license": "MIT",
+  "main": "pathToMain",
+  "scripts": {
+    "build": "ts-node build.ts",
+    "start": "node pathToMain"
+  },
+  "version": "1.0.0"
 }

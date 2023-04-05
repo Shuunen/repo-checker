@@ -2,13 +2,14 @@ import { test } from 'uvu'
 import { equal } from 'uvu/assert'
 import { check } from '../src/check'
 import { ProjectData, repoCheckerPath } from '../src/constants'
+import { tsProjectFolder } from './utils'
 
-test('repo-checker A folder fails with low max size', async function () {
+test('check A folder fails with low max size', async function () {
   const message = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 2, isPublishedPackage: true, isQuiet: true })).catch(() => 'failed')
   equal(message, 'failed')
 })
 
-test('repo-checker B folder succeed', async function () {
+test('check B folder succeed', async function () {
   const { passed, failed } = await check(repoCheckerPath, new ProjectData({ maxSizeKo: 120, isPublishedPackage: true, isQuiet: true }))
   equal(passed, [
     'use-dependency-cruiser',
@@ -162,6 +163,11 @@ test('repo-checker B folder succeed', async function () {
     'tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough',
   ], 'passed')
   equal(failed, [], 'failed')
+})
+
+test('check C data/tsProject', async function () {
+  const message = await check(tsProjectFolder, new ProjectData({ isQuiet: true })).catch(() => 'failed')
+  equal(message, 'failed')
 })
 
 test.run()
