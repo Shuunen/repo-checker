@@ -24,7 +24,7 @@ export class ProjectData {
 
   public license = 'GPL-3.0'
 
-  public maxSizeKo = Nb.One
+  public maxSizeKo = Number(Nb.One)
 
   /**
    * Tells repo-checker to generate a report for the given project

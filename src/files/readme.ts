@@ -1,4 +1,3 @@
-/* eslint-disable putout/putout */
 /* eslint-disable regexp/no-unused-capturing-group */
 /* eslint-disable regexp/prefer-named-capture-group */
 /* eslint-disable prefer-named-capture-group */

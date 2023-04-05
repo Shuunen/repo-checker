@@ -1,9 +1,9 @@
 /* c8 ignore next */
 /* eslint-disable no-restricted-imports */
-import { readdir as readDirectoryAsync, readFile as nodeReadFile, stat as statAsync } from 'fs/promises'
+import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'fs/promises'
 import path from 'path'
-import { arrayUnique, Nb, parseJson, slugify } from 'shuutils'
-import { dataDefaults, dataFileName, ProjectData } from './constants'
+import { Nb, arrayUnique, parseJson, slugify } from 'shuutils'
+import { ProjectData, dataDefaults, dataFileName } from './constants'
 import { log } from './logger'
 
 export async function fileExists (filePath: string): Promise<boolean> {
@@ -130,7 +130,7 @@ export async function findStringInFolder (folderPath: string, pattern: string, i
     /* c8 ignore next */
     if (!statData) continue  // eslint-disable-line no-continue
     if (statData.isDirectory()) {
-      matches.push(...await findStringInFolder(target, pattern, ignored, count + 1)) // eslint-disable-line no-await-in-loop
+      matches.push(...await findStringInFolder(target, pattern, ignored, count + 1)) // eslint-disable-line no-await-in-loop, total-functions/no-unsafe-enum-assignment
       continue  // eslint-disable-line no-continue
     }
     // eslint-disable-next-line no-await-in-loop

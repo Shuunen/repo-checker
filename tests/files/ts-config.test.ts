@@ -31,7 +31,6 @@ test('ts config file fix', async function () {
       esModuleInterop: true,
       exactOptionalPropertyTypes: true,
       forceConsistentCasingInFileNames: true,
-      importsNotUsedAsValues: 'error',
       noFallthroughCasesInSwitch: true,
       noImplicitAny: true,
       noImplicitOverride: true,
