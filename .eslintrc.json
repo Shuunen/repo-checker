@@ -94,6 +94,7 @@
     "eslint-comments/no-use": "off",
     "etc/no-const-enum": "off",
     "etc/no-enum": "off",
+    "etc/prefer-interface": "off",
     "ext/lines-between-object-properties": "off",
     "func-names": [
       "error",
