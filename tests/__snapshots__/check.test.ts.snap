@@ -76,6 +76,7 @@ exports[`check B folder succeed 1`] = `
   "package-json-has-no-fat-color-dependency-use-shuutils-or-nanocolors",
   "package-json-has-no-fat-fs-extra-dependency-use-native-fs",
   "package-json-has-no-utopian-shuunen-stack-dependency",
+  "package-json-has-no-fat-slow-jsdom-dependency-use-happy-dom-instead",
   "package-json-has-no-fat-task-runner-use-npm-run-xyz-npm-run-abc-for-sequential-or-zero-deps-package-npm-parallel",
   "has-a-readme-md-file",
   "readme-md-has-a-title",
