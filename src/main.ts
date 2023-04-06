@@ -71,6 +71,6 @@ export async function start (): Promise<void> {
   log.options.isActive = !isQuiet
   log.options.minimumLevel = isVerbose ? LogLevel.Debug : LogLevel.Info
   log.info(`${String(name)} v${String(version)} is starting ${willFix ? '(fix enabled)' : ''}`)
-  await check(target, data, willFix, willForce)
+  await check({ folderPath: target, data, canFix: willFix, canForce: willForce })
 }
 
