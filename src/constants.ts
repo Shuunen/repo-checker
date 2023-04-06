@@ -18,30 +18,16 @@ export class ProjectData {
    */
   public canAutoMergeDeps = true
 
-  public shouldAvoidSass = true
+  public hasMainBranch = false
+
+  public hasTaskPrefix = false
 
   public isModule = false
 
-  public license = 'GPL-3.0'
-
-  public maxSizeKo = Number(Nb.One)
-
-  /**
-   * Tells repo-checker to generate a report for the given project
-   */
-  public willGenerateReport = true
-
   public isPublishedPackage = false
-
-  public packageName = ''
 
   public isQuiet = false
 
-  public repoId = 'a-great-repo'
-
-  /**
-   * C8 is a code coverage tool that is used to generate the coverage report based on the unit tests
-   */
   public isUsingC8 = false
 
   public isUsingDependencyCruiser = false
@@ -49,14 +35,6 @@ export class ProjectData {
   public isUsingEslint = false
 
   public isUsingNyc = false
-
-  public userId = 'Shuunen'
-
-  public userIdLowercase = 'shuunen'
-
-  public userMail = 'romain.racamier@gmail.com'
-
-  public userName = 'Romain Racamier-Lafon'
 
   public isUsingTailwind = false
 
@@ -66,9 +44,27 @@ export class ProjectData {
 
   public isWebPublished = false
 
+  public license = 'GPL-3.0'
+
+  public maxSizeKo = Number(Nb.One)
+
+  public packageName = ''
+
+  public repoId = 'a-great-repo'
+
+  public shouldAvoidSass = true
+
+  public userId = 'Shuunen'
+
+  public userIdLowercase = 'shuunen'
+
+  public userMail = 'romain.racamier@gmail.com'
+
+  public userName = 'Romain Racamier-Lafon'
+
   public webUrl = 'https://my-website.com'
 
-  public hasMainBranch = false
+  public willGenerateReport = true
 
   public constructor (data: Partial<ProjectData> = {}) {
     Object.assign(this, data)

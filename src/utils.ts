@@ -84,6 +84,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   data.isUsingEslint = content.includes('"eslint"')
   data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()
+  if (/ "(?:post|pre)[^"]+": "[^"]+"/u.test(content)) data.hasTaskPrefix = true
   if (/"(?:nuxt|vitepress|vue)"/u.test(content)) data.isUsingVue = true
   if (/ts-node|typescript|@types/u.test(content)) data.isUsingTypescript = true
   if (/css|webapp|webcomponent|website/u.test(content) || data.isUsingVue) data.isWebPublished = true

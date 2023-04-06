@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-43ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
+exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-44ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
 
 exports[`check B folder succeed 1`] = `
 [
@@ -18,7 +18,7 @@ exports[`check B folder succeed 1`] = `
   "eslintrc-json-has-hardcore-rules-extend",
   "eslintrc-json-has-unicorn-rules-extend",
   "eslintrc-json-has-no-promise-plugin-require-eslint-7",
-  "eslintrc-json-current-eslintrc-json-has-only-76-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "eslintrc-json-current-eslintrc-json-has-only-77-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
   "eslintrc-json-has-hardcore-typescript-rules-extend",
   "eslintrc-json-has-a-disabled-explicit-function-return-type",
   "avoid-main-branch-reference-use-master-instead-git-bclean",
@@ -32,13 +32,15 @@ exports[`check B folder succeed 1`] = `
   "has-a-license-file",
   "license-has-a-gpl-title",
   "license-has-a-version-3-subtitle",
+  "npmrc-file-should-be-present-when-using-pre-post-task-in-package-json-to-set-enable-pre-post-scripts-option",
+  "npmrc-has-enable-pre-post-scripts-option",
   "has-a-nvmrc-file",
   "nvmrc-has-a-recent-lts-node-version",
   "has-a-package-json-file",
   "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
   "package-json-has-a-dist-repo-check-min-cjs-file",
   "package-json-main-file-specified-in-package-json-dist-repo-check-min-cjs-exists-on-disk-be-sure-to-build-before-run-repo-check",
-  "package-json-main-file-size-43ko-should-be-less-or-equal-to-max-size-allowed-120ko",
+  "package-json-main-file-size-44ko-should-be-less-or-equal-to-max-size-allowed-120ko",
   "package-json-has-a-schema-declaration",
   "package-json-has-a-bugs-property",
   "package-json-has-a-description-property",

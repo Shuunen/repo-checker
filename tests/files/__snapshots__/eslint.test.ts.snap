@@ -28,7 +28,7 @@ exports[`eslint B config file empty 3`] = `
   "could-have-hardcore-rules-extend-hardcore",
   "could-have-eslint-recommended-rules-extend-eslint-recommended",
   "could-have-unicorn-rules-extend-plugin-unicorn-all",
-  "current-eslintrc-json-has-only-15-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "current-eslintrc-json-has-only-15-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
 ]
 `;
 
@@ -50,7 +50,7 @@ exports[`eslint C config file empty for ts project 3`] = `
   "could-have-hardcore-rules-extend-hardcore",
   "could-have-eslint-recommended-rules-extend-eslint-recommended",
   "could-have-unicorn-rules-extend-plugin-unicorn-all",
-  "current-eslintrc-json-has-only-1-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "current-eslintrc-json-has-only-1-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
   "could-have-hardcore-typescript-rules-extend-hardcore-ts",
 ]
 `;
@@ -74,7 +74,7 @@ exports[`eslint D config file empty for vue ts project 3`] = `
   "could-have-hardcore-rules-extend-hardcore",
   "could-have-eslint-recommended-rules-extend-eslint-recommended",
   "could-have-unicorn-rules-extend-plugin-unicorn-all",
-  "current-eslintrc-json-has-only-1-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "current-eslintrc-json-has-only-1-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
   "could-have-vue-first-attribute-linebreak-off-vue-first-attribute-linebreak-off",
   "could-have-vue-html-closing-bracket-newline-off-vue-html-closing-bracket-newline-off",
   "could-have-vue-html-indent-off-vue-html-indent-off",
@@ -105,7 +105,7 @@ exports[`eslint E config file empty for tailwind project 3`] = `
   "could-have-hardcore-rules-extend-hardcore",
   "could-have-eslint-recommended-rules-extend-eslint-recommended",
   "could-have-unicorn-rules-extend-plugin-unicorn-all",
-  "current-eslintrc-json-has-only-15-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "current-eslintrc-json-has-only-15-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
 ]
 `;
 
@@ -127,7 +127,7 @@ exports[`eslint F config partial file for js project 3`] = `
 [
   "could-have-hardcore-rules-extend-hardcore",
   "could-have-unicorn-rules-extend-plugin-unicorn-all",
-  "current-eslintrc-json-has-only-15-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "current-eslintrc-json-has-only-15-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
 ]
 `;
 
@@ -149,7 +149,7 @@ exports[`eslint G config partial file for ts project 3`] = `
 [
   "could-have-hardcore-rules-extend-hardcore",
   "could-have-unicorn-rules-extend-plugin-unicorn-all",
-  "current-eslintrc-json-has-only-1-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "current-eslintrc-json-has-only-1-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
   "could-have-hardcore-typescript-rules-extend-hardcore-ts",
 ]
 `;
@@ -173,7 +173,7 @@ exports[`eslint H config partial file for vue ts project 3`] = `
 [
   "could-have-hardcore-rules-extend-hardcore",
   "could-have-unicorn-rules-extend-plugin-unicorn-all",
-  "current-eslintrc-json-has-only-1-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "current-eslintrc-json-has-only-1-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
   "could-have-vue-first-attribute-linebreak-off-vue-first-attribute-linebreak-off",
   "could-have-vue-html-closing-bracket-newline-off-vue-html-closing-bracket-newline-off",
   "could-have-vue-html-indent-off-vue-html-indent-off",
@@ -232,7 +232,7 @@ exports[`eslint J config file with no rules 2`] = `
 exports[`eslint J config file with no rules 3`] = `
 [
   "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-  "eslintrc-json-current-eslintrc-json-has-only-15-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "eslintrc-json-current-eslintrc-json-has-only-15-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
 ]
 `;
 
@@ -253,6 +253,6 @@ exports[`eslint K config file with just rules (no override) 2`] = `
 exports[`eslint K config file with just rules (no override) 3`] = `
 [
   "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-  "eslintrc-json-current-eslintrc-json-has-only-16-of-the-76-custom-rules-in-repo-checker-eslintrc-json",
+  "eslintrc-json-current-eslintrc-json-has-only-16-of-the-77-custom-rules-in-repo-checker-eslintrc-json",
 ]
 `;
