@@ -2,9 +2,9 @@
 import { ellipsis, green, Nb, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants'
 import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files/index.js'
+import { NpmRcFile } from './files/npmrc.file'
 import { log } from './logger'
 import { augmentData, getProjectFolders } from './utils'
-import { NpmRcFile } from './files/npmrc.file'
 
 interface Indicators { passed: string[]; warnings: string[]; failed: string[] }
 
