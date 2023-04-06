@@ -69,7 +69,6 @@ If file already exists, use `--force` to overwrite it.
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
 - [ ] prepare a json schema for .repo-checker.json
 - [ ] check vitest config file
-- [ ] check method should take an object as parameter & handle a dontThrow boolean option, then enhance check C test case
 
 ## Benchmarks
 

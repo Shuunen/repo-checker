@@ -33,17 +33,24 @@ function reportLog (color: (string: string) => string, count: number, message: s
   log.info(count === Nb.None ? line : color(line))
 }
 
+interface CheckOptions {
+  folderPath: string
+  data: ProjectData
+  canFix?: boolean
+  canForce?: boolean
+  canThrow?: boolean
+}
+
 export function report ({ passed = [], warnings = [], failed = [] }: Indicators): void {
   log.info('Report :')
   reportLog(green, passed.length, 'are successful')
   reportLog(yellow, warnings.length, 'triggered warnings')
   reportLog(red, failed.length, 'are problematic')
-  if (failed.length > Nb.None) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), Nb.Hundred)}`)
   /* c8 ignore next */
 }
 
-// eslint-disable-next-line max-params, max-statements
-export async function check (folderPath: string, data: ProjectData, canFix = false, canForce = false): Promise<Indicators> {
+// eslint-disable-next-line max-statements
+export async function check ({ folderPath, data, canFix = false, canForce = false, canThrow = true }: CheckOptions): Promise<Indicators> {
   const folders = await getProjectFolders(folderPath)
   let passed: string[] = []
   let warnings: string[] = []
@@ -66,5 +73,6 @@ export async function check (folderPath: string, data: ProjectData, canFix = fal
   }
   /* eslint-enable no-await-in-loop */
   report({ passed, warnings, failed })
+  if (canThrow && failed.length > Nb.None) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), Nb.Hundred)}`)
   return { passed, warnings, failed }
 }
