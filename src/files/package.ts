@@ -66,6 +66,7 @@ export class PackageJsonFile extends FileBase {
     this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(?:chalk|colorette|colors)"/u, Nb.None)
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/u, Nb.None)
     this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/u, Nb.None)
+    this.couldContains('no fat & slow jsdom dependency, use happy-dom instead', /jsdom/u, Nb.None)
     this.couldContains('no fat task runner, use npm run xyz && npm run abc for sequential or zero-deps package : npm-parallel', /"npm-run-all"/u, Nb.None)
     if (this.fileContent.includes('esbuild-plugin-run')) this.couldContains('not fat ts runner, use "typescript-run" like "dev": "ts-run src --watch" or "ts-run src -w src another-folder"')
   }
