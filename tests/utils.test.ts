@@ -55,6 +55,7 @@ it('data augment A with git : repo-check & no-local', async () => {
 it('data augment B repo-check & local', async () => {
   const expectedAugmentedData = new ProjectData({
     canAutoMergeDeps: true,
+    hasTaskPrefix: true,
     isModule: false,
     maxSizeKo: 45,
     isPublishedPackage: true,
@@ -77,6 +78,7 @@ it('data augment C test folder', async () => {
 it('data augment D with package : rootFolder', async () => {
   const data = await augmentDataWithPackageJson(repoCheckerPath, dataDefaults)
   const expectedData = new ProjectData({
+    hasTaskPrefix: true,
     isModule: false,
     isPublishedPackage: true,
     packageName: 'repo-check',

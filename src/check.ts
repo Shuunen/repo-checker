@@ -4,6 +4,7 @@ import type { ProjectData } from './constants'
 import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files/index.js'
 import { log } from './logger'
 import { augmentData, getProjectFolders } from './utils'
+import { NpmRcFile } from './files/npmrc.file'
 
 interface Indicators { passed: string[]; warnings: string[]; failed: string[] }
 
@@ -14,6 +15,7 @@ const checkers = [
   GitFile,
   GithubWorkflowFile,
   LicenseFile,
+  NpmRcFile,
   NvmrcFile,
   NycRcFile,
   PackageJsonFile,
