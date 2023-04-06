@@ -46,7 +46,7 @@
     "build": "esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs && echo build success",
     "check": "npm run build && npm run lint && npm start && npm test && echo check success",
     "dev": "ts-run src -w src",
-    "lint": "tsc --noEmit && eslint --cache --fix --ignore-path .gitignore --ext .js,.ts . && depcruise src --config && echo lint success",
+    "lint": "tsc --noEmit && eslint --cache --fix --ext .js,.ts . && depcruise src --config && echo lint success",
     "postversion": "git push && git push --tags && npm run build && npm publish",
     "preversion": "npm run check",
     "start": "ts-run src && echo start success",
