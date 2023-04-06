@@ -73,6 +73,7 @@ exports[`check B folder succeed 1`] = `
   "package-json-one-unit-testing-dependency-from-vitest-mocha-uvu",
   "package-json-one-coverage-dependency-from-nyc-c8",
   "package-json-has-eslint-cache-flag",
+  "package-json-has-no-eslint-ignore-flag-solution-1-just-remove-it-useless-most-of-the-time-check-debugeslint-cli-engine-npx-eslint-to-see-linted-files-or-solution-2-use-ignore-patterns-inside-eslintrc-json-the-objective-here-is-to-let-the-eslint-cli-vscode-eslint-use-the-same-config",
   "package-json-has-no-fat-color-dependency-use-shuutils-or-nanocolors",
   "package-json-has-no-fat-fs-extra-dependency-use-native-fs",
   "package-json-has-no-utopian-shuunen-stack-dependency",
