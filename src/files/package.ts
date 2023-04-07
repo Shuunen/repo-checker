@@ -47,6 +47,7 @@ export class PackageJsonFile extends FileBase {
     if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/u, Nb.None)
     if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/u, Nb.One, 'like watchlist src tests -eager -- npm run test')
     if (this.data.isUsingDependencyCruiser) this.shouldContains('a depcruise usage', /depcruise\s/u, Nb.One, false, 'like "depcruise src --config"')
+    if (this.data.isUsingShuutils) this.couldContains('a unique-mark task', /unique-mark /u, Nb.One, 'like "mark": "unique-mark public/my-file && echo mark success",')
     if (!this.fileContent.includes('github.com/Shuunen')) return
     this.couldContains('a check script', /"check": "/u, Nb.One, 'like "check": "npm run build && npm run lint ...')
   }
