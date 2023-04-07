@@ -60,6 +60,7 @@ exports[`check B folder succeed 1`] = `
   "package-json-has-a-pre-script-for-version-automation",
   "package-json-has-a-post-script-for-version-automation",
   "package-json-has-a-depcruise-usage",
+  "package-json-has-a-unique-mark-task",
   "package-json-has-a-check-script",
   "package-json-has-a-final-echo-for-task-build",
   "package-json-has-a-final-echo-for-task-check",

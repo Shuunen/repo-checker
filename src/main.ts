@@ -1,6 +1,6 @@
 import arg from 'arg'
 import { LogLevel, Nb, parseJson } from 'shuutils'
-import { name, version } from '../package.json'
+import { name } from '../package.json'
 import { check } from './check'
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { dataDefaults, dataFileName, home, ProjectData, templatePath } from './constants'
@@ -45,32 +45,34 @@ function getTarget (argument = ''): string {
 }
 
 function showVersion (): void {
-  log.info(version)
+  log.info(`${name} version : __unique-mark__`)
   process.exit(Nb.Zero)
 }
 
 function parseOptions (): { willShowVersion: boolean; willInit: boolean; willForce: boolean; target: string; willFix: boolean; isQuiet: boolean; isVerbose: boolean } {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const options = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean }, { argv: process.argv.slice(Nb.Two) })
-  return {
-    willShowVersion: (options['--version'] ?? false) || (options['-v'] ?? false),
-    willInit: options['--init'] ?? false,
-    willForce: options['--force'] ?? false,
-    target: getTarget(options['--target']),
-    willFix: options['--fix'] ?? false,
-    isQuiet: options['--quiet'] ?? false,
-    isVerbose: options['--verbose'] ?? false,
+  const input = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean }, { argv: process.argv.slice(Nb.Two) })
+  const options = {
+    willShowVersion: (input['--version'] ?? false) || (input['-v'] ?? false),
+    willInit: input['--init'] ?? false,
+    willForce: input['--force'] ?? false,
+    target: '',
+    willFix: input['--fix'] ?? false,
+    isQuiet: input['--quiet'] ?? false,
+    isVerbose: input['--verbose'] ?? false,
   }
+  if (options.willShowVersion) showVersion()
+  options.target = getTarget(input['--target'])
+  return options
 }
 
 export async function start (): Promise<void> {
-  const { willShowVersion, willInit, willForce, target, willFix, isQuiet, isVerbose } = parseOptions()
-  if (willShowVersion) showVersion()
+  const { willInit, willForce, target, willFix, isQuiet, isVerbose } = parseOptions()
   if (willInit) void initDataFile()
   const data = await getData(target)
   log.options.isActive = !isQuiet
   log.options.minimumLevel = isVerbose ? LogLevel.Debug : LogLevel.Info
-  log.info(`${String(name)} v${String(version)} is starting ${willFix ? '(fix enabled)' : ''}`)
+  log.info(`${String(name)} __unique-mark__ is starting ${willFix ? '(fix enabled)' : ''}`)
   await check({ folderPath: target, data, canFix: willFix, canForce: willForce })
 }
 

@@ -36,6 +36,8 @@ export class ProjectData {
 
   public isUsingNyc = false
 
+  public isUsingShuutils = false
+
   public isUsingTailwind = false
 
   public isUsingTypescript = false

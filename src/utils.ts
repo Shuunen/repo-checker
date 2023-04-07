@@ -82,6 +82,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   data.isUsingNyc = content.includes('"nyc"')
   data.isUsingC8 = content.includes('"c8"') || content.includes('coverage-c8')
   data.isUsingEslint = content.includes('"eslint"')
+  data.isUsingShuutils = content.includes('"shuutils"')
   data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()
   if (/ "(?:post|pre)[^"]+": "[^"]+"/u.test(content)) data.hasTaskPrefix = true
