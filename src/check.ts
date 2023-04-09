@@ -34,11 +34,12 @@ function reportLog (color: (string: string) => string, count: number, message: s
 }
 
 interface CheckOptions {
-  folderPath: string
-  data: ProjectData
+  canFailStop?: boolean
   canFix?: boolean
   canForce?: boolean
   canThrow?: boolean
+  data: ProjectData
+  folderPath: string
 }
 
 export function report ({ passed = [], warnings = [], failed = [] }: Indicators): void {
@@ -50,7 +51,7 @@ export function report ({ passed = [], warnings = [], failed = [] }: Indicators)
 }
 
 // eslint-disable-next-line max-statements
-export async function check ({ folderPath, data, canFix = false, canForce = false, canThrow = true }: CheckOptions): Promise<Indicators> {
+export async function check ({ folderPath, data, canFix = false, canForce = false, canThrow = true, canFailStop = false }: CheckOptions): Promise<Indicators> {
   const folders = await getProjectFolders(folderPath)
   let passed: string[] = []
   let warnings: string[] = []
@@ -60,6 +61,10 @@ export async function check ({ folderPath, data, canFix = false, canForce = fals
   if (folders.length === Nb.Zero) log.warn('no folder to check', folderPath)
   /* eslint-disable no-await-in-loop */
   for (const folder of folders) {
+    if (canFailStop && failed.length > Nb.None) {
+      log.warn('stop checking other folders because of failures & --fail-stop option')
+      break
+    }
     log.info('Checking folder :', folder)
     const dataFolder = await augmentData(folder, data, folders.length > Nb.One)
     for (const Checker of checkers) { // eslint-disable-line @typescript-eslint/naming-convention

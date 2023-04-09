@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest'
 import { check } from '../src/check'
 import { ProjectData, repoCheckerPath } from '../src/constants'
-import { tsProjectFolder } from './utils'
+import { dataProjectsFolder, tsProjectFolder } from './utils'
 
 it('check A folder fails with low max size', async () => {
   const data = new ProjectData({ maxSizeKo: 2, isPublishedPackage: true, isQuiet: true })
@@ -21,6 +21,21 @@ it('check B folder succeed', async () => {
 it('check C data/tsProject', async () => {
   const data = new ProjectData({ isQuiet: true })
   const { passed, failed, warnings } = await check({ folderPath: tsProjectFolder, data, canThrow: false })
+  expect(passed, 'passed').toMatchSnapshot()
+  expect(failed, 'failed').toMatchSnapshot()
+  expect(warnings, 'warnings').toMatchSnapshot()
+})
+
+it('check D data folders and throw', async () => {
+  const data = new ProjectData({ isQuiet: true })
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const message = await check({ folderPath: dataProjectsFolder, data, canFailStop: true }).catch((error: unknown) => (error as Error).message)
+  expect(message).toMatchSnapshot()
+})
+
+it('check E data folders and not throw', async () => {
+  const data = new ProjectData({ isQuiet: true })
+  const { passed, failed, warnings } = await check({ folderPath: dataProjectsFolder, data, canFailStop: true, canThrow: false })
   expect(passed, 'passed').toMatchSnapshot()
   expect(failed, 'failed').toMatchSnapshot()
   expect(warnings, 'warnings').toMatchSnapshot()

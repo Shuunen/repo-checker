@@ -56,6 +56,7 @@ function showHelp () {
       --force       force init or fix
       --target      target directory
       --fix         fix issues
+      --fail-stop   stop process on first error
       --quiet       quiet mode
       --verbose     verbose mode
       -v --version  show version
@@ -65,33 +66,35 @@ function showHelp () {
 
 function parseInputs () {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const inputs = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean, '--help': Boolean, '-h': Boolean }, { argv: process.argv.slice(Nb.Two) })
+  const inputs = arg({ '--init': Boolean, '--fail-stop': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean, '--help': Boolean, '-h': Boolean }, { argv: process.argv.slice(Nb.Two) })
   if (inputs['--version'] ?? inputs['-v'] ?? false) showVersion()
   if (inputs['--help'] ?? inputs['-h'] ?? false) showHelp()
   return inputs
 }
 
+// eslint-disable-next-line complexity
 function parseOptions () {
   const inputs = parseInputs()
   return {
-    willShowHelp: inputs['--help'] ?? inputs['-h'] ?? false,
-    willShowVersion: inputs['--version'] ?? inputs['-v'] ?? false,
-    willInit: inputs['--init'] ?? false,
-    willForce: inputs['--force'] ?? false,
-    target: getTarget(inputs['--target']),
-    willFix: inputs['--fix'] ?? false,
+    canFailStop: inputs['--fail-stop'] ?? false,
+    canFix: inputs['--fix'] ?? false,
+    canForce: inputs['--force'] ?? false,
     isQuiet: inputs['--quiet'] ?? false,
     isVerbose: inputs['--verbose'] ?? false,
+    target: getTarget(inputs['--target']),
+    willInit: inputs['--init'] ?? false,
+    willShowHelp: inputs['--help'] ?? inputs['-h'] ?? false,
+    willShowVersion: inputs['--version'] ?? inputs['-v'] ?? false,
   }
 }
 
 export async function start (): Promise<void> {
-  const { willInit, willForce, target, willFix, isQuiet, isVerbose } = parseOptions()
+  const { willInit, canForce, target, canFix, isQuiet, isVerbose, canFailStop } = parseOptions()
   if (willInit) void initDataFile()
   const data = await getData(target)
   log.options.isActive = !isQuiet
   log.options.minimumLevel = isVerbose ? LogLevel.Debug : LogLevel.Info
-  log.info(`${String(name)} __unique-mark__ is starting ${willFix ? '(fix enabled)' : ''}`)
-  await check({ folderPath: target, data, canFix: willFix, canForce: willForce })
+  log.info(`${String(name)} __unique-mark__ is starting ${canFix ? '(fix enabled)' : ''}`)
+  await check({ folderPath: target, data, canFix, canForce, canFailStop })
 }
 
