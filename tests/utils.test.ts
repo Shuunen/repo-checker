@@ -1,9 +1,9 @@
 import { mkdirSync, rmSync } from 'fs' // eslint-disable-line no-restricted-imports
 import { Nb } from 'shuutils'
 import { expect, it } from 'vitest'
-import { ProjectData, dataDefaults, dataFileName, repoCheckerPath } from '../src/constants'
+import { dataDefaults, dataFileName, repoCheckerPath } from '../src/constants'
 import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findInFolder, getFileSizeInKo, getProjectFolders, isProjectFolder, join, jsToJson, messageToCode, readFileInFolder, writeFile } from '../src/utils'
-import { testFolder } from './utils'
+import { testFolder, tsProjectFolder, vueProjectFolder } from './utils'
 
 it('isProjectFolder A', async () => {
   expect(await isProjectFolder(repoCheckerPath)).toBe(true)
@@ -42,82 +42,24 @@ it('file size calculation', async () => {
   expect(existingFileSize >= Nb.One).toBe(true)
 })
 
-it('data augment A with git : repo-check & no-local', async () => {
-  const expectedDataFromGit = new ProjectData({
-    userId: 'Shuunen',
-    userIdLowercase: 'shuunen',
-    repoId: 'repo-checker',
-  })
-  const dataFromGit = await augmentDataWithGit(repoCheckerPath, dataDefaults)
-  expect(dataFromGit).toStrictEqual(expectedDataFromGit)
-})
+it('augmentData A repoCheckerPath', async () => { expect(await augmentData(repoCheckerPath, dataDefaults)).toMatchSnapshot() })
+it('augmentData B vueProjectFolder', async () => { expect(await augmentData(vueProjectFolder, dataDefaults)).toMatchSnapshot() })
+it('augmentData C tsProjectFolder', async () => { expect(await augmentData(tsProjectFolder, dataDefaults)).toMatchSnapshot() })
+it('augmentData D testFolder', async () => { expect(await augmentData(testFolder, dataDefaults)).toMatchSnapshot() })
+it('augmentData A repoCheckerPath with local', async () => { expect(await augmentData(repoCheckerPath, dataDefaults, true)).toMatchSnapshot() })
+it('augmentData B vueProjectFolder with local', async () => { expect(await augmentData(vueProjectFolder, dataDefaults, true)).toMatchSnapshot() })
+it('augmentData C tsProjectFolder with local', async () => { expect(await augmentData(tsProjectFolder, dataDefaults, true)).toMatchSnapshot() })
+it('augmentData D testFolder with local', async () => { expect(await augmentData(testFolder, dataDefaults, true)).toMatchSnapshot() })
 
-it('data augment B repo-check & local', async () => {
-  const expectedAugmentedData = new ProjectData({
-    canAutoMergeDeps: true,
-    hasTaskPrefix: true,
-    isModule: false,
-    maxSizeKo: 45,
-    isUsingShuutils: true,
-    isPublishedPackage: true,
-    packageName: 'repo-check',
-    repoId: 'repo-checker',
-    isUsingTypescript: true,
-    isUsingC8: true,
-    isUsingEslint: true,
-    isUsingDependencyCruiser: true,
-  })
-  const augmentedData = await augmentData(repoCheckerPath, dataDefaults, true)
-  expect(augmentedData).toStrictEqual(expectedAugmentedData)
-})
+it('augmentDataWithGit A repoCheckerPath', async () => { expect(await augmentDataWithGit(repoCheckerPath, dataDefaults)).toMatchSnapshot() })
+it('augmentDataWithGit B vueProjectFolder', async () => { expect(await augmentDataWithGit(vueProjectFolder, dataDefaults)).toMatchSnapshot() })
+it('augmentDataWithGit C tsProjectFolder', async () => { expect(await augmentDataWithGit(tsProjectFolder, dataDefaults)).toMatchSnapshot() })
+it('augmentDataWithGit D testFolder', async () => { expect(await augmentDataWithGit(testFolder, dataDefaults)).toMatchSnapshot() })
 
-it('data augment C test folder', async () => {
-  const augmentedDataFromTestFolder = await augmentData(testFolder, dataDefaults)
-  expect(augmentedDataFromTestFolder).toStrictEqual(dataDefaults)
-})
-
-it('data augment D with package : rootFolder', async () => {
-  const data = await augmentDataWithPackageJson(repoCheckerPath, dataDefaults)
-  const expectedData = new ProjectData({
-    hasTaskPrefix: true,
-    isModule: false,
-    isPublishedPackage: true,
-    packageName: 'repo-check',
-    isUsingTypescript: true,
-    isUsingShuutils: true,
-    isUsingC8: true,
-    isUsingEslint: true,
-    isUsingDependencyCruiser: true,
-  })
-  expect(data).toStrictEqual(expectedData)
-})
-
-it('data augment E with package : vueProject', async () => {
-  const vueData = await augmentDataWithPackageJson(join(testFolder, 'data', 'vueProject'), dataDefaults)
-  const expectedVueData = new ProjectData({
-    packageName: 'name',
-    isUsingVue: true,
-    userIdLowercase: 'kevin_malone',
-    userId: 'Kevin_Malone',
-    isWebPublished: true,
-    isUsingTailwind: true,
-    isUsingEslint: false,
-  })
-  expect(vueData).toStrictEqual(expectedVueData)
-})
-
-it('data augment F with package : tsProject', async () => {
-  const tsData = await augmentData(join(testFolder, 'data', 'tsProject'), dataDefaults, true)
-  const expectedTsData = new ProjectData({
-    shouldAvoidSass: false,
-    license: 'MIT',
-    packageName: '',
-    isUsingTypescript: true,
-    userName: 'Dwight Schrute',
-    webUrl: 'https://my-website.com',
-  })
-  expect(tsData).toStrictEqual(expectedTsData)
-})
+it('augmentDataWithPackageJson A repoCheckerPath', async () => { expect(await augmentDataWithPackageJson(repoCheckerPath, dataDefaults)).toMatchSnapshot() })
+it('augmentDataWithPackageJson B vueProjectFolder', async () => { expect(await augmentDataWithPackageJson(vueProjectFolder, dataDefaults)).toMatchSnapshot() })
+it('augmentDataWithPackageJson C tsProjectFolder', async () => { expect(await augmentDataWithPackageJson(tsProjectFolder, dataDefaults)).toMatchSnapshot() })
+it('augmentDataWithPackageJson D testFolder', async () => { expect(await augmentDataWithPackageJson(testFolder, dataDefaults)).toMatchSnapshot() })
 
 it('find pattern in folder', async () => {
   const folder = join(testFolder, 'data', 'tsProject')
