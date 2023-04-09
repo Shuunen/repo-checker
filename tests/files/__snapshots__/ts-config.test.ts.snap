@@ -31,8 +31,7 @@ exports[`ts config file fix 1`] = `
     \\"target\\": \\"ES2020\\",
     \\"lib\\": [
       \\"ESNext\\"
-    ],
-    \\"types\\": []
+    ]
   }
 }"
 `;
@@ -100,8 +99,7 @@ exports[`ts config file fix 2`] = `
     \\"target\\": \\"ES2020\\",
     \\"lib\\": [
       \\"ESNext\\"
-    ],
-    \\"types\\": []
+    ]
   }
 }",
   "fileContentObject": {
@@ -128,7 +126,6 @@ exports[`ts config file fix 2`] = `
       "skipLibCheck": true,
       "strict": true,
       "target": "ES2020",
-      "types": [],
     },
     "files": [
       "src/main.ts",
@@ -144,7 +141,9 @@ exports[`ts config file fix 2`] = `
     "does-not-use-wildcard-in-files-section",
     "my-folder-is-not-needed-in-include-section-my-folder-is-enough",
   ],
-  "warnings": [],
+  "warnings": [
+    "could-have-a-non-empty-types-compiler-option-ex-types-node-fs-promises",
+  ],
 }
 `;
 
