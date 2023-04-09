@@ -76,6 +76,14 @@ Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
 
 | command alias      | date       | main lib targeted   | delay   | comment                                                               |
 | ------------------ | ---------- | ------------------- | ------- | --------------------------------------------------------------------- |
+| npx-tsc-no-emit    | 2023-04-09 | npx + typescript    | 2,4 s   | wow thanks NPX for **doubling** the amount of time for... nothing     |
+| tsc-no-emit        | 2023-04-09 | typescript          | 1,2 s   | typescript v5                                                         |
+| vitest-c8          | 2023-04-09 | npx & vitest & c8   | 3,6 s   | ok now coverage is only 300ms                                         |
+| vitest             | 2023-04-09 | npx & vitest        | 3,3 s   | slower but there is npx + a lot of new test cases & snapshots         |
+| ts-run             | 2023-04-09 | typescript-run      | 250 ms  | 40% faster ? nice ^^ no idea why                                      |
+| esbuild            | 2023-04-09 | esbuild             | 81 ms   | 20% faster ? nice ^^ no idea why                                      |
+| repo-check         | 2023-04-09 | node & repo-checker | 115 ms  |                                                                       |
+| eslint             | 2023-04-09 | eslint              | 10 sec  | slower... :'( hardcore 35 maybe ?                                     |
 | eslint             | 2023-01-29 | eslint              | 7,6 sec | + no overrides                                                        |
 | eslint             | 2023-01-29 | eslint              | 7,5 sec | + test/**/* glob converted into *.test.ts                             |
 | eslint             | 2023-01-29 | eslint              | 8,0 sec | + all import rules disabled                                           |
@@ -110,10 +118,13 @@ Command aliases :
 - esbuild : `node node_modules/esbuild/bin/esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs`
 - ts-run : `node node_modules/typescript-run/src/index.js src`
 - tsc-no-emit : `node node_modules/typescript/bin/tsc --noEmit`
+- npx-tsc-no-emit : `npx tsc --noEmit`
 - eslint : `node node_modules/eslint/bin/eslint --fix --ignore-path .gitignore --ext .js,.ts .`
 - eslint-ts-src-only : `node node_modules/eslint/bin/eslint src/ --ext .ts`
 - uvu : `node node_modules/uvu/bin -r tsm tests`
 - c8-uvu : `node node_modules/c8/bin/c8 node_modules/uvu/bin -r tsm tests`
+- vitest : `npx vitest --run`
+- vitest-c8 : `npx vitest --run --coverage`
 
 ### Old method
 
