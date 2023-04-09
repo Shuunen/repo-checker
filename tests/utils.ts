@@ -28,3 +28,5 @@ export const testFolder = dirname(__filename)
 export const vueProjectFolder = join(testFolder, 'data', 'vueProject')
 
 export const tsProjectFolder = join(testFolder, 'data', 'tsProject')
+
+export const dataProjectsFolder = join(testFolder, 'data')
