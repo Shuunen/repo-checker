@@ -12,18 +12,14 @@ it('check A folder fails with low max size', async () => {
 
 it('check B folder succeed', async () => {
   const data = new ProjectData({ maxSizeKo: 120, isPublishedPackage: true, isQuiet: true })
-  const { passed, failed, warnings } = await check({ folderPath: repoCheckerPath, data })
-  expect(passed, 'passed').toMatchSnapshot()
-  expect(failed, 'failed').toMatchSnapshot()
-  expect(warnings, 'warnings').toMatchSnapshot()
+  const indicators = await check({ folderPath: repoCheckerPath, data })
+  expect(indicators).toMatchSnapshot()
 })
 
 it('check C data/tsProject', async () => {
   const data = new ProjectData({ isQuiet: true })
-  const { passed, failed, warnings } = await check({ folderPath: tsProjectFolder, data, canThrow: false })
-  expect(passed, 'passed').toMatchSnapshot()
-  expect(failed, 'failed').toMatchSnapshot()
-  expect(warnings, 'warnings').toMatchSnapshot()
+  const indicators = await check({ folderPath: tsProjectFolder, data, canThrow: false })
+  expect(indicators).toMatchSnapshot()
 })
 
 it('check D data folders and throw', async () => {
@@ -35,8 +31,6 @@ it('check D data folders and throw', async () => {
 
 it('check E data folders and not throw', async () => {
   const data = new ProjectData({ isQuiet: true })
-  const { passed, failed, warnings } = await check({ folderPath: dataProjectsFolder, data, canFailStop: true, canThrow: false })
-  expect(passed, 'passed').toMatchSnapshot()
-  expect(failed, 'failed').toMatchSnapshot()
-  expect(warnings, 'warnings').toMatchSnapshot()
+  const indicators = await check({ folderPath: dataProjectsFolder, data, canFailStop: true, canThrow: false })
+  expect(indicators).toMatchSnapshot()
 })

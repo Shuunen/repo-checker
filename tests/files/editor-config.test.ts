@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest'
 import { EditorConfigFile } from '../../src/files'
 import { log } from '../../src/logger'
-import { promiseFalse, promiseTrue, promiseVoid } from '../utils'
+import { cleanInstanceForSnap, promiseFalse, promiseTrue, promiseVoid } from '../utils'
 
 it('editor config A missing file', async () => {
   log.disable()
@@ -9,9 +9,7 @@ it('editor config A missing file', async () => {
   instance.checkFileExists = promiseFalse
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('editor config B file', async () => {
@@ -22,7 +20,5 @@ it('editor config B file', async () => {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })

@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest'
 import { DependencyCruiserFile } from '../../src/files'
 import { log } from '../../src/logger'
-import { promiseFalse } from '../utils'
+import { cleanInstanceForSnap, promiseFalse } from '../utils'
 
 it('dependency cruiser config missing file', async () => {
   log.disable()
@@ -9,7 +9,5 @@ it('dependency cruiser config missing file', async () => {
   instance.checkFileExists = promiseFalse
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })

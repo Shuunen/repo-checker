@@ -2,7 +2,7 @@ import { expect, it } from 'vitest'
 import { ProjectData } from '../../src/constants'
 import { EsLintFile } from '../../src/files'
 import { log } from '../../src/logger'
-import { promiseFalse, promiseTrue, promiseVoid, tsProjectFolder, vueProjectFolder } from '../utils'
+import { cleanInstanceForSnap, promiseFalse, promiseTrue, promiseVoid, tsProjectFolder, vueProjectFolder } from '../utils'
 
 it('eslint A config missing file', async () => {
   log.disable()
@@ -10,9 +10,7 @@ it('eslint A config missing file', async () => {
   instance.fileExists = promiseFalse
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint B config file empty', async () => {
@@ -23,9 +21,7 @@ it('eslint B config file empty', async () => {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint C config file empty for ts project', async () => {
@@ -36,9 +32,7 @@ it('eslint C config file empty for ts project', async () => {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint D config file empty for vue ts project', async () => {
@@ -49,9 +43,7 @@ it('eslint D config file empty for vue ts project', async () => {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint E config file empty for tailwind project', async () => {
@@ -62,9 +54,7 @@ it('eslint E config file empty for tailwind project', async () => {
   instance.fileContent = ''
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint F config partial file for js project', async () => {
@@ -84,9 +74,7 @@ it('eslint F config partial file for js project', async () => {
   }`
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint G config partial file for ts project', async () => {
@@ -104,9 +92,7 @@ it('eslint G config partial file for ts project', async () => {
   }`
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint H config partial file for vue ts project', async () => {
@@ -135,9 +121,7 @@ it('eslint H config partial file for vue ts project', async () => {
   }`
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint I up to date config file for vue ts project', async () => {
@@ -162,9 +146,7 @@ it('eslint I up to date config file for vue ts project', async () => {
   }`
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint J config file with no rules', async () => {
@@ -173,9 +155,7 @@ it('eslint J config file with no rules', async () => {
   instance.fileExists = promiseTrue
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('eslint K config file with just rules (no override)', async () => {
@@ -184,7 +164,5 @@ it('eslint K config file with just rules (no override)', async () => {
   instance.fileExists = promiseTrue
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })

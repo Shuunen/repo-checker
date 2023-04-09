@@ -2,16 +2,14 @@ import { expect, it } from 'vitest'
 import { ProjectData } from '../../src/constants'
 import { TsConfigFile } from '../../src/files'
 import { log } from '../../src/logger'
-import { promiseVoid } from '../utils'
+import { cleanInstanceForSnap, promiseVoid } from '../utils'
 
 it('ts config file no check', async () => {
   log.disable()
   const instance = new TsConfigFile('', new ProjectData({ isUsingTypescript: false }))
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('ts config file fix', async () => {
@@ -25,9 +23,7 @@ it('ts config file fix', async () => {
   await instance.start()
   await instance.end()
   expect(instance.fileContent).toMatchSnapshot()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('ts config malformed', async () => {
@@ -39,7 +35,5 @@ it('ts config malformed', async () => {
   expect(instance.fileContent).toStrictEqual(fileInitial)
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
