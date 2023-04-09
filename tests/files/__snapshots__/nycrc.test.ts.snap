@@ -1,39 +1,205 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`nyc rc A file exists 1`] = `[]`;
-
-exports[`nyc rc A file exists 2`] = `
-[
-  "nycrc-file-exists",
-]
+exports[`nyc rc A file exists 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": true,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "nycrc-file-exists",
+  ],
+  "fileContent": "",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [],
+  "warnings": [],
+}
 `;
 
-exports[`nyc rc A file exists 3`] = `[]`;
-
-exports[`nyc rc B check skip on a non nyc/c8 project 1`] = `[]`;
-
-exports[`nyc rc B check skip on a non nyc/c8 project 2`] = `[]`;
-
-exports[`nyc rc B check skip on a non nyc/c8 project 3`] = `[]`;
-
-exports[`nyc rc C file missing 1`] = `[]`;
-
-exports[`nyc rc C file missing 2`] = `
-[
-  "nycrc-file-exists",
-]
+exports[`nyc rc B check skip on a non nyc/c8 project 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [],
+  "fileContent": "",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [],
+  "warnings": [],
+}
 `;
 
-exports[`nyc rc C file missing 3`] = `[]`;
+exports[`nyc rc C file missing 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": true,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "nycrc-file-exists",
+  ],
+  "fileContent": "",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [],
+  "warnings": [],
+}
+`;
 
 exports[`nyc rc D file exists but not a json ext file 1`] = `
-[
-  "nycrc-file-exists",
-  "has-a-nycrc-file",
-  "nycrc-has-a-schema-declaration",
-]
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": true,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [],
+  "fileContent": "{
+  \\"$schema\\": \\"https://json.schemastore.org/nycrc\\",
+  \\"branches\\": 90,
+  \\"check-coverage\\": true,
+  \\"functions\\": 90,
+  \\"include\\": [
+    \\"src/**/*.ts\\"
+  ],
+  \\"lines\\": 90,
+  \\"reporter\\": [
+    \\"html\\",
+    \\"text\\",
+    \\"lcovonly\\"
+  ],
+  \\"statements\\": 90
+}
+",
+  "fileName": ".nycrc",
+  "originalFileContent": "{
+  \\"$schema\\": \\"https://json.schemastore.org/nycrc\\",
+  \\"branches\\": 90,
+  \\"check-coverage\\": true,
+  \\"functions\\": 90,
+  \\"include\\": [
+    \\"src/**/*.ts\\"
+  ],
+  \\"lines\\": 90,
+  \\"reporter\\": [
+    \\"html\\",
+    \\"text\\",
+    \\"lcovonly\\"
+  ],
+  \\"statements\\": 90
+}
+",
+  "passed": [
+    "nycrc-file-exists",
+    "has-a-nycrc-file",
+    "nycrc-has-a-schema-declaration",
+  ],
+  "warnings": [],
+}
 `;
-
-exports[`nyc rc D file exists but not a json ext file 2`] = `[]`;
-
-exports[`nyc rc D file exists but not a json ext file 3`] = `[]`;

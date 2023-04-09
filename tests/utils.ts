@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-restricted-imports, unicorn/import-style
 import { dirname } from 'path'
-import { Nb, sleep } from 'shuutils'
+import { Nb, clone, sleep } from 'shuutils'
+import type { FileBase } from '../src/file'
 import { join } from '../src/utils'
 
 export async function promiseValue<Type> (value: Type): Promise<Type> {
@@ -30,3 +31,9 @@ export const vueProjectFolder = join(testFolder, 'data', 'vueProject')
 export const tsProjectFolder = join(testFolder, 'data', 'tsProject')
 
 export const dataProjectsFolder = join(testFolder, 'data')
+
+export function cleanInstanceForSnap (instance: FileBase) {
+  const clean = clone<Partial<FileBase>>(instance)
+  delete clean.folderPath
+  return clean
+}

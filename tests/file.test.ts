@@ -3,6 +3,7 @@ import { expect, it } from 'vitest'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 import { FileBase } from '../src/file'
 import { deleteFile, join, readFile, writeFile } from '../src/utils'
+import { cleanInstanceForSnap } from './utils'
 
 const existingFilename = '.nvmrc'
 const existingFilepath = join(repoCheckerPath, existingFilename)
@@ -33,9 +34,7 @@ it('file : simple validator', async () => {
   const instance = new MyFile(repoCheckerPath, new ProjectData({ isQuiet: true }))
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('file : validator with fix', async () => {
@@ -52,9 +51,7 @@ it('file : validator with fix', async () => {
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }), true)
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('file : validator with fix & force, overwrite a problematic file with template', async () => {
@@ -71,9 +68,7 @@ it('file : validator with fix & force, overwrite a problematic file with templat
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ isQuiet: true }), true, true)
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('file : validator with fix & force, update a problematic file on the go', async () => {
@@ -88,9 +83,7 @@ it('file : validator with fix & force, update a problematic file on the go', asy
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ isQuiet: true }), true, true)
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
   expect(await readFile(existingFilepath), 'file content updated').toBe(fakeContent)
   await writeFile(existingFilepath, originalContent) // restore the file
 })
@@ -108,9 +101,7 @@ it('file : validator without force cannot fix a problematic file on the go', asy
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ isQuiet: true }), true, false)
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
   expect(await readFile(existingFilepath)).toBe(originalContent)
 })
 
@@ -123,9 +114,7 @@ it('file : validator with fix cannot fix if the template require data that is mi
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }), true)
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('file : validator can detect a missing schema', async () => {
@@ -139,9 +128,7 @@ it('file : validator can detect a missing schema', async () => {
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }))
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('file : validator can detect an existing schema', async () => {
@@ -159,9 +146,7 @@ it('file : validator can detect an existing schema', async () => {
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }))
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 it('file : validator can fix a missing schema', async () => {
@@ -183,9 +168,7 @@ it('file : validator can fix a missing schema', async () => {
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }), true)
   await instance.start()
   await instance.end()
-  expect(instance.passed, 'passed').toMatchSnapshot()
-  expect(instance.failed, 'failed').toMatchSnapshot()
-  expect(instance.warnings, 'warnings').toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
 

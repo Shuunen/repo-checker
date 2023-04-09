@@ -1,20 +1,49 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`git : detect a missing git ignore 1`] = `
-[
-  "avoid-main-branch-reference-use-master-instead-git-bclean",
-  "gitignore-has-no-pnpm-lock-exclusion",
-]
-`;
-
-exports[`git : detect a missing git ignore 2`] = `
-[
-  "has-a-gitignore-file",
-]
-`;
-
-exports[`git : detect a missing git ignore 3`] = `
-[
-  "gitignore-could-have-node-modules-node-modules",
-]
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-a-gitignore-file",
+  ],
+  "fileContent": "",
+  "fileName": ".gitignore",
+  "originalFileContent": "",
+  "passed": [
+    "avoid-main-branch-reference-use-master-instead-git-bclean",
+    "gitignore-has-no-pnpm-lock-exclusion",
+  ],
+  "warnings": [
+    "gitignore-could-have-node-modules-node-modules",
+  ],
+}
 `;
