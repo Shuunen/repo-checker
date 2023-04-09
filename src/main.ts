@@ -49,21 +49,40 @@ function showVersion (): void {
   process.exit(Nb.Zero)
 }
 
-function parseOptions (): { willShowVersion: boolean; willInit: boolean; willForce: boolean; target: string; willFix: boolean; isQuiet: boolean; isVerbose: boolean } {
+function showHelp () {
+  log.info(`usage : ${name} [options]
+    options :
+      --init        init a data file to enhance fix
+      --force       force init or fix
+      --target      target directory
+      --fix         fix issues
+      --quiet       quiet mode
+      --verbose     verbose mode
+      -v --version  show version
+      -h --help     show help`)
+  process.exit(Nb.Zero)
+}
+
+function parseInputs () {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const input = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean }, { argv: process.argv.slice(Nb.Two) })
-  const options = {
-    willShowVersion: (input['--version'] ?? false) || (input['-v'] ?? false),
-    willInit: input['--init'] ?? false,
-    willForce: input['--force'] ?? false,
-    target: '',
-    willFix: input['--fix'] ?? false,
-    isQuiet: input['--quiet'] ?? false,
-    isVerbose: input['--verbose'] ?? false,
+  const inputs = arg({ '--init': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean, '--help': Boolean, '-h': Boolean }, { argv: process.argv.slice(Nb.Two) })
+  if (inputs['--version'] ?? inputs['-v'] ?? false) showVersion()
+  if (inputs['--help'] ?? inputs['-h'] ?? false) showHelp()
+  return inputs
+}
+
+function parseOptions () {
+  const inputs = parseInputs()
+  return {
+    willShowHelp: inputs['--help'] ?? inputs['-h'] ?? false,
+    willShowVersion: inputs['--version'] ?? inputs['-v'] ?? false,
+    willInit: inputs['--init'] ?? false,
+    willForce: inputs['--force'] ?? false,
+    target: getTarget(inputs['--target']),
+    willFix: inputs['--fix'] ?? false,
+    isQuiet: inputs['--quiet'] ?? false,
+    isVerbose: inputs['--verbose'] ?? false,
   }
-  if (options.willShowVersion) showVersion()
-  options.target = getTarget(input['--target'])
-  return options
 }
 
 export async function start (): Promise<void> {
