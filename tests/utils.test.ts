@@ -2,7 +2,7 @@ import { mkdirSync, rmSync } from 'fs' // eslint-disable-line no-restricted-impo
 import { Nb } from 'shuutils'
 import { expect, it } from 'vitest'
 import { dataDefaults, dataFileName, repoCheckerPath } from '../src/constants'
-import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findInFolder, getFileSizeInKo, getProjectFolders, isProjectFolder, join, jsToJson, messageToCode, readFileInFolder, writeFile } from '../src/utils'
+import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findInFolder, getFileSizeInKo, getProjectFolders, isProjectFolder, join, jsToJson, messageToCode, objectToJson, readFileInFolder, writeFile } from '../src/utils'
 import { testFolder, tsProjectFolder, vueProjectFolder } from './utils'
 
 it('isProjectFolder A', async () => {
@@ -101,4 +101,16 @@ module.exports = {
   "userName": "Dwight Schrute",
   "banSass": false
 }`)
+})
+
+it('objectToJson A nothing to sort', () => {
+  expect(objectToJson({ keyA: 'A' })).toMatchSnapshot()
+})
+
+it('objectToJson B already sorted', () => {
+  expect(objectToJson({ keyA: 'A', keyB: 'B' })).toMatchSnapshot()
+})
+
+it('objectToJson C sort', () => {
+  expect(objectToJson({ keyB: 'B', keyA: 'A' })).toMatchSnapshot()
 })

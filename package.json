@@ -8,11 +8,13 @@
   },
   "dependencies": {
     "arg": "5",
-    "shuutils": "7.2"
+    "shuutils": "7.2",
+    "sort-json": "2"
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {
     "@types/node": "18",
+    "@types/sort-json": "2",
     "@vitest/coverage-c8": "0.30",
     "dependency-cruiser": "latest",
     "esbuild": "0.17",
