@@ -101,6 +101,7 @@ exports[`check B folder succeed 1`] = `
   "readme-md-has-a-thanks-to-c8",
   "readme-md-has-no-remaining-thanks-to-chokidar",
   "readme-md-has-no-remaining-thanks-to-cypress-io",
+  "readme-md-has-a-thanks-to-dependency-cruiser",
   "readme-md-has-a-thanks-to-esbuild",
   "readme-md-has-a-thanks-to-eslint",
   "readme-md-has-no-remaining-thanks-to-mocha",

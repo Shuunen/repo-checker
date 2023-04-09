@@ -140,6 +140,7 @@ Each task is run 3 times via `time npm run <task>` to get the average execution 
 
 - [Arg](https://github.com/vercel/arg) : un-opinionated, no-frills CLI argument parser
 - [C8](https://github.com/bcoe/c8) : simple & effective cli for code coverage
+- [Dependency-cruiser](https://github.com/sverweij/dependency-cruiser) : handy tool to validate and visualize dependencies
 - [Esbuild](https://github.com/evanw/esbuild) : an extremely fast JavaScript bundler and minifier
 - [Eslint](https://eslint.org) : super tool to find & fix problems
 - [Github](https://github.com) : for all their great work year after year, pushing OSS forward
