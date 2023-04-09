@@ -3,6 +3,7 @@
 import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'fs/promises'
 import path from 'path'
 import { Nb, arrayUnique, parseJson, slugify } from 'shuutils'
+import sortJson from 'sort-json'
 import { ProjectData, dataDefaults, dataFileName } from './constants'
 import { log } from './logger'
 
@@ -154,6 +155,10 @@ export function jsToJson (js: string): string {
     .replace(/ {2,4}(?<key>\w+):/gu, '  "$<key>":') // add quotes to keys
     .replace(/,\n\}/gu, '\n}') // remove last comma
     .replace(/'/gu, '"') // replace single quotes with double quotes
+}
+
+export function objectToJson (object: Record<string, unknown>) {
+  return JSON.stringify(sortJson(object), undefined, Nb.Two)
 }
 
 export function readableRegex (regex: RegExp): string {
