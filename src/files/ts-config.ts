@@ -76,8 +76,7 @@ export class TsConfigFile extends FileBase {
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.target = 'ES2020'
     isOk = this.couldContains('a non-empty lib compiler option', /"lib":\s\[\n/u, Nb.One, 'ex : "lib": [ "ESNext" ],', true)
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.lib = ['ESNext']
-    isOk = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/u, Nb.One, 'ex : "types": [ "node/fs/promises" ],', true)
-    if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.types = []
+    isOk = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/u, Nb.One, 'ex : "types": [ "node/fs/promises" ],')
     if (this.canFix) this.fileContent = JSON.stringify(json, undefined, Nb.Two)
   }
 
