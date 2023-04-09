@@ -118,7 +118,7 @@ export class FileBase {
       hasFile = fileContent.length > Nb.None
     }
     this.test(hasFile, `has a ${fileName} file`, willJustWarn)
-    return Boolean(fileExists)
+    return hasFile
   }
 
   public async checkNoFileExists (fileName: string): Promise<void> {

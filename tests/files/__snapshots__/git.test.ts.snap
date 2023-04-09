@@ -36,14 +36,11 @@ exports[`git : detect a missing git ignore 1`] = `
     "has-a-gitignore-file",
   ],
   "fileContent": "",
-  "fileName": ".gitignore",
+  "fileName": "",
   "originalFileContent": "",
   "passed": [
     "avoid-main-branch-reference-use-master-instead-git-bclean",
-    "gitignore-has-no-pnpm-lock-exclusion",
   ],
-  "warnings": [
-    "gitignore-could-have-node-modules-node-modules",
-  ],
+  "warnings": [],
 }
 `;
