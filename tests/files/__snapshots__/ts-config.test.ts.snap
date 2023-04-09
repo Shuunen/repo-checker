@@ -2,13 +2,6 @@
 
 exports[`ts config file fix 1`] = `
 "{
-  \\"name\\": \\"John\\",
-  \\"files\\": [
-    \\"src/main.ts\\"
-  ],
-  \\"include\\": [
-    \\"src\\"
-  ],
   \\"compilerOptions\\": {
     \\"allowUnreachableCode\\": false,
     \\"allowUnusedLabels\\": false,
@@ -16,6 +9,10 @@ exports[`ts config file fix 1`] = `
     \\"esModuleInterop\\": true,
     \\"exactOptionalPropertyTypes\\": true,
     \\"forceConsistentCasingInFileNames\\": true,
+    \\"lib\\": [
+      \\"ESNext\\"
+    ],
+    \\"moduleResolution\\": \\"Node\\",
     \\"noFallthroughCasesInSwitch\\": true,
     \\"noImplicitAny\\": true,
     \\"noImplicitOverride\\": true,
@@ -24,15 +21,18 @@ exports[`ts config file fix 1`] = `
     \\"noUncheckedIndexedAccess\\": true,
     \\"noUnusedLocals\\": true,
     \\"noUnusedParameters\\": true,
+    \\"outDir\\": \\"./dist\\",
     \\"skipLibCheck\\": true,
     \\"strict\\": true,
-    \\"outDir\\": \\"./dist\\",
-    \\"moduleResolution\\": \\"Node\\",
-    \\"target\\": \\"ES2020\\",
-    \\"lib\\": [
-      \\"ESNext\\"
-    ]
-  }
+    \\"target\\": \\"ES2020\\"
+  },
+  \\"files\\": [
+    \\"src/main.ts\\"
+  ],
+  \\"include\\": [
+    \\"src\\"
+  ],
+  \\"name\\": \\"John\\"
 }"
 `;
 
@@ -70,13 +70,6 @@ exports[`ts config file fix 2`] = `
   },
   "failed": [],
   "fileContent": "{
-  \\"name\\": \\"John\\",
-  \\"files\\": [
-    \\"src/main.ts\\"
-  ],
-  \\"include\\": [
-    \\"src\\"
-  ],
   \\"compilerOptions\\": {
     \\"allowUnreachableCode\\": false,
     \\"allowUnusedLabels\\": false,
@@ -84,6 +77,10 @@ exports[`ts config file fix 2`] = `
     \\"esModuleInterop\\": true,
     \\"exactOptionalPropertyTypes\\": true,
     \\"forceConsistentCasingInFileNames\\": true,
+    \\"lib\\": [
+      \\"ESNext\\"
+    ],
+    \\"moduleResolution\\": \\"Node\\",
     \\"noFallthroughCasesInSwitch\\": true,
     \\"noImplicitAny\\": true,
     \\"noImplicitOverride\\": true,
@@ -92,15 +89,18 @@ exports[`ts config file fix 2`] = `
     \\"noUncheckedIndexedAccess\\": true,
     \\"noUnusedLocals\\": true,
     \\"noUnusedParameters\\": true,
+    \\"outDir\\": \\"./dist\\",
     \\"skipLibCheck\\": true,
     \\"strict\\": true,
-    \\"outDir\\": \\"./dist\\",
-    \\"moduleResolution\\": \\"Node\\",
-    \\"target\\": \\"ES2020\\",
-    \\"lib\\": [
-      \\"ESNext\\"
-    ]
-  }
+    \\"target\\": \\"ES2020\\"
+  },
+  \\"files\\": [
+    \\"src/main.ts\\"
+  ],
+  \\"include\\": [
+    \\"src\\"
+  ],
+  \\"name\\": \\"John\\"
 }",
   "fileContentObject": {
     "compilerOptions": {

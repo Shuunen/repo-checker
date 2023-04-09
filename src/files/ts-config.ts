@@ -1,6 +1,7 @@
 import { clone, Nb, parseJson } from 'shuutils'
 import { FileBase } from '../file'
 import { log } from '../logger'
+import { objectToJson } from '../utils'
 
 const recommendedCompilerOptions = {
   /* eslint-disable @typescript-eslint/naming-convention */
@@ -77,7 +78,7 @@ export class TsConfigFile extends FileBase {
     isOk = this.couldContains('a non-empty lib compiler option', /"lib":\s\[\n/u, Nb.One, 'ex : "lib": [ "ESNext" ],', true)
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.lib = ['ESNext']
     isOk = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/u, Nb.One, 'ex : "types": [ "node/fs/promises" ],')
-    if (this.canFix) this.fileContent = JSON.stringify(json, undefined, Nb.Two)
+    if (this.canFix) this.fileContent = objectToJson(json)
   }
 
   // eslint-disable-next-line max-statements
