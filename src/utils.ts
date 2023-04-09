@@ -157,7 +157,7 @@ export function jsToJson (js: string): string {
     .replace(/'/gu, '"') // replace single quotes with double quotes
 }
 
-export function objectToJson (object: Record<string, unknown>) {
+export function objectToJson (object: object) {
   return JSON.stringify(sortJson(object), undefined, Nb.Two)
 }
 
