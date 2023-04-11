@@ -76,6 +76,7 @@ Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
 
 | command alias      | date       | main lib targeted   | delay   | comment                                                               |
 | ------------------ | ---------- | ------------------- | ------- | --------------------------------------------------------------------- |
+| eslint             | 2023-04-09 | eslint              | 13 sec  | slower because I added import back                                    |
 | npx-tsc-no-emit    | 2023-04-09 | npx + typescript    | 2,4 s   | wow thanks NPX for **doubling** the amount of time for... nothing     |
 | tsc-no-emit        | 2023-04-09 | typescript          | 1,2 s   | typescript v5                                                         |
 | vitest-c8          | 2023-04-09 | npx & vitest & c8   | 3,6 s   | ok now coverage is only 300ms                                         |
