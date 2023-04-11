@@ -1,8 +1,7 @@
 /* c8 ignore next */
 import { ellipsis, green, Nb, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants'
-import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files/index.js'
-import { NpmRcFile } from './files/npmrc.file'
+import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NpmRcFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files/index.js'
 import { log } from './logger'
 import { augmentData, getProjectFolders } from './utils'
 

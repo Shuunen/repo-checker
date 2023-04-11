@@ -23,7 +23,8 @@
     "eslint-plugin-unicorn": "46",
     "typescript": "5.0",
     "typescript-run": "0",
-    "vitest": "0.30"
+    "vitest": "0.30",
+    "watchlist": "0"
   },
   "files": [
     "dist/*.min.cjs",
@@ -45,14 +46,16 @@
     "url": "https://github.com/Shuunen/repo-checker.git"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs && unique-mark dist/repo-check.min.cjs && echo build success",
-    "check": "npm run build && npm run lint && npm start && npm test && echo check success",
-    "dev": "ts-run src -w src",
+    "build": "pnpm build:app && unique-mark dist/repo-check.min.cjs && echo build success",
+    "build:app": "esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs",
+    "build:start": "pnpm build:app && node .",
+    "check": "pnpm start && pnpm lint && npm test && echo check success",
+    "dev": "watchlist src -eager -- pnpm build:start",
     "lint": "tsc --noEmit && eslint --cache --fix --ext .js,.ts . && depcruise src --config && echo lint success",
-    "postversion": "git push && git push --tags && npm run build && npm publish",
-    "preversion": "npm run check",
-    "start": "ts-run src && echo start success",
-    "test": "npm run test:watch -- --run && echo test success",
+    "postversion": "git push && git push --tags && pnpm build && npm publish",
+    "preversion": "pnpm check",
+    "start": "pnpm build:start && echo start success",
+    "test": "pnpm test:watch --run && echo test success",
     "test:watch": "vitest --coverage"
   },
   "version": "1.30.1"

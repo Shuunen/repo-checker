@@ -45,6 +45,9 @@ devDependencies:
   vitest:
     specifier: '0.30'
     version: 0.30.0
+  watchlist:
+    specifier: '0'
+    version: 0.0.0
 
 packages:
 
@@ -7931,6 +7934,10 @@ packages:
       semver: 7.3.8
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /watchlist@0.0.0:
+    resolution: {integrity: sha512-LyOfSRb4a4LGRy5zEvobVALGgrN4EhaLeF/kLoF0INlslIj6vRcjKZkVEgbpioGzlMeq2ksIgvhVhn4W8x1hPA==}
     dev: true
 
   /watskeburt@0.10.1:

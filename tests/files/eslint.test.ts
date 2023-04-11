@@ -166,3 +166,46 @@ it('eslint K config file with just rules (no override)', async () => {
   await instance.end()
   expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
+
+it('eslint L fix file content', async () => {
+  log.disable()
+  const instance = new EsLintFile(vueProjectFolder, new ProjectData({}), true)
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
+  instance.fileContent = `{
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:unicorn/recommended"
+    ],
+    "rules": {}
+  }`
+  await instance.start()
+  await instance.end()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
+})
+
+it('eslint M fix rules in overrides', async () => {
+  log.disable()
+  const instance = new EsLintFile(tsProjectFolder, new ProjectData({}), true)
+  instance.fileExists = promiseTrue
+  instance.inspectFile = promiseVoid
+  instance.fileContent = `{
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:unicorn/recommended"
+    ],
+    "overrides": [
+      {
+        "files": ["*.ts"],
+        "rules": {
+          "unicorn/filename-case": "off"
+        }
+      }
+    ]
+  }`
+  await instance.start()
+  await instance.end()
+  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
+})

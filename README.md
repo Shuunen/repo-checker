@@ -160,3 +160,4 @@ Each task is run 3 times via `time npm run <task>` to get the average execution 
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
 - [Shuutils](https://github.com/Shuunen/shuutils) : collection of pure JS utils
 - [Vitest](https://github.com/vitest-dev/vitest) : super fast vite-native testing framework
+- [Watchlist](https://github.com/lukeed/watchlist) : recursively watch a list of directories & run a command on any file system
