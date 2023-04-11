@@ -1,5 +1,5 @@
 /* c8 ignore next 4 */
-import path from 'path' // eslint-disable-line no-restricted-imports
+import path from 'path'
 import { Nb } from 'shuutils'
 
 export const home = process.env.HOME ?? '' // when does HOME is not defined ?

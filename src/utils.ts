@@ -1,5 +1,4 @@
 /* c8 ignore next */
-/* eslint-disable no-restricted-imports */
 import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'fs/promises'
 import path from 'path'
 import { Nb, arrayUnique, parseJson, slugify } from 'shuutils'

@@ -2,8 +2,7 @@ import arg from 'arg'
 import { LogLevel, Nb, parseJson } from 'shuutils'
 import { name } from '../package.json'
 import { check } from './check'
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import { dataDefaults, dataFileName, home, ProjectData, templatePath } from './constants'
+import { ProjectData, dataDefaults, dataFileName, home, templatePath } from './constants' // eslint-disable-line @typescript-eslint/consistent-type-imports
 import { log } from './logger'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils'
 

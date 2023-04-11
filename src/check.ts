@@ -42,7 +42,7 @@ interface CheckOptions {
   folderPath: string
 }
 
-export function report ({ passed = [], warnings = [], failed = [] }: Indicators): void {
+function report ({ passed = [], warnings = [], failed = [] }: Indicators): void {
   log.info('Report :')
   reportLog(green, passed.length, 'are successful')
   reportLog(yellow, warnings.length, 'triggered warnings')

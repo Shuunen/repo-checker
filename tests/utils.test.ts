@@ -1,4 +1,4 @@
-import { mkdirSync, rmSync } from 'fs' // eslint-disable-line no-restricted-imports
+import { mkdirSync, rmSync } from 'fs'
 import { Nb } from 'shuutils'
 import { expect, it } from 'vitest'
 import { dataDefaults, dataFileName, repoCheckerPath } from '../src/constants'
