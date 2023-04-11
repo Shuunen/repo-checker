@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-restricted-imports, unicorn/import-style
+// eslint-disable-next-line unicorn/import-style
 import { dirname } from 'path'
 import { Nb, clone, sleep } from 'shuutils'
 import type { FileBase } from '../src/file'
