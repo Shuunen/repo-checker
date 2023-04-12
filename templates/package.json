@@ -18,13 +18,13 @@
   },
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/my-app.min.cjs",
-    "check": "npm run build && repo-check && npm run lint && npm start && npm test",
+    "check": "pnpm build && repo-check && pnpm lint && npm start && npm test",
     "dev": "ts-run src -w src",
-    "lint": "tsc --noEmit && eslint --cache --fix --ignore-path .gitignore --ext .js,.ts . && npm run check",
-    "postversion": "git push && git push --tags && npm run build && npm publish",
-    "preversion": "npm run ci",
+    "lint": "tsc --noEmit && eslint --cache --fix --ignore-path .gitignore --ext .js,.ts . && pnpm check",
+    "postversion": "git push && git push --tags && pnpm build && npm publish",
+    "preversion": "pnpm check",
     "start": "ts-run src",
-    "test": "npm run test:watch -- --run && echo test success",
+    "test": "pnpm test:watch -- --run && echo test success",
     "test:watch": "vitest --coverage"
   },
   "version": "0.0.1"
