@@ -5,7 +5,6 @@ import { FileBase } from '../file'
 import { log } from '../logger'
 import { findInFolder, join } from '../utils'
 
-/* c8 ignore start */
 export class PackageJsonFile extends FileBase {
 
   // eslint-disable-next-line max-statements
@@ -58,11 +57,6 @@ export class PackageJsonFile extends FileBase {
     this.couldContains('no ci script', /"ci": "/u, Nb.Zero, 'avoid using "ci" script, use "check" instead')
   }
 
-  private checkBuild () {
-    if (!this.fileContent.includes('"build":')) return
-    if (this.fileContent.includes('parcel build')) this.shouldContains('a parcel build with report enabled', /"parcel build.*--detailed-report",/u)
-  }
-
   private suggestAlternatives () {
     this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(?:chalk|colorette|colors)"/u, Nb.None)
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/u, Nb.None)
@@ -107,7 +101,6 @@ export class PackageJsonFile extends FileBase {
   }
 
   private checkDependenciesPrecision () {
-    /* useless precision in deps versions */
     const hasNoPatch = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+"/gu, Nb.None, 'patch precision is rarely useful', true)
     // eslint-disable-next-line prefer-named-capture-group, regexp/prefer-named-capture-group
     if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gu, '$1')
@@ -128,7 +121,6 @@ export class PackageJsonFile extends FileBase {
     this.checkProperties()
     this.checkScripts()
     this.checkEchoes()
-    this.checkBuild()
     await this.checkDependencies()
     this.suggestAlternatives()
   }
@@ -138,6 +130,7 @@ export class PackageJsonFile extends FileBase {
     if (!hasMaxSize) return
     const hasFile = await this.checkFileExists(filePath)
     this.test(hasFile, `main file specified in package.json (${filePath}) exists on disk (be sure to build before run repo-check)`)
+    /* c8 ignore next */
     if (!hasFile) return
     const sizeKo = await this.getFileSizeInKo(filePath)
     const isSizeOk = sizeKo <= maxSizeKo
@@ -150,8 +143,7 @@ export class PackageJsonFile extends FileBase {
       log.debug('no main file specified in package.json')
       return
     }
-    const { maxSizeKo } = this.data
-    await this.checkMaxSize(mainFilePath, maxSizeKo)
+    await this.checkMaxSize(mainFilePath, this.data.maxSizeKo)
   }
 
   private async checkDependenciesUsagesUvu (): Promise<void> {
@@ -173,6 +165,7 @@ export class PackageJsonFile extends FileBase {
   private async checkDependencies (): Promise<void> {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
     const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
+    /* c8 ignore next */
     if (!hasDependencies && !hasDevelopmentDependencies) return
     this.checkDependenciesUnwanted()
     this.checkDependenciesPrecision()
@@ -181,5 +174,3 @@ export class PackageJsonFile extends FileBase {
   }
 
 }
-
-/* c8 ignore stop */

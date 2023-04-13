@@ -1,13 +1,16 @@
 {
   "author": "Michael Scott-Junior",
   "dependencies": {
-    "typescript": "latest"
+    "esbuild-plugin-run": "latest",
+    "typescript": "latest",
+    "uvu": "9"
   },
   "description": "description",
   "license": "MIT",
   "main": "pathToMain",
   "scripts": {
     "build": "ts-node build.ts",
+    "prepublish": "npm run build",
     "start": "node pathToMain"
   },
   "version": "1.0.0"

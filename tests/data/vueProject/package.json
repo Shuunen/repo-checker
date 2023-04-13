@@ -6,7 +6,6 @@
     "vue": "latest"
   },
   "description": "description",
-  "main": "pathToMain",
   "name": "name",
   "version": "1.0.0"
 }

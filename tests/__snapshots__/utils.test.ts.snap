@@ -128,7 +128,7 @@ exports[`augmentData C tsProjectFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
-  "hasTaskPrefix": false,
+  "hasTaskPrefix": true,
   "isModule": false,
   "isPublishedPackage": false,
   "isQuiet": false,
@@ -159,7 +159,7 @@ exports[`augmentData C tsProjectFolder with local 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
-  "hasTaskPrefix": false,
+  "hasTaskPrefix": true,
   "isModule": false,
   "isPublishedPackage": false,
   "isQuiet": false,
@@ -438,7 +438,7 @@ exports[`augmentDataWithPackageJson C tsProjectFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
-  "hasTaskPrefix": false,
+  "hasTaskPrefix": true,
   "isModule": false,
   "isPublishedPackage": false,
   "isQuiet": false,
