@@ -167,5 +167,6 @@ export function readableRegex (regex: RegExp): string {
 }
 
 export { unlink as deleteFile, writeFile } from 'fs/promises'
+/* c8 ignore next */
 export { join, resolve } from 'path'
 

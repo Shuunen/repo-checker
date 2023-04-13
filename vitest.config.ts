@@ -5,11 +5,8 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     coverage: {
-      // rollback to 100: true,
-      lines: 95,
-      statements: 95,
-      functions: 95,
-      branches: 95,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      100: true,
       reporter: ['text', 'lcov', 'html'],
       exclude: ['tests'],
     },
