@@ -32,8 +32,10 @@ export const tsProjectFolder = join(testFolder, 'data', 'tsProject')
 
 export const dataProjectsFolder = join(testFolder, 'data')
 
-export function cleanInstanceForSnap (instance: FileBase) {
+export function cleanInstanceForSnap (instance: FileBase, ...bonusKeys: string[]) {
   const clean = clone<Partial<FileBase>>(instance)
   delete clean.folderPath
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @typescript-eslint/consistent-type-assertions
+  for (const key of bonusKeys) if (key in clean) delete (clean as Record<string, unknown>)[key]
   return clean
 }

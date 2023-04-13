@@ -11,7 +11,7 @@ const missingFilename = 'some-file.log'
 const missingFilepath = join(repoCheckerPath, missingFilename)
 const fakeContent = 'zorglub'
 
-it('file : simple validator', async () => {
+it('file A simple validator', async () => {
   class MyFile extends FileBase {
     public async start (): Promise<void> {
       await writeFile(missingFilepath, 'Foobar content')
@@ -37,7 +37,7 @@ it('file : simple validator', async () => {
   expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
-it('file : validator with fix', async () => {
+it('file B validator with fix', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await this.checkFileExists(existingFilename)
@@ -54,7 +54,7 @@ it('file : validator with fix', async () => {
   expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
-it('file : validator with fix & force, overwrite a problematic file with template', async () => {
+it('file C validator with fix & force, overwrite a problematic file with template', async () => {
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
       await this.inspectFile(existingFilename)
@@ -68,10 +68,10 @@ it('file : validator with fix & force, overwrite a problematic file with templat
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ isQuiet: true }), true, true)
   await instance.start()
   await instance.end()
-  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance, 'fileContent', 'originalFileContent')).toMatchSnapshot() // remove fileContent & originalFileContent to avoid snap being polluted by nvrmc content
 })
 
-it('file : validator with fix & force, update a problematic file on the go', async () => {
+it('file D validator with fix & force, update a problematic file on the go', async () => {
   let originalContent = ''
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
@@ -83,12 +83,12 @@ it('file : validator with fix & force, update a problematic file on the go', asy
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ isQuiet: true }), true, true)
   await instance.start()
   await instance.end()
-  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance, 'originalFileContent')).toMatchSnapshot() // remove originalFileContent to avoid snap being polluted by nvrmc content
   expect(await readFile(existingFilepath), 'file content updated').toBe(fakeContent)
   await writeFile(existingFilepath, originalContent) // restore the file
 })
 
-it('file : validator without force cannot fix a problematic file on the go', async () => {
+it('file E validator without force cannot fix a problematic file on the go', async () => {
   let originalContent = ''
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
@@ -101,11 +101,11 @@ it('file : validator without force cannot fix a problematic file on the go', asy
   const instance = new MyFileFixForce(repoCheckerPath, new ProjectData({ isQuiet: true }), true, false)
   await instance.start()
   await instance.end()
-  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance, 'originalFileContent')).toMatchSnapshot() // remove originalFileContent to avoid snap being polluted by nvrmc content
   expect(await readFile(existingFilepath)).toBe(originalContent)
 })
 
-it('file : validator with fix cannot fix if the template require data that is missing', async () => {
+it('file F validator with fix cannot fix if the template require data that is missing', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await this.checkFileExists('template-example.json')
@@ -117,7 +117,7 @@ it('file : validator with fix cannot fix if the template require data that is mi
   expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
-it('file : validator can detect a missing schema', async () => {
+it('file G validator can detect a missing schema', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await sleep(Nb.One)
@@ -131,7 +131,7 @@ it('file : validator can detect a missing schema', async () => {
   expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
-it('file : validator can detect an existing schema', async () => {
+it('file H validator can detect an existing schema', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await sleep(Nb.One)
@@ -149,7 +149,7 @@ it('file : validator can detect an existing schema', async () => {
   expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
 })
 
-it('file : validator can fix a missing schema', async () => {
+it('file I validator can fix a missing schema', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await sleep(Nb.One)

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`file : simple validator 1`] = `
+exports[`file A simple validator 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -50,231 +50,7 @@ exports[`file : simple validator 1`] = `
 }
 `;
 
-exports[`file : validator can detect a missing schema 1`] = `
-{
-  "canFix": false,
-  "canForce": false,
-  "data": {
-    "canAutoMergeDeps": true,
-    "hasMainBranch": false,
-    "hasTaskPrefix": false,
-    "isModule": false,
-    "isPublishedPackage": false,
-    "isQuiet": true,
-    "isUsingC8": false,
-    "isUsingDependencyCruiser": false,
-    "isUsingEslint": false,
-    "isUsingNyc": false,
-    "isUsingShuutils": false,
-    "isUsingTailwind": false,
-    "isUsingTypescript": false,
-    "isUsingVue": false,
-    "isWebPublished": false,
-    "license": "GPL-3.0",
-    "maxSizeKo": 1,
-    "packageName": "",
-    "repoId": "a-great-repo",
-    "shouldAvoidSass": true,
-    "userId": "Shuunen",
-    "userIdLowercase": "shuunen",
-    "userMail": "romain.racamier@gmail.com",
-    "userName": "Romain Racamier-Lafon",
-    "webUrl": "https://my-website.com",
-    "willGenerateReport": true,
-  },
-  "failed": [],
-  "fileContent": "{}",
-  "fileName": "",
-  "originalFileContent": "",
-  "passed": [],
-  "warnings": [
-    "could-have-a-schema-declaration-like-schema-does-not-exist-43m30m-fixable-39m49m",
-  ],
-}
-`;
-
-exports[`file : validator can detect an existing schema 1`] = `
-{
-  "canFix": false,
-  "canForce": false,
-  "data": {
-    "canAutoMergeDeps": true,
-    "hasMainBranch": false,
-    "hasTaskPrefix": false,
-    "isModule": false,
-    "isPublishedPackage": false,
-    "isQuiet": true,
-    "isUsingC8": false,
-    "isUsingDependencyCruiser": false,
-    "isUsingEslint": false,
-    "isUsingNyc": false,
-    "isUsingShuutils": false,
-    "isUsingTailwind": false,
-    "isUsingTypescript": false,
-    "isUsingVue": false,
-    "isWebPublished": false,
-    "license": "GPL-3.0",
-    "maxSizeKo": 1,
-    "packageName": "",
-    "repoId": "a-great-repo",
-    "shouldAvoidSass": true,
-    "userId": "Shuunen",
-    "userIdLowercase": "shuunen",
-    "userMail": "romain.racamier@gmail.com",
-    "userName": "Romain Racamier-Lafon",
-    "webUrl": "https://my-website.com",
-    "willGenerateReport": true,
-  },
-  "failed": [],
-  "fileContent": "{
-        \\"something\\": \\"else\\",
-        \\"$schema\\": \\"https://json.schemastore.org/does-exist\\",
-        \\"age\\": 42
-      }",
-  "fileName": "",
-  "originalFileContent": "",
-  "passed": [
-    "has-a-schema-declaration",
-  ],
-  "warnings": [],
-}
-`;
-
-exports[`file : validator can fix a missing schema 1`] = `
-{
-  "canFix": true,
-  "canForce": false,
-  "data": {
-    "canAutoMergeDeps": true,
-    "hasMainBranch": false,
-    "hasTaskPrefix": false,
-    "isModule": false,
-    "isPublishedPackage": false,
-    "isQuiet": true,
-    "isUsingC8": false,
-    "isUsingDependencyCruiser": false,
-    "isUsingEslint": false,
-    "isUsingNyc": false,
-    "isUsingShuutils": false,
-    "isUsingTailwind": false,
-    "isUsingTypescript": false,
-    "isUsingVue": false,
-    "isWebPublished": false,
-    "license": "GPL-3.0",
-    "maxSizeKo": 1,
-    "packageName": "",
-    "repoId": "a-great-repo",
-    "shouldAvoidSass": true,
-    "userId": "Shuunen",
-    "userIdLowercase": "shuunen",
-    "userMail": "romain.racamier@gmail.com",
-    "userName": "Romain Racamier-Lafon",
-    "webUrl": "https://my-website.com",
-    "willGenerateReport": true,
-  },
-  "failed": [],
-  "fileContent": "{
-        \\"$schema\\": \\"https://json.schemastore.org/does-exist-too\\",
-        \\"something\\": \\"else\\",
-        \\"age\\": 42
-      }",
-  "fileName": "",
-  "originalFileContent": "",
-  "passed": [],
-  "warnings": [],
-}
-`;
-
-exports[`file : validator with fix & force, overwrite a problematic file with template 1`] = `
-{
-  "canFix": true,
-  "canForce": true,
-  "data": {
-    "canAutoMergeDeps": true,
-    "hasMainBranch": false,
-    "hasTaskPrefix": false,
-    "isModule": false,
-    "isPublishedPackage": false,
-    "isQuiet": true,
-    "isUsingC8": false,
-    "isUsingDependencyCruiser": false,
-    "isUsingEslint": false,
-    "isUsingNyc": false,
-    "isUsingShuutils": false,
-    "isUsingTailwind": false,
-    "isUsingTypescript": false,
-    "isUsingVue": false,
-    "isWebPublished": false,
-    "license": "GPL-3.0",
-    "maxSizeKo": 1,
-    "packageName": "",
-    "repoId": "a-great-repo",
-    "shouldAvoidSass": true,
-    "userId": "Shuunen",
-    "userIdLowercase": "shuunen",
-    "userMail": "romain.racamier@gmail.com",
-    "userName": "Romain Racamier-Lafon",
-    "webUrl": "https://my-website.com",
-    "willGenerateReport": true,
-  },
-  "failed": [
-    "nvmrc-does-not-have-a-regular-nvmrc-file-content-travers",
-  ],
-  "fileContent": "18.15.0
-",
-  "fileName": ".nvmrc",
-  "originalFileContent": "18.15.0
-",
-  "passed": [
-    "nvmrc-has-two-dots",
-  ],
-  "warnings": [],
-}
-`;
-
-exports[`file : validator with fix & force, update a problematic file on the go 1`] = `
-{
-  "canFix": true,
-  "canForce": true,
-  "data": {
-    "canAutoMergeDeps": true,
-    "hasMainBranch": false,
-    "hasTaskPrefix": false,
-    "isModule": false,
-    "isPublishedPackage": false,
-    "isQuiet": true,
-    "isUsingC8": false,
-    "isUsingDependencyCruiser": false,
-    "isUsingEslint": false,
-    "isUsingNyc": false,
-    "isUsingShuutils": false,
-    "isUsingTailwind": false,
-    "isUsingTypescript": false,
-    "isUsingVue": false,
-    "isWebPublished": false,
-    "license": "GPL-3.0",
-    "maxSizeKo": 1,
-    "packageName": "",
-    "repoId": "a-great-repo",
-    "shouldAvoidSass": true,
-    "userId": "Shuunen",
-    "userIdLowercase": "shuunen",
-    "userMail": "romain.racamier@gmail.com",
-    "userName": "Romain Racamier-Lafon",
-    "webUrl": "https://my-website.com",
-    "willGenerateReport": true,
-  },
-  "failed": [],
-  "fileContent": "zorglub",
-  "fileName": ".nvmrc",
-  "originalFileContent": "18.15.0
-",
-  "passed": [],
-  "warnings": [],
-}
-`;
-
-exports[`file : validator with fix 1`] = `
+exports[`file B validator with fix 1`] = `
 {
   "canFix": true,
   "canForce": false,
@@ -321,7 +97,132 @@ exports[`file : validator with fix 1`] = `
 }
 `;
 
-exports[`file : validator with fix cannot fix if the template require data that is missing 1`] = `
+exports[`file C validator with fix & force, overwrite a problematic file with template 1`] = `
+{
+  "canFix": true,
+  "canForce": true,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "nvmrc-does-not-have-a-regular-nvmrc-file-content-travers",
+  ],
+  "fileName": ".nvmrc",
+  "passed": [
+    "nvmrc-has-two-dots",
+  ],
+  "warnings": [],
+}
+`;
+
+exports[`file D validator with fix & force, update a problematic file on the go 1`] = `
+{
+  "canFix": true,
+  "canForce": true,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [],
+  "fileContent": "zorglub",
+  "fileName": ".nvmrc",
+  "passed": [],
+  "warnings": [],
+}
+`;
+
+exports[`file E validator without force cannot fix a problematic file on the go 1`] = `
+{
+  "canFix": true,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "nvmrc-does-not-have-a-weird-stuff-zorglub",
+  ],
+  "fileContent": "zorglub",
+  "fileName": ".nvmrc",
+  "passed": [],
+  "warnings": [],
+}
+`;
+
+exports[`file F validator with fix cannot fix if the template require data that is missing 1`] = `
 {
   "canFix": true,
   "canForce": false,
@@ -364,7 +265,97 @@ exports[`file : validator with fix cannot fix if the template require data that 
 }
 `;
 
-exports[`file : validator without force cannot fix a problematic file on the go 1`] = `
+exports[`file G validator can detect a missing schema 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [],
+  "fileContent": "{}",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [],
+  "warnings": [
+    "could-have-a-schema-declaration-like-schema-does-not-exist-43m30m-fixable-39m49m",
+  ],
+}
+`;
+
+exports[`file H validator can detect an existing schema 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [],
+  "fileContent": "{
+        \\"something\\": \\"else\\",
+        \\"$schema\\": \\"https://json.schemastore.org/does-exist\\",
+        \\"age\\": 42
+      }",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-a-schema-declaration",
+  ],
+  "warnings": [],
+}
+`;
+
+exports[`file I validator can fix a missing schema 1`] = `
 {
   "canFix": true,
   "canForce": false,
@@ -396,13 +387,14 @@ exports[`file : validator without force cannot fix a problematic file on the go 
     "webUrl": "https://my-website.com",
     "willGenerateReport": true,
   },
-  "failed": [
-    "nvmrc-does-not-have-a-weird-stuff-zorglub",
-  ],
-  "fileContent": "zorglub",
-  "fileName": ".nvmrc",
-  "originalFileContent": "18.15.0
-",
+  "failed": [],
+  "fileContent": "{
+        \\"$schema\\": \\"https://json.schemastore.org/does-exist-too\\",
+        \\"something\\": \\"else\\",
+        \\"age\\": 42
+      }",
+  "fileName": "",
+  "originalFileContent": "",
   "passed": [],
   "warnings": [],
 }
