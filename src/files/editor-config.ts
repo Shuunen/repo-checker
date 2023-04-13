@@ -1,4 +1,3 @@
-import { Nb } from 'shuutils'
 import { FileBase } from '../file'
 
 export class EditorConfigFile extends FileBase {
@@ -13,6 +12,6 @@ export class EditorConfigFile extends FileBase {
     this.couldContains('whitespace trailing', /trim_trailing_whitespace = true/u)
     this.couldContains('final new line rule', /insert_final_newline = true/u)
     // eslint-disable-next-line require-unicode-regexp, regexp/require-unicode-regexp, unicorn/better-regex
-    this.couldContains('no specific html indent rule', /\[\*\.html\]\nindent_size = 4/, Nb.None)
+    this.couldContains('no specific html indent rule', /\[\*\.html\]\nindent_size = 4/, 0)
   }
 }

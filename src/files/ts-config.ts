@@ -1,4 +1,4 @@
-import { clone, Nb, parseJson } from 'shuutils'
+import { clone, parseJson } from 'shuutils'
 import { FileBase } from '../file'
 import { log } from '../logger'
 import { objectToJson } from '../utils'
@@ -37,13 +37,13 @@ export class TsConfigFile extends FileBase {
 
   private checkFileManagement (): void {
     const files = this.fileContentObject?.files ?? []
-    if (files.length > Nb.Zero) {
+    if (files.length > 0) {
       const hasNoWildcard = !files.some(file => file.includes('*'))
       this.test(hasNoWildcard, 'does not use wildcard in files section')
     }
     /* c8 ignore next */
     const include = this.fileContentObject?.include ?? []
-    if (include.length > Nb.Zero) {
+    if (include.length > 0) {
       const hasNoGlob = !include.some(file => file.endsWith('**/*'))
       this.test(hasNoGlob, '"my-folder/**/*" is not needed in include section, "my-folder" is enough', true)
     }
@@ -54,7 +54,7 @@ export class TsConfigFile extends FileBase {
     /* c8 ignore next */
     if (this.fileContentObject === undefined) { log.error('cannot check compiler options without file content'); return }
     const json = this.fileContentObject
-    let isOk = this.couldContains('an include section', /"include"/u, Nb.One, undefined, true)
+    let isOk = this.couldContains('an include section', /"include"/u, 1, undefined, true)
     if (!isOk && this.canFix) json.include = ['src']
     if (this.canFix && json.compilerOptions === undefined) json.compilerOptions = clone(recommendedCompilerOptions)
     // eslint-disable-next-line guard-for-in
@@ -65,19 +65,19 @@ export class TsConfigFile extends FileBase {
       const value = recommendedCompilerOptions[key]
       // eslint-disable-next-line security/detect-non-literal-regexp
       const regex = new RegExp(`"${key}": ${String(value)}`, 'u')
-      isOk = this.couldContains(`a ${key} compiler option`, regex, Nb.One, undefined, true)
+      isOk = this.couldContains(`a ${key} compiler option`, regex, 1, undefined, true)
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions[key] = value as never
     }
-    isOk = this.couldContains('a outDir compiler option', /"outDir": "/u, Nb.One, 'ex : "outDir": "./dist",', true)
+    isOk = this.couldContains('a outDir compiler option', /"outDir": "/u, 1, 'ex : "outDir": "./dist",', true)
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.outDir = './dist'
-    isOk = this.couldContains('a moduleResolution compiler option', /"moduleResolution": "/u, Nb.One, 'ex : "moduleResolution": "Node",', true)
+    isOk = this.couldContains('a moduleResolution compiler option', /"moduleResolution": "/u, 1, 'ex : "moduleResolution": "Node",', true)
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.moduleResolution = 'Node'
-    isOk = this.couldContains('a target compiler option', /"target": "/u, Nb.One, 'ex : "target": "ES2020",', true)
+    isOk = this.couldContains('a target compiler option', /"target": "/u, 1, 'ex : "target": "ES2020",', true)
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.target = 'ES2020'
-    isOk = this.couldContains('a non-empty lib compiler option', /"lib":\s\[\n/u, Nb.One, 'ex : "lib": [ "ESNext" ],', true)
+    isOk = this.couldContains('a non-empty lib compiler option', /"lib":\s\[\n/u, 1, 'ex : "lib": [ "ESNext" ],', true)
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.lib = ['ESNext']
-    isOk = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/u, Nb.One, 'ex : "types": [ "node/fs/promises" ],')
+    isOk = this.couldContains('a non-empty types compiler option', /"types":\s\[\n/u, 1, 'ex : "types": [ "node/fs/promises" ],')
     if (this.canFix) this.fileContent = objectToJson(json)
   }
 

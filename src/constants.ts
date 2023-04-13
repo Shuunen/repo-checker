@@ -1,6 +1,5 @@
 /* c8 ignore next 4 */
 import path from 'path'
-import { Nb } from 'shuutils'
 
 export const home = process.env.HOME ?? '' // when does HOME is not defined ?
 /**
@@ -48,7 +47,7 @@ export class ProjectData {
 
   public license = 'GPL-3.0'
 
-  public maxSizeKo = Number(Nb.One)
+  public maxSizeKo = 1
 
   public packageName = ''
 

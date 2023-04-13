@@ -1,5 +1,5 @@
 /* c8 ignore next */
-import { ellipsis, green, Nb, red, yellow } from 'shuutils'
+import { ellipsis, green, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants'
 import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NpmRcFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files/index.js'
 import { log } from './logger'
@@ -29,7 +29,7 @@ const checkers = [
 function reportLog (color: (string: string) => string, count: number, message: string): void {
   const line = `‣ ${count} check${count > 1 ? 's' : ''} ${message}`
   /* c8 ignore next */
-  log.info(count === Nb.None ? line : color(line))
+  log.info(count === 0 ? line : color(line))
 }
 
 interface CheckOptions {
@@ -57,15 +57,15 @@ export async function check ({ folderPath, data, canFix = false, canForce = fals
   let failed: string[] = []
   log.options.isActive = !data.isQuiet
   /* c8 ignore next */
-  if (folders.length === Nb.Zero) log.warn('no folder to check', folderPath)
+  if (folders.length === 0) log.warn('no folder to check', folderPath)
   /* eslint-disable no-await-in-loop */
   for (const folder of folders) {
-    if (canFailStop && failed.length > Nb.None) {
+    if (canFailStop && failed.length > 0) {
       log.warn('stop checking other folders because of failures & --fail-stop option')
       break
     }
     log.info('Checking folder :', folder)
-    const dataFolder = await augmentData(folder, data, folders.length > Nb.One)
+    const dataFolder = await augmentData(folder, data, folders.length > 1)
     for (const Checker of checkers) { // eslint-disable-line @typescript-eslint/naming-convention
       const instance = new Checker(folder, dataFolder, canFix, canForce)
       await instance.start()
@@ -77,6 +77,7 @@ export async function check ({ folderPath, data, canFix = false, canForce = fals
   }
   /* eslint-enable no-await-in-loop */
   report({ passed, warnings, failed })
-  if (canThrow && failed.length > Nb.None) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), Nb.Hundred)}`)
+  const maxLogLength = 100
+  if (canThrow && failed.length > 0) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), maxLogLength)}`)
   return { passed, warnings, failed }
 }

@@ -1,26 +1,26 @@
 // eslint-disable-next-line unicorn/import-style
 import { dirname } from 'path'
-import { Nb, clone, sleep } from 'shuutils'
+import { clone, sleep } from 'shuutils'
 import type { FileBase } from '../src/file'
 import { join } from '../src/utils'
 
 export async function promiseValue<Type> (value: Type): Promise<Type> {
-  await sleep(Nb.One)
+  await sleep(1)
   return value
 }
 
 export async function promiseTrue (): Promise<true> {
-  await sleep(Nb.One)
+  await sleep(1)
   return true
 }
 
 export async function promiseFalse (): Promise<false> {
-  await sleep(Nb.One)
+  await sleep(1)
   return false
 }
 
 export async function promiseVoid (): Promise<void> {
-  await sleep(Nb.One)
+  await sleep(1)
 }
 
 // eslint-disable-next-line putout/putout

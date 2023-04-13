@@ -1,10 +1,13 @@
 /* c8 ignore next */
 import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'fs/promises'
 import path from 'path'
-import { Nb, arrayUnique, parseJson, slugify } from 'shuutils'
+import { arrayUnique, parseJson, slugify } from 'shuutils'
 import sortJson from 'sort-json'
 import { ProjectData, dataDefaults, dataFileName } from './constants'
 import { log } from './logger'
+
+const maxFilesToScan = 1000
+const jsonSpaceIndent = 2
 
 export async function fileExists (filePath: string): Promise<boolean> {
   return await statAsync(filePath).then(() => true).catch(() => false)
@@ -108,7 +111,7 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
 }
 
 export async function getFileSizeInKo (filePath: string): Promise<number> {
-  if (!await fileExists(filePath)) return Nb.Zero
+  if (!await fileExists(filePath)) return 0
   const statData = await statAsync(filePath)
   const kb = 1024
   const size = Math.round(statData.size / kb)
@@ -117,7 +120,7 @@ export async function getFileSizeInKo (filePath: string): Promise<number> {
 }
 
 // eslint-disable-next-line max-params, max-statements, sonarjs/cognitive-complexity
-export async function findInFolder (folderPath: string, pattern: RegExp, ignoredInput = ['node_modules', '.git'], count = Nb.None): Promise<string[]> {
+export async function findInFolder (folderPath: string, pattern: RegExp, ignoredInput = ['node_modules', '.git'], count = 0): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
   const matches: string[] = []
   let ignored = arrayUnique(ignoredInput)
@@ -128,13 +131,13 @@ export async function findInFolder (folderPath: string, pattern: RegExp, ignored
   for (const filePath of filePaths) {
     if (ignored.includes(filePath)) continue  // eslint-disable-line no-continue
     /* c8 ignore next */
-    if (count > Nb.Thousand) throw new Error('too many files to scan, please reduce the scope')
+    if (count > maxFilesToScan) throw new Error('too many files to scan, please reduce the scope')
     const target = path.join(folderPath, filePath)
     const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null, no-await-in-loop
     /* c8 ignore next */
     if (!statData) continue  // eslint-disable-line no-continue
     if (statData.isDirectory()) {
-      matches.push(...await findInFolder(target, pattern, ignored, count + 1)) // eslint-disable-line no-await-in-loop, total-functions/no-unsafe-enum-assignment
+      matches.push(...await findInFolder(target, pattern, ignored, count + 1)) // eslint-disable-line no-await-in-loop
       continue  // eslint-disable-line no-continue
     }
     // eslint-disable-next-line no-await-in-loop
@@ -157,7 +160,7 @@ export function jsToJson (js: string): string {
 }
 
 export function objectToJson (object: object) {
-  return JSON.stringify(sortJson(object), undefined, Nb.Two)
+  return JSON.stringify(sortJson(object), undefined, jsonSpaceIndent)
 }
 
 export function readableRegex (regex: RegExp): string {

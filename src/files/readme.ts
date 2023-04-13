@@ -2,7 +2,6 @@
 /* eslint-disable regexp/prefer-named-capture-group */
 /* eslint-disable prefer-named-capture-group */
 /* eslint-disable max-classes-per-file */
-import { Nb } from 'shuutils'
 import { dataDefaults } from '../constants'
 import { FileBase } from '../file'
 import { log } from '../logger'
@@ -29,10 +28,10 @@ class Badge {
 /* c8 ignore start */
 export class ReadmeFile extends FileBase {
   private checkMarkdown (): void {
-    let hasNoCrLf = this.shouldContains('no CRLF Windows carriage return', /\r/u, Nb.None, false, 'prefer Unix LF', true)
+    let hasNoCrLf = this.shouldContains('no CRLF Windows carriage return', /\r/u, 0, false, 'prefer Unix LF', true)
     if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\r\n/gu, '\n')
     const starLists = /\n\*\s[\w[]/gu
-    hasNoCrLf = this.couldContains('no star flavored list', starLists, Nb.None, 'should use dash flavor', true)
+    hasNoCrLf = this.couldContains('no star flavored list', starLists, 0, 'should use dash flavor', true)
     if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\n\*\s(?=[\w[])/gu, '\n- ')
   }
 
@@ -47,7 +46,7 @@ export class ReadmeFile extends FileBase {
       const message = `${badge.expected ? 'a' : 'no'} "${badge.label}" badge`
       // eslint-disable-next-line security/detect-non-literal-regexp
       const regex = new RegExp(`\\(${badge.link.replace('?', '\\?')}\\)`, 'u')
-      const isOk = this.couldContains(message, regex, badge.expected ? Nb.One : Nb.None, badge.markdown, badge.expected)
+      const isOk = this.couldContains(message, regex, badge.expected ? 1 : 0, badge.markdown, badge.expected)
       if (!isOk && badge.expected && badge.fixable && this.canFix) this.addBadge(badge.markdown)
     }
   }
@@ -90,10 +89,10 @@ export class ReadmeFile extends FileBase {
     if (!hasFile) return
     await this.inspectFile('README.md')
     this.shouldContains('a title', /^#\s\w+/u)
-    this.couldContains('a svg logo', /\/logo\.svg\)/u, Nb.One, '![logo](folder/logo.svg)')
-    this.couldContains('a demo screen or gif', /demo\./u, Nb.One, '![demo](folder/demo.gif)')
-    this.shouldContains('no link to deprecated *.netlify.com', /\.netlify\.com/u, Nb.None)
-    this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/u, Nb.None) // https://stackoverflow.com/questions/9161769/url-without-httphttps
+    this.couldContains('a svg logo', /\/logo\.svg\)/u, 1, '![logo](folder/logo.svg)')
+    this.couldContains('a demo screen or gif', /demo\./u, 1, '![demo](folder/demo.gif)')
+    this.shouldContains('no link to deprecated *.netlify.com', /\.netlify\.com/u, 0)
+    this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/u, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
     this.checkMarkdown()
     this.checkTodos()
     this.checkBadges()
@@ -108,7 +107,7 @@ export class ReadmeFile extends FileBase {
       const message = `${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`
       // eslint-disable-next-line security/detect-non-literal-regexp
       const regex = new RegExp(`\\[${thank.label}\\]`, 'iu')
-      const hasThanks = this.couldContains(message, regex, thank.expected ? Nb.One : Nb.None, thank.markdown, thank.expected)
+      const hasThanks = this.couldContains(message, regex, thank.expected ? 1 : 0, thank.markdown, thank.expected)
       const shouldAdd = !hasThanks && thank.expected && thank.fixable && this.canFix
       if (shouldAdd) this.addThanks(thank.markdown)
     }

@@ -1,4 +1,3 @@
-import { Nb } from 'shuutils'
 import { FileBase } from '../file'
 
 export class TailwindFile extends FileBase {
@@ -8,10 +7,10 @@ export class TailwindFile extends FileBase {
     await this.checkFileExists(fileName)
     await this.inspectFile(fileName)
     if (!hasTsFile) {
-      const hasTypes = this.shouldContains('type definitions', /@type/u, Nb.One, true, 'like : /** @type {import(\'tailwindcss\').Config} */', true)
+      const hasTypes = this.shouldContains('type definitions', /@type/u, 1, true, 'like : /** @type {import(\'tailwindcss\').Config} */', true)
       if (!hasTypes && this.canFix) this.fileContent = `/** @type {import('tailwindcss').Config} */\n${this.fileContent}`
     }
-    this.shouldContains('a content (previously named purge) option', /content/u, Nb.One, false, 'like : content: [\'./src/**/*.{vue,js,ts,jsx,tsx}\']')
+    this.shouldContains('a content (previously named purge) option', /content/u, 1, false, 'like : content: [\'./src/**/*.{vue,js,ts,jsx,tsx}\']')
   }
 
   private async detectContext (): Promise<{ fileName: string; hasTsFile: boolean }> {

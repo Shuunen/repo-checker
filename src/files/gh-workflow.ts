@@ -1,4 +1,3 @@
-import { Nb } from 'shuutils'
 import { FileBase } from '../file'
 
 /* c8 ignore start */
@@ -11,7 +10,7 @@ export class GithubWorkflowFile extends FileBase {
     this.shouldContains('a checkout step in ci workflow', /actions\/checkout/u)
     this.shouldContains('a node step in ci workflow', /actions\/setup-node/u)
     this.couldContains('a pnpm setup step', /pnpm\/action-setup/u)
-    this.couldContains('no main branch reference', /- main/u, Nb.None)
+    this.couldContains('no main branch reference', /- main/u, 0)
   }
 }
 /* c8 ignore stop */

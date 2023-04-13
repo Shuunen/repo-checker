@@ -1,5 +1,4 @@
 import { mkdirSync, rmSync } from 'fs'
-import { Nb } from 'shuutils'
 import { expect, it } from 'vitest'
 import { dataDefaults, dataFileName, repoCheckerPath } from '../src/constants'
 import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findInFolder, getFileSizeInKo, getProjectFolders, isProjectFolder, join, jsToJson, messageToCode, objectToJson, readFileInFolder, writeFile } from '../src/utils'
@@ -20,7 +19,7 @@ it('isProjectFolder B folders listing', async () => {
     await writeFile(join(folderPath, 'config'), '', 'utf8')
   }
   const folders = await getProjectFolders(testFolder)
-  expect(folders.length >= Nb.Two).toBe(true)
+  expect(folders.length >= 2).toBe(true)
   // eslint-disable-next-line @typescript-eslint/naming-convention
   projects.forEach(name => { rmSync(join(testFolder, name), { recursive: true }) })
 })
@@ -37,9 +36,9 @@ it('file creation, detection, read', async () => {
 
 it('file size calculation', async () => {
   const nonExistingFileSize = await getFileSizeInKo(filename)
-  expect(nonExistingFileSize).toBe(Nb.None)
+  expect(nonExistingFileSize).toBe(0)
   const existingFileSize = await getFileSizeInKo('package.json')
-  expect(existingFileSize >= Nb.One).toBe(true)
+  expect(existingFileSize >= 1).toBe(true)
 })
 
 it('augmentData A repoCheckerPath', async () => { expect(await augmentData(repoCheckerPath, dataDefaults)).toMatchSnapshot() })
@@ -64,19 +63,19 @@ it('augmentDataWithPackageJson D testFolder', async () => { expect(await augment
 it('find pattern in folder', async () => {
   const folder = join(testFolder, 'data', 'tsProject')
   const result = await findInFolder(folder, /Dwight Schrute/u)
-  expect(result[Nb.First]).toBe(dataFileName)
+  expect(result[0]).toBe(dataFileName)
 })
 
 it('find pattern in sub folder', async () => {
   const folder = join(testFolder, 'data', 'tsProject')
   const result = await findInFolder(folder, /Alice/u)
-  expect(result[Nb.First]).toBe('here.txt')
+  expect(result[0]).toBe('here.txt')
 })
 
 it('find no pattern in folder', async () => {
   const folder = join(testFolder, 'data', 'tsProject')
   const result = await findInFolder(folder, /Bob/u)
-  expect(result.length).toBe(Nb.None)
+  expect(result.length).toBe(0)
 })
 
 it('find is skipped when scanning node_modules or git folders', async () => {

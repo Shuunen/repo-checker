@@ -1,5 +1,5 @@
 /* eslint-disable security/detect-non-literal-regexp */
-import { ellipsis, Nb } from 'shuutils'
+import { ellipsis } from 'shuutils'
 import { dataDefaults } from '../constants'
 import { FileBase } from '../file'
 import { log } from '../logger'
@@ -38,31 +38,31 @@ export class PackageJsonFile extends FileBase {
   }
 
   private checkScriptsPrePost () {
-    this.couldContains('a pre-script for version automation', /"preversion": "/u, Nb.One, 'like : "preversion": "pnpm check",')
-    if (this.data.isPublishedPackage) this.couldContains('a post-script for version automation', /"postversion": "/u, Nb.One, 'like : "postversion": "git push && git push --tags && npm publish",')
-    else this.couldContains('a post-script for version automation', /"postversion": "/u, Nb.One, 'like : "postversion": "git push && git push --tags",')
-    if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/u, Nb.None)
+    this.couldContains('a pre-script for version automation', /"preversion": "/u, 1, 'like : "preversion": "pnpm check",')
+    if (this.data.isPublishedPackage) this.couldContains('a post-script for version automation', /"postversion": "/u, 1, 'like : "postversion": "git push && git push --tags && npm publish",')
+    else this.couldContains('a post-script for version automation', /"postversion": "/u, 1, 'like : "postversion": "git push && git push --tags",')
+    if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/u, 0)
   }
 
   private checkScripts () {
     this.checkScriptsTs()
     this.shouldContains('a script section', this.regexForObjectProp('scripts'))
     this.checkScriptsPrePost()
-    if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/u, Nb.One, 'like watchlist src tests -eager -- pnpm test')
-    if (this.data.isUsingDependencyCruiser) this.shouldContains('a depcruise usage', /depcruise\s/u, Nb.One, false, 'like "depcruise src --config"')
-    if (this.data.isUsingShuutils) this.couldContains('a unique-mark task', /unique-mark /u, Nb.One, 'like "mark": "unique-mark public/my-file && echo mark success",')
-    const isOk = this.couldContains('pnpm instead of npm run', /npm run/u, Nb.None, 'use pnpm instead of npm run for performance', true)
+    if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/u, 1, 'like watchlist src tests -eager -- pnpm test')
+    if (this.data.isUsingDependencyCruiser) this.shouldContains('a depcruise usage', /depcruise\s/u, 1, false, 'like "depcruise src --config"')
+    if (this.data.isUsingShuutils) this.couldContains('a unique-mark task', /unique-mark /u, 1, 'like "mark": "unique-mark public/my-file && echo mark success",')
+    const isOk = this.couldContains('pnpm instead of npm run', /npm run/u, 0, 'use pnpm instead of npm run for performance', true)
     if (!isOk && this.canFix) this.fileContent = this.fileContent.replace(/npm run/gu, 'pnpm')
-    this.couldContains('a check script', /"check": "/u, Nb.One, 'like "check": "pnpm build && pnpm lint ...')
-    this.couldContains('no ci script', /"ci": "/u, Nb.Zero, 'avoid using "ci" script, use "check" instead')
+    this.couldContains('a check script', /"check": "/u, 1, 'like "check": "pnpm build && pnpm lint ...')
+    this.couldContains('no ci script', /"ci": "/u, 0, 'avoid using "ci" script, use "check" instead')
   }
 
   private suggestAlternatives () {
-    this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(?:chalk|colorette|colors)"/u, Nb.None)
-    this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/u, Nb.None)
-    this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/u, Nb.None)
-    this.couldContains('no fat & slow jsdom dependency, use happy-dom instead', /jsdom/u, Nb.None)
-    this.couldContains('no fat task runner, use pnpm xyz && pnpm abc for sequential or zero-deps package : npm-parallel', /"npm-run-all"/u, Nb.None)
+    this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(?:chalk|colorette|colors)"/u, 0)
+    this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/u, 0)
+    this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/u, 0)
+    this.couldContains('no fat & slow jsdom dependency, use happy-dom instead', /jsdom/u, 0)
+    this.couldContains('no fat task runner, use pnpm xyz && pnpm abc for sequential or zero-deps package : npm-parallel', /"npm-run-all"/u, 0)
     if (this.fileContent.includes('esbuild-plugin-run')) this.couldContains('not fat ts runner, use "typescript-run" like "dev": "ts-run src --watch" or "ts-run src -w src another-folder"')
   }
 
@@ -94,23 +94,23 @@ export class PackageJsonFile extends FileBase {
   }
 
   private checkDependenciesUnwanted () {
-    if (this.data.shouldAvoidSass) this.shouldContains('no sass dependency (fat & useless)', /sass/u, Nb.None)
-    this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/u, Nb.None)
-    this.shouldContains('no tslint dependency (deprecated)', /tslint/u, Nb.None)
-    this.shouldContains('no eslint-plugin-promise 5 dependency (require eslint 7)', /"eslint-plugin-promise": "\^?5/u, Nb.None)
+    if (this.data.shouldAvoidSass) this.shouldContains('no sass dependency (fat & useless)', /sass/u, 0)
+    this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/u, 0)
+    this.shouldContains('no tslint dependency (deprecated)', /tslint/u, 0)
+    this.shouldContains('no eslint-plugin-promise 5 dependency (require eslint 7)', /"eslint-plugin-promise": "\^?5/u, 0)
   }
 
   private checkDependenciesPrecision () {
-    const hasNoPatch = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+"/gu, Nb.None, 'patch precision is rarely useful', true)
+    const hasNoPatch = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+"/gu, 0, 'patch precision is rarely useful', true)
     // eslint-disable-next-line prefer-named-capture-group, regexp/prefer-named-capture-group
     if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gu, '$1')
   }
 
   private checkDependenciesUsagesEslint () {
     if (this.data.isUsingTailwind) this.couldContains('an eslint tailwindcss plugin', /"eslint-plugin-tailwindcss"/u)
-    const hasCacheFlag = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/u, Nb.One, 'like "eslint --cache ..."', true)
+    const hasCacheFlag = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/u, 1, 'like "eslint --cache ..."', true)
     if (!hasCacheFlag && this.canFix) this.fileContent = this.fileContent.replace('eslint ', 'eslint --cache ')
-    this.couldContains('no eslint ignore flag, solution 1 : just remove it (useless most of the time, check "DEBUG=eslint:cli-engine npx eslint ..." to see linted files) or solution 2 : use ignorePatterns inside .eslintrc.json. The objective here is to let the eslint cli & vscode eslint use the same config', /eslint[^\n"&']+--ignore-path/u, Nb.Zero)
+    this.couldContains('no eslint ignore flag, solution 1 : just remove it (useless most of the time, check "DEBUG=eslint:cli-engine npx eslint ..." to see linted files) or solution 2 : use ignorePatterns inside .eslintrc.json. The objective here is to let the eslint cli & vscode eslint use the same config', /eslint[^\n"&']+--ignore-path/u, 0)
   }
 
   public async start (): Promise<void> {
@@ -148,7 +148,8 @@ export class PackageJsonFile extends FileBase {
 
   private async checkDependenciesUsagesUvu (): Promise<void> {
     const badAsserts = await findInFolder(join(this.folderPath, 'tests'), /from 'assert'/u)
-    this.test(badAsserts.length === Nb.Zero, `assert dependency used in "${ellipsis(badAsserts.join(','), Nb.OneHalf * Nb.Hundred)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
+    const logMaxLength = 50
+    this.test(badAsserts.length === 0, `assert dependency used in "${ellipsis(badAsserts.join(','), logMaxLength)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
   }
 
   private async checkDependenciesUsagesNode () {

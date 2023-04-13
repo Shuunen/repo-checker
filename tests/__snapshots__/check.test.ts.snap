@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-48ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
+exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-46ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
 
 exports[`check B folder succeed 1`] = `
 {
@@ -42,7 +42,7 @@ exports[`check B folder succeed 1`] = `
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-has-a-dist-repo-check-min-cjs-file",
     "package-json-main-file-specified-in-package-json-dist-repo-check-min-cjs-exists-on-disk-be-sure-to-build-before-run-repo-check",
-    "package-json-main-file-size-48ko-should-be-less-or-equal-to-max-size-allowed-120ko",
+    "package-json-main-file-size-46ko-should-be-less-or-equal-to-max-size-allowed-120ko",
     "package-json-has-a-schema-declaration",
     "package-json-has-a-bugs-property",
     "package-json-has-a-description-property",

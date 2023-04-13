@@ -1,4 +1,4 @@
-import { Nb, parseJson } from 'shuutils'
+import { parseJson } from 'shuutils'
 import { repoCheckerPath } from '../constants'
 import { FileBase } from '../file'
 import { log } from '../logger'
@@ -11,16 +11,16 @@ export class EsLintFile extends FileBase {
     const hasHardcore = this.couldContains('hardcore rules extend', /hardcore/u)
     if (!hasHardcore) this.couldContains('eslint recommended rules extend', /"eslint:recommended"/u)
     this.couldContains('unicorn rules extend', /plugin:unicorn\/all/u)
-    this.shouldContains('no promise plugin (require eslint 7)', /plugin:promise\/recommended|"promise"/u, Nb.None)
+    this.shouldContains('no promise plugin (require eslint 7)', /plugin:promise\/recommended|"promise"/u, 0)
   }
 
   private findRules (config: EslintRcJsonFile) {
-    if (Object.keys(config.rules).length > Nb.Zero) {
+    if (Object.keys(config.rules).length > 0) {
       log.debug(`found ${Object.keys(config.rules).length} root/global rules`)
       return config.rules
     }
     const override = config.overrides?.find(anOverride => anOverride.files.find(file => file.endsWith('.ts')))
-    if (override && Object.keys(override.rules).length > Nb.Zero) {
+    if (override && Object.keys(override.rules).length > 0) {
       log.debug(`found ${Object.keys(override.rules).length} override rules`)
       return override.rules
     }
@@ -30,12 +30,12 @@ export class EsLintFile extends FileBase {
 
   private injectRules (input: EslintRcJsonFile, rules: EslintConfigRules) {
     const output = new EslintRcJsonFile(input)
-    if (Object.keys(output.rules).length > Nb.Zero) {
+    if (Object.keys(output.rules).length > 0) {
       Object.assign(output.rules, rules)
       return output
     }
     const override = output.overrides?.find(anOverride => anOverride.files.find(file => file.endsWith('.ts')))
-    if (override && Object.keys(override.rules).length > Nb.Zero) {
+    if (override && Object.keys(override.rules).length > 0) {
       Object.assign(override.rules, rules)
       return output
     }
@@ -50,7 +50,7 @@ export class EsLintFile extends FileBase {
   private checkTs () {
     // check here ts & vue ts projects
     this.couldContains('hardcore typescript rules extend', /hardcore\/ts/u)
-    this.couldContains('a disabled explicit function return type', /"@typescript-eslint\/explicit-function-return-type": "error"/u, Nb.None)
+    this.couldContains('a disabled explicit function return type', /"@typescript-eslint\/explicit-function-return-type": "error"/u, 0)
     // eslint-disable-next-line sonarjs/no-redundant-jump, no-useless-return
     if (this.data.isUsingVue) { this.checkTsVue(); return }
     // check here ts only projects
@@ -67,13 +67,13 @@ export class EsLintFile extends FileBase {
 
   private updateFileContent (input: EslintRcJsonFile, expectedRules: EslintConfigRules) {
     const fixedContent = this.injectRules(input, expectedRules)
-    if (fixedContent.overrides?.length === Nb.Zero) delete fixedContent.overrides
+    if (fixedContent.overrides?.length === 0) delete fixedContent.overrides
     this.fileContent = objectToJson(fixedContent)
   }
 
   private reportMissingRules (expectedRules: EslintConfigRules, missingRules: string[]) {
     const total = Object.keys(expectedRules).length
-    const isOk = this.test(missingRules.length === Nb.Zero, `current .eslintrc.json has only ${total - missingRules.length} of the ${total} custom rules in repo-checker .eslintrc.json`, true)
+    const isOk = this.test(missingRules.length === 0, `current .eslintrc.json has only ${total - missingRules.length} of the ${total} custom rules in repo-checker .eslintrc.json`, true)
     if (!isOk) log.warn('missing rules :', missingRules.map(rule => `"${rule}": ${JSON.stringify(expectedRules[rule])}`).join(', '))
   }
 
@@ -116,7 +116,7 @@ export class EsLintFile extends FileBase {
     const data = parseJson<EslintRcJsonFile>(this.fileContent)
     if (data.error) { log.warn('cannot check empty or invalid .eslintrc.json file'); return }
     const { expectedRules, missingRules } = await this.getRules(data.value)
-    if (missingRules.length === Nb.Zero) return
+    if (missingRules.length === 0) return
     if (this.canFix) { this.updateFileContent(data.value, expectedRules); return }
     this.reportMissingRules(expectedRules, missingRules)
   }

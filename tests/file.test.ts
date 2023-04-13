@@ -1,4 +1,4 @@
-import { Nb, sleep } from 'shuutils'
+import { sleep } from 'shuutils'
 import { expect, it } from 'vitest'
 import { ProjectData, repoCheckerPath } from '../src/constants'
 import { FileBase } from '../src/file'
@@ -28,7 +28,7 @@ it('file A simple validator', async () => {
       await this.checkNoFileExists('zorglub.exe')
       expect(this.passed, 'test 6').toStrictEqual(['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file', 'some-file-log-has-no-zorglub-exe-file'])
       await deleteFile(missingFilepath)
-      this.shouldContains('two dots', /\./gu, Nb.Two, true, 'hehe 2 dots', true)
+      this.shouldContains('two dots', /\./gu, 2, true, 'hehe 2 dots', true)
     }
   }
   const instance = new MyFile(repoCheckerPath, new ProjectData({ isQuiet: true }))
@@ -45,7 +45,7 @@ it('file B validator with fix', async () => {
       await this.checkFileExists(existingFilename)
       await this.checkFileExists('missing-template.csv')
       const sizeKo = await this.getFileSizeInKo(existingFilename)
-      this.test(sizeKo < Nb.Two, 'nvmrc should be a small text file')
+      this.test(sizeKo < 2, 'nvmrc should be a small text file')
     }
   }
   const instance = new MyFileFix(repoCheckerPath, new ProjectData({ isQuiet: true }), true)
@@ -58,10 +58,10 @@ it('file C validator with fix & force, overwrite a problematic file with templat
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
       await this.inspectFile(existingFilename)
-      this.shouldContains('two dots', /\./gu, Nb.Two)
+      this.shouldContains('two dots', /\./gu, 2)
       this.shouldContains('a regular nvmrc file content', /travers/u)
-      this.shouldContains('a super nvmrc file content', /travers is super/u, Nb.One, true, 'just say it', true)
-      this.shouldContains('an extra nvmrc file content', /travers is extra/u, Nb.Two, true, undefined, true)
+      this.shouldContains('a super nvmrc file content', /travers is super/u, 1, true, 'just say it', true)
+      this.shouldContains('an extra nvmrc file content', /travers is extra/u, 2, true, undefined, true)
       this.checkContains(/travers is extra/u)
     }
   }
@@ -120,7 +120,7 @@ it('file F validator with fix cannot fix if the template require data that is mi
 it('file G validator can detect a missing schema', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
-      await sleep(Nb.One)
+      await sleep(1)
       this.fileContent = '{}'
       expect(this.couldContainsSchema('does-not-exist')).toBe(false)
     }
@@ -134,7 +134,7 @@ it('file G validator can detect a missing schema', async () => {
 it('file H validator can detect an existing schema', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
-      await sleep(Nb.One)
+      await sleep(1)
       this.fileContent = `{
         "something": "else",
         "$schema": "https://json.schemastore.org/does-exist",
@@ -152,7 +152,7 @@ it('file H validator can detect an existing schema', async () => {
 it('file I validator can fix a missing schema', async () => {
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
-      await sleep(Nb.One)
+      await sleep(1)
       this.fileContent = `{
         "something": "else",
         "age": 42

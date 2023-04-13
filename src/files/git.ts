@@ -1,4 +1,3 @@
-import { Nb } from 'shuutils'
 import { FileBase } from '../file'
 
 export class GitFile extends FileBase {
@@ -9,6 +8,6 @@ export class GitFile extends FileBase {
     if (!hasFile) return
     await this.inspectFile('.gitignore')
     this.couldContains('node_modules', /node_modules/u)
-    this.couldContains('no pnpm-lock exclusion', /pnpm-lock\.yaml/u, Nb.None)
+    this.couldContains('no pnpm-lock exclusion', /pnpm-lock\.yaml/u, 0)
   }
 }

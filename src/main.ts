@@ -1,5 +1,5 @@
 import arg from 'arg'
-import { LogLevel, Nb, parseJson } from 'shuutils'
+import { LogLevel, parseJson } from 'shuutils'
 import { name } from '../package.json'
 import { check } from './check'
 import { ProjectData, dataDefaults, dataFileName, home, templatePath } from './constants' // eslint-disable-line @typescript-eslint/consistent-type-imports
@@ -16,7 +16,7 @@ async function initDataFile (shouldForce = false): Promise<void> {
   const filePath = join(home, dataFileName)
   void writeFile(filePath, fileContent)
   log.info('repo-checker data file successfully init, you should edit :', dataFileName)
-  process.exit(Nb.Zero)
+  process.exit(0)
 }
 
 async function getDataPath (target = ''): Promise<string> {
@@ -29,7 +29,7 @@ async function getDataPath (target = ''): Promise<string> {
 
 async function getData (target = ''): Promise<ProjectData> {
   const dataPath = await getDataPath(target)
-  if (dataPath.length === Nb.Zero) return dataDefaults
+  if (dataPath.length === 0) return dataDefaults
   log.info('loading data from', dataPath)
   const { error, value } = parseJson<ProjectData>(await readFileInFolder(dataPath, ''))
   if (error) log.error('error while parsing data file', dataPath, error)
@@ -37,7 +37,7 @@ async function getData (target = ''): Promise<ProjectData> {
 }
 
 function getTarget (argument = ''): string {
-  if (argument.length > Nb.Zero) return resolve(argument)
+  if (argument.length > 0) return resolve(argument)
   log.info('no target specified via : --target=path/to/directory')
   log.info('targeting current directory...')
   return process.cwd()
@@ -45,7 +45,7 @@ function getTarget (argument = ''): string {
 
 function showVersion (): void {
   log.info(`${name} version : __unique-mark__`)
-  process.exit(Nb.Zero)
+  process.exit(0)
 }
 
 function showHelp () {
@@ -60,12 +60,13 @@ function showHelp () {
       --verbose     verbose mode
       -v --version  show version
       -h --help     show help`)
-  process.exit(Nb.Zero)
+  process.exit(0)
 }
 
 function parseInputs () {
+  const sliceAfter = 2
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const inputs = arg({ '--init': Boolean, '--fail-stop': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean, '--help': Boolean, '-h': Boolean }, { argv: process.argv.slice(Nb.Two) })
+  const inputs = arg({ '--init': Boolean, '--fail-stop': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean, '--help': Boolean, '-h': Boolean }, { argv: process.argv.slice(sliceAfter) })
   if (inputs['--version'] ?? inputs['-v'] ?? false) showVersion()
   if (inputs['--help'] ?? inputs['-h'] ?? false) showHelp()
   return inputs
