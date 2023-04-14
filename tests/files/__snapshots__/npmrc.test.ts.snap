@@ -34,14 +34,16 @@ exports[`npm rc A file exists & hasTaskPrefix 1`] = `
   },
   "failed": [],
   "fileContent": "enable-pre-post-scripts=true
+strict-peer-dependencies=false
 ",
   "fileName": ".npmrc",
   "originalFileContent": "enable-pre-post-scripts=true
+strict-peer-dependencies=false
 ",
   "passed": [
     "has-a-npmrc-file",
-    "npmrc-is-present-needed-when-using-pre-post-task-in-package-json-need-to-set-enable-pre-post-scripts-option",
     "npmrc-has-enable-pre-post-scripts-option",
+    "npmrc-has-strict-peer-dependencies-option",
   ],
   "warnings": [],
 }
@@ -80,10 +82,17 @@ exports[`npm rc B file exists & !hasTaskPrefix 1`] = `
     "willGenerateReport": true,
   },
   "failed": [],
-  "fileContent": "",
-  "fileName": "",
-  "originalFileContent": "",
-  "passed": [],
+  "fileContent": "enable-pre-post-scripts=true
+strict-peer-dependencies=false
+",
+  "fileName": ".npmrc",
+  "originalFileContent": "enable-pre-post-scripts=true
+strict-peer-dependencies=false
+",
+  "passed": [
+    "has-a-npmrc-file",
+    "npmrc-has-strict-peer-dependencies-option",
+  ],
   "warnings": [],
 }
 `;
@@ -127,7 +136,54 @@ exports[`npm rc C file !exists & hasTaskPrefix 1`] = `
   "passed": [],
   "warnings": [
     "has-a-npmrc-file",
-    "npmrc-is-present-needed-when-using-pre-post-task-in-package-json-need-to-set-enable-pre-post-scripts-option",
+  ],
+}
+`;
+
+exports[`npm rc D fix file 1`] = `
+{
+  "canFix": true,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": true,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": true,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [],
+  "fileContent": "
+enable-pre-post-scripts=true
+strict-peer-dependencies=false",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-a-npmrc-file",
+  ],
+  "warnings": [
+    "could-have-enable-pre-post-scripts-option-enable-pre-post-scriptstrue",
+    "could-have-strict-peer-dependencies-option-strict-peer-dependenciesfalse",
   ],
 }
 `;
