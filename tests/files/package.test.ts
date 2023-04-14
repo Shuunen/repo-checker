@@ -7,7 +7,7 @@ it('package A on repo checker', async () => {
   const instance = new PackageJsonFile(repoCheckerPath, new ProjectData({ isQuiet: true }))
   await instance.start()
   await instance.end()
-  expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
+  expect(cleanInstanceForSnap(instance, 'fileContent', 'originalFileContent')).toMatchSnapshot() // need to remove fileContent & originalFileContent because they are polluting the snapshot
 })
 
 it('package B on ts project', async () => {
