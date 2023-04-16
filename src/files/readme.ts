@@ -25,6 +25,11 @@ class Badge {
   }
 }
 
+const deprecatedBadges = [
+  'bettercodehub.com',
+  'lgtm.com',
+]
+
 /* c8 ignore start */
 export class ReadmeFile extends FileBase {
   private checkMarkdown (): void {
@@ -40,8 +45,17 @@ export class ReadmeFile extends FileBase {
     this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/u, `$1${line}\n`)
   }
 
-  private checkBadges (): void {
-    const badges = this.getBadges()
+  private checkBadgesDeprecated (): void {
+    for (const badge of deprecatedBadges) {
+      // eslint-disable-next-line security/detect-non-literal-regexp
+      const isOk = this.shouldContains(`no deprecated ${badge} badge`, new RegExp(badge, 'u'), 0, false, `${badge} does not exist anymore`, true)
+      // eslint-disable-next-line security/detect-non-literal-regexp
+      if (!isOk && this.canFix) this.fileContent = this.fileContent.replace(new RegExp(`.*${badge}.*\n`, 'giu'), '')
+    }
+  }
+
+  private checkBadgesRecommended (): void {
+    const badges = this.getBadgesRecommended()
     for (const badge of badges) {
       const message = `${badge.expected ? 'a' : 'no'} "${badge.label}" badge`
       // eslint-disable-next-line security/detect-non-literal-regexp
@@ -51,10 +65,16 @@ export class ReadmeFile extends FileBase {
     }
   }
 
-  private getBadges (): Badge[] {
+  private checkBadges (): void {
+    this.checkBadgesRecommended()
+    this.checkBadgesDeprecated()
+  }
+
+  private getBadgesRecommended (): Badge[] {
     const userRepo = `${this.data.userId}/${this.data.repoId}`
     const list = [
       new Badge('Project license', `https://github.com/${userRepo}/blob/master/LICENSE`, `https://img.shields.io/github/license/${userRepo}.svg?color=informational`),
+      new Badge('Code Climate maintainability', `https://codeclimate.com/github/${userRepo}`, `https://img.shields.io/codeclimate/maintainability/${userRepo}?style=flat`),
     ]
     if (this.data.isWebPublished && !this.fileContent.includes('shields.io/website/'))
       list.push(new Badge('Website up', this.data.webUrl, `https://img.shields.io/website/https/${this.data.webUrl.replace('https://', '')}.svg`, true, this.data.webUrl !== dataDefaults.webUrl))
@@ -89,8 +109,8 @@ export class ReadmeFile extends FileBase {
     if (!hasFile) return
     await this.inspectFile('README.md')
     this.shouldContains('a title', /^#\s\w+/u)
-    this.couldContains('a svg logo', /\/logo\.svg\)/u, 1, '![logo](folder/logo.svg)')
-    this.couldContains('a demo screen or gif', /demo\./u, 1, '![demo](folder/demo.gif)')
+    this.couldContains('a logo image', /!\[logo\]\(.*\.\w{3,4}\)/u, 1, '![logo](folder/logo.svg)')
+    this.couldContains('a demo image or gif', /!\[demo\]\(.*\.\w{3,4}\)/u, 1, '![demo](folder/demo.gif)')
     this.shouldContains('no link to deprecated *.netlify.com', /\.netlify\.com/u, 0)
     this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/u, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
     this.checkMarkdown()

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-46ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
+exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-47ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
 
 exports[`check B folder succeed 1`] = `
 {
@@ -42,7 +42,7 @@ exports[`check B folder succeed 1`] = `
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-has-a-dist-repo-check-min-cjs-file",
     "package-json-main-file-specified-in-package-json-dist-repo-check-min-cjs-exists-on-disk-be-sure-to-build-before-run-repo-check",
-    "package-json-main-file-size-46ko-should-be-less-or-equal-to-max-size-allowed-120ko",
+    "package-json-main-file-size-47ko-should-be-less-or-equal-to-max-size-allowed-120ko",
     "package-json-has-a-schema-declaration",
     "package-json-has-a-bugs-property",
     "package-json-has-a-description-property",
@@ -92,10 +92,13 @@ exports[`check B folder succeed 1`] = `
     "readme-md-has-no-crlf-windows-carriage-return",
     "readme-md-has-no-star-flavored-list",
     "readme-md-has-a-project-license-badge",
+    "readme-md-has-a-code-climate-maintainability-badge",
     "readme-md-has-a-npm-monthly-downloads-badge",
     "readme-md-has-a-npm-version-badge",
     "readme-md-has-a-publish-size-badge",
     "readme-md-has-a-install-size-badge",
+    "readme-md-has-no-deprecated-bettercodehub-com-badge",
+    "readme-md-has-no-deprecated-lgtm-com-badge",
     "readme-md-has-a-thanks-section",
     "readme-md-has-a-thanks-to-shields-io",
     "readme-md-has-no-remaining-thanks-to-travis-ci-com",
@@ -162,8 +165,8 @@ exports[`check B folder succeed 1`] = `
     "tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough",
   ],
   "warnings": [
-    "readme-md-could-have-a-svg-logo-logofolder-logo-svg",
-    "readme-md-could-have-a-demo-screen-or-gif-demofolder-demo-gif",
+    "readme-md-could-have-a-logo-image-logofolder-logo-svg",
+    "readme-md-could-have-a-demo-image-or-gif-demofolder-demo-gif",
   ],
 }
 `;
