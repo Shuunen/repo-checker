@@ -28,7 +28,7 @@ it('file A simple validator', async () => {
       await this.checkNoFileExists('zorglub.exe')
       expect(this.passed, 'test 6').toStrictEqual(['some-file-log-has-foobar', 'some-file-log-has-a-package-json-file', 'some-file-log-has-no-zorglub-exe-file'])
       await deleteFile(missingFilepath)
-      this.shouldContains('two dots', /\./gu, 2, true, 'hehe 2 dots', true)
+      this.shouldContains('two dots', /\./gu, 2, true, 'should contains 2 dots', true)
     }
   }
   const instance = new MyFile(repoCheckerPath, new ProjectData({ isQuiet: true }))

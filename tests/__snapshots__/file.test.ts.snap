@@ -45,7 +45,7 @@ exports[`file A simple validator 1`] = `
   ],
   "warnings": [
     "some-file-log-could-have-world-world",
-    "some-file-log-could-have-two-dots-hehe-2-dots-43m30m-fixable-39m49m",
+    "some-file-log-could-have-two-dots-should-contains-2-dots-43m30m-fixable-39m49m",
   ],
 }
 `;
