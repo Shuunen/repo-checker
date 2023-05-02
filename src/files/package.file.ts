@@ -108,9 +108,12 @@ export class PackageJsonFile extends FileBase {
 
   private checkDependenciesUsagesEslint () {
     if (this.data.isUsingTailwind) this.couldContains('an eslint tailwindcss plugin', /"eslint-plugin-tailwindcss"/u)
-    const hasCacheFlag = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/u, 1, 'like "eslint --cache ..."', true)
-    if (!hasCacheFlag && this.canFix) this.fileContent = this.fileContent.replace('eslint ', 'eslint --cache ')
-    this.couldContains('no eslint ignore flag, solution 1 : just remove it (useless most of the time, check "DEBUG=eslint:cli-engine npx eslint ..." to see linted files) or solution 2 : use ignorePatterns inside .eslintrc.json. The objective here is to let the eslint cli & vscode eslint use the same config', /eslint[^\n"&']+--ignore-path/u, 0)
+    const isUsingEslintCli = this.fileContent.includes('eslint ')
+    if (isUsingEslintCli) {
+      const hasCacheFlag = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/u, 1, 'like "eslint --cache ..."', true)
+      if (!hasCacheFlag && this.canFix) this.fileContent = this.fileContent.replace('eslint ', 'eslint --cache ')
+      this.couldContains('no eslint ignore flag, solution 1 : just remove it (useless most of the time, check "DEBUG=eslint:cli-engine npx eslint ..." to see linted files) or solution 2 : use ignorePatterns inside .eslintrc.json. The objective here is to let the eslint cli & vscode eslint use the same config', /eslint[^\n"&']+--ignore-path/u, 0)
+    }
   }
 
   public async start (): Promise<void> {
