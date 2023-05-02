@@ -65,7 +65,6 @@ function showHelp () {
 
 function parseInputs () {
   const sliceAfter = 2
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const inputs = arg({ '--init': Boolean, '--fail-stop': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean, '--help': Boolean, '-h': Boolean }, { argv: process.argv.slice(sliceAfter) })
   if (inputs['--version'] ?? inputs['-v'] ?? false) showVersion()
   if (inputs['--help'] ?? inputs['-h'] ?? false) showHelp()

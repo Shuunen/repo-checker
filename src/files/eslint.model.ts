@@ -16,7 +16,6 @@ export class EslintRcJsonFile {
 }
 
 export const recommendedVueRules = {
-  /* eslint-disable @typescript-eslint/naming-convention */
   'vue/first-attribute-linebreak': 'off',
   'vue/html-closing-bracket-newline': 'off',
   'vue/html-indent': 'off',
@@ -24,7 +23,6 @@ export const recommendedVueRules = {
   'vue/max-attributes-per-line': 'off',
   'vue/no-multiple-template-root': 'off',
   'vue/singleline-html-element-content-newline': 'off',
-  /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 export const specificRepoCheckerRules = new Set(['no-restricted-imports'])
