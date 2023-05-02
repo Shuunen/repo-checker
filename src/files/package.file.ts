@@ -34,7 +34,7 @@ export class PackageJsonFile extends FileBase {
   private checkScriptsTs () {
     if (!this.data.isUsingTypescript) return
     this.shouldContains('a typescript build or check', /\btsc\b/u)
-    this.shouldContains('a typescript lint', /eslint [^"]+\.ts/u)
+    if (!this.fileContent.includes('vue-cli-service lint')) this.shouldContains('a typescript lint', /eslint [^"]+\.ts/u)
   }
 
   private checkScriptsPrePost () {
