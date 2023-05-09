@@ -8,22 +8,22 @@
   },
   "dependencies": {
     "arg": "5",
-    "shuutils": "7.2",
+    "shuutils": "7.3",
     "sort-json": "2"
   },
   "description": "Repo cleaning made easy",
   "devDependencies": {
     "@types/node": "18",
     "@types/sort-json": "2",
-    "@vitest/coverage-c8": "0.30",
+    "@vitest/coverage-c8": "0.31",
     "dependency-cruiser": "latest",
     "esbuild": "0.17",
-    "eslint": "8.39",
-    "eslint-config-hardcore": "35",
-    "eslint-plugin-unicorn": "46",
+    "eslint": "8.40",
+    "eslint-config-hardcore": "35.7",
+    "eslint-plugin-unicorn": "47.0",
     "typescript": "5.0",
     "typescript-run": "0",
-    "vitest": "0.30",
+    "vitest": "0.31",
     "watchlist": "0"
   },
   "files": [
