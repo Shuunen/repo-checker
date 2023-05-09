@@ -27,6 +27,7 @@ class Badge {
 
 const deprecatedBadges = [
   'bettercodehub.com',
+  'david-dm.org',
   'lgtm.com',
 ]
 
