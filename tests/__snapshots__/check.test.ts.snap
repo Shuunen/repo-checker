@@ -98,6 +98,7 @@ exports[`check B folder succeed 1`] = `
     "readme-md-has-a-publish-size-badge",
     "readme-md-has-a-install-size-badge",
     "readme-md-has-no-deprecated-bettercodehub-com-badge",
+    "readme-md-has-no-deprecated-david-dm-org-badge",
     "readme-md-has-no-deprecated-lgtm-com-badge",
     "readme-md-has-a-thanks-section",
     "readme-md-has-a-thanks-to-shields-io",
