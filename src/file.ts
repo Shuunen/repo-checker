@@ -1,7 +1,7 @@
 import { bgYellow, black, fillTemplate } from 'shuutils'
 import { ProjectData, templatePath } from './constants'
 import { log } from './logger'
-import { fileExists, getFileSizeInKo, join, messageToCode, readableRegex, readFileInFolder, writeFile } from './utils'
+import { fileExists, getFileSizeInKo, join, messageToCode, readFileInFolder, readableRegex, writeFile } from './utils'
 
 const defaultAmount = 99
 

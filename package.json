@@ -18,10 +18,10 @@
     "@vitest/coverage-c8": "0.31",
     "dependency-cruiser": "latest",
     "esbuild": "0.17",
-    "eslint": "8.40",
-    "eslint-config-hardcore": "35.7",
+    "eslint": "8.42",
+    "eslint-config-hardcore": "36.3",
     "eslint-plugin-unicorn": "47.0",
-    "typescript": "5.0",
+    "typescript": "5.1",
     "typescript-run": "0",
     "vitest": "0.31",
     "watchlist": "0"

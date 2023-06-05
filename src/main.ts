@@ -96,4 +96,3 @@ export async function start (): Promise<void> {
   log.info(`${String(name)} __unique-mark__ is starting ${canFix ? '(fix enabled)' : ''}`)
   await check({ folderPath: target, data, canFix, canForce, canFailStop })
 }
-
