@@ -15,7 +15,7 @@
   "devDependencies": {
     "@types/node": "18",
     "@types/sort-json": "2",
-    "@vitest/coverage-c8": "0.31",
+    "@vitest/coverage-c8": "0.32",
     "dependency-cruiser": "latest",
     "esbuild": "0.17",
     "eslint": "8.42",
@@ -23,7 +23,7 @@
     "eslint-plugin-unicorn": "47.0",
     "typescript": "5.1",
     "typescript-run": "0",
-    "vitest": "0.31",
+    "vitest": "0.32",
     "watchlist": "0"
   },
   "files": [
