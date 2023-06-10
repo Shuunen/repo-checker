@@ -17,7 +17,7 @@
     "@types/sort-json": "2",
     "@vitest/coverage-c8": "0.31",
     "dependency-cruiser": "latest",
-    "esbuild": "0.17",
+    "esbuild": "0.18",
     "eslint": "8.42",
     "eslint-config-hardcore": "36.3",
     "eslint-plugin-unicorn": "47.0",
