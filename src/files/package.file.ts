@@ -89,8 +89,8 @@ export class PackageJsonFile extends FileBase {
   private checkDependenciesTesting () {
     const hasUt = /"(?<tool>mocha|uvu|vitest)"/u.exec(this.fileContent)?.groups?.tool !== undefined
     this.test(hasUt, 'one unit testing dependency from : vitest, mocha, uvu', true)
-    const hasCoverage = /"(?<tool>c8|nyc|@vitest\/coverage-c8)"/u.exec(this.fileContent)?.groups?.tool !== undefined
-    this.test(hasCoverage, 'one coverage dependency from : nyc, c8', true)
+    const hasCoverage = /"(?<tool>c8|@vitest\/coverage-c8|@vitest\/coverage-v8|nyc)"/u.exec(this.fileContent)?.groups?.tool !== undefined
+    this.test(hasCoverage, 'one coverage dependency from : nyc, c8, v8', true)
   }
 
   private checkDependenciesUnwanted () {

@@ -18,6 +18,7 @@ exports[`dependency cruiser config missing file 1`] = `
     "isUsingShuutils": false,
     "isUsingTailwind": false,
     "isUsingTypescript": false,
+    "isUsingV8": false,
     "isUsingVue": false,
     "isWebPublished": false,
     "license": "GPL-3.0",

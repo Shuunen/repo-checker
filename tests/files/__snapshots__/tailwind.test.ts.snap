@@ -18,6 +18,7 @@ exports[`tailwind : can detect valid config 1`] = `
     "isUsingShuutils": false,
     "isUsingTailwind": true,
     "isUsingTypescript": false,
+    "isUsingV8": false,
     "isUsingVue": false,
     "isWebPublished": false,
     "license": "GPL-3.0",

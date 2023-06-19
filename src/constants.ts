@@ -41,6 +41,8 @@ export class ProjectData {
 
   public isUsingTypescript = false
 
+  public isUsingV8 = false
+
   public isUsingVue = false
 
   public isWebPublished = false
