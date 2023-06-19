@@ -15,15 +15,15 @@
   "devDependencies": {
     "@types/node": "18",
     "@types/sort-json": "2",
-    "@vitest/coverage-c8": "0.31",
+    "@vitest/coverage-v8": "0.32",
     "dependency-cruiser": "latest",
-    "esbuild": "0.17",
-    "eslint": "8.42",
+    "esbuild": "0.18",
+    "eslint": "8.43",
     "eslint-config-hardcore": "36.3",
     "eslint-plugin-unicorn": "47.0",
     "typescript": "5.1",
     "typescript-run": "0",
-    "vitest": "0.31",
+    "vitest": "0.32",
     "watchlist": "0"
   },
   "files": [
@@ -47,7 +47,7 @@
   },
   "scripts": {
     "build": "pnpm build:app && unique-mark dist/repo-check.min.cjs && echo build success",
-    "build:app": "esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs",
+    "build:app": "esbuild src/index.ts --target=esnext --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs",
     "build:start": "pnpm build:app && node .",
     "check": "pnpm start && pnpm lint && npm test && echo check success",
     "dev": "watchlist src -eager -- pnpm build:start",
