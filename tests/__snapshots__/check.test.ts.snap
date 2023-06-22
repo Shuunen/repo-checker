@@ -37,7 +37,7 @@ exports[`check B folder succeed 1`] = `
     "license-has-a-version-3-subtitle",
     "has-a-npmrc-file",
     "npmrc-has-enable-pre-post-scripts-option",
-    "npmrc-has-strict-peer-dependencies-option",
+    "npmrc-has-no-strict-peer-dependencies-option",
     "has-a-nvmrc-file",
     "nvmrc-has-a-recent-lts-node-version",
     "has-a-package-json-file",

@@ -9,8 +9,9 @@ export class NpmRcFile extends FileBase {
   }
 
   private checkStrictPeerDependencies () {
-    const isOk = this.couldContains('strict-peer-dependencies option', /strict-peer-dependencies=false/u)
-    if (!isOk && this.canFix) this.fileContent += '\nstrict-peer-dependencies=false'
+    const isOk = this.couldContains('no strict-peer-dependencies option', /strict-peer-dependencies=false/u, 0, undefined, true)
+    /* c8 ignore next */
+    if (!isOk && this.canFix) this.fileContent = this.fileContent.replace('\nstrict-peer-dependencies=false', '')
   }
 
   public async start (): Promise<void> {

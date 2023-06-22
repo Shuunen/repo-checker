@@ -35,16 +35,14 @@ exports[`npm rc A file exists & hasTaskPrefix 1`] = `
   },
   "failed": [],
   "fileContent": "enable-pre-post-scripts=true
-strict-peer-dependencies=false
 ",
   "fileName": ".npmrc",
   "originalFileContent": "enable-pre-post-scripts=true
-strict-peer-dependencies=false
 ",
   "passed": [
     "has-a-npmrc-file",
     "npmrc-has-enable-pre-post-scripts-option",
-    "npmrc-has-strict-peer-dependencies-option",
+    "npmrc-has-no-strict-peer-dependencies-option",
   ],
   "warnings": [],
 }
@@ -85,15 +83,13 @@ exports[`npm rc B file exists & !hasTaskPrefix 1`] = `
   },
   "failed": [],
   "fileContent": "enable-pre-post-scripts=true
-strict-peer-dependencies=false
 ",
   "fileName": ".npmrc",
   "originalFileContent": "enable-pre-post-scripts=true
-strict-peer-dependencies=false
 ",
   "passed": [
     "has-a-npmrc-file",
-    "npmrc-has-strict-peer-dependencies-option",
+    "npmrc-has-no-strict-peer-dependencies-option",
   ],
   "warnings": [],
 }
@@ -178,16 +174,15 @@ exports[`npm rc D fix file 1`] = `
   },
   "failed": [],
   "fileContent": "
-enable-pre-post-scripts=true
-strict-peer-dependencies=false",
+enable-pre-post-scripts=true",
   "fileName": "",
   "originalFileContent": "",
   "passed": [
     "has-a-npmrc-file",
+    "has-no-strict-peer-dependencies-option",
   ],
   "warnings": [
     "could-have-enable-pre-post-scripts-option-enable-pre-post-scriptstrue",
-    "could-have-strict-peer-dependencies-option-strict-peer-dependenciesfalse",
   ],
 }
 `;
