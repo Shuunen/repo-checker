@@ -29,6 +29,8 @@ exports[`check B folder succeed 1`] = `
     "github-workflows-ci-yml-has-a-checkout-step-in-ci-workflow",
     "github-workflows-ci-yml-has-a-node-step-in-ci-workflow",
     "github-workflows-ci-yml-has-a-pnpm-setup-step",
+    "github-workflows-ci-yml-has-a-recent-pnpm-version-8",
+    "github-workflows-ci-yml-has-no-frozen-lockfile-flag",
     "github-workflows-ci-yml-has-no-main-branch-reference",
     "has-a-license-file",
     "license-has-a-gpl-title",
