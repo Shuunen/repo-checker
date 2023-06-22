@@ -21,6 +21,7 @@ const recommendedCompilerOptions = {
   noUnusedParameters: true,
   skipLibCheck: true,
   strict: true,
+  verbatimModuleSyntax: true,
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 

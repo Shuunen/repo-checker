@@ -24,7 +24,8 @@ exports[`ts config file fix 1`] = `
     \\"outDir\\": \\"./dist\\",
     \\"skipLibCheck\\": true,
     \\"strict\\": true,
-    \\"target\\": \\"ES2020\\"
+    \\"target\\": \\"ES2020\\",
+    \\"verbatimModuleSyntax\\": true
   },
   \\"files\\": [
     \\"src/main.ts\\"
@@ -93,7 +94,8 @@ exports[`ts config file fix 2`] = `
     \\"outDir\\": \\"./dist\\",
     \\"skipLibCheck\\": true,
     \\"strict\\": true,
-    \\"target\\": \\"ES2020\\"
+    \\"target\\": \\"ES2020\\",
+    \\"verbatimModuleSyntax\\": true
   },
   \\"files\\": [
     \\"src/main.ts\\"
@@ -127,6 +129,7 @@ exports[`ts config file fix 2`] = `
       "skipLibCheck": true,
       "strict": true,
       "target": "ES2020",
+      "verbatimModuleSyntax": true,
     },
     "files": [
       "src/main.ts",

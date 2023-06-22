@@ -33,7 +33,8 @@
       "node/process",
       "node/stream",
       "node/globals"
-    ]
+    ],
+    "verbatimModuleSyntax": true
   },
   "include": [
     "src",

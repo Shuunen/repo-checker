@@ -1,5 +1,5 @@
 import arg from 'arg'
-import { LogLevel, parseJson } from 'shuutils'
+import { parseJson, type LogLevel } from 'shuutils'
 import { name } from '../package.json'
 import { check } from './check'
 import { ProjectData, dataDefaults, dataFileName, home, templatePath } from './constants' // eslint-disable-line @typescript-eslint/consistent-type-imports
@@ -92,7 +92,8 @@ export async function start (): Promise<void> {
   if (willInit) void initDataFile()
   const data = await getData(target)
   log.options.isActive = !isQuiet
-  log.options.minimumLevel = isVerbose ? LogLevel.Debug : LogLevel.Info
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  log.options.minimumLevel = (isVerbose ? 'debug' : 'info') as LogLevel
   log.info(`${String(name)} __unique-mark__ is starting ${canFix ? '(fix enabled)' : ''}`)
   await check({ folderPath: target, data, canFix, canForce, canFailStop })
 }
