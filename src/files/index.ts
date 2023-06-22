@@ -1,3 +1,4 @@
+/* eslint-disable sonar/no-wildcard-import */
 export * from './dependency-cruiser'
 export * from './editor-config'
 export * from './eslint.file'
