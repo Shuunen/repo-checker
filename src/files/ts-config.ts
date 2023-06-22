@@ -21,6 +21,7 @@ const recommendedCompilerOptions = {
   noUnusedParameters: true,
   skipLibCheck: true,
   strict: true,
+  // target: 'ESNext', dont enforce target, let the user choose
   verbatimModuleSyntax: true,
   /* eslint-enable @typescript-eslint/naming-convention */
 }
@@ -74,8 +75,6 @@ export class TsConfigFile extends FileBase {
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.outDir = './dist'
     isOk = this.couldContains('a moduleResolution compiler option', /"moduleResolution": "/u, 1, 'ex : "moduleResolution": "Node",', true)
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.moduleResolution = 'Node'
-    isOk = this.couldContains('a target compiler option', /"target": "/u, 1, 'ex : "target": "ES2020",', true)
-    if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.target = 'ES2020'
     isOk = this.couldContains('a non-empty lib compiler option', /"lib":\s\[\n/u, 1, 'ex : "lib": [ "ESNext" ],', true)
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.lib = ['ESNext']
     this.couldContains('a non-empty types compiler option', /"types":\s\[\n/u, 1, 'ex : "types": [ "node/fs/promises" ],')
