@@ -19,7 +19,7 @@
     "dependency-cruiser": "latest",
     "esbuild": "0.18",
     "eslint": "8.43",
-    "eslint-config-hardcore": "36.3",
+    "eslint-config-hardcore": "36.4",
     "eslint-plugin-unicorn": "47.0",
     "typescript": "5.1",
     "typescript-run": "0",
