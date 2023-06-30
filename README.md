@@ -74,49 +74,14 @@ If file already exists, use `--force` to overwrite it.
 
 Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
 
-| command alias      | date       | main lib targeted   | delay   | comment                                                               |
-| ------------------ | ---------- | ------------------- | ------- | --------------------------------------------------------------------- |
-| repo-check         | 2023-06-19 | repo-checker 1.31   | 60 ms   | 2 times faster ? nice ^^ no idea why                                  |
-| esbuild            | 2023-06-19 | esbuild 0.18        | 12 ms   | 7 times faster ? nice ^^ no idea why                                  |
-| tsc-no-emit        | 2023-06-19 | typescript 5.1      | 760 ms  | 2 times faster ? nice ^^ no idea why                                  |
-| eslint             | 2023-06-19 | eslint 8.43         | 7,4 s   | 2 times faster ? nice ^^ no idea why                                  |
-| vitest-v8          | 2023-06-19 | npx & vitest & v8   | 1,9 s   | 2 times faster ? nice ^^ no idea why                                  |
-| vitest             | 2023-06-19 | npx & vitest        | 1,8 s   | 2 times faster ? nice ^^ no idea why                                  |
-| eslint             | 2023-04-09 | eslint              | 13 sec  | slower because I added import back                                    |
-| npx-tsc-no-emit    | 2023-04-09 | npx + typescript    | 2,4 s   | wow thanks NPX for **doubling** the amount of time for... nothing     |
-| tsc-no-emit        | 2023-04-09 | typescript          | 1,2 s   | typescript v5                                                         |
-| vitest-c8          | 2023-04-09 | npx & vitest & c8   | 3,6 s   | ok now coverage is only 300ms                                         |
-| vitest             | 2023-04-09 | npx & vitest        | 3,3 s   | slower but there is npx + a lot of new test cases & snapshots         |
-| ts-run             | 2023-04-09 | typescript-run      | 250 ms  | 40% faster ? nice ^^ no idea why                                      |
-| esbuild            | 2023-04-09 | esbuild             | 81 ms   | 20% faster ? nice ^^ no idea why                                      |
-| repo-check         | 2023-04-09 | node & repo-checker | 115 ms  |                                                                       |
-| eslint             | 2023-04-09 | eslint              | 10 sec  | slower... :'( hardcore 35 maybe ?                                     |
-| eslint             | 2023-01-29 | eslint              | 7,6 sec | + no overrides                                                        |
-| eslint             | 2023-01-29 | eslint              | 7,5 sec | + test/**/* glob converted into *.test.ts                             |
-| eslint             | 2023-01-29 | eslint              | 8,0 sec | + all import rules disabled                                           |
-| eslint             | 2023-01-29 | eslint              | 8,8 sec | + overrides                                                           |
-| eslint             | 2023-01-29 | eslint              | 9,0 sec | new cpu + hardcore 26 :'( no overrides                                |
-| eslint             | 2023-01-25 | eslint              | 3,8 sec | 1 sec faster, maybe because of my new cpu                             |
-| repo-check         | 2022-11-13 | node & repo-checker | 101 ms  | +2% slower when using fs/promises over fs (keeping createWriteStream) |
-| repo-check         | 2022-11-13 | node & repo-checker | 135 ms  | +30% slower when using async writeFile instead of createWriteStream   |
-| tsc-no-emit        | 2022-11-07 | typescript          | 950 ms  | with restricted node types & ES2020 lib                               |
-| tsc-no-emit        | 2022-11-07 | typescript          | 1,1 sec | with restricted node types & all lib                                  |
-| eslint             | 2022-11-07 | eslint              | 4,8 sec | with restricted node types & ES2020 lib                               |
-| uvu                | 2022-11-05 | uvu                 | 1 sec   | I mean, I'm adding tests over time so...                              |
-| c8-uvu             | 2022-11-05 | c8 & uvu            | 1,6 sec | 600 ms too for coverage, pretty good                                  |
-| eslint             | 2022-11-05 | eslint              | 5,6 sec |                                                                       |
-| esbuild            | 2022-11-05 | esbuild             | 100 ms  |                                                                       |
-| tsc-no-emit        | 2022-11-05 | typescript          | 1,3 sec | way better :) no idea why                                             |
-| repo-check         | 2022-11-05 | node & repo-checker | 90 ms   | way better :) no idea why                                             |
-| repo-check         | 2022-03-12 | node & repo-checker | 160 ms  | pretty cool before any optimisations                                  |
-| repo-check-no-out  | 2022-03-12 | node & repo-checker | 140 ms  | 20 ms dedicated to console/file output                                |
-| esbuild            | 2022-03-12 | esbuild             | 170 ms  |                                                                       |
-| ts-run             | 2022-03-12 | typescript-run      | 420 ms  | it's faster to build & run ^^'                                        |
-| tsc-no-emit        | 2022-03-12 | typescript          | 3,5 sec |                                                                       |
-| eslint             | 2022-03-12 | eslint              | 6,5 sec | damn slow, seems slower than old benches                              |
-| eslint-ts-src-only | 2022-03-12 | eslint              | 5,5 sec | 1 sec diff, still slow IMHO                                           |
-| uvu                | 2022-03-12 | uvu                 | 820 ms  | pretty good                                                           |
-| c8-uvu             | 2022-03-12 | c8 & uvu            | 1,6 sec | 800 ms too for coverage, still good                                   |
+| command alias | date       | main lib targeted | delay  | node  | os    | comment |
+| ------------- | ---------- | ----------------- | ------ | ----- | ----- | ------- |
+| repo-check    | 2023-06-19 | repo-checker 1.31 | 60 ms  | 18.16 | Linux |         |
+| esbuild       | 2023-06-19 | esbuild 0.18      | 12 ms  | 18.16 | Linux |         |
+| tsc-no-emit   | 2023-06-19 | typescript 5.1    | 760 ms | 18.16 | Linux |         |
+| eslint        | 2023-06-19 | eslint 8.43       | 7,4 s  | 18.16 | Linux |         |
+| vitest-v8     | 2023-06-19 | npx & vitest & v8 | 1,9 s  | 18.16 | Linux |         |
+| vitest        | 2023-06-19 | npx & vitest 0.32 | 1,8 s  | 18.16 | Linux |         |
 
 Command aliases :
 
