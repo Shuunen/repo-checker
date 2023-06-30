@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-48ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
+exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-47ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
 
 exports[`check B folder succeed 1`] = `
 {
@@ -44,7 +44,7 @@ exports[`check B folder succeed 1`] = `
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-has-a-dist-repo-check-min-cjs-file",
     "package-json-main-file-specified-in-package-json-dist-repo-check-min-cjs-exists-on-disk-be-sure-to-build-before-run-repo-check",
-    "package-json-main-file-size-48ko-should-be-less-or-equal-to-max-size-allowed-120ko",
+    "package-json-main-file-size-47ko-should-be-less-or-equal-to-max-size-allowed-120ko",
     "package-json-has-a-schema-declaration",
     "package-json-has-a-bugs-property",
     "package-json-has-a-description-property",
@@ -164,7 +164,6 @@ exports[`check B folder succeed 1`] = `
     "tsconfig-json-has-a-verbatim-module-syntax-compiler-option",
     "tsconfig-json-has-a-out-dir-compiler-option",
     "tsconfig-json-has-a-module-resolution-compiler-option",
-    "tsconfig-json-has-a-target-compiler-option",
     "tsconfig-json-has-a-non-empty-lib-compiler-option",
     "tsconfig-json-has-a-non-empty-types-compiler-option",
     "tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough",
@@ -261,7 +260,6 @@ exports[`check C data/tsProject 1`] = `
     "tsconfig-json-could-have-a-verbatim-module-syntax-compiler-option-verbatim-module-syntax-true-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-out-dir-compiler-option-ex-out-dir-dist-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-module-resolution-compiler-option-ex-module-resolution-node-43m30m-fixable-39m49m",
-    "tsconfig-json-could-have-a-target-compiler-option-ex-target-es2020-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-non-empty-lib-compiler-option-ex-lib-esnext-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-non-empty-types-compiler-option-ex-types-node-fs-promises",
   ],
@@ -354,7 +352,6 @@ exports[`check E data folders and not throw 1`] = `
     "tsconfig-json-could-have-a-verbatim-module-syntax-compiler-option-verbatim-module-syntax-true-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-out-dir-compiler-option-ex-out-dir-dist-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-module-resolution-compiler-option-ex-module-resolution-node-43m30m-fixable-39m49m",
-    "tsconfig-json-could-have-a-target-compiler-option-ex-target-es2020-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-non-empty-lib-compiler-option-ex-lib-esnext-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-non-empty-types-compiler-option-ex-types-node-fs-promises",
   ],
