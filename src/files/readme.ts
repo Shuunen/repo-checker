@@ -106,9 +106,13 @@ export class ReadmeFile extends FileBase {
 
   // eslint-disable-next-line max-statements
   public async start (): Promise<void> {
-    const hasFile = await this.checkFileExists('README.md')
-    if (!hasFile) return
-    await this.inspectFile('README.md')
+    const hasREADMEFile = await this.fileExists('README.md')
+    const hasReadmeFile = await this.fileExists('readme.md')
+    if (!hasREADMEFile && !hasReadmeFile) {
+      this.test(false, 'no README.md or readme.md file found')
+      return
+    }
+    await this.inspectFile(hasREADMEFile ? 'README.md' : 'readme.md')
     this.shouldContains('a title', /^#\s\w+/u)
     this.couldContains('a logo image', /!\[logo\]\(.*\.\w{3,4}\)/u, 1, '![logo](folder/logo.svg)')
     this.couldContains('a demo image or gif', /!\[demo\]\(.*\.\w{3,4}\)/u, 1, '![demo](folder/demo.gif)')
