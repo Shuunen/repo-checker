@@ -87,6 +87,7 @@ exports[`check B folder succeed 1`] = `
     "package-json-has-no-fat-slow-jsdom-dependency-use-happy-dom-instead",
     "package-json-has-no-fat-task-runner-use-pnpm-xyz-pnpm-abc-for-sequential-or-zero-deps-package-npm-parallel",
     "readme-md-has-a-title",
+    "readme-md-has-a-logo-image",
     "readme-md-has-no-link-to-deprecated-netlify-com",
     "readme-md-has-no-links-without-https-scheme",
     "readme-md-has-no-crlf-windows-carriage-return",
@@ -167,8 +168,7 @@ exports[`check B folder succeed 1`] = `
     "tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough",
   ],
   "warnings": [
-    "readme-md-could-have-a-logo-image-logofolder-logo-svg",
-    "readme-md-could-have-a-demo-image-or-gif-demofolder-demo-gif",
+    "readme-md-could-have-a-demo-image-or-gif-demofolder-any-file-ext",
   ],
 }
 `;
@@ -225,7 +225,7 @@ exports[`check C data/tsProject 1`] = `
   "warnings": [
     "use-dependency-cruiser",
     "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-55-custom-rules-in-repo-checker-eslintrc-json",
+    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-56-custom-rules-in-repo-checker-eslintrc-json",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",
@@ -243,8 +243,8 @@ exports[`check C data/tsProject 1`] = `
     "package-json-one-coverage-dependency-from-nyc-c8-v8",
     "package-json-ts-node-without-transpile-only-detected-in-files-package-json",
     "package-json-could-have-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder",
-    "readme-md-could-have-a-logo-image-logofolder-logo-svg",
-    "readme-md-could-have-a-demo-image-or-gif-demofolder-demo-gif",
+    "readme-md-could-have-a-logo-image-logofolder-any-file-ext",
+    "readme-md-could-have-a-demo-image-or-gif-demofolder-any-file-ext",
     "readme-md-could-have-a-project-license-badge-project-licensehttps-img-shields-io-github-license-shuunen-a-great-repo-svgcolorinformationalhttps-github-com-shuunen-a-great-repo-blob-master-license-43m30m-fixable-39m49m",
     "readme-md-could-have-a-code-climate-maintainability-badge-code-climate-maintainabilityhttps-img-shields-io-codeclimate-maintainability-shuunen-a-great-repostyleflathttps-codeclimate-com-github-shuunen-a-great-repo-43m30m-fixable-39m49m",
     "readme-md-could-have-a-thanks-section-thanks",
@@ -329,7 +329,7 @@ exports[`check E data folders and not throw 1`] = `
   "warnings": [
     "use-dependency-cruiser",
     "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-55-custom-rules-in-repo-checker-eslintrc-json",
+    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-56-custom-rules-in-repo-checker-eslintrc-json",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",
@@ -347,8 +347,8 @@ exports[`check E data folders and not throw 1`] = `
     "package-json-one-coverage-dependency-from-nyc-c8-v8",
     "package-json-ts-node-without-transpile-only-detected-in-files-package-json",
     "package-json-could-have-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder",
-    "readme-md-could-have-a-logo-image-logofolder-logo-svg",
-    "readme-md-could-have-a-demo-image-or-gif-demofolder-demo-gif",
+    "readme-md-could-have-a-logo-image-logofolder-any-file-ext",
+    "readme-md-could-have-a-demo-image-or-gif-demofolder-any-file-ext",
     "readme-md-could-have-a-project-license-badge-project-licensehttps-img-shields-io-github-license-shuunen-a-great-repo-svgcolorinformationalhttps-github-com-shuunen-a-great-repo-blob-master-license-43m30m-fixable-39m49m",
     "readme-md-could-have-a-code-climate-maintainability-badge-code-climate-maintainabilityhttps-img-shields-io-codeclimate-maintainability-shuunen-a-great-repostyleflathttps-codeclimate-com-github-shuunen-a-great-repo-43m30m-fixable-39m49m",
     "readme-md-could-have-a-thanks-section-thanks",

@@ -3,8 +3,8 @@ export type EslintConfigRules = Record<string, string[] | string>
 
 export class EslintRcJsonFile {
   public overrides?: {
-    files: string[]
     extends: string[]
+    files: string[]
     rules: EslintConfigRules
   }[] = []
 

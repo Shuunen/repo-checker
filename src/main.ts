@@ -1,5 +1,5 @@
 import arg from 'arg'
-import { parseJson, type LogLevel } from 'shuutils'
+import { parseJson } from 'shuutils'
 import { name } from '../package.json'
 import { check } from './check'
 import { ProjectData, dataDefaults, dataFileName, home, templatePath } from './constants' // eslint-disable-line @typescript-eslint/consistent-type-imports
@@ -65,7 +65,7 @@ function showHelp () {
 
 function parseInputs () {
   const sliceAfter = 2
-  const inputs = arg({ '--init': Boolean, '--fail-stop': Boolean, '--force': Boolean, '--target': String, '--fix': Boolean, '--quiet': Boolean, '--version': Boolean, '-v': Boolean, '--verbose': Boolean, '--help': Boolean, '-h': Boolean }, { argv: process.argv.slice(sliceAfter) })
+  const inputs = arg({ '--fail-stop': Boolean, '--fix': Boolean, '--force': Boolean, '--help': Boolean, '--init': Boolean, '--quiet': Boolean, '--target': String, '--verbose': Boolean, '--version': Boolean, '-h': Boolean, '-v': Boolean }, { argv: process.argv.slice(sliceAfter) })
   if (inputs['--version'] ?? inputs['-v'] ?? false) showVersion()
   if (inputs['--help'] ?? inputs['-h'] ?? false) showHelp()
   return inputs
@@ -88,12 +88,11 @@ function parseOptions () {
 }
 
 export async function start (): Promise<void> {
-  const { willInit, canForce, target, canFix, isQuiet, isVerbose, canFailStop } = parseOptions()
+  const { canFailStop, canFix, canForce, isQuiet, isVerbose, target, willInit } = parseOptions()
   if (willInit) void initDataFile()
   const data = await getData(target)
   log.options.isActive = !isQuiet
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  log.options.minimumLevel = (isVerbose ? 'debug' : 'info') as LogLevel
+  log.options.minimumLevel = isVerbose ? '1-debug' : '3-info'
   log.info(`${String(name)} __unique-mark__ is starting ${canFix ? '(fix enabled)' : ''}`)
-  await check({ folderPath: target, data, canFix, canForce, canFailStop })
+  await check({ canFailStop, canFix, canForce, data, folderPath: target })
 }

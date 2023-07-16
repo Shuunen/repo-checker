@@ -18,7 +18,7 @@ it('package B on ts project', async () => {
 })
 
 it('package C ts project isUsing*', async () => {
-  const instance = new PackageJsonFile(tsProjectFolder, new ProjectData({ isQuiet: true, maxSizeKo: 0, isUsingShuutils: true, isUsingTailwind: true, isUsingTypescript: true, isPublishedPackage: true, isUsingDependencyCruiser: true, isUsingC8: true, isUsingEslint: true }))
+  const instance = new PackageJsonFile(tsProjectFolder, new ProjectData({ isPublishedPackage: true, isQuiet: true, isUsingC8: true, isUsingDependencyCruiser: true, isUsingEslint: true, isUsingShuutils: true, isUsingTailwind: true, isUsingTypescript: true, maxSizeKo: 0 }))
   await instance.start()
   await instance.end()
   expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
@@ -40,7 +40,7 @@ it('package E vue project', async () => {
 })
 
 it('package F fix project', async () => {
-  const instance = new PackageJsonFile('', new ProjectData({ isQuiet: true, isUsingTypescript: true, isUsingEslint: true }), true)
+  const instance = new PackageJsonFile('', new ProjectData({ isQuiet: true, isUsingEslint: true, isUsingTypescript: true }), true)
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
   instance.fileContent = `{

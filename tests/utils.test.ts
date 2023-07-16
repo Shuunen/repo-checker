@@ -111,5 +111,5 @@ it('objectToJson B already sorted', () => {
 })
 
 it('objectToJson C sort', () => {
-  expect(objectToJson({ keyB: 'B', keyA: 'A' })).toMatchSnapshot()
+  expect(objectToJson({ keyA: 'A', keyB: 'B' })).toMatchSnapshot()
 })

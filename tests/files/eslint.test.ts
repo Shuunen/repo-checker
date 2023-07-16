@@ -37,7 +37,7 @@ it('eslint C config file empty for ts project', async () => {
 
 it('eslint D config file empty for vue ts project', async () => {
   log.disable()
-  const instance = new EsLintFile('', new ProjectData({ isUsingVue: true, isUsingTypescript: true }))
+  const instance = new EsLintFile('', new ProjectData({ isUsingTypescript: true, isUsingVue: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
   instance.fileContent = ''
@@ -97,7 +97,7 @@ it('eslint G config partial file for ts project', async () => {
 
 it('eslint H config partial file for vue ts project', async () => {
   log.disable()
-  const instance = new EsLintFile('', new ProjectData({ isUsingVue: true, isUsingTypescript: true }))
+  const instance = new EsLintFile('', new ProjectData({ isUsingTypescript: true, isUsingVue: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
   instance.fileContent = `{
@@ -126,7 +126,7 @@ it('eslint H config partial file for vue ts project', async () => {
 
 it('eslint I up to date config file for vue ts project', async () => {
   log.disable()
-  const instance = new EsLintFile('', new ProjectData({ isUsingVue: true, isUsingTypescript: true }))
+  const instance = new EsLintFile('', new ProjectData({ isUsingTypescript: true, isUsingVue: true }))
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
   instance.fileContent = `{

@@ -5,8 +5,8 @@ export default defineConfig({
   test: {
     coverage: {
       100: true,
-      reporter: ['text', 'lcov', 'html'],
       exclude: ['tests'],
+      reporter: ['text', 'lcov', 'html'],
     },
   },
 })

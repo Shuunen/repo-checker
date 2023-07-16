@@ -28,9 +28,9 @@ const recommendedCompilerOptions = {
 
 interface TsConfigJsonFile {
   compilerOptions?: Record<string, string[] | boolean | string | undefined> & typeof recommendedCompilerOptions
-  include: string[]
   exclude: string[]
   files: string[]
+  include: string[]
 }
 
 export class TsConfigFile extends FileBase {

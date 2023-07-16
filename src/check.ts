@@ -5,7 +5,7 @@ import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWor
 import { log } from './logger'
 import { augmentData, getProjectFolders } from './utils'
 
-interface Indicators { passed: string[]; warnings: string[]; failed: string[] }
+interface Indicators { failed: string[]; passed: string[]; warnings: string[] }
 
 const checkers = [
   DependencyCruiserFile,
@@ -41,7 +41,7 @@ interface CheckOptions {
   folderPath: string
 }
 
-function report ({ passed = [], warnings = [], failed = [] }: Indicators): void {
+function report ({ failed = [], passed = [], warnings = [] }: Indicators): void {
   log.info('Report :')
   reportLog(green, passed.length, 'are successful')
   reportLog(yellow, warnings.length, 'triggered warnings')
@@ -50,7 +50,7 @@ function report ({ passed = [], warnings = [], failed = [] }: Indicators): void 
 }
 
 // eslint-disable-next-line max-statements
-export async function check ({ folderPath, data, canFix = false, canForce = false, canThrow = true, canFailStop = false }: CheckOptions): Promise<Indicators> {
+export async function check ({ canFailStop = false, canFix = false, canForce = false, canThrow = true, data, folderPath }: CheckOptions): Promise<Indicators> {
   const folders = await getProjectFolders(folderPath)
   let passed: string[] = []
   let warnings: string[] = []
@@ -76,8 +76,8 @@ export async function check ({ folderPath, data, canFix = false, canForce = fals
     }
   }
   /* eslint-enable no-await-in-loop */
-  report({ passed, warnings, failed })
+  report({ failed, passed, warnings })
   const maxLogLength = 100
   if (canThrow && failed.length > 0) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), maxLogLength)}`)
-  return { passed, warnings, failed }
+  return { failed, passed, warnings }
 }
