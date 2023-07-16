@@ -76,6 +76,10 @@ Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
 
 | command alias | date       | main lib targeted | delay  | node  | os    | comment |
 | ------------- | ---------- | ----------------- | ------ | ----- | ----- | ------- |
+| vitest-v8     | 2023-07-17 | npx & vitest & v8 | 2,16 s | 18.16 | Linux |         |
+| vitest        | 2023-07-17 | npx & vitest 0.33 | 1,97 s | 18.16 | Linux |         |
+| esbuild       | 2023-07-17 | esbuild 0.18      | 12 ms  | 18.16 | Linux |         |
+| repo-check    | 2023-07-17 | repo-checker 1.33 | 55 ms  | 18.16 | Linux |         |
 | repo-check    | 2023-06-19 | repo-checker 1.31 | 60 ms  | 18.16 | Linux |         |
 | esbuild       | 2023-06-19 | esbuild 0.18      | 12 ms  | 18.16 | Linux |         |
 | tsc-no-emit   | 2023-06-19 | typescript 5.1    | 760 ms | 18.16 | Linux |         |
