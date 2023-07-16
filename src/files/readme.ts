@@ -114,8 +114,8 @@ export class ReadmeFile extends FileBase {
     }
     await this.inspectFile(hasREADMEFile ? 'README.md' : 'readme.md')
     this.shouldContains('a title', /^#\s\w+/u)
-    this.couldContains('a logo image', /!\[logo\]\(.*\.\w{3,4}\)/u, 1, '![logo](folder/logo.svg)')
-    this.couldContains('a demo image or gif', /!\[demo\]\(.*\.\w{3,4}\)/u, 1, '![demo](folder/demo.gif)')
+    this.couldContains('a logo image', /!\[logo\]\(.*\.\w{3,4}\)/u, 1, '![logo](folder/any-file.ext)')
+    this.couldContains('a demo image or gif', /!\[demo\]\(.*\.\w{3,4}\)/u, 1, '![demo](folder/any-file.ext)')
     this.shouldContains('no link to deprecated *.netlify.com', /\.netlify\.com/u, 0)
     this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/u, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
     this.checkMarkdown()

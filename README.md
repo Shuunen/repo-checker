@@ -9,7 +9,7 @@
 [![Publish size](https://img.shields.io/bundlephobia/min/repo-check?label=publish%20size)](https://bundlephobia.com/package/repo-check)
 [![Install size](https://badgen.net/packagephobia/install/repo-check)](https://packagephobia.com/result?p=repo-check)
 
-> Maintain order in repositories chaos
+![logo](docs/banner.svg)
 
 - [Repo Checker](#repo-checker)
   - [Usage](#usage)
