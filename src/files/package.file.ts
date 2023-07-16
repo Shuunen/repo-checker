@@ -50,7 +50,7 @@ export class PackageJsonFile extends FileBase {
     this.checkScriptsPrePost()
     if (this.fileContent.includes('watchlist')) this.couldContains('watchlist eager param', /-eager --/u, 1, 'like watchlist src tests -eager -- pnpm test')
     if (this.data.isUsingDependencyCruiser) this.shouldContains('a depcruise usage', /depcruise\s/u, 1, false, 'like "depcruise src --config"')
-    if (this.data.isUsingShuutils) this.couldContains('a unique-mark task', /unique-mark/u, 1, 'like "mark": "unique-mark public/my-file && echo mark success",')
+    if (this.fileContent.includes('"build": "') && this.data.isUsingShuutils) this.couldContains('a unique-mark task', /unique-mark/u, 1, 'like "mark": "unique-mark public/my-file && echo mark success",')
     const isOk = this.couldContains('pnpm instead of npm run', /npm run/u, 0, 'use pnpm instead of npm run for performance', true)
     if (!isOk && this.canFix) this.fileContent = this.fileContent.replace(/npm run/gu, 'pnpm').replace(/pnpm (?<task>[\w:]+) -- -/gu, 'pnpm $<task> -') // don't use -- for pnpm
     this.couldContains('a check script', /"check": "/u, 1, 'like "check": "pnpm build && pnpm lint ...')
