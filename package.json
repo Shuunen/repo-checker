@@ -20,7 +20,7 @@
     "esbuild": "0.18",
     "eslint": "8.43",
     "eslint-config-hardcore": "37",
-    "eslint-plugin-unicorn": "47.0",
+    "eslint-plugin-unicorn": "48.0",
     "typescript": "5.1",
     "typescript-run": "0",
     "vitest": "0.32",
