@@ -92,7 +92,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   if (/ "(?:post|pre)[^"]+": "[^"]+"/u.test(content)) data.hasTaskPrefix = true
   if (/"(?:nuxt|vitepress|vue)"/u.test(content)) data.isUsingVue = true
   if (/ts-node|typescript|@types/u.test(content)) data.isUsingTypescript = true
-  if (/css|webapp|webcomponent|website/u.test(content) || data.isUsingVue) data.isWebPublished = true
+  if (/webapp|webcomponent|website/u.test(content) || data.isUsingVue) data.isWebPublished = true
   if (content.includes('npm publish')) data.isPublishedPackage = true
   return data
 }
