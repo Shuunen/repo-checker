@@ -102,7 +102,7 @@ export async function augmentData (folderPath: string, dataSource: ProjectData, 
   let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
   data = await augmentDataWithPackageJson(folderPath, data)
-  const hasLocalData = shouldLoadLocal ? await fileExists(path.join(folderPath, dataFileName)) : false
+  const hasLocalData = shouldLoadLocal && await fileExists(path.join(folderPath, dataFileName))
   if (hasLocalData) { // local data overwrite the rest
     const { error, value } = parseJson<ProjectData>(await readFileInFolder(folderPath, dataFileName))
     /* c8 ignore next */
