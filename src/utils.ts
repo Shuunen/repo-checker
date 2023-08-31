@@ -42,7 +42,8 @@ export async function readFileInFolder (folderPath: string, fileName: string): P
   if (!await fileExists(filePath)) throw new Error(`file "${filePath}" does not exists`)
   const statData = await statAsync(filePath)
   if (statData.isDirectory()) throw new Error(`filepath "${filePath}" is a directory`)
-  return await readFile(filePath)
+  const content = await readFile(filePath)
+  return content.replace(/\r\n/gu, '\n') // normalize line endings
 }
 
 // eslint-disable-next-line max-statements
@@ -75,7 +76,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   const content = await readFileInFolder(folderPath, 'package.json')
   data.packageName = /"name": "(?<packageName>[\w+/@-]+)"/u.exec(content)?.groups?.packageName ?? dataDefaults.packageName
   data.license = /"license": "(?<license>[\w+\-.]+)"/u.exec(content)?.groups?.license ?? dataDefaults.license
-  // eslint-disable-next-line unicorn/no-unsafe-regex, security/detect-unsafe-regex
+  // eslint-disable-next-line security/detect-unsafe-regex
   const author = /"author": "(?<userName>[\s\w/@-]+)\b[\s<]*(?<userMail>[\w.@-]+)?>?"/u.exec(content)
   data.userName = author?.groups?.userName ?? data.userName
   data.userMail = author?.groups?.userMail ?? data.userMail
