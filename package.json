@@ -51,7 +51,7 @@
     "build:start": "pnpm build:app && node .",
     "check": "pnpm i && pnpm start && pnpm lint && npm test && echo check success",
     "dev": "watchlist src -eager -- pnpm build:start",
-    "lint": "tsc --noEmit && eslint --cache --fix --ext .js,.ts . && depcruise src --config && echo lint success",
+    "lint": "tsc --noEmit && echo tsc success && eslint --cache --fix --ext .js,.ts . && echo eslint success && depcruise src --config && echo lint success",
     "postversion": "git push && git push --tags && pnpm build && npm publish",
     "preversion": "pnpm check",
     "start": "pnpm build:start && echo start success",
