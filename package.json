@@ -49,7 +49,7 @@
     "build": "pnpm build:app && unique-mark dist/repo-check.min.cjs && echo build success",
     "build:app": "esbuild src/index.ts --target=esnext --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs",
     "build:start": "pnpm build:app && node .",
-    "check": "pnpm start && pnpm lint && npm test && echo check success",
+    "check": "pnpm i && pnpm start && pnpm lint && npm test && echo check success",
     "dev": "watchlist src -eager -- pnpm build:start",
     "lint": "tsc --noEmit && eslint --cache --fix --ext .js,.ts . && depcruise src --config && echo lint success",
     "postversion": "git push && git push --tags && pnpm build && npm publish",
