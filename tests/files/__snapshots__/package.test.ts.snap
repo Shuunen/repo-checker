@@ -124,7 +124,7 @@ exports[`package B on ts project 1`] = `
   \\"dependencies\\": {
     \\"esbuild-plugin-run\\": \\"latest\\",
     \\"typescript\\": \\"latest\\",
-    \\"uvu\\": \\"9\\"
+    \\"uvu\\": \\"0\\"
   },
   \\"description\\": \\"description\\",
   \\"license\\": \\"MIT\\",
@@ -142,7 +142,7 @@ exports[`package B on ts project 1`] = `
   \\"dependencies\\": {
     \\"esbuild-plugin-run\\": \\"latest\\",
     \\"typescript\\": \\"latest\\",
-    \\"uvu\\": \\"9\\"
+    \\"uvu\\": \\"0\\"
   },
   \\"description\\": \\"description\\",
   \\"license\\": \\"MIT\\",
@@ -244,7 +244,7 @@ exports[`package C ts project isUsing* 1`] = `
   \\"dependencies\\": {
     \\"esbuild-plugin-run\\": \\"latest\\",
     \\"typescript\\": \\"latest\\",
-    \\"uvu\\": \\"9\\"
+    \\"uvu\\": \\"0\\"
   },
   \\"description\\": \\"description\\",
   \\"license\\": \\"MIT\\",
@@ -262,7 +262,7 @@ exports[`package C ts project isUsing* 1`] = `
   \\"dependencies\\": {
     \\"esbuild-plugin-run\\": \\"latest\\",
     \\"typescript\\": \\"latest\\",
-    \\"uvu\\": \\"9\\"
+    \\"uvu\\": \\"0\\"
   },
   \\"description\\": \\"description\\",
   \\"license\\": \\"MIT\\",
