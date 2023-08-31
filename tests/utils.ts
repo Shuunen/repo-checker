@@ -23,7 +23,6 @@ export async function promiseVoid (): Promise<void> {
   await sleep(1)
 }
 
-// eslint-disable-next-line putout/putout
 export const testFolder = dirname(__filename)
 
 export const vueProjectFolder = join(testFolder, 'data', 'vueProject')
