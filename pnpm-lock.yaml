@@ -6,21 +6,21 @@ settings:
 
 dependencies:
   arg:
-    specifier: '5'
+    specifier: '5.0'
     version: 5.0.2
   shuutils:
     specifier: '7.3'
     version: 7.3.1
   sort-json:
-    specifier: '2'
+    specifier: '2.0'
     version: 2.0.1
 
 devDependencies:
   '@types/node':
-    specifier: '20'
+    specifier: '20.5'
     version: 20.5.7
   '@types/sort-json':
-    specifier: '2'
+    specifier: '2.0'
     version: 2.0.1
   '@vitest/coverage-v8':
     specifier: '0.34'
