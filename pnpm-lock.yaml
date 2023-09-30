@@ -26,8 +26,8 @@ devDependencies:
     specifier: '0.34'
     version: 0.34.3(vitest@0.34.3)
   dependency-cruiser:
-    specifier: '14.0'
-    version: 14.0.0
+    specifier: '14.1'
+    version: 14.1.0
   esbuild:
     specifier: '0.19'
     version: 0.19.2
@@ -3542,8 +3542,8 @@ packages:
       object-keys: 1.1.1
     dev: true
 
-  /dependency-cruiser@14.0.0:
-    resolution: {integrity: sha512-AAPiYPLAkJBhfcsxBp6nbR5gyfLZBAbCMwYI1hscuaBjbKt6FRzpMitl+f7mkzEWxyPGi6d0S9Us86Jx2CN55A==}
+  /dependency-cruiser@14.1.0:
+    resolution: {integrity: sha512-JF7F0SFG4K5vXmUMvgYHKQnMuU2JzO18/+r/hTuaGEr3KTlMYkR16WNc+WDqS0y5fjq8khDy/WKO4bR5xhw2sQ==}
     engines: {node: ^18.17||>=20}
     hasBin: true
     dependencies:
