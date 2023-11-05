@@ -121,7 +121,7 @@ export async function getFileSizeInKo (filePath: string): Promise<number> {
   return size
 }
 
-// eslint-disable-next-line max-params, max-statements, sonarjs/cognitive-complexity
+// eslint-disable-next-line max-statements, sonarjs/cognitive-complexity, @typescript-eslint/max-params
 export async function findInFolder (folderPath: string, pattern: RegExp, ignoredInput = ['node_modules', '.git'], count = 0): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
   const matches: string[] = []

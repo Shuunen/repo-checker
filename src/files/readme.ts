@@ -10,7 +10,7 @@ import { fileExists, join, readFile } from '../utils'
 class Thanks {
   public markdown = ''
 
-  // eslint-disable-next-line max-params, @typescript-eslint/parameter-properties
+  // eslint-disable-next-line @typescript-eslint/parameter-properties, @typescript-eslint/max-params
   public constructor (public label = '', public link = '', public description = '', public expected = false, public fixable = true) {
     this.markdown = `- [${label}](${link}) : ${description}`
   }
@@ -19,7 +19,7 @@ class Thanks {
 class Badge {
   public markdown = ''
 
-  // eslint-disable-next-line max-params, @typescript-eslint/parameter-properties
+  // eslint-disable-next-line @typescript-eslint/parameter-properties, @typescript-eslint/max-params
   public constructor (public label = '', public link = '', public image = '', public expected = true, public fixable = true) {
     this.markdown = `[![${label}](${image})](${link})`
   }

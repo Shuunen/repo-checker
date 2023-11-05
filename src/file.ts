@@ -27,7 +27,7 @@ export class FileBase {
 
   private originalFileContent = ''
 
-  // eslint-disable-next-line max-params
+  // eslint-disable-next-line @typescript-eslint/max-params
   public constructor (folderPath = '', data = new ProjectData(), canFix = false, canForce = false) {
     this.folderPath = folderPath
     this.data = data
@@ -35,7 +35,7 @@ export class FileBase {
     this.canForce = canForce
   }
 
-  // eslint-disable-next-line max-params, complexity, sonarjs/cognitive-complexity
+  // eslint-disable-next-line complexity, sonarjs/cognitive-complexity, @typescript-eslint/max-params
   public shouldContains (name: string, regex?: RegExp, nbMatchExpected = defaultAmount, willJustWarn = false, helpMessage = '', canFix = false): boolean {
     // eslint-disable-next-line security/detect-non-literal-regexp
     const regexp = regex ?? new RegExp(name, 'u')
@@ -50,7 +50,7 @@ export class FileBase {
     return isOk
   }
 
-  // eslint-disable-next-line max-params
+  // eslint-disable-next-line @typescript-eslint/max-params
   public couldContains (name: string, regex?: RegExp, nbMatchExpected = defaultAmount, helpMessage = '', canFix = false): boolean {
     return this.shouldContains(name, regex, nbMatchExpected, true, helpMessage, canFix)
   }
