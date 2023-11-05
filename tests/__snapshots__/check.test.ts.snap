@@ -38,6 +38,7 @@ exports[`check B folder succeed 1`] = `
     "has-a-npmrc-file",
     "npmrc-has-enable-pre-post-scripts-option",
     "has-a-nvmrc-file",
+    "nvmrc-has-a-recent-lts-node-version",
     "has-a-package-json-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-has-a-dist-repo-check-min-cjs-file",
@@ -167,7 +168,6 @@ exports[`check B folder succeed 1`] = `
     "tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough",
   ],
   "warnings": [
-    "nvmrc-could-have-a-recent-lts-node-version-20-d-d",
     "readme-md-could-have-a-demo-image-or-gif-demofolder-any-file-ext",
   ],
 }
