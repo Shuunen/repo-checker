@@ -67,6 +67,7 @@ export class EsLintFile extends FileBase {
 
   private updateFileContent (input: EslintRcJsonFile, expectedRules: EslintConfigRules) {
     const fixedContent = this.injectRules(input, expectedRules)
+    /* c8 ignore next */
     if (fixedContent.overrides?.length === 0) delete fixedContent.overrides
     this.fileContent = objectToJson(fixedContent)
   }
