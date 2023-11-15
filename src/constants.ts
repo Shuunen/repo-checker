@@ -68,7 +68,7 @@ export class ProjectData {
 
   public willGenerateReport = true
 
-  public constructor (data: Partial<ProjectData> = {}) {
+  public constructor (data: Readonly<Partial<ProjectData>> = {}) {
     Object.assign(this, data)
   }
 }

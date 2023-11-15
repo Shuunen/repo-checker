@@ -1,19 +1,16 @@
 
-export type EslintConfigRules = Record<string, string[] | string>
+type EslintConfigRules = Readonly<Record<string, string | readonly string[]>>
 
-export class EslintRcJsonFile {
-  public overrides?: {
-    extends: string[]
-    files: string[]
-    rules: EslintConfigRules
-  }[] = []
+type EslintConfigOverride = Readonly<{
+  extends: readonly string[]
+  files: readonly string[]
+  rules: Readonly<EslintConfigRules>
+}>
 
-  public rules: EslintConfigRules = {}
-
-  public constructor (data: Partial<EslintRcJsonFile> = {}) {
-    Object.assign(this, data)
-  }
-}
+export type EslintRcJsonFile = Readonly<{
+  overrides?: readonly EslintConfigOverride[]
+  rules?: Readonly<EslintConfigRules>
+}>
 
 export const recommendedVueRules = {
   'vue/first-attribute-linebreak': 'off',
@@ -26,3 +23,5 @@ export const recommendedVueRules = {
 }
 
 export const specificRepoCheckerRules = new Set(['no-restricted-imports'])
+
+export type { EslintConfigRules }

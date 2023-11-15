@@ -28,7 +28,7 @@ export class FileBase {
   private originalFileContent = ''
 
   // eslint-disable-next-line @typescript-eslint/max-params
-  public constructor (folderPath = '', data = new ProjectData(), canFix = false, canForce = false) {
+  public constructor (folderPath = '', data: Readonly<ProjectData> = new ProjectData(), canFix = false, canForce = false) {
     this.folderPath = folderPath
     this.data = data
     this.canFix = canFix
@@ -36,7 +36,7 @@ export class FileBase {
   }
 
   // eslint-disable-next-line complexity, sonarjs/cognitive-complexity, @typescript-eslint/max-params
-  public shouldContains (name: string, regex?: RegExp, nbMatchExpected = defaultAmount, willJustWarn = false, helpMessage = '', canFix = false): boolean {
+  public shouldContains (name: string, regex?: Readonly<RegExp>, nbMatchExpected = defaultAmount, willJustWarn = false, helpMessage = '', canFix = false): boolean {
     // eslint-disable-next-line security/detect-non-literal-regexp
     const regexp = regex ?? new RegExp(name, 'u')
     const isOk = this.checkContains(regexp, nbMatchExpected)
@@ -51,14 +51,15 @@ export class FileBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/max-params
-  public couldContains (name: string, regex?: RegExp, nbMatchExpected = defaultAmount, helpMessage = '', canFix = false): boolean {
+  public couldContains (name: string, regex?: Readonly<RegExp>, nbMatchExpected = defaultAmount, helpMessage = '', canFix = false): boolean {
     return this.shouldContains(name, regex, nbMatchExpected, true, helpMessage, canFix)
   }
 
-  public checkContains (regex: RegExp, nbMatchExpected = defaultAmount): boolean {
+  public checkContains (regex: Readonly<RegExp>, nbMatchExpected = defaultAmount): boolean {
     // eslint-disable-next-line regexp/prefer-regexp-exec
     const matches = this.fileContent.match(regex) ?? []
     const hasExpectedMatches = nbMatchExpected === defaultAmount ? matches.length > 0 : nbMatchExpected === matches.length
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     if (!hasExpectedMatches) log.debug(regex.toString().replace('\n', ''), `matched ${matches.length} instead of ${nbMatchExpected === defaultAmount ? 'one or more' : nbMatchExpected}`)
     return hasExpectedMatches
   }

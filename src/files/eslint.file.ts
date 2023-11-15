@@ -1,9 +1,9 @@
-import { parseJson } from 'shuutils'
+import { clone, parseJson } from 'shuutils'
 import { repoCheckerPath } from '../constants'
 import { FileBase } from '../file'
 import { log } from '../logger'
 import { objectToJson, readFileInFolder } from '../utils'
-import { EslintRcJsonFile, recommendedVueRules, specificRepoCheckerRules, type EslintConfigRules } from './eslint.model'
+import { recommendedVueRules, specificRepoCheckerRules, type EslintConfigRules, type EslintRcJsonFile } from './eslint.model'
 
 export class EsLintFile extends FileBase {
 
@@ -15,7 +15,7 @@ export class EsLintFile extends FileBase {
   }
 
   private findRules (config: EslintRcJsonFile) {
-    if (Object.keys(config.rules).length > 0) {
+    if (config.rules && Object.keys(config.rules).length > 0) {
       log.debug(`found ${Object.keys(config.rules).length} root/global rules`)
       return config.rules
     }
@@ -29,8 +29,8 @@ export class EsLintFile extends FileBase {
   }
 
   private injectRules (input: EslintRcJsonFile, rules: EslintConfigRules) {
-    const output = new EslintRcJsonFile(input)
-    if (Object.keys(output.rules).length > 0) {
+    const output = clone(input)
+    if (output.rules && Object.keys(output.rules).length > 0) {
       Object.assign(output.rules, rules)
       return output
     }
@@ -71,7 +71,7 @@ export class EsLintFile extends FileBase {
     this.fileContent = objectToJson(fixedContent)
   }
 
-  private reportMissingRules (expectedRules: EslintConfigRules, missingRules: string[]) {
+  private reportMissingRules (expectedRules: EslintConfigRules, missingRules: readonly string[]) {
     const total = Object.keys(expectedRules).length
     const isOk = this.test(missingRules.length === 0, `current .eslintrc.json has only ${total - missingRules.length} of the ${total} custom rules in repo-checker .eslintrc.json`, true)
     if (!isOk) log.warn('missing rules :', missingRules.map(rule => `"${rule}": ${JSON.stringify(expectedRules[rule])}`).join(', '))
@@ -80,7 +80,7 @@ export class EsLintFile extends FileBase {
   private async getExpectedRules () {
     const expectedJsonString = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
     const data = parseJson<EslintRcJsonFile>(expectedJsonString)
-    let expectedContent = new EslintRcJsonFile(data.value)
+    let expectedContent = clone(data.value)
     if (this.data.isUsingVue) expectedContent = this.injectRules(expectedContent, recommendedVueRules)
     const expectedRules = this.findRules(expectedContent)
     log.debug('found', Object.keys(expectedRules).length, 'expected rules')
@@ -88,7 +88,7 @@ export class EsLintFile extends FileBase {
   }
 
   private async getRules (input: object) {
-    const content = new EslintRcJsonFile(input)
+    const content = clone(input)
     const rules = this.findRules(content)
     const expectedRules = await this.getExpectedRules()
     const missingRules = this.getMissingRulesFrom(expectedRules, rules)

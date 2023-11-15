@@ -5,7 +5,7 @@ import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWor
 import { log } from './logger'
 import { augmentData, getProjectFolders } from './utils'
 
-interface Indicators { failed: string[]; passed: string[]; warnings: string[] }
+interface Indicators { failed: readonly string[]; passed: readonly string[]; warnings: readonly string[] }
 
 const checkers = [
   DependencyCruiserFile,
@@ -37,11 +37,11 @@ interface CheckOptions {
   canFix?: boolean
   canForce?: boolean
   canThrow?: boolean
-  data: ProjectData
+  data: Readonly<ProjectData>
   folderPath: string
 }
 
-function report ({ failed = [], passed = [], warnings = [] }: Indicators): void {
+function report ({ failed = [], passed = [], warnings = [] }: Readonly<Indicators>): void {
   log.info('Report :')
   reportLog(green, passed.length, 'are successful')
   reportLog(yellow, warnings.length, 'triggered warnings')
@@ -50,7 +50,7 @@ function report ({ failed = [], passed = [], warnings = [] }: Indicators): void 
 }
 
 // eslint-disable-next-line max-statements
-export async function check ({ canFailStop = false, canFix = false, canForce = false, canThrow = true, data, folderPath }: CheckOptions): Promise<Indicators> {
+export async function check ({ canFailStop = false, canFix = false, canForce = false, canThrow = true, data, folderPath }: Readonly<CheckOptions>): Promise<Indicators> {
   const folders = await getProjectFolders(folderPath)
   let passed: string[] = []
   let warnings: string[] = []

@@ -47,7 +47,7 @@ export async function readFileInFolder (folderPath: string, fileName: string): P
 }
 
 // eslint-disable-next-line max-statements
-export async function augmentDataWithGit (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
+export async function augmentDataWithGit (folderPath: string, dataSource: Readonly<ProjectData>): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
   const gitFolder = path.join(folderPath, '.git')
   if (!await fileExists(path.join(gitFolder, 'config'))) return data
@@ -67,7 +67,7 @@ export async function augmentDataWithGit (folderPath: string, dataSource: Projec
 }
 
 // eslint-disable-next-line max-statements, complexity, sonarjs/cognitive-complexity
-export async function augmentDataWithPackageJson (folderPath: string, dataSource: ProjectData): Promise<ProjectData> {
+export async function augmentDataWithPackageJson (folderPath: string, dataSource: Readonly<ProjectData>): Promise<ProjectData> {
   const data = new ProjectData(dataSource)
   if (!await fileExists(path.join(folderPath, 'package.json'))) {
     log.debug('cannot augment, no package.json found in', folderPath)
@@ -98,7 +98,7 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   return data
 }
 
-export async function augmentData (folderPath: string, dataSource: ProjectData, shouldLoadLocal = false): Promise<ProjectData> {
+export async function augmentData (folderPath: string, dataSource: Readonly<ProjectData>, shouldLoadLocal = false): Promise<ProjectData> {
   let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
   data = await augmentDataWithPackageJson(folderPath, data)
@@ -122,7 +122,7 @@ export async function getFileSizeInKo (filePath: string): Promise<number> {
 }
 
 // eslint-disable-next-line max-statements, sonarjs/cognitive-complexity, @typescript-eslint/max-params
-export async function findInFolder (folderPath: string, pattern: RegExp, ignoredInput = ['node_modules', '.git'], count = 0): Promise<string[]> {
+export async function findInFolder (folderPath: string, pattern: Readonly<RegExp>, ignoredInput: readonly string[] = ['node_modules', '.git'], count = 0): Promise<string[]> {
   const filePaths = await readDirectoryAsync(folderPath)
   const matches: string[] = []
   let ignored = arrayUnique(ignoredInput)
@@ -165,7 +165,8 @@ export function objectToJson (object: object) {
   return JSON.stringify(sortJson(object), undefined, jsonSpaceIndent)
 }
 
-export function readableRegex (regex: RegExp): string {
+export function readableRegex (regex: Readonly<RegExp>): string {
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   return regex.toString()
     .replace(/\/[gui]\b/giu, '')
     .replace(/\\/gu, '')
