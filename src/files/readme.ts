@@ -29,6 +29,7 @@ const deprecatedBadges = [
   'bettercodehub.com',
   'david-dm.org',
   'lgtm.com',
+  'libraries.io', // shows deprecated informations
 ]
 
 /* c8 ignore start */

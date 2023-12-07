@@ -101,6 +101,7 @@ exports[`check B folder succeed 1`] = `
     "readme-md-has-no-deprecated-bettercodehub-com-badge",
     "readme-md-has-no-deprecated-david-dm-org-badge",
     "readme-md-has-no-deprecated-lgtm-com-badge",
+    "readme-md-has-no-deprecated-libraries-io-badge",
     "readme-md-has-a-thanks-section",
     "readme-md-has-a-thanks-to-shields-io",
     "readme-md-has-no-remaining-thanks-to-travis-ci-com",
@@ -220,6 +221,7 @@ exports[`check C data/tsProject 1`] = `
     "readme-md-has-no-deprecated-bettercodehub-com-badge",
     "readme-md-has-no-deprecated-david-dm-org-badge",
     "readme-md-has-no-deprecated-lgtm-com-badge",
+    "readme-md-has-no-deprecated-libraries-io-badge",
     "has-a-repo-checker-json-file",
   ],
   "warnings": [
@@ -324,6 +326,7 @@ exports[`check E data folders and not throw 1`] = `
     "readme-md-has-no-deprecated-bettercodehub-com-badge",
     "readme-md-has-no-deprecated-david-dm-org-badge",
     "readme-md-has-no-deprecated-lgtm-com-badge",
+    "readme-md-has-no-deprecated-libraries-io-badge",
     "has-a-repo-checker-json-file",
   ],
   "warnings": [
