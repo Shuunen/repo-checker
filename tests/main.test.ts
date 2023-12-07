@@ -1,16 +1,24 @@
+import { clone } from 'shuutils'
 import { expect, it } from 'vitest'
 import { defaultOptions, getData, getFlags, getOptions, initDataFile, start } from '../src/main'
 
+function cleanTargetForSnap (options: Readonly<ReturnType<typeof getOptions>>) {
+  const clean = clone<Partial<typeof options>>(options)
+  // we need to get rid of targets like c:\Users\MyUser or /home/another-variable/ because they are not the same on every machine
+  delete clean.target
+  return clean
+}
+
 it('parseOptions A defaults', () => {
-  expect(getOptions({})).toMatchSnapshot()
+  expect(cleanTargetForSnap(getOptions({}))).toMatchSnapshot()
 })
 
 it('parseOptions B non existing target', () => {
-  expect(getOptions({ '--fix': true, '--target': 'my-folder' })).toMatchSnapshot()
+  expect(cleanTargetForSnap(getOptions({ '--fix': true, '--target': 'my-folder' }))).toMatchSnapshot()
 })
 
 it('parseOptions C show help', () => {
-  expect(getOptions({ '--help': true })).toMatchSnapshot()
+  expect(cleanTargetForSnap(getOptions({ '--help': true }))).toMatchSnapshot()
 })
 
 it('getFlags A', () => {
