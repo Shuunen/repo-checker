@@ -2,37 +2,37 @@
 
 exports[`ts config file fix 1`] = `
 "{
-  \\"compilerOptions\\": {
-    \\"allowUnreachableCode\\": false,
-    \\"allowUnusedLabels\\": false,
-    \\"checkJs\\": true,
-    \\"esModuleInterop\\": true,
-    \\"exactOptionalPropertyTypes\\": true,
-    \\"forceConsistentCasingInFileNames\\": true,
-    \\"lib\\": [
-      \\"ESNext\\"
+  "compilerOptions": {
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "ESNext"
     ],
-    \\"moduleResolution\\": \\"Node\\",
-    \\"noFallthroughCasesInSwitch\\": true,
-    \\"noImplicitAny\\": true,
-    \\"noImplicitOverride\\": true,
-    \\"noImplicitReturns\\": true,
-    \\"noPropertyAccessFromIndexSignature\\": false,
-    \\"noUncheckedIndexedAccess\\": true,
-    \\"noUnusedLocals\\": true,
-    \\"noUnusedParameters\\": true,
-    \\"outDir\\": \\"./dist\\",
-    \\"skipLibCheck\\": true,
-    \\"strict\\": true,
-    \\"verbatimModuleSyntax\\": true
+    "moduleResolution": "Node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "./dist",
+    "skipLibCheck": true,
+    "strict": true,
+    "verbatimModuleSyntax": true
   },
-  \\"files\\": [
-    \\"src/main.ts\\"
+  "files": [
+    "src/main.ts"
   ],
-  \\"include\\": [
-    \\"src\\"
+  "include": [
+    "src"
   ],
-  \\"name\\": \\"John\\"
+  "name": "John"
 }"
 `;
 
@@ -71,37 +71,37 @@ exports[`ts config file fix 2`] = `
   },
   "failed": [],
   "fileContent": "{
-  \\"compilerOptions\\": {
-    \\"allowUnreachableCode\\": false,
-    \\"allowUnusedLabels\\": false,
-    \\"checkJs\\": true,
-    \\"esModuleInterop\\": true,
-    \\"exactOptionalPropertyTypes\\": true,
-    \\"forceConsistentCasingInFileNames\\": true,
-    \\"lib\\": [
-      \\"ESNext\\"
+  "compilerOptions": {
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "ESNext"
     ],
-    \\"moduleResolution\\": \\"Node\\",
-    \\"noFallthroughCasesInSwitch\\": true,
-    \\"noImplicitAny\\": true,
-    \\"noImplicitOverride\\": true,
-    \\"noImplicitReturns\\": true,
-    \\"noPropertyAccessFromIndexSignature\\": false,
-    \\"noUncheckedIndexedAccess\\": true,
-    \\"noUnusedLocals\\": true,
-    \\"noUnusedParameters\\": true,
-    \\"outDir\\": \\"./dist\\",
-    \\"skipLibCheck\\": true,
-    \\"strict\\": true,
-    \\"verbatimModuleSyntax\\": true
+    "moduleResolution": "Node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "./dist",
+    "skipLibCheck": true,
+    "strict": true,
+    "verbatimModuleSyntax": true
   },
-  \\"files\\": [
-    \\"src/main.ts\\"
+  "files": [
+    "src/main.ts"
   ],
-  \\"include\\": [
-    \\"src\\"
+  "include": [
+    "src"
   ],
-  \\"name\\": \\"John\\"
+  "name": "John"
 }",
   "fileContentObject": {
     "compilerOptions": {
@@ -224,7 +224,7 @@ exports[`ts config malformed 1`] = `
     "willGenerateReport": true,
   },
   "failed": [],
-  "fileContent": "\\"name\\": \\"John\\" }",
+  "fileContent": ""name": "John" }",
   "fileName": "",
   "originalFileContent": "",
   "passed": [],

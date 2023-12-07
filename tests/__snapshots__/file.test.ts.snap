@@ -350,9 +350,9 @@ exports[`file H validator can detect an existing schema 1`] = `
   },
   "failed": [],
   "fileContent": "{
-        \\"something\\": \\"else\\",
-        \\"$schema\\": \\"https://json.schemastore.org/does-exist\\",
-        \\"age\\": 42
+        "something": "else",
+        "$schema": "https://json.schemastore.org/does-exist",
+        "age": 42
       }",
   "fileName": "",
   "originalFileContent": "",
@@ -398,9 +398,9 @@ exports[`file I validator can fix a missing schema 1`] = `
   },
   "failed": [],
   "fileContent": "{
-        \\"$schema\\": \\"https://json.schemastore.org/does-exist-too\\",
-        \\"something\\": \\"else\\",
-        \\"age\\": 42
+        "$schema": "https://json.schemastore.org/does-exist-too",
+        "something": "else",
+        "age": 42
       }",
   "fileName": "",
   "originalFileContent": "",

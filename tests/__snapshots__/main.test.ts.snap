@@ -1,0 +1,43 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parseOptions A defaults 1`] = `
+{
+  "canFailStop": false,
+  "canFix": false,
+  "canForce": false,
+  "isQuiet": false,
+  "isVerbose": false,
+  "target": "C:\\Users\\User\\Projects\\github\\repo-checker",
+  "willInit": false,
+  "willShowHelp": false,
+  "willShowVersion": false,
+}
+`;
+
+exports[`parseOptions B non existing target 1`] = `
+{
+  "canFailStop": false,
+  "canFix": true,
+  "canForce": false,
+  "isQuiet": false,
+  "isVerbose": false,
+  "target": "C:\\Users\\User\\Projects\\github\\repo-checker\\my-folder",
+  "willInit": false,
+  "willShowHelp": false,
+  "willShowVersion": false,
+}
+`;
+
+exports[`parseOptions C show help 1`] = `
+{
+  "canFailStop": false,
+  "canFix": false,
+  "canForce": false,
+  "isQuiet": false,
+  "isVerbose": false,
+  "target": "C:\\Users\\User\\Projects\\github\\repo-checker",
+  "willInit": false,
+  "willShowHelp": true,
+  "willShowVersion": false,
+}
+`;

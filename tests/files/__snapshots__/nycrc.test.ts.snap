@@ -165,38 +165,38 @@ exports[`nyc rc D file exists but not a json ext file 1`] = `
   },
   "failed": [],
   "fileContent": "{
-  \\"$schema\\": \\"https://json.schemastore.org/nycrc\\",
-  \\"branches\\": 90,
-  \\"check-coverage\\": true,
-  \\"functions\\": 90,
-  \\"include\\": [
-    \\"src/**/*.ts\\"
+  "$schema": "https://json.schemastore.org/nycrc",
+  "branches": 90,
+  "check-coverage": true,
+  "functions": 90,
+  "include": [
+    "src/**/*.ts"
   ],
-  \\"lines\\": 90,
-  \\"reporter\\": [
-    \\"html\\",
-    \\"text\\",
-    \\"lcovonly\\"
+  "lines": 90,
+  "reporter": [
+    "html",
+    "text",
+    "lcovonly"
   ],
-  \\"statements\\": 90
+  "statements": 90
 }
 ",
   "fileName": ".nycrc",
   "originalFileContent": "{
-  \\"$schema\\": \\"https://json.schemastore.org/nycrc\\",
-  \\"branches\\": 90,
-  \\"check-coverage\\": true,
-  \\"functions\\": 90,
-  \\"include\\": [
-    \\"src/**/*.ts\\"
+  "$schema": "https://json.schemastore.org/nycrc",
+  "branches": 90,
+  "check-coverage": true,
+  "functions": 90,
+  "include": [
+    "src/**/*.ts"
   ],
-  \\"lines\\": 90,
-  \\"reporter\\": [
-    \\"html\\",
-    \\"text\\",
-    \\"lcovonly\\"
+  "lines": 90,
+  "reporter": [
+    "html",
+    "text",
+    "lcovonly"
   ],
-  \\"statements\\": 90
+  "statements": 90
 }
 ",
   "passed": [

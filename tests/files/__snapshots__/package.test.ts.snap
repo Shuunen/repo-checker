@@ -120,39 +120,39 @@ exports[`package B on ts project 1`] = `
     "package-json-assert-dependency-used-in-some-ts-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative",
   ],
   "fileContent": "{
-  \\"author\\": \\"Michael Scott-Junior\\",
-  \\"dependencies\\": {
-    \\"esbuild-plugin-run\\": \\"latest\\",
-    \\"typescript\\": \\"latest\\",
-    \\"uvu\\": \\"0\\"
+  "author": "Michael Scott-Junior",
+  "dependencies": {
+    "esbuild-plugin-run": "latest",
+    "typescript": "latest",
+    "uvu": "0"
   },
-  \\"description\\": \\"description\\",
-  \\"license\\": \\"MIT\\",
-  \\"main\\": \\"pathToMain\\",
-  \\"scripts\\": {
-    \\"build\\": \\"ts-node build.ts\\",
-    \\"prepublish\\": \\"npm run build\\",
-    \\"start\\": \\"node pathToMain\\"
+  "description": "description",
+  "license": "MIT",
+  "main": "pathToMain",
+  "scripts": {
+    "build": "ts-node build.ts",
+    "prepublish": "npm run build",
+    "start": "node pathToMain"
   },
-  \\"version\\": \\"1.0.0\\"
+  "version": "1.0.0"
 }",
   "fileName": "package.json",
   "originalFileContent": "{
-  \\"author\\": \\"Michael Scott-Junior\\",
-  \\"dependencies\\": {
-    \\"esbuild-plugin-run\\": \\"latest\\",
-    \\"typescript\\": \\"latest\\",
-    \\"uvu\\": \\"0\\"
+  "author": "Michael Scott-Junior",
+  "dependencies": {
+    "esbuild-plugin-run": "latest",
+    "typescript": "latest",
+    "uvu": "0"
   },
-  \\"description\\": \\"description\\",
-  \\"license\\": \\"MIT\\",
-  \\"main\\": \\"pathToMain\\",
-  \\"scripts\\": {
-    \\"build\\": \\"ts-node build.ts\\",
-    \\"prepublish\\": \\"npm run build\\",
-    \\"start\\": \\"node pathToMain\\"
+  "description": "description",
+  "license": "MIT",
+  "main": "pathToMain",
+  "scripts": {
+    "build": "ts-node build.ts",
+    "prepublish": "npm run build",
+    "start": "node pathToMain"
   },
-  \\"version\\": \\"1.0.0\\"
+  "version": "1.0.0"
 }",
   "passed": [
     "has-a-package-json-file",
@@ -240,39 +240,39 @@ exports[`package C ts project isUsing* 1`] = `
     "package-json-assert-dependency-used-in-some-ts-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative",
   ],
   "fileContent": "{
-  \\"author\\": \\"Michael Scott-Junior\\",
-  \\"dependencies\\": {
-    \\"esbuild-plugin-run\\": \\"latest\\",
-    \\"typescript\\": \\"latest\\",
-    \\"uvu\\": \\"0\\"
+  "author": "Michael Scott-Junior",
+  "dependencies": {
+    "esbuild-plugin-run": "latest",
+    "typescript": "latest",
+    "uvu": "0"
   },
-  \\"description\\": \\"description\\",
-  \\"license\\": \\"MIT\\",
-  \\"main\\": \\"pathToMain\\",
-  \\"scripts\\": {
-    \\"build\\": \\"ts-node build.ts\\",
-    \\"prepublish\\": \\"npm run build\\",
-    \\"start\\": \\"node pathToMain\\"
+  "description": "description",
+  "license": "MIT",
+  "main": "pathToMain",
+  "scripts": {
+    "build": "ts-node build.ts",
+    "prepublish": "npm run build",
+    "start": "node pathToMain"
   },
-  \\"version\\": \\"1.0.0\\"
+  "version": "1.0.0"
 }",
   "fileName": "package.json",
   "originalFileContent": "{
-  \\"author\\": \\"Michael Scott-Junior\\",
-  \\"dependencies\\": {
-    \\"esbuild-plugin-run\\": \\"latest\\",
-    \\"typescript\\": \\"latest\\",
-    \\"uvu\\": \\"0\\"
+  "author": "Michael Scott-Junior",
+  "dependencies": {
+    "esbuild-plugin-run": "latest",
+    "typescript": "latest",
+    "uvu": "0"
   },
-  \\"description\\": \\"description\\",
-  \\"license\\": \\"MIT\\",
-  \\"main\\": \\"pathToMain\\",
-  \\"scripts\\": {
-    \\"build\\": \\"ts-node build.ts\\",
-    \\"prepublish\\": \\"npm run build\\",
-    \\"start\\": \\"node pathToMain\\"
+  "description": "description",
+  "license": "MIT",
+  "main": "pathToMain",
+  "scripts": {
+    "build": "ts-node build.ts",
+    "prepublish": "npm run build",
+    "start": "node pathToMain"
   },
-  \\"version\\": \\"1.0.0\\"
+  "version": "1.0.0"
 }",
   "passed": [
     "has-a-package-json-file",
@@ -398,27 +398,27 @@ exports[`package E vue project 1`] = `
     "package-json-does-not-have-a-script-section-scripts-n",
   ],
   "fileContent": "{
-  \\"authors\\": \\"author\\",
-  \\"bugs\\": \\"https://github.com/Kevin_Malone/recipes/issues\\",
-  \\"dependencies\\": {
-    \\"tailwindcss\\": \\"latest\\",
-    \\"vue\\": \\"latest\\"
+  "authors": "author",
+  "bugs": "https://github.com/Kevin_Malone/recipes/issues",
+  "dependencies": {
+    "tailwindcss": "latest",
+    "vue": "latest"
   },
-  \\"description\\": \\"description\\",
-  \\"name\\": \\"name\\",
-  \\"version\\": \\"1.0.0\\"
+  "description": "description",
+  "name": "name",
+  "version": "1.0.0"
 }",
   "fileName": "package.json",
   "originalFileContent": "{
-  \\"authors\\": \\"author\\",
-  \\"bugs\\": \\"https://github.com/Kevin_Malone/recipes/issues\\",
-  \\"dependencies\\": {
-    \\"tailwindcss\\": \\"latest\\",
-    \\"vue\\": \\"latest\\"
+  "authors": "author",
+  "bugs": "https://github.com/Kevin_Malone/recipes/issues",
+  "dependencies": {
+    "tailwindcss": "latest",
+    "vue": "latest"
   },
-  \\"description\\": \\"description\\",
-  \\"name\\": \\"name\\",
-  \\"version\\": \\"1.0.0\\"
+  "description": "description",
+  "name": "name",
+  "version": "1.0.0"
 }",
   "passed": [
     "has-a-package-json-file",
@@ -496,14 +496,14 @@ exports[`package F fix project 1`] = `
     "does-not-have-a-typescript-build-or-check-btscb",
   ],
   "fileContent": "{
-    \\"$schema\\": \\"https://json.schemastore.org/package\\",
-    \\"devDependencies\\": {
-      \\"@types/jest\\": \\"^26.0\\",
-      \\"node\\": \\"14.14\\",
+    "$schema": "https://json.schemastore.org/package",
+    "devDependencies": {
+      "@types/jest": "^26.0",
+      "node": "14.14",
     },
-    \\"scripts\\": {
-      \\"eslint\\": \\"eslint --cache --ext .js,.ts,.vue src\\",
-      \\"test\\": \\"pnpm jest\\",
+    "scripts": {
+      "eslint": "eslint --cache --ext .js,.ts,.vue src",
+      "test": "pnpm jest",
     }
   }",
   "fileName": "",

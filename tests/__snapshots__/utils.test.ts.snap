@@ -514,20 +514,20 @@ ProjectData {
 
 exports[`objectToJson A nothing to sort 1`] = `
 "{
-  \\"keyA\\": \\"A\\"
+  "keyA": "A"
 }"
 `;
 
 exports[`objectToJson B already sorted 1`] = `
 "{
-  \\"keyA\\": \\"A\\",
-  \\"keyB\\": \\"B\\"
+  "keyA": "A",
+  "keyB": "B"
 }"
 `;
 
 exports[`objectToJson C sort 1`] = `
 "{
-  \\"keyA\\": \\"A\\",
-  \\"keyB\\": \\"B\\"
+  "keyA": "A",
+  "keyB": "B"
 }"
 `;

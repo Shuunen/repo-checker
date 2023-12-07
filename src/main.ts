@@ -2,50 +2,20 @@ import arg from 'arg'
 import { parseJson } from 'shuutils'
 import { name } from '../package.json'
 import { check } from './check'
-import { ProjectData, dataDefaults, dataFileName, home, templatePath } from './constants' // eslint-disable-line @typescript-eslint/consistent-type-imports
+import { ProjectData, dataDefaults, dataFileName, templatePath } from './constants' // eslint-disable-line @typescript-eslint/consistent-type-imports
 import { log } from './logger'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils'
 
-async function initDataFile (shouldForce = false): Promise<void> {
-  const isPresent = await fileExists(dataFileName)
-  if (isPresent && !shouldForce) {
-    log.warn('repo-checker data file', dataFileName, 'already exists, use --force to overwrite it')
-    return
-  }
-  const fileContent = await readFileInFolder(templatePath, dataFileName)
-  const filePath = join(home, dataFileName)
-  void writeFile(filePath, fileContent)
-  log.info('repo-checker data file successfully init, you should edit :', dataFileName)
-  process.exit(0)
-}
-
-async function getDataPath (target = ''): Promise<string> {
-  const dataFileTargetPath = join(target, dataFileName)
-  if (await fileExists(dataFileTargetPath)) return dataFileTargetPath
-  log.warn('you should use --init to prepare a data file to enhance fix')
-  log.info('because no custom data file has been found, default data will be used')
-  return ''
-}
-
-async function getData (target = ''): Promise<ProjectData> {
-  const dataPath = await getDataPath(target)
-  if (dataPath.length === 0) return dataDefaults
-  log.info('loading data from', dataPath)
-  const { error, value } = parseJson<ProjectData>(await readFileInFolder(dataPath, ''))
-  if (error) log.error('error while parsing data file', dataPath, error)
-  return value
-}
-
-function getTarget (argument = ''): string {
+function getTarget (argument = '') {
   if (argument.length > 0) return resolve(argument)
   log.info('no target specified via : --target=path/to/directory')
   log.info('targeting current directory...')
   return process.cwd()
 }
 
-function showVersion (): void {
+function showVersion () {
   log.info(`${name} version : __unique-mark__`)
-  process.exit(0)
+  return { failed: [], passed: ['show-version'], warnings: [] }
 }
 
 function showHelp () {
@@ -59,40 +29,95 @@ function showHelp () {
       --quiet       quiet mode
       --verbose     verbose mode
       -v --version  show version
-      -h --help     show help`)
-  process.exit(0)
+      -h --help     show this help`)
+  return { failed: [], passed: ['show-help'], warnings: [] }
 }
 
-function parseInputs () {
+const availableFlags = {
+  '--fail-stop': Boolean,
+  '--fix': Boolean,
+  '--force': Boolean,
+  '--help': Boolean,
+  '--init': Boolean,
+  '--quiet': Boolean,
+  '--target': String,
+  '--verbose': Boolean,
+  '--version': Boolean,
+  '-h': Boolean,
+  '-v': Boolean,
+}
+
+type Flags = { readonly [key in keyof typeof availableFlags]?: ReturnType<typeof availableFlags[key]> }
+
+export async function initDataFile (directoryPath = '', shouldForce = false) {
+  const dataPath = join(directoryPath, dataFileName)
+  const isPresent = await fileExists(dataPath)
+  if (isPresent && !shouldForce) {
+    log.warn('repo-checker data file', dataPath, 'already exists, use --force to overwrite it')
+    return { failed: [], passed: [], warnings: ['data-file-already-exists'] }
+  }
+  const fileContent = await readFileInFolder(templatePath, dataFileName)
+  void writeFile(dataPath, fileContent)
+  log.info('repo-checker data file successfully init, you should edit :', dataPath)
+  return { failed: [], passed: ['init-data-file'], warnings: [] }
+}
+
+export async function getData (directoryPath = '') {
+  const dataPath = join(directoryPath, dataFileName)
+  const isPresent = await fileExists(dataPath)
+  if (!isPresent) {
+    log.warn('you should use --init to prepare a data file to enhance fix')
+    log.info('because no custom data file has been found, default data will be used')
+    return dataDefaults
+  }
+  log.info('loading data from', dataPath)
+  const { error, value } = parseJson<ProjectData>(await readFileInFolder(dataPath, ''))
+  if (error) throw new Error(`error at getting data, target "${directoryPath}", dataPath "${dataPath}", error "${error}"`)
+  return value
+}
+
+export const defaultOptions = {
+  canFailStop: false,
+  canFix: false,
+  canForce: false,
+  isQuiet: false,
+  isVerbose: false,
+  target: '.',
+  willInit: false,
+  willShowHelp: false,
+  willShowVersion: false,
+}
+
+export function getFlags () {
   const sliceAfter = 2
-  const inputs = arg({ '--fail-stop': Boolean, '--fix': Boolean, '--force': Boolean, '--help': Boolean, '--init': Boolean, '--quiet': Boolean, '--target': String, '--verbose': Boolean, '--version': Boolean, '-h': Boolean, '-v': Boolean }, { argv: process.argv.slice(sliceAfter) })
-  if (inputs['--version'] ?? inputs['-v'] ?? false) showVersion()
-  if (inputs['--help'] ?? inputs['-h'] ?? false) showHelp()
-  return inputs
+  const flags = arg(availableFlags, { argv: process.argv.slice(sliceAfter) })
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return flags as Flags
 }
 
 // eslint-disable-next-line complexity
-function parseOptions () {
-  const inputs = parseInputs()
+export function getOptions (flags: Flags) {
   return {
-    canFailStop: inputs['--fail-stop'] ?? false,
-    canFix: inputs['--fix'] ?? false,
-    canForce: inputs['--force'] ?? false,
-    isQuiet: inputs['--quiet'] ?? false,
-    isVerbose: inputs['--verbose'] ?? false,
-    target: getTarget(inputs['--target']),
-    willInit: inputs['--init'] ?? false,
-    willShowHelp: inputs['--help'] ?? inputs['-h'] ?? false,
-    willShowVersion: inputs['--version'] ?? inputs['-v'] ?? false,
+    canFailStop: flags['--fail-stop'] ?? defaultOptions.canFailStop,
+    canFix: flags['--fix'] ?? defaultOptions.canFix,
+    canForce: flags['--force'] ?? defaultOptions.canForce,
+    isQuiet: flags['--quiet'] ?? defaultOptions.isQuiet,
+    isVerbose: flags['--verbose'] ?? defaultOptions.isVerbose,
+    target: getTarget(flags['--target']),
+    willInit: flags['--init'] ?? defaultOptions.willInit,
+    willShowHelp: flags['--help'] ?? flags['-h'] ?? defaultOptions.willShowHelp,
+    willShowVersion: flags['--version'] ?? flags['-v'] ?? defaultOptions.willShowVersion,
   }
 }
 
-export async function start (): Promise<void> {
-  const { canFailStop, canFix, canForce, isQuiet, isVerbose, target, willInit } = parseOptions()
-  if (willInit) void initDataFile()
+export async function start ({ canFailStop, canFix, canForce, isQuiet, isVerbose, target, willInit, willShowHelp, willShowVersion }: Readonly<ReturnType<typeof getOptions>> = defaultOptions) {
+  if (willShowVersion) return showVersion()
+  if (willShowHelp) return showHelp()
+  if (willInit) return await initDataFile(target, canForce)
+  /* c8 ignore next 4 */
   const data = await getData(target)
   log.options.isActive = !isQuiet
   log.options.minimumLevel = isVerbose ? '1-debug' : '3-info'
   log.info(`${String(name)} __unique-mark__ is starting ${canFix ? '(fix enabled)' : ''}`)
-  await check({ canFailStop, canFix, canForce, data, folderPath: target })
+  return await check({ canFailStop, canFix, canForce, data, folderPath: target })
 }

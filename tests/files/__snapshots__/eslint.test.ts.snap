@@ -291,14 +291,14 @@ exports[`eslint F config partial file for js project 1`] = `
     "has-no-xo-config-js-file",
   ],
   "fileContent": "{
-    \\"extends\\": [
-      \\"eslint:recommended\\",
-      \\"plugin:unicorn/recommended\\"
+    "extends": [
+      "eslint:recommended",
+      "plugin:unicorn/recommended"
     ],
-    \\"plugins\\": [
-      \\"unicorn\\"
+    "plugins": [
+      "unicorn"
     ],
-    \\"rules\\": {}
+    "rules": {}
   }",
   "fileName": "",
   "originalFileContent": "",
@@ -351,12 +351,12 @@ exports[`eslint G config partial file for ts project 1`] = `
     "has-no-xo-config-js-file",
   ],
   "fileContent": "{
-    \\"extends\\": [
-      \\"eslint:recommended\\",
-      \\"plugin:@typescript-eslint/recommended\\",
-      \\"plugin:unicorn/recommended\\"
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:unicorn/recommended"
     ],
-    \\"rules\\": {}
+    "rules": {}
   }",
   "fileName": "",
   "originalFileContent": "",
@@ -412,23 +412,23 @@ exports[`eslint H config partial file for vue ts project 1`] = `
     "does-not-have-hardcore-vue-rules-extend-hardcore-vue",
   ],
   "fileContent": "{
-    \\"extends\\": [
-      \\"eslint:recommended\\",
-      \\"plugin:@typescript-eslint/recommended\\",
-      \\"plugin:unicorn/recommended\\",
-      \\"plugin:vue/vue3-recommended\\"
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:unicorn/recommended",
+      "plugin:vue/vue3-recommended"
     ],
-    \\"parser\\": \\"vue-eslint-parser\\",
-    \\"parserOptions\\": {
-      \\"parser\\": \\"@typescript-eslint/parser\\",
-      \\"ecmaVersion\\": 2021,
-      \\"sourceType\\": \\"module\\"
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+      "parser": "@typescript-eslint/parser",
+      "ecmaVersion": 2021,
+      "sourceType": "module"
     },
-    \\"plugins\\": [
-      \\"@typescript-eslint\\",
-      \\"unicorn\\"
+    "plugins": [
+      "@typescript-eslint",
+      "unicorn"
     ],
-    \\"rules\\": {}
+    "rules": {}
   }",
   "fileName": "",
   "originalFileContent": "",
@@ -484,18 +484,18 @@ exports[`eslint I up to date config file for vue ts project 1`] = `
     "does-not-have-hardcore-vue-rules-extend-hardcore-vue",
   ],
   "fileContent": "{
-    \\"extends\\": [
-      \\"plugin:vue/vue3-recommended\\",
-      \\"eslint:recommended\\",
-      \\"@vue/typescript/recommended\\",
-      \\"plugin:unicorn/recommended\\"
+    "extends": [
+      "plugin:vue/vue3-recommended",
+      "eslint:recommended",
+      "@vue/typescript/recommended",
+      "plugin:unicorn/recommended"
     ],
-    \\"parserOptions\\": {
-      \\"ecmaVersion\\": 2021
+    "parserOptions": {
+      "ecmaVersion": 2021
     },
-    \\"plugins\\": [
-      \\"html\\",
-      \\"unicorn\\"
+    "plugins": [
+      "html",
+      "unicorn"
     ],
   }",
   "fileName": "",
@@ -550,24 +550,24 @@ exports[`eslint J config file with no rules 1`] = `
     "has-no-xo-config-js-file",
   ],
   "fileContent": "{
-  \\"env\\": {
-    \\"browser\\": false
+  "env": {
+    "browser": false
   },
-  \\"settings\\": {
-    \\"repo-faker\\": {
-      \\"hardcore/ts\\": \\"\\"
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
     }
   }
 }
 ",
   "fileName": ".eslintrc.json",
   "originalFileContent": "{
-  \\"env\\": {
-    \\"browser\\": false
+  "env": {
+    "browser": false
   },
-  \\"settings\\": {
-    \\"repo-faker\\": {
-      \\"hardcore/ts\\": \\"\\"
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
     }
   }
 }
@@ -620,30 +620,30 @@ exports[`eslint K config file with just rules (no override) 1`] = `
     "has-no-xo-config-js-file",
   ],
   "fileContent": "{
-  \\"env\\": {
-    \\"browser\\": false
+  "env": {
+    "browser": false
   },
-  \\"rules\\": {
-    \\"no-console\\": \\"off\\"
+  "rules": {
+    "no-console": "off"
   },
-  \\"settings\\": {
-    \\"repo-faker\\": {
-      \\"hardcore/ts\\": \\"\\"
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
     }
   }
 }
 ",
   "fileName": ".eslintrc.json",
   "originalFileContent": "{
-  \\"env\\": {
-    \\"browser\\": false
+  "env": {
+    "browser": false
   },
-  \\"rules\\": {
-    \\"no-console\\": \\"off\\"
+  "rules": {
+    "no-console": "off"
   },
-  \\"settings\\": {
-    \\"repo-faker\\": {
-      \\"hardcore/ts\\": \\"\\"
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
     }
   }
 }
@@ -696,12 +696,12 @@ exports[`eslint L fix file content 1`] = `
     "has-no-xo-config-js-file",
   ],
   "fileContent": "{
-  \\"extends\\": [
-    \\"eslint:recommended\\",
-    \\"plugin:@typescript-eslint/recommended\\",
-    \\"plugin:unicorn/recommended\\"
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:unicorn/recommended"
   ],
-  \\"rules\\": {}
+  "rules": {}
 }",
   "fileName": "",
   "originalFileContent": "",
@@ -753,174 +753,174 @@ exports[`eslint M fix rules in overrides 1`] = `
     "has-no-xo-config-js-file",
   ],
   "fileContent": "{
-  \\"extends\\": [
-    \\"eslint:recommended\\",
-    \\"plugin:@typescript-eslint/recommended\\",
-    \\"plugin:unicorn/recommended\\"
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:unicorn/recommended"
   ],
-  \\"overrides\\": [
+  "overrides": [
     {
-      \\"files\\": [
-        \\"*.ts\\"
+      "files": [
+        "*.ts"
       ],
-      \\"rules\\": {
-        \\"@typescript-eslint/brace-style\\": [
-          \\"error\\",
-          \\"1tbs\\",
+      "rules": {
+        "@typescript-eslint/brace-style": [
+          "error",
+          "1tbs",
           {
-            \\"allowSingleLine\\": true
+            "allowSingleLine": true
           }
         ],
-        \\"@typescript-eslint/comma-dangle\\": [
-          \\"error\\",
-          \\"always-multiline\\"
+        "@typescript-eslint/comma-dangle": [
+          "error",
+          "always-multiline"
         ],
-        \\"@typescript-eslint/consistent-indexed-object-style\\": \\"off\\",
-        \\"@typescript-eslint/consistent-type-definitions\\": \\"off\\",
-        \\"@typescript-eslint/consistent-type-imports\\": [
-          \\"error\\",
+        "@typescript-eslint/consistent-indexed-object-style": "off",
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
           {
-            \\"fixStyle\\": \\"inline-type-imports\\",
-            \\"prefer\\": \\"type-imports\\"
+            "fixStyle": "inline-type-imports",
+            "prefer": "type-imports"
           }
         ],
-        \\"@typescript-eslint/explicit-function-return-type\\": \\"off\\",
-        \\"@typescript-eslint/indent\\": [
-          \\"error\\",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/indent": [
+          "error",
           2
         ],
-        \\"@typescript-eslint/lines-around-comment\\": \\"off\\",
-        \\"@typescript-eslint/member-delimiter-style\\": [
-          \\"error\\",
+        "@typescript-eslint/lines-around-comment": "off",
+        "@typescript-eslint/member-delimiter-style": [
+          "error",
           {
-            \\"multiline\\": {
-              \\"delimiter\\": \\"none\\"
+            "multiline": {
+              "delimiter": "none"
             }
           }
         ],
-        \\"@typescript-eslint/no-type-alias\\": \\"off\\",
-        \\"@typescript-eslint/no-unused-vars\\": [
-          \\"error\\",
+        "@typescript-eslint/no-type-alias": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
           {
-            \\"argsIgnorePattern\\": \\"^_\\",
-            \\"varsIgnorePattern\\": \\"^(_|global)\\"
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^(_|global)"
           }
         ],
-        \\"@typescript-eslint/object-curly-spacing\\": [
-          \\"error\\",
-          \\"always\\"
+        "@typescript-eslint/object-curly-spacing": [
+          "error",
+          "always"
         ],
-        \\"@typescript-eslint/prefer-destructuring\\": \\"off\\",
-        \\"@typescript-eslint/prefer-readonly-parameter-types\\": [
-          \\"error\\",
+        "@typescript-eslint/prefer-destructuring": "off",
+        "@typescript-eslint/prefer-readonly-parameter-types": [
+          "error",
           {
-            \\"allow\\": [
-              \\"Document\\",
-              \\"DomContent\\",
-              \\"Element\\",
-              \\"Event\\",
-              \\"HTMLElement\\",
-              \\"Node\\",
-              \\"Window\\"
+            "allow": [
+              "Document",
+              "DomContent",
+              "Element",
+              "Event",
+              "HTMLElement",
+              "Node",
+              "Window"
             ],
-            \\"ignoreInferredTypes\\": false
+            "ignoreInferredTypes": false
           }
         ],
-        \\"@typescript-eslint/quotes\\": [
-          \\"error\\",
-          \\"single\\"
+        "@typescript-eslint/quotes": [
+          "error",
+          "single"
         ],
-        \\"@typescript-eslint/semi\\": [
-          \\"error\\",
-          \\"never\\"
+        "@typescript-eslint/semi": [
+          "error",
+          "never"
         ],
-        \\"capitalized-comments\\": \\"off\\",
-        \\"comma-dangle\\": [
-          \\"error\\",
-          \\"always-multiline\\"
+        "capitalized-comments": "off",
+        "comma-dangle": [
+          "error",
+          "always-multiline"
         ],
-        \\"curly\\": [
-          \\"error\\",
-          \\"multi\\"
+        "curly": [
+          "error",
+          "multi"
         ],
-        \\"eslint-comments/no-use\\": \\"off\\",
-        \\"etc/no-const-enum\\": \\"off\\",
-        \\"etc/no-deprecated\\": \\"off\\",
-        \\"etc/no-enum\\": \\"off\\",
-        \\"etc/no-internal\\": \\"off\\",
-        \\"etc/prefer-interface\\": \\"off\\",
-        \\"ext/lines-between-object-properties\\": \\"off\\",
-        \\"func-names\\": [
-          \\"error\\",
-          \\"always\\"
+        "eslint-comments/no-use": "off",
+        "etc/no-const-enum": "off",
+        "etc/no-deprecated": "off",
+        "etc/no-enum": "off",
+        "etc/no-internal": "off",
+        "etc/prefer-interface": "off",
+        "ext/lines-between-object-properties": "off",
+        "func-names": [
+          "error",
+          "always"
         ],
-        \\"id-length\\": [
-          \\"error\\",
+        "id-length": [
+          "error",
           {
-            \\"exceptions\\": [
-              \\"t\\"
+            "exceptions": [
+              "t"
             ],
-            \\"min\\": 2
+            "min": 2
           }
         ],
-        \\"import/extensions\\": \\"off\\",
-        \\"import/newline-after-import\\": \\"off\\",
-        \\"import/order\\": \\"off\\",
-        \\"import/prefer-default-export\\": \\"off\\",
-        \\"indent\\": \\"off\\",
-        \\"line-comment-position\\": \\"off\\",
-        \\"lines-around-comment\\": \\"off\\",
-        \\"lines-between-class-members\\": \\"off\\",
-        \\"logical-assignment-operators\\": \\"off\\",
-        \\"max-len\\": \\"off\\",
-        \\"max-statements-per-line\\": \\"off\\",
-        \\"no-console\\": \\"error\\",
-        \\"no-inline-comments\\": \\"off\\",
-        \\"object-curly-spacing\\": [
-          \\"error\\",
-          \\"always\\"
+        "import/extensions": "off",
+        "import/newline-after-import": "off",
+        "import/order": "off",
+        "import/prefer-default-export": "off",
+        "indent": "off",
+        "line-comment-position": "off",
+        "lines-around-comment": "off",
+        "lines-between-class-members": "off",
+        "logical-assignment-operators": "off",
+        "max-len": "off",
+        "max-statements-per-line": "off",
+        "no-console": "error",
+        "no-inline-comments": "off",
+        "object-curly-spacing": [
+          "error",
+          "always"
         ],
-        \\"padding-line-between-statements\\": \\"off\\",
-        \\"prettier/prettier\\": \\"off\\",
-        \\"putout/putout\\": \\"off\\",
-        \\"quote-props\\": [
-          \\"error\\",
-          \\"consistent-as-needed\\"
+        "padding-line-between-statements": "off",
+        "prettier/prettier": "off",
+        "putout/putout": "off",
+        "quote-props": [
+          "error",
+          "consistent-as-needed"
         ],
-        \\"quotes\\": \\"off\\",
-        \\"regexp/require-unicode-sets-regexp\\": \\"off\\",
-        \\"require-atomic-updates\\": [
-          \\"error\\",
+        "quotes": "off",
+        "regexp/require-unicode-sets-regexp": "off",
+        "require-atomic-updates": [
+          "error",
           {
-            \\"allowProperties\\": true
+            "allowProperties": true
           }
         ],
-        \\"semi\\": [
-          \\"error\\",
-          \\"never\\"
+        "semi": [
+          "error",
+          "never"
         ],
-        \\"simple-import-sort/imports\\": \\"off\\",
-        \\"space-before-function-paren\\": [
-          \\"error\\",
-          \\"always\\"
+        "simple-import-sort/imports": "off",
+        "space-before-function-paren": [
+          "error",
+          "always"
         ],
-        \\"total-functions/no-partial-division\\": \\"off\\",
-        \\"total-functions/no-unsafe-readonly-mutable-assignment\\": \\"off\\",
-        \\"unicorn/filename-case\\": \\"off\\",
-        \\"unicorn/no-array-for-each\\": \\"off\\",
-        \\"unicorn/no-process-exit\\": \\"off\\",
-        \\"unicorn/prefer-module\\": \\"off\\",
-        \\"unicorn/prefer-node-protocol\\": \\"off\\",
-        \\"unicorn/prefer-spread\\": \\"off\\",
-        \\"unicorn/prefer-string-replace-all\\": \\"off\\",
-        \\"unicorn/prefer-switch\\": \\"off\\",
-        \\"unicorn/prevent-abbreviations\\": [
-          \\"error\\",
+        "total-functions/no-partial-division": "off",
+        "total-functions/no-unsafe-readonly-mutable-assignment": "off",
+        "unicorn/filename-case": "off",
+        "unicorn/no-array-for-each": "off",
+        "unicorn/no-process-exit": "off",
+        "unicorn/prefer-module": "off",
+        "unicorn/prefer-node-protocol": "off",
+        "unicorn/prefer-spread": "off",
+        "unicorn/prefer-string-replace-all": "off",
+        "unicorn/prefer-switch": "off",
+        "unicorn/prevent-abbreviations": [
+          "error",
           {
-            \\"allowList\\": {
-              \\"args\\": true,
-              \\"pkg\\": true,
-              \\"str\\": true
+            "allowList": {
+              "args": true,
+              "pkg": true,
+              "str": true
             }
           }
         ]

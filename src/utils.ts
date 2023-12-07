@@ -19,8 +19,8 @@ export async function readFile (filePath: string): Promise<string> {
 }
 
 export async function isProjectFolder (folderPath: string): Promise<boolean> {
-  const statData = await statAsync(folderPath)
-  if (!statData.isDirectory()) return false
+  const statData = await statAsync(folderPath).catch(() => undefined) // eslint-disable-line unicorn/no-useless-undefined
+  if (statData === undefined || !statData.isDirectory()) return false
   const hasGitConfig = await fileExists(path.join(folderPath, '.git', 'config'))
   if (hasGitConfig) return true
   return await fileExists(path.join(folderPath, 'package.json'))

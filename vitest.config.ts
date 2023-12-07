@@ -4,9 +4,12 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     coverage: {
-      100: true,
-      exclude: ['tests'],
+      exclude: ['src/index.ts'],
+      include: ['src'],
       reporter: ['text', 'lcov', 'html'],
+      thresholds: {
+        100: true,
+      },
     },
   },
 })
