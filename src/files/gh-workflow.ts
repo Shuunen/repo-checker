@@ -21,6 +21,7 @@ export class GithubWorkflowFile extends FileBase {
     this.shouldContains('a node step in ci workflow', /actions\/setup-node/u)
     this.checkPnpm()
     this.couldContains('no main branch reference', /- main/u, 0)
+    this.couldContains('a recent node version', /node: \[20\]/u, 1)
   }
 
 }
