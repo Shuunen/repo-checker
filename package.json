@@ -56,8 +56,8 @@
     "postversion": "git push && git push --tags && pnpm build && npm publish",
     "preversion": "pnpm check",
     "start": "pnpm build:start && echo start success",
-    "test": "pnpm test:watch --run && echo test success",
-    "test:bench": "vitest bench",
+    "test": "vitest --coverage --run && echo test success",
+    "test:bench": "vitest bench && echo test bench success",
     "test:update": "vitest --run --update && echo test update success",
     "test:watch": "vitest --coverage"
   },

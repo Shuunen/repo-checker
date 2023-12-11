@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/unambiguous, import/no-commonjs
 module.exports = {
   content: ['public/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [

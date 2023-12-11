@@ -1,3 +1,5 @@
+/* eslint-disable import/no-commonjs */
+/* eslint-disable import/unambiguous */
 /* eslint-disable max-lines */
 /* eslint-disable multiline-comment-style */
 /** @type {import('dependency-cruiser').IConfiguration} */

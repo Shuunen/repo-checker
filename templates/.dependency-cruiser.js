@@ -1,3 +1,5 @@
+/* eslint-disable import/no-commonjs */
+/* eslint-disable import/unambiguous */
 /* eslint-disable no-useless-escape */
 /* eslint-disable multiline-comment-style */
 /* eslint-disable max-lines */
