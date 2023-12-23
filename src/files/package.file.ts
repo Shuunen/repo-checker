@@ -5,6 +5,7 @@ import { FileBase } from '../file'
 import { log } from '../logger'
 import { findInFolder, join } from '../utils'
 
+// eslint-disable-next-line no-restricted-syntax
 export class PackageJsonFile extends FileBase {
 
   // eslint-disable-next-line max-statements

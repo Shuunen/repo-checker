@@ -1,5 +1,6 @@
 import { bgBlue, black, Logger } from 'shuutils'
 
+// eslint-disable-next-line no-restricted-syntax
 class ExtendedLogger extends Logger {
   public fix (...stuff: readonly string[]): void {
     const items = Array.from(stuff)

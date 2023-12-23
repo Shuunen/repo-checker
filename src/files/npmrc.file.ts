@@ -1,5 +1,6 @@
 import { FileBase } from '../file'
 
+// eslint-disable-next-line no-restricted-syntax
 export class NpmRcFile extends FileBase {
 
   private checkPrePost () {

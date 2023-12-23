@@ -12,6 +12,7 @@ const missingFilepath = join(repoCheckerPath, missingFilename)
 const fakeContent = 'zorglub'
 
 it('file A simple validator', async () => {
+  // eslint-disable-next-line no-restricted-syntax
   class MyFile extends FileBase {
     public async start (): Promise<void> {
       await writeFile(missingFilepath, 'Foobar content')
@@ -38,6 +39,7 @@ it('file A simple validator', async () => {
 })
 
 it('file B validator with fix', async () => {
+  // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await this.checkFileExists(existingFilename)
@@ -55,6 +57,7 @@ it('file B validator with fix', async () => {
 })
 
 it('file C validator with fix & force, overwrite a problematic file with template', async () => {
+  // eslint-disable-next-line no-restricted-syntax
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
       await this.inspectFile(existingFilename)
@@ -73,6 +76,7 @@ it('file C validator with fix & force, overwrite a problematic file with templat
 
 it('file D validator with fix & force, update a problematic file on the go', async () => {
   let originalContent = ''
+  // eslint-disable-next-line no-restricted-syntax
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
       await this.inspectFile(existingFilename)
@@ -90,6 +94,7 @@ it('file D validator with fix & force, update a problematic file on the go', asy
 
 it('file E validator without force cannot fix a problematic file on the go', async () => {
   let originalContent = ''
+  // eslint-disable-next-line no-restricted-syntax
   class MyFileFixForce extends FileBase {
     public async start (): Promise<void> {
       await this.inspectFile(existingFilename)
@@ -106,6 +111,7 @@ it('file E validator without force cannot fix a problematic file on the go', asy
 })
 
 it('file F validator with fix cannot fix if the template require data that is missing', async () => {
+  // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await this.checkFileExists('template-example.json')
@@ -118,6 +124,7 @@ it('file F validator with fix cannot fix if the template require data that is mi
 })
 
 it('file G validator can detect a missing schema', async () => {
+  // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await sleep(1)
@@ -132,6 +139,7 @@ it('file G validator can detect a missing schema', async () => {
 })
 
 it('file H validator can detect an existing schema', async () => {
+  // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await sleep(1)
@@ -150,6 +158,7 @@ it('file H validator can detect an existing schema', async () => {
 })
 
 it('file I validator can fix a missing schema', async () => {
+  // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
     public async start (): Promise<void> {
       await sleep(1)

@@ -1,6 +1,7 @@
 import { FileBase } from '../file'
 
 /* c8 ignore start */
+// eslint-disable-next-line no-restricted-syntax
 export class TravisFile extends FileBase {
   public async start (): Promise<void> {
     const hasFile = await this.fileExists('.travis.yml')

@@ -5,6 +5,7 @@ import { fileExists, getFileSizeInKo, join, messageToCode, readFileInFolder, rea
 
 const defaultAmount = 99
 
+// eslint-disable-next-line no-restricted-syntax
 export class FileBase {
 
   public passed: string[] = []

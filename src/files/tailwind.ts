@@ -1,5 +1,6 @@
 import { FileBase } from '../file'
 
+// eslint-disable-next-line no-restricted-syntax
 export class TailwindFile extends FileBase {
   public async start (): Promise<void> {
     if (!this.data.isUsingTailwind) return

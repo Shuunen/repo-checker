@@ -5,6 +5,7 @@ import { log } from '../logger'
 import { objectToJson, readFileInFolder } from '../utils'
 import { recommendedVueRules, specificRepoCheckerRules, type EslintConfigRules, type EslintRcJsonFile } from './eslint.model'
 
+// eslint-disable-next-line no-restricted-syntax
 export class EsLintFile extends FileBase {
 
   private checkExtends () {

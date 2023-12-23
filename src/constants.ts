@@ -9,6 +9,7 @@ export const dataFileName = '.repo-checker.json'
 export const repoCheckerPath = path.join(__dirname, '..')
 export const templatePath = path.join(repoCheckerPath, 'templates')
 
+// eslint-disable-next-line no-restricted-syntax
 export class ProjectData {
 
   /**

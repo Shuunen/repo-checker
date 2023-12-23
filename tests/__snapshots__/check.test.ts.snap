@@ -228,7 +228,7 @@ exports[`check C data/tsProject 1`] = `
   "warnings": [
     "use-dependency-cruiser",
     "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-65-custom-rules-in-repo-checker-eslintrc-json",
+    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-66-custom-rules-in-repo-checker-eslintrc-json",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",
@@ -333,7 +333,7 @@ exports[`check E data folders and not throw 1`] = `
   "warnings": [
     "use-dependency-cruiser",
     "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-65-custom-rules-in-repo-checker-eslintrc-json",
+    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-66-custom-rules-in-repo-checker-eslintrc-json",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",

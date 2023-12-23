@@ -33,6 +33,7 @@ interface TsConfigJsonFile {
   include: string[]
 }
 
+// eslint-disable-next-line no-restricted-syntax
 export class TsConfigFile extends FileBase {
 
   private fileContentObject: TsConfigJsonFile | undefined

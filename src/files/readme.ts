@@ -7,6 +7,7 @@ import { FileBase } from '../file'
 import { log } from '../logger'
 import { fileExists, join, readFile } from '../utils'
 
+// eslint-disable-next-line no-restricted-syntax
 class Thanks {
   public markdown = ''
 
@@ -16,6 +17,7 @@ class Thanks {
   }
 }
 
+// eslint-disable-next-line no-restricted-syntax
 class Badge {
   public markdown = ''
 
@@ -33,6 +35,7 @@ const deprecatedBadges = [
 ]
 
 /* c8 ignore start */
+// eslint-disable-next-line no-restricted-syntax
 export class ReadmeFile extends FileBase {
   private checkMarkdown (): void {
     let hasNoCrLf = this.shouldContains('no CRLF Windows carriage return', /\r/u, 0, false, 'prefer Unix LF', true)

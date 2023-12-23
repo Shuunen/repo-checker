@@ -2,6 +2,7 @@ import { dataFileName } from '../constants'
 import { FileBase } from '../file'
 import { deleteFile, join, jsToJson, readFileInFolder, writeFile } from '../utils'
 
+// eslint-disable-next-line no-restricted-syntax
 export class RepoCheckerConfigFile extends FileBase {
   public async start (): Promise<void> {
     await this.migrateOldConfig('.repo-checker.js')

@@ -1,6 +1,7 @@
 import { FileBase } from '../file'
 import { log } from '../logger'
 
+// eslint-disable-next-line no-restricted-syntax
 export class NycRcFile extends FileBase {
 
   private async getConfigFileName (): Promise<string> {

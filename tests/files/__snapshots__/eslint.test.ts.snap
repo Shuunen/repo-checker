@@ -90,7 +90,7 @@ exports[`eslint B config file empty 1`] = `
     "could-have-hardcore-rules-extend-hardcore",
     "could-have-eslint-recommended-rules-extend-eslint-recommended",
     "could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "current-eslintrc-json-has-only-16-of-the-65-custom-rules-in-repo-checker-eslintrc-json",
+    "current-eslintrc-json-has-only-16-of-the-66-custom-rules-in-repo-checker-eslintrc-json",
   ],
 }
 `;
@@ -142,7 +142,7 @@ exports[`eslint C config file empty for ts project 1`] = `
     "could-have-hardcore-rules-extend-hardcore",
     "could-have-eslint-recommended-rules-extend-eslint-recommended",
     "could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "current-eslintrc-json-has-only-0-of-the-65-custom-rules-in-repo-checker-eslintrc-json",
+    "current-eslintrc-json-has-only-0-of-the-66-custom-rules-in-repo-checker-eslintrc-json",
     "could-have-hardcore-typescript-rules-extend-hardcore-ts",
   ],
 }
@@ -196,7 +196,7 @@ exports[`eslint D config file empty for vue ts project 1`] = `
     "could-have-hardcore-rules-extend-hardcore",
     "could-have-eslint-recommended-rules-extend-eslint-recommended",
     "could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "current-eslintrc-json-has-only-0-of-the-72-custom-rules-in-repo-checker-eslintrc-json",
+    "current-eslintrc-json-has-only-0-of-the-73-custom-rules-in-repo-checker-eslintrc-json",
     "could-have-hardcore-typescript-rules-extend-hardcore-ts",
   ],
 }
@@ -249,7 +249,7 @@ exports[`eslint E config file empty for tailwind project 1`] = `
     "could-have-hardcore-rules-extend-hardcore",
     "could-have-eslint-recommended-rules-extend-eslint-recommended",
     "could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "current-eslintrc-json-has-only-16-of-the-65-custom-rules-in-repo-checker-eslintrc-json",
+    "current-eslintrc-json-has-only-16-of-the-66-custom-rules-in-repo-checker-eslintrc-json",
   ],
 }
 `;
@@ -309,7 +309,7 @@ exports[`eslint F config partial file for js project 1`] = `
   "warnings": [
     "could-have-hardcore-rules-extend-hardcore",
     "could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "current-eslintrc-json-has-only-16-of-the-65-custom-rules-in-repo-checker-eslintrc-json",
+    "current-eslintrc-json-has-only-16-of-the-66-custom-rules-in-repo-checker-eslintrc-json",
   ],
 }
 `;
@@ -368,7 +368,7 @@ exports[`eslint G config partial file for ts project 1`] = `
   "warnings": [
     "could-have-hardcore-rules-extend-hardcore",
     "could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "current-eslintrc-json-has-only-0-of-the-65-custom-rules-in-repo-checker-eslintrc-json",
+    "current-eslintrc-json-has-only-0-of-the-66-custom-rules-in-repo-checker-eslintrc-json",
     "could-have-hardcore-typescript-rules-extend-hardcore-ts",
   ],
 }
@@ -440,7 +440,7 @@ exports[`eslint H config partial file for vue ts project 1`] = `
   "warnings": [
     "could-have-hardcore-rules-extend-hardcore",
     "could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "current-eslintrc-json-has-only-0-of-the-72-custom-rules-in-repo-checker-eslintrc-json",
+    "current-eslintrc-json-has-only-0-of-the-73-custom-rules-in-repo-checker-eslintrc-json",
     "could-have-hardcore-typescript-rules-extend-hardcore-ts",
   ],
 }
@@ -578,7 +578,7 @@ exports[`eslint J config file with no rules 1`] = `
   ],
   "warnings": [
     "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-16-of-the-65-custom-rules-in-repo-checker-eslintrc-json",
+    "eslintrc-json-current-eslintrc-json-has-only-16-of-the-66-custom-rules-in-repo-checker-eslintrc-json",
   ],
 }
 `;
@@ -654,7 +654,7 @@ exports[`eslint K config file with just rules (no override) 1`] = `
   ],
   "warnings": [
     "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-17-of-the-65-custom-rules-in-repo-checker-eslintrc-json",
+    "eslintrc-json-current-eslintrc-json-has-only-17-of-the-66-custom-rules-in-repo-checker-eslintrc-json",
   ],
 }
 `;
@@ -878,6 +878,13 @@ exports[`eslint M fix rules in overrides 1`] = `
         "max-statements-per-line": "off",
         "no-console": "error",
         "no-inline-comments": "off",
+        "no-restricted-syntax": [
+          "error",
+          {
+            "message": "Avoid using Class, just use good old unit-testable functions :)",
+            "selector": "ClassDeclaration"
+          }
+        ],
         "object-curly-spacing": [
           "error",
           "always"

@@ -1,6 +1,7 @@
 import { FileBase } from '../file'
 
 /* c8 ignore start */
+// eslint-disable-next-line no-restricted-syntax
 export class GithubWorkflowFile extends FileBase {
 
   private checkPnpm (): void {
