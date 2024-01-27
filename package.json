@@ -16,7 +16,7 @@
     "@types/node": "20.11",
     "@types/sort-json": "2.0",
     "@vitest/coverage-v8": "1.2",
-    "dependency-cruiser": "16.0",
+    "dependency-cruiser": "16.1",
     "esbuild": "0.19",
     "eslint": "8.56",
     "eslint-config-hardcore": "45.2",
