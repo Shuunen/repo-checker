@@ -1,13 +1,7 @@
-import { bgBlue, black, Logger } from 'shuutils'
+import { Logger } from 'shuutils'
 
 // eslint-disable-next-line no-restricted-syntax
 class ExtendedLogger extends Logger {
-  public fix (...stuff: readonly string[]): void {
-    const items = Array.from(stuff)
-    items.push(bgBlue(black('[ fixed ]')))
-    this.info(...items)
-  }
-
   public unknownError (error: unknown): void {
     if (error instanceof Error) { this.error(error.message); return }
     if (typeof error === 'string') { this.error(error); return }

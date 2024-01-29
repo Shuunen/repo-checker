@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "arg": "5.0",
-    "shuutils": "7.4",
+    "shuutils": "7.7",
     "sort-json": "2.0"
   },
   "description": "Repo cleaning made easy",
@@ -49,7 +49,7 @@
     "build": "pnpm build:app && pnpm mark && echo build success",
     "build:app": "esbuild src/index.ts --target=esnext --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs",
     "build:start": "pnpm build:app && node .",
-    "check": "pnpm i && pnpm start && pnpm lint && npm test && echo check success",
+    "check": "pnpm i && echo install success && pnpm start && pnpm lint && npm test && echo check success",
     "dev": "watchlist src -eager -- pnpm build:start",
     "lint": "tsc --noEmit && echo tsc success && eslint --cache --fix --ext .js,.ts . && echo eslint success && depcruise src --config && echo lint success",
     "mark": "unique-mark dist/repo-check.min.cjs && echo mark success",
