@@ -6,22 +6,22 @@ import { join } from '../src/utils'
 
 const baseKeys: (keyof FileBase)[] = ['fileExists', 'checkFileExists', 'folderPath', 'inspectFile', 'updateFile', 'initFile']
 
-export async function promiseValue<Type> (value: Type): Promise<Type> {
+export async function promiseValue<Type> (value: Type) {
   await sleep(1)
   return value
 }
 
-export async function promiseTrue (): Promise<true> {
+export async function promiseTrue () {
   await sleep(1)
   return true
 }
 
-export async function promiseFalse (): Promise<false> {
+export async function promiseFalse () {
   await sleep(1)
   return false
 }
 
-export async function promiseVoid (): Promise<void> {
+export async function promiseVoid () {
   await sleep(1)
 }
 

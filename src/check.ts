@@ -26,7 +26,7 @@ const checkers = [
   TsConfigFile,
 ]
 
-function reportLog (color: (string: string) => string, count: number, message: string): void {
+function reportLog (color: (string: string) => string, count: number, message: string) {
   const line = `‣ ${count} check${count > 1 ? 's' : ''} ${message}`
   /* c8 ignore next */
   log.info(count === 0 ? line : color(line))
@@ -41,7 +41,7 @@ interface CheckOptions {
   folderPath: string
 }
 
-function report ({ failed = [], passed = [], warnings = [] }: Readonly<Indicators>): void {
+function report ({ failed = [], passed = [], warnings = [] }: Readonly<Indicators>) {
   log.info('Report :')
   reportLog(green, passed.length, 'are successful')
   reportLog(yellow, warnings.length, 'triggered warnings')
@@ -50,7 +50,7 @@ function report ({ failed = [], passed = [], warnings = [] }: Readonly<Indicator
 }
 
 // eslint-disable-next-line max-statements
-export async function check ({ canFailStop = false, canFix = false, canForce = false, canThrow = true, data, folderPath }: Readonly<CheckOptions>): Promise<Indicators> {
+export async function check ({ canFailStop = false, canFix = false, canForce = false, canThrow = true, data, folderPath }: Readonly<CheckOptions>) {
   const folders = await getProjectFolders(folderPath)
   let passed: string[] = []
   let warnings: string[] = []

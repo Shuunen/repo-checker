@@ -142,6 +142,10 @@
       {
         "message": "Avoid using Class, just use good old unit-testable functions :)",
         "selector": "ClassDeclaration"
+      },
+      {
+        "message": "Don't specify return type on function",
+        "selector": "FunctionDeclaration[returnType]"
       }
     ],
     "object-curly-spacing": [

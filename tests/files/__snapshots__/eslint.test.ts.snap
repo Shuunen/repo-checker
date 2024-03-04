@@ -881,6 +881,10 @@ exports[`eslint M fix rules in overrides 1`] = `
           {
             "message": "Avoid using Class, just use good old unit-testable functions :)",
             "selector": "ClassDeclaration"
+          },
+          {
+            "message": "Don't specify return type on function",
+            "selector": "FunctionDeclaration[returnType]"
           }
         ],
         "object-curly-spacing": [
