@@ -18,7 +18,7 @@
     "@vitest/coverage-v8": "1.5",
     "dependency-cruiser": "16.3",
     "esbuild": "0.20",
-    "eslint": "8.57",
+    "eslint": "9.0",
     "eslint-config-hardcore": "45.4",
     "eslint-plugin-unicorn": "52.0",
     "typescript": "5.4",
