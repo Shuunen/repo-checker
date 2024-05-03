@@ -68,8 +68,8 @@ export class FileBase {
   public test (isValid: boolean, message: string, willJustWarn = false): boolean {
     const finalMessage = message.startsWith(this.fileName) ? message : `${this.fileName} ${message}`
     const code = messageToCode(finalMessage)
-    if (isValid) { this.passed.push(code); log.test(isValid, finalMessage) } // eslint-disable-line @typescript-eslint/brace-style
-    else if (willJustWarn) { this.warnings.push(code); log.warn(finalMessage) } // eslint-disable-line @typescript-eslint/brace-style
+    if (isValid) { this.passed.push(code); log.test(isValid, finalMessage) }
+    else if (willJustWarn) { this.warnings.push(code); log.warn(finalMessage) }
     else { this.failed.push(code); log.error(finalMessage) }
     return isValid
   }
