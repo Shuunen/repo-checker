@@ -27,6 +27,7 @@ exports[`check B folder succeed 1`] = `
     "gitignore-has-node-modules",
     "gitignore-has-no-pnpm-lock-exclusion",
     "github-workflows-ci-yml-has-a-checkout-step-in-ci-workflow",
+    "github-workflows-ci-yml-has-a-recent-checkout-version",
     "github-workflows-ci-yml-has-a-node-step-in-ci-workflow",
     "github-workflows-ci-yml-has-a-pnpm-setup-step",
     "github-workflows-ci-yml-has-a-recent-pnpm-version-8-or-9",
@@ -166,7 +167,6 @@ exports[`check B folder succeed 1`] = `
     "tsconfig-json-has-a-out-dir-compiler-option",
     "tsconfig-json-has-a-module-resolution-compiler-option",
     "tsconfig-json-has-a-non-empty-lib-compiler-option",
-    "tsconfig-json-has-a-non-empty-types-compiler-option",
     "tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough",
   ],
   "warnings": [
@@ -228,7 +228,7 @@ exports[`check C data/tsProject 1`] = `
   "warnings": [
     "use-dependency-cruiser",
     "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-64-custom-rules-in-repo-checker-eslintrc-json",
+    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-61-custom-rules-in-repo-checker-eslintrc-json",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",
@@ -274,7 +274,6 @@ exports[`check C data/tsProject 1`] = `
     "tsconfig-json-could-have-a-out-dir-compiler-option-ex-out-dir-dist-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-module-resolution-compiler-option-ex-module-resolution-node-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-non-empty-lib-compiler-option-ex-lib-esnext-43m30m-fixable-39m49m",
-    "tsconfig-json-could-have-a-non-empty-types-compiler-option-ex-types-node-fs-promises",
   ],
 }
 `;
@@ -333,7 +332,7 @@ exports[`check E data folders and not throw 1`] = `
   "warnings": [
     "use-dependency-cruiser",
     "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-64-custom-rules-in-repo-checker-eslintrc-json",
+    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-61-custom-rules-in-repo-checker-eslintrc-json",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",
@@ -379,7 +378,6 @@ exports[`check E data folders and not throw 1`] = `
     "tsconfig-json-could-have-a-out-dir-compiler-option-ex-out-dir-dist-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-module-resolution-compiler-option-ex-module-resolution-node-43m30m-fixable-39m49m",
     "tsconfig-json-could-have-a-non-empty-lib-compiler-option-ex-lib-esnext-43m30m-fixable-39m49m",
-    "tsconfig-json-could-have-a-non-empty-types-compiler-option-ex-types-node-fs-promises",
   ],
 }
 `;

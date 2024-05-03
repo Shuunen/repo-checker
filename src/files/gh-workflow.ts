@@ -13,16 +13,23 @@ export class GithubWorkflowFile extends FileBase {
     if (!hasNoFrozenFlag && this.canFix) this.fileContent = this.fileContent.replace(' --no-frozen-lockfile', '')
   }
 
+  private checkCheckout (): void {
+    const hasCheckout = this.shouldContains('a checkout step in ci workflow', /actions\/checkout/u)
+    if (!hasCheckout) return
+    const hasRecentVersion = this.shouldContains('a recent checkout version', /uses: actions\/checkout@v[456]/u, 1, false, undefined, true)
+    if (!hasRecentVersion && this.canFix) this.fileContent = this.fileContent.replace(/(?<step>uses: actions\/checkout@)v\d/u, '$<step>latest')
+  }
+
   public async start (): Promise<void> {
     const filePath = '.github/workflows/ci.yml'
     const hasFile = await this.fileExists(filePath)
     if (!hasFile) return
     await this.inspectFile(filePath)
-    this.shouldContains('a checkout step in ci workflow', /actions\/checkout/u)
+    this.checkCheckout()
     this.shouldContains('a node step in ci workflow', /actions\/setup-node/u)
     this.checkPnpm()
     this.couldContains('no main branch reference', /- main/u, 0)
-    this.couldContains('a recent node version', /node: \[20\]/u, 1)
+    this.couldContains('a recent node version', /node: \[2\d\]|node-version: 2\d/u, 1)
   }
 
 }
