@@ -1,4 +1,3 @@
-
 type EslintConfigRules = Readonly<Record<string, string | readonly string[]>>
 
 type EslintConfigOverride = Readonly<{

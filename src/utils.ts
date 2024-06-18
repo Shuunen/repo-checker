@@ -1,6 +1,8 @@
 /* c8 ignore next */
-import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'fs/promises'
-import path from 'path'
+// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
+import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'node:fs/promises'
+// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
+import path from 'node:path'
 import { arrayUnique, parseJson, slugify } from 'shuutils'
 import sortJson from 'sort-json'
 import { ProjectData, dataDefaults, dataFileName } from './constants'
@@ -9,16 +11,18 @@ import { log } from './logger'
 const maxFilesToScan = 1000
 const jsonSpaceIndent = 2
 
-export async function fileExists (filePath: string) {
-  return await statAsync(filePath).then(() => true).catch(() => false)
+export async function fileExists(filePath: string) {
+  return await statAsync(filePath)
+    .then(() => true)
+    .catch(() => false)
 }
 
-export async function readFile (filePath: string) {
+export async function readFile(filePath: string) {
   const fileContent = await nodeReadFile(filePath, { encoding: 'utf8' })
   return Buffer.from(fileContent).toString()
 }
 
-export async function isProjectFolder (folderPath: string) {
+export async function isProjectFolder(folderPath: string) {
   const statData = await statAsync(folderPath).catch(() => undefined) // eslint-disable-line unicorn/no-useless-undefined
   if (statData === undefined || !statData.isDirectory()) return false
   const hasGitConfig = await fileExists(path.join(folderPath, '.git', 'config'))
@@ -26,7 +30,7 @@ export async function isProjectFolder (folderPath: string) {
   return await fileExists(path.join(folderPath, 'package.json'))
 }
 
-export async function getProjectFolders (folderPath: string) {
+export async function getProjectFolders(folderPath: string) {
   if (await isProjectFolder(folderPath)) return [folderPath]
   const filePaths = await readDirectoryAsync(folderPath)
   const gitDirectories: string[] = []
@@ -37,9 +41,9 @@ export async function getProjectFolders (folderPath: string) {
   return gitDirectories
 }
 
-export async function readFileInFolder (folderPath: string, fileName: string) {
+export async function readFileInFolder(folderPath: string, fileName: string) {
   const filePath = path.join(folderPath, fileName)
-  if (!await fileExists(filePath)) throw new Error(`file "${filePath}" does not exists`)
+  if (!(await fileExists(filePath))) throw new Error(`file "${filePath}" does not exists`)
   const statData = await statAsync(filePath)
   if (statData.isDirectory()) throw new Error(`filepath "${filePath}" is a directory`)
   const content = await readFile(filePath)
@@ -47,10 +51,10 @@ export async function readFileInFolder (folderPath: string, fileName: string) {
 }
 
 // eslint-disable-next-line max-statements
-export async function augmentDataWithGit (folderPath: string, dataSource: Readonly<ProjectData>) {
+export async function augmentDataWithGit(folderPath: string, dataSource: Readonly<ProjectData>) {
   const data = new ProjectData(dataSource)
   const gitFolder = path.join(folderPath, '.git')
-  if (!await fileExists(path.join(gitFolder, 'config'))) return data
+  if (!(await fileExists(path.join(gitFolder, 'config')))) return data
   const gitConfigContent = await readFileInFolder(gitFolder, 'config')
   data.hasMainBranch = gitConfigContent.includes('branch "main"')
   const matches = /url = .*[/:](?<userId>[\w-]+)\/(?<repoId>[\w-]+)/u.exec(gitConfigContent)
@@ -67,9 +71,9 @@ export async function augmentDataWithGit (folderPath: string, dataSource: Readon
 }
 
 // eslint-disable-next-line max-statements, complexity, sonarjs/cognitive-complexity
-export async function augmentDataWithPackageJson (folderPath: string, dataSource: Readonly<ProjectData>) {
+export async function augmentDataWithPackageJson(folderPath: string, dataSource: Readonly<ProjectData>) {
   const data = new ProjectData(dataSource)
-  if (!await fileExists(path.join(folderPath, 'package.json'))) {
+  if (!(await fileExists(path.join(folderPath, 'package.json')))) {
     log.debug('cannot augment, no package.json found in', folderPath)
     return data
   }
@@ -98,12 +102,13 @@ export async function augmentDataWithPackageJson (folderPath: string, dataSource
   return data
 }
 
-export async function augmentData (folderPath: string, dataSource: Readonly<ProjectData>, shouldLoadLocal = false) {
+export async function augmentData(folderPath: string, dataSource: Readonly<ProjectData>, shouldLoadLocal = false) {
   let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
   data = await augmentDataWithPackageJson(folderPath, data)
-  const hasLocalData = shouldLoadLocal && await fileExists(path.join(folderPath, dataFileName))
-  if (hasLocalData) { // local data overwrite the rest
+  const hasLocalData = shouldLoadLocal && (await fileExists(path.join(folderPath, dataFileName)))
+  if (hasLocalData) {
+    // local data overwrite the rest
     const { error, value } = parseJson<ProjectData>(await readFileInFolder(folderPath, dataFileName))
     /* c8 ignore next */
     if (error) log.error('error while parsing data file', folderPath, dataFileName, error)
@@ -112,8 +117,8 @@ export async function augmentData (folderPath: string, dataSource: Readonly<Proj
   return data
 }
 
-export async function getFileSizeInKo (filePath: string) {
-  if (!await fileExists(filePath)) return 0
+export async function getFileSizeInKo(filePath: string) {
+  if (!(await fileExists(filePath))) return 0
   const statData = await statAsync(filePath)
   const kb = 1024
   const size = Math.round(statData.size / kb)
@@ -122,7 +127,7 @@ export async function getFileSizeInKo (filePath: string) {
 }
 
 // eslint-disable-next-line max-statements, sonarjs/cognitive-complexity, @typescript-eslint/max-params
-export async function findInFolder (folderPath: string, pattern: Readonly<RegExp>, ignoredInput: readonly string[] = ['node_modules', '.git'], count = 0) {
+export async function findInFolder(folderPath: string, pattern: Readonly<RegExp>, ignoredInput: readonly string[] = ['node_modules', '.git'], count = 0) {
   const filePaths = await readDirectoryAsync(folderPath)
   const matches: string[] = []
   let ignored = arrayUnique(ignoredInput)
@@ -131,16 +136,16 @@ export async function findInFolder (folderPath: string, pattern: Readonly<RegExp
     ignored = arrayUnique([...ignored, ...content.split('\n')])
   }
   for (const filePath of filePaths) {
-    if (ignored.includes(filePath)) continue  // eslint-disable-line no-continue
+    if (ignored.includes(filePath)) continue // eslint-disable-line no-continue
     /* c8 ignore next */
     if (count > maxFilesToScan) throw new Error('too many files to scan, please reduce the scope')
     const target = path.join(folderPath, filePath)
     const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null, no-await-in-loop
     /* c8 ignore next */
-    if (!statData) continue  // eslint-disable-line no-continue
+    if (!statData) continue // eslint-disable-line no-continue
     if (statData.isDirectory()) {
-      matches.push(...await findInFolder(target, pattern, ignored, count + 1)) // eslint-disable-line no-await-in-loop
-      continue  // eslint-disable-line no-continue
+      matches.push(...(await findInFolder(target, pattern, ignored, count + 1))) // eslint-disable-line no-await-in-loop
+      continue // eslint-disable-line no-continue
     }
     // eslint-disable-next-line no-await-in-loop
     const content = await readFileInFolder(folderPath, filePath)
@@ -149,30 +154,34 @@ export async function findInFolder (folderPath: string, pattern: Readonly<RegExp
   return matches
 }
 
-export function messageToCode (message: string) {
+export function messageToCode(message: string) {
   return slugify(message.replace(/[,./:\\_]/gu, '-').replace(/(?<=[a-z])(?=[A-Z])/gu, '-'))
 }
 
-export function jsToJson (js: string) {
-  return js.replace(/\/\*[^*]+\*\/\n?/gu, '') // remove comments
+export function jsToJson(js: string) {
+  return js
+    .replace(/\/\*[^*]+\*\/\n?/gu, '') // remove comments
     .replace('module.exports = ', '') // remove module.exports
     .replace(/ {2,4}(?<key>\w+):/gu, '  "$<key>":') // add quotes to keys
     .replace(/,\n\}/gu, '\n}') // remove last comma
     .replace(/'/gu, '"') // replace single quotes with double quotes
 }
 
-export function objectToJson (object: object) {
+export function objectToJson(object: object) {
   return JSON.stringify(sortJson(object), undefined, jsonSpaceIndent)
 }
 
-export function readableRegex (regex: Readonly<RegExp>) {
+export function readableRegex(regex: Readonly<RegExp>) {
   // eslint-disable-next-line @typescript-eslint/no-base-to-string
-  return regex.toString()
+  return regex
+    .toString()
     .replace(/\/[gui]\b/giu, '')
     .replace(/\\/gu, '')
 }
 
-export { unlink as deleteFile, writeFile } from 'fs/promises'
+// biome-ignore lint/performance/noBarrelFile: <explanation>
+// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
+export { unlink as deleteFile, writeFile } from 'node:fs/promises'
 /* c8 ignore next */
-export { join, resolve } from 'path'
-
+// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
+export { join, resolve } from 'node:path'

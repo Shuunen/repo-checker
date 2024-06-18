@@ -7,15 +7,14 @@ import { recommendedVueRules, specificRepoCheckerRules, type EslintConfigRules, 
 
 // eslint-disable-next-line no-restricted-syntax
 export class EsLintFile extends FileBase {
-
-  private checkExtends () {
+  private checkExtends() {
     const hasHardcore = this.couldContains('hardcore rules extend', /hardcore/u)
     if (!hasHardcore) this.couldContains('eslint recommended rules extend', /"eslint:recommended"/u)
     this.couldContains('unicorn rules extend', /plugin:unicorn\/all/u)
     this.shouldContains('no promise plugin (require eslint 7)', /plugin:promise\/recommended|"promise"/u, 0)
   }
 
-  private findRules (config: EslintRcJsonFile) {
+  private findRules(config: EslintRcJsonFile) {
     if (config.rules && Object.keys(config.rules).length > 0) {
       log.debug(`found ${Object.keys(config.rules).length} root/global rules`)
       return config.rules
@@ -29,7 +28,7 @@ export class EsLintFile extends FileBase {
     return {} as EslintConfigRules // eslint-disable-line @typescript-eslint/consistent-type-assertions
   }
 
-  private injectRules (input: EslintRcJsonFile, rules: EslintConfigRules) {
+  private injectRules(input: EslintRcJsonFile, rules: EslintConfigRules) {
     const output = clone(input)
     if (output.rules && Object.keys(output.rules).length > 0) {
       Object.assign(output.rules, rules)
@@ -44,20 +43,19 @@ export class EsLintFile extends FileBase {
     return output
   }
 
-  private checkTsVue () {
+  private checkTsVue() {
     this.shouldContains('hardcore vue rules extend', /hardcore\/vue/u)
   }
 
-  private checkTs () {
+  private checkTs() {
     // check here ts & vue ts projects
     this.couldContains('hardcore typescript rules extend', /hardcore\/ts/u)
     this.couldContains('a disabled explicit function return type', /"@typescript-eslint\/explicit-function-return-type": "error"/u, 0)
-    // eslint-disable-next-line sonarjs/no-redundant-jump, no-useless-return
-    if (this.data.isUsingVue) { this.checkTsVue(); return }
+    if (this.data.isUsingVue) this.checkTsVue()
     // check here ts only projects
   }
 
-  private getMissingRulesFrom (expectedRules: EslintConfigRules, rules: EslintConfigRules) {
+  private getMissingRulesFrom(expectedRules: EslintConfigRules, rules: EslintConfigRules) {
     return Object.keys(expectedRules).filter(rule => {
       /* c8 ignore next */
       if (specificRepoCheckerRules.has(rule)) return false
@@ -66,20 +64,21 @@ export class EsLintFile extends FileBase {
     })
   }
 
-  private updateFileContent (input: EslintRcJsonFile, expectedRules: EslintConfigRules) {
+  private updateFileContent(input: EslintRcJsonFile, expectedRules: EslintConfigRules) {
     const fixedContent = this.injectRules(input, expectedRules)
-    /* c8 ignore next */
+    /* c8 ignore next 2 */
+    // biome-ignore lint/performance/noDelete: check if it's worth it
     if (fixedContent.overrides?.length === 0) delete fixedContent.overrides
     this.fileContent = objectToJson(fixedContent)
   }
 
-  private reportMissingRules (expectedRules: EslintConfigRules, missingRules: readonly string[]) {
+  private reportMissingRules(expectedRules: EslintConfigRules, missingRules: readonly string[]) {
     const total = Object.keys(expectedRules).length
     const isOk = this.test(missingRules.length === 0, `current .eslintrc.json has only ${total - missingRules.length} of the ${total} custom rules in repo-checker .eslintrc.json`, true)
     if (!isOk) log.warn('missing rules :', missingRules.map(rule => `"${rule}": ${JSON.stringify(expectedRules[rule])}`).join(', '))
   }
 
-  private async getExpectedRules () {
+  private async getExpectedRules() {
     const expectedJsonString = await readFileInFolder(repoCheckerPath, '.eslintrc.json')
     const data = parseJson<EslintRcJsonFile>(expectedJsonString)
     let expectedContent = clone(data.value)
@@ -89,7 +88,7 @@ export class EsLintFile extends FileBase {
     return expectedRules
   }
 
-  private async getRules (input: object) {
+  private async getRules(input: object) {
     const content = clone(input)
     const rules = this.findRules(content)
     const expectedRules = await this.getExpectedRules()
@@ -98,15 +97,18 @@ export class EsLintFile extends FileBase {
     return { expectedRules, missingRules }
   }
 
-  public async start () {
+  public async start() {
     await this.checkNoFileExists('xo.config.js')
     await this.checkEslint()
   }
 
-  private async checkEslint () {
+  private async checkEslint() {
     const filename = '.eslintrc.json'
     const hasFile = await this.fileExists(filename)
-    if (!hasFile) { log.debug('skipping eslintrc checks'); return }
+    if (!hasFile) {
+      log.debug('skipping eslintrc checks')
+      return
+    }
     await this.inspectFile(filename)
     this.checkExtends()
     await this.checkRules()
@@ -114,12 +116,18 @@ export class EsLintFile extends FileBase {
     if (this.data.isUsingTypescript) this.checkTs()
   }
 
-  private async checkRules () {
+  private async checkRules() {
     const data = parseJson<EslintRcJsonFile>(this.fileContent)
-    if (data.error) { log.warn('cannot check empty or invalid .eslintrc.json file'); return }
+    if (data.error) {
+      log.warn('cannot check empty or invalid .eslintrc.json file')
+      return
+    }
     const { expectedRules, missingRules } = await this.getRules(data.value)
     if (missingRules.length === 0) return
-    if (this.canFix) { this.updateFileContent(data.value, expectedRules); return }
+    if (this.canFix) {
+      this.updateFileContent(data.value, expectedRules)
+      return
+    }
     this.reportMissingRules(expectedRules, missingRules)
   }
 }

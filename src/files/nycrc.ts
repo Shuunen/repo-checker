@@ -3,8 +3,7 @@ import { log } from '../logger'
 
 // eslint-disable-next-line no-restricted-syntax
 export class NycRcFile extends FileBase {
-
-  private async getConfigFileName (): Promise<string> {
+  private async getConfigFileName(): Promise<string> {
     const hasRc = await this.fileExists('.nycrc')
     const hasRcJson = await this.fileExists('.nycrc.json')
     const hasConfigFile = hasRc || hasRcJson
@@ -14,8 +13,11 @@ export class NycRcFile extends FileBase {
     return hasRc ? '.nycrc' : '.nycrc.json'
   }
 
-  public async start (): Promise<void> {
-    if (!this.data.isUsingNyc) { log.debug('does not use nyc'); return }
+  public async start(): Promise<void> {
+    if (!this.data.isUsingNyc) {
+      log.debug('does not use nyc')
+      return
+    }
     const fileName = await this.getConfigFileName()
     if (fileName === '') return
     await this.checkFileExists(fileName)

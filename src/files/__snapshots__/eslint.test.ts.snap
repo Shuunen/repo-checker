@@ -1,0 +1,979 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`eslint A config missing file 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [],
+  "fileContent": "",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-no-xo-config-js-file",
+  ],
+  "warnings": [],
+}
+`;
+
+exports[`eslint B config file empty 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+  ],
+  "fileContent": "",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-no-promise-plugin-require-eslint-7",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-eslint-recommended-rules-extend-eslint-recommended",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "current-eslintrc-json-has-only-12-of-the-82-custom-rules-in-repo-checker-eslintrc-json",
+  ],
+}
+`;
+
+exports[`eslint C config file empty for ts project 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": true,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+  ],
+  "fileContent": "",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-no-promise-plugin-require-eslint-7",
+    "has-a-disabled-explicit-function-return-type",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-eslint-recommended-rules-extend-eslint-recommended",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "current-eslintrc-json-has-only-0-of-the-82-custom-rules-in-repo-checker-eslintrc-json",
+    "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+  ],
+}
+`;
+
+exports[`eslint D config file empty for vue ts project 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": true,
+    "isUsingV8": false,
+    "isUsingVue": true,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+    "does-not-have-hardcore-vue-rules-extend-hardcore-vue",
+  ],
+  "fileContent": "",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-no-promise-plugin-require-eslint-7",
+    "has-a-disabled-explicit-function-return-type",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-eslint-recommended-rules-extend-eslint-recommended",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "current-eslintrc-json-has-only-0-of-the-89-custom-rules-in-repo-checker-eslintrc-json",
+    "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+  ],
+}
+`;
+
+exports[`eslint E config file empty for tailwind project 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": true,
+    "isUsingTypescript": false,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+    "does-not-have-tailwind-rules-extend-plugin-tailwindcss-recommended",
+  ],
+  "fileContent": "",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-no-promise-plugin-require-eslint-7",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-eslint-recommended-rules-extend-eslint-recommended",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "current-eslintrc-json-has-only-12-of-the-82-custom-rules-in-repo-checker-eslintrc-json",
+  ],
+}
+`;
+
+exports[`eslint F config partial file for js project 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+  ],
+  "fileContent": "{
+    "extends": [
+      "eslint:recommended",
+      "plugin:unicorn/recommended"
+    ],
+    "plugins": [
+      "unicorn"
+    ],
+    "rules": {}
+  }",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-eslint-recommended-rules-extend",
+    "has-no-promise-plugin-require-eslint-7",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "current-eslintrc-json-has-only-12-of-the-82-custom-rules-in-repo-checker-eslintrc-json",
+  ],
+}
+`;
+
+exports[`eslint G config partial file for ts project 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": true,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+  ],
+  "fileContent": "{
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:unicorn/recommended"
+    ],
+    "rules": {}
+  }",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-eslint-recommended-rules-extend",
+    "has-no-promise-plugin-require-eslint-7",
+    "has-a-disabled-explicit-function-return-type",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "current-eslintrc-json-has-only-0-of-the-82-custom-rules-in-repo-checker-eslintrc-json",
+    "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+  ],
+}
+`;
+
+exports[`eslint H config partial file for vue ts project 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": true,
+    "isUsingV8": false,
+    "isUsingVue": true,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+    "does-not-have-hardcore-vue-rules-extend-hardcore-vue",
+  ],
+  "fileContent": "{
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:unicorn/recommended",
+      "plugin:vue/vue3-recommended"
+    ],
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+      "parser": "@typescript-eslint/parser",
+      "ecmaVersion": 2021,
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint",
+      "unicorn"
+    ],
+    "rules": {}
+  }",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-eslint-recommended-rules-extend",
+    "has-no-promise-plugin-require-eslint-7",
+    "has-a-disabled-explicit-function-return-type",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "current-eslintrc-json-has-only-0-of-the-89-custom-rules-in-repo-checker-eslintrc-json",
+    "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+  ],
+}
+`;
+
+exports[`eslint I up to date config file for vue ts project 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": true,
+    "isUsingV8": false,
+    "isUsingVue": true,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+    "does-not-have-hardcore-vue-rules-extend-hardcore-vue",
+  ],
+  "fileContent": "{
+    "extends": [
+      "plugin:vue/vue3-recommended",
+      "eslint:recommended",
+      "@vue/typescript/recommended",
+      "plugin:unicorn/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2021
+    },
+    "plugins": [
+      "html",
+      "unicorn"
+    ],
+  }",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-eslint-recommended-rules-extend",
+    "has-no-promise-plugin-require-eslint-7",
+    "has-a-disabled-explicit-function-return-type",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "could-have-hardcore-typescript-rules-extend-hardcore-ts",
+  ],
+}
+`;
+
+exports[`eslint J config file with no rules 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+  ],
+  "fileContent": "{
+  "env": {
+    "browser": false
+  },
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
+    }
+  }
+}
+",
+  "fileName": ".eslintrc.json",
+  "originalFileContent": "{
+  "env": {
+    "browser": false
+  },
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
+    }
+  }
+}
+",
+  "passed": [
+    "eslintrc-json-has-hardcore-rules-extend",
+    "eslintrc-json-has-no-promise-plugin-require-eslint-7",
+  ],
+  "warnings": [
+    "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "eslintrc-json-current-eslintrc-json-has-only-12-of-the-82-custom-rules-in-repo-checker-eslintrc-json",
+  ],
+}
+`;
+
+exports[`eslint K config file with just rules (no override) 1`] = `
+{
+  "canFix": false,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+  ],
+  "fileContent": "{
+  "env": {
+    "browser": false
+  },
+  "rules": {
+    "no-console": "off"
+  },
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
+    }
+  }
+}
+",
+  "fileName": ".eslintrc.json",
+  "originalFileContent": "{
+  "env": {
+    "browser": false
+  },
+  "rules": {
+    "no-console": "off"
+  },
+  "settings": {
+    "repo-faker": {
+      "hardcore/ts": ""
+    }
+  }
+}
+",
+  "passed": [
+    "eslintrc-json-has-hardcore-rules-extend",
+    "eslintrc-json-has-no-promise-plugin-require-eslint-7",
+  ],
+  "warnings": [
+    "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
+    "eslintrc-json-current-eslintrc-json-has-only-13-of-the-82-custom-rules-in-repo-checker-eslintrc-json",
+  ],
+}
+`;
+
+exports[`eslint L fix file content 1`] = `
+{
+  "canFix": true,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+  ],
+  "fileContent": "{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:unicorn/recommended"
+  ],
+  "rules": {}
+}",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-eslint-recommended-rules-extend",
+    "has-no-promise-plugin-require-eslint-7",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  ],
+}
+`;
+
+exports[`eslint M fix rules in overrides 1`] = `
+{
+  "canFix": true,
+  "canForce": false,
+  "data": {
+    "canAutoMergeDeps": true,
+    "hasMainBranch": false,
+    "hasTaskPrefix": false,
+    "isModule": false,
+    "isPublishedPackage": false,
+    "isQuiet": false,
+    "isUsingC8": false,
+    "isUsingDependencyCruiser": false,
+    "isUsingEslint": false,
+    "isUsingNyc": false,
+    "isUsingShuutils": false,
+    "isUsingTailwind": false,
+    "isUsingTypescript": false,
+    "isUsingV8": false,
+    "isUsingVue": false,
+    "isWebPublished": false,
+    "license": "GPL-3.0",
+    "maxSizeKo": 1,
+    "packageName": "",
+    "repoId": "a-great-repo",
+    "shouldAvoidSass": true,
+    "userId": "Shuunen",
+    "userIdLowercase": "shuunen",
+    "userMail": "romain.racamier@gmail.com",
+    "userName": "Romain Racamier-Lafon",
+    "webUrl": "https://my-website.com",
+    "willGenerateReport": true,
+  },
+  "failed": [
+    "has-no-xo-config-js-file",
+  ],
+  "fileContent": "{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:unicorn/recommended"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "rules": {
+        "@stylistic/array-element-newline": "off",
+        "@stylistic/arrow-parens": "off",
+        "@stylistic/brace-style": "off",
+        "@stylistic/comma-dangle": [
+          "error",
+          "always-multiline"
+        ],
+        "@stylistic/dot-location": "off",
+        "@stylistic/function-call-argument-newline": "off",
+        "@stylistic/indent": [
+          "error",
+          2
+        ],
+        "@stylistic/lines-around-comment": "off",
+        "@stylistic/lines-between-class-members": "off",
+        "@stylistic/max-len": "off",
+        "@stylistic/member-delimiter-style": [
+          "error",
+          {
+            "multiline": {
+              "delimiter": "none"
+            }
+          }
+        ],
+        "@stylistic/multiline-comment-style": "off",
+        "@stylistic/multiline-ternary": "off",
+        "@stylistic/no-extra-parens": "off",
+        "@stylistic/object-curly-spacing": [
+          "error",
+          "always"
+        ],
+        "@stylistic/object-property-newline": "off",
+        "@stylistic/padded-blocks": "off",
+        "@stylistic/padding-line-between-statements": "off",
+        "@stylistic/quote-props": [
+          "error",
+          "consistent-as-needed"
+        ],
+        "@stylistic/quotes": [
+          "error",
+          "single"
+        ],
+        "@stylistic/semi": [
+          "error",
+          "never"
+        ],
+        "@typescript-eslint/comma-dangle": [
+          "error",
+          "always-multiline"
+        ],
+        "@typescript-eslint/consistent-indexed-object-style": "off",
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          {
+            "fixStyle": "inline-type-imports",
+            "prefer": "type-imports"
+          }
+        ],
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/lines-around-comment": "off",
+        "@typescript-eslint/member-delimiter-style": [
+          "error",
+          {
+            "multiline": {
+              "delimiter": "none"
+            }
+          }
+        ],
+        "@typescript-eslint/no-type-alias": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^(_|global)"
+          }
+        ],
+        "@typescript-eslint/prefer-destructuring": "off",
+        "@typescript-eslint/prefer-readonly-parameter-types": [
+          "error",
+          {
+            "allow": [
+              "Document",
+              "DomContent",
+              "Element",
+              "Event",
+              "HTMLElement",
+              "Node",
+              "Window"
+            ],
+            "ignoreInferredTypes": false
+          }
+        ],
+        "@typescript-eslint/semi": [
+          "error",
+          "never"
+        ],
+        "capitalized-comments": "off",
+        "comma-dangle": [
+          "error",
+          "always-multiline"
+        ],
+        "compat/compat": "off",
+        "curly": [
+          "error",
+          "multi"
+        ],
+        "eslint-comments/no-use": "off",
+        "etc/no-deprecated": "off",
+        "etc/no-internal": "off",
+        "etc/no-misused-generics": "off",
+        "etc/prefer-interface": "off",
+        "ext/lines-between-object-properties": "off",
+        "func-names": [
+          "error",
+          "always"
+        ],
+        "id-length": [
+          "error",
+          {
+            "exceptions": [
+              "t"
+            ],
+            "min": 2
+          }
+        ],
+        "import/extensions": "off",
+        "import/newline-after-import": "off",
+        "import/order": "off",
+        "import/prefer-default-export": "off",
+        "indent": "off",
+        "line-comment-position": "off",
+        "lines-around-comment": "off",
+        "lines-between-class-members": "off",
+        "logical-assignment-operators": "off",
+        "max-len": "off",
+        "max-statements-per-line": "off",
+        "no-console": "error",
+        "no-inline-comments": "off",
+        "no-restricted-syntax": [
+          "error",
+          {
+            "message": "Avoid using Class, just use good old unit-testable functions :)",
+            "selector": "ClassDeclaration"
+          },
+          {
+            "message": "Don't specify return type on function",
+            "selector": "FunctionDeclaration[returnType]"
+          }
+        ],
+        "object-curly-spacing": [
+          "error",
+          "always"
+        ],
+        "padding-line-between-statements": "off",
+        "prefer-destructuring": "off",
+        "prettier/prettier": "off",
+        "putout/putout": "off",
+        "quote-props": [
+          "error",
+          "consistent-as-needed"
+        ],
+        "quotes": "off",
+        "regexp/require-unicode-sets-regexp": "off",
+        "require-atomic-updates": [
+          "error",
+          {
+            "allowProperties": true
+          }
+        ],
+        "semi": [
+          "error",
+          "never"
+        ],
+        "simple-import-sort/imports": "off",
+        "space-before-function-parent": "off",
+        "total-functions/no-partial-division": "off",
+        "total-functions/no-unsafe-readonly-mutable-assignment": "off",
+        "typescript-compat/compat": "off",
+        "unicorn/filename-case": "off",
+        "unicorn/no-array-for-each": "off",
+        "unicorn/no-process-exit": "off",
+        "unicorn/prefer-module": "off",
+        "unicorn/prefer-node-protocol": "off",
+        "unicorn/prefer-spread": "off",
+        "unicorn/prefer-string-replace-all": "off",
+        "unicorn/prefer-switch": "off",
+        "unicorn/prevent-abbreviations": [
+          "error",
+          {
+            "allowList": {
+              "args": true,
+              "pkg": true,
+              "str": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}",
+  "fileName": "",
+  "originalFileContent": "",
+  "passed": [
+    "has-eslint-recommended-rules-extend",
+    "has-no-promise-plugin-require-eslint-7",
+  ],
+  "warnings": [
+    "could-have-hardcore-rules-extend-hardcore",
+    "could-have-unicorn-rules-extend-plugin-unicorn-all",
+  ],
+}
+`;

@@ -2,7 +2,7 @@ import { FileBase } from '../file'
 
 // eslint-disable-next-line no-restricted-syntax
 export class EditorConfigFile extends FileBase {
-  public async start (): Promise<void> {
+  public async start(): Promise<void> {
     const hasFile = await this.checkFileExists('.editorconfig')
     if (!hasFile) return
     await this.inspectFile('.editorconfig')

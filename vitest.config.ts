@@ -1,10 +1,11 @@
 import { defineConfig } from 'vitest/config'
 
-// eslint-disable-next-line import/no-anonymous-default-export, import/no-unused-modules
+/* eslint-disable import/no-anonymous-default-export, import/no-unused-modules */
+// biome-ignore lint/style/noDefaultExport: <explanation>
 export default defineConfig({
   test: {
     coverage: {
-      exclude: ['src/index.ts'],
+      exclude: ['src/index.ts', 'src/mocks/*'],
       include: ['src'],
       reporter: ['text', 'lcov', 'html'],
       thresholds: {
@@ -13,3 +14,4 @@ export default defineConfig({
     },
   },
 })
+/* eslint-enable import/no-anonymous-default-export, import/no-unused-modules */

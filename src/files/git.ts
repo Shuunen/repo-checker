@@ -2,7 +2,7 @@ import { FileBase } from '../file'
 
 // eslint-disable-next-line no-restricted-syntax
 export class GitFile extends FileBase {
-  public async start (): Promise<void> {
+  public async start() {
     this.test(!this.data.hasMainBranch, 'avoid "main" branch reference, use master instead & git bclean', true)
     const hasFile = await this.checkFileExists('.gitignore')
     /* c8 ignore next */

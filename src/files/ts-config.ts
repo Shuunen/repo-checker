@@ -35,10 +35,9 @@ interface TsConfigJsonFile {
 
 // eslint-disable-next-line no-restricted-syntax
 export class TsConfigFile extends FileBase {
-
   private fileContentObject: TsConfigJsonFile | undefined
 
-  private checkFileManagement (): void {
+  private checkFileManagement(): void {
     const files = this.fileContentObject?.files ?? []
     if (files.length > 0) {
       const hasNoWildcard = !files.some(file => file.includes('*'))
@@ -52,10 +51,14 @@ export class TsConfigFile extends FileBase {
     }
   }
 
-  // eslint-disable-next-line max-statements, complexity, sonarjs/cognitive-complexity
-  private checkCompilerOptions (): void {
-    /* c8 ignore next */
-    if (this.fileContentObject === undefined) { log.error('cannot check compiler options without file content'); return }
+  /* eslint-disable max-statements, complexity, sonarjs/cognitive-complexity */
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: refactor needed ^^'
+  private checkCompilerOptions() {
+    /* c8 ignore next 4 */
+    if (this.fileContentObject === undefined) {
+      log.error('cannot check compiler options without file content')
+      return
+    }
     const json = this.fileContentObject
     let isOk = this.couldContains('an include section', /"include"/u, 1, undefined, true)
     if (!isOk && this.canFix) json.include = ['src']
@@ -80,13 +83,20 @@ export class TsConfigFile extends FileBase {
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.lib = ['ESNext']
     if (this.canFix) this.fileContent = objectToJson(json)
   }
+  /* eslint-enable max-statements, complexity, sonarjs/cognitive-complexity */
 
   // eslint-disable-next-line max-statements
-  public async start (): Promise<void> {
-    if (!this.data.isUsingTypescript) { log.debug('does not use typescript, skipping tsconfig.json checks'); return }
+  public async start(): Promise<void> {
+    if (!this.data.isUsingTypescript) {
+      log.debug('does not use typescript, skipping tsconfig.json checks')
+      return
+    }
     await this.inspectFile('tsconfig.json')
     const data = parseJson<TsConfigJsonFile>(this.fileContent)
-    if (data.error) { log.error('cannot check empty or invalid tsconfig.json file'); return }
+    if (data.error) {
+      log.error('cannot check empty or invalid tsconfig.json file')
+      return
+    }
     this.fileContentObject = data.value
     this.couldContainsSchema('https://json.schemastore.org/tsconfig')
     this.checkCompilerOptions()

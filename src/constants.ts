@@ -1,5 +1,6 @@
 /* c8 ignore next 4 */
-import path from 'path'
+// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
+import path from 'node:path'
 
 export const home = process.env.HOME ?? '' // when does HOME is not defined ?
 /**
@@ -11,7 +12,6 @@ export const templatePath = path.join(repoCheckerPath, 'templates')
 
 // eslint-disable-next-line no-restricted-syntax
 export class ProjectData {
-
   /**
    * Renovate auto-merge feature
    */
@@ -69,7 +69,7 @@ export class ProjectData {
 
   public willGenerateReport = true
 
-  public constructor (data: Readonly<Partial<ProjectData>> = {}) {
+  public constructor(data: Readonly<Partial<ProjectData>> = {}) {
     Object.assign(this, data)
   }
 }

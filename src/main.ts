@@ -2,23 +2,23 @@ import arg from 'arg'
 import { parseJson } from 'shuutils'
 import { name } from '../package.json'
 import { check } from './check'
-import { ProjectData, dataDefaults, dataFileName, templatePath } from './constants' // eslint-disable-line @typescript-eslint/consistent-type-imports
+import { dataDefaults, dataFileName, templatePath, type ProjectData } from './constants'
 import { log } from './logger'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils'
 
-function getTarget (argument = '') {
+function getTarget(argument = '') {
   if (argument.length > 0) return resolve(argument)
   log.info('no target specified via : --target=path/to/directory')
   log.info('targeting current directory...')
   return process.cwd()
 }
 
-function showVersion () {
+function showVersion() {
   log.info(`${name} version : __unique-mark__`)
   return { failed: [], passed: ['show-version'], warnings: [] }
 }
 
-function showHelp () {
+function showHelp() {
   log.info(`usage : ${name} [options]
     options :
       --init        init a data file to enhance fix
@@ -47,9 +47,9 @@ const availableFlags = {
   '-v': Boolean,
 }
 
-type Flags = { readonly [key in keyof typeof availableFlags]?: ReturnType<typeof availableFlags[key]> }
+type Flags = { readonly [Key in keyof typeof availableFlags]?: ReturnType<(typeof availableFlags)[Key]> }
 
-export async function initDataFile (directoryPath = '', shouldForce = false) {
+export async function initDataFile(directoryPath = '', shouldForce = false) {
   const dataPath = join(directoryPath, dataFileName)
   const isPresent = await fileExists(dataPath)
   if (isPresent && !shouldForce) {
@@ -62,7 +62,7 @@ export async function initDataFile (directoryPath = '', shouldForce = false) {
   return { failed: [], passed: ['init-data-file'], warnings: [] }
 }
 
-export async function getData (directoryPath = '') {
+export async function getData(directoryPath = '') {
   const dataPath = join(directoryPath, dataFileName)
   const isPresent = await fileExists(dataPath)
   if (!isPresent) {
@@ -88,7 +88,7 @@ export const defaultOptions = {
   willShowVersion: false,
 }
 
-export function getFlags () {
+export function getFlags() {
   const sliceAfter = 2
   const flags = arg(availableFlags, { argv: process.argv.slice(sliceAfter) })
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -96,7 +96,7 @@ export function getFlags () {
 }
 
 // eslint-disable-next-line complexity
-export function getOptions (flags: Flags) {
+export function getOptions(flags: Flags) {
   return {
     canFailStop: flags['--fail-stop'] ?? defaultOptions.canFailStop,
     canFix: flags['--fix'] ?? defaultOptions.canFix,
@@ -110,7 +110,7 @@ export function getOptions (flags: Flags) {
   }
 }
 
-export async function start ({ canFailStop, canFix, canForce, isQuiet, isVerbose, target, willInit, willShowHelp, willShowVersion }: Readonly<ReturnType<typeof getOptions>> = defaultOptions) {
+export async function start({ canFailStop, canFix, canForce, isQuiet, isVerbose, target, willInit, willShowHelp, willShowVersion }: Readonly<ReturnType<typeof getOptions>> = defaultOptions) {
   if (willShowVersion) return showVersion()
   if (willShowHelp) return showHelp()
   if (willInit) return await initDataFile(target, canForce)

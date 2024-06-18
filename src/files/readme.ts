@@ -10,9 +10,19 @@ import { fileExists, join, readFile } from '../utils'
 // eslint-disable-next-line no-restricted-syntax
 class Thanks {
   public markdown = ''
+  public label = ''
+  public link = ''
+  public description = ''
+  public isExpected = true
+  public isFixable = true
 
-  // eslint-disable-next-line @typescript-eslint/parameter-properties, @typescript-eslint/max-params
-  public constructor (public label = '', public link = '', public description = '', public expected = false, public fixable = true) {
+  // eslint-disable-next-line @typescript-eslint/max-params
+  public constructor(label = '', link = '', description = '', isExpected = false, isFixable = true) {
+    this.label = label
+    this.link = link
+    this.description = description
+    this.isExpected = isExpected
+    this.isFixable = isFixable
     this.markdown = `- [${label}](${link}) : ${description}`
   }
 }
@@ -20,9 +30,19 @@ class Thanks {
 // eslint-disable-next-line no-restricted-syntax
 class Badge {
   public markdown = ''
+  public label = ''
+  public link = ''
+  public image = ''
+  public isExpected = true
+  public isFixable = true
 
-  // eslint-disable-next-line @typescript-eslint/parameter-properties, @typescript-eslint/max-params
-  public constructor (public label = '', public link = '', public image = '', public expected = true, public fixable = true) {
+  // eslint-disable-next-line @typescript-eslint/max-params
+  public constructor(label = '', link = '', image = '', isExpected = true, isFixable = true) {
+    this.label = label
+    this.link = link
+    this.image = image
+    this.isExpected = isExpected
+    this.isFixable = isFixable
     this.markdown = `[![${label}](${image})](${link})`
   }
 }
@@ -37,7 +57,7 @@ const deprecatedBadges = [
 /* c8 ignore start */
 // eslint-disable-next-line no-restricted-syntax
 export class ReadmeFile extends FileBase {
-  private checkMarkdown (): void {
+  private checkMarkdown(): void {
     let hasNoCrLf = this.shouldContains('no CRLF Windows carriage return', /\r/u, 0, false, 'prefer Unix LF', true)
     if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\r\n/gu, '\n')
     const starLists = /\n\*\s[\w[]/gu
@@ -45,12 +65,12 @@ export class ReadmeFile extends FileBase {
     if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\n\*\s(?=[\w[])/gu, '\n- ')
   }
 
-  private addBadge (line = ''): void {
+  private addBadge(line = ''): void {
     // just after project title
     this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/u, `$1${line}\n`)
   }
 
-  private checkBadgesDeprecated (): void {
+  private checkBadgesDeprecated(): void {
     for (const badge of deprecatedBadges) {
       // eslint-disable-next-line security/detect-non-literal-regexp
       const isOk = this.shouldContains(`no deprecated ${badge} badge`, new RegExp(badge, 'u'), 0, false, `${badge} does not exist anymore`, true)
@@ -59,46 +79,46 @@ export class ReadmeFile extends FileBase {
     }
   }
 
-  private checkBadgesRecommended (): void {
+  private checkBadgesRecommended(): void {
     const badges = this.getBadgesRecommended()
     for (const badge of badges) {
-      const message = `${badge.expected ? 'a' : 'no'} "${badge.label}" badge`
-      // eslint-disable-next-line security/detect-non-literal-regexp
-      const regex = new RegExp(`\\(${badge.link.replace('?', '\\?')}\\)`, 'u')
-      const isOk = this.couldContains(message, regex, badge.expected ? 1 : 0, badge.markdown, badge.expected)
-      if (!isOk && badge.expected && badge.fixable && this.canFix) this.addBadge(badge.markdown)
+      const message = `${badge.isExpected ? 'a' : 'no'} "${badge.label}" badge`
+      // eslint-disable-next-line security/detect-non-literal-regexp, sonarjs/no-nested-template-literals
+      const regex = new RegExp(`\\(${badge.link.replace('?', String.raw`\?`)}\\)`, 'u')
+      const isOk = this.couldContains(message, regex, badge.isExpected ? 1 : 0, badge.markdown, badge.isExpected)
+      if (!isOk && badge.isExpected && badge.isFixable && this.canFix) this.addBadge(badge.markdown)
     }
   }
 
-  private checkBadges (): void {
+  private checkBadges(): void {
     this.checkBadgesRecommended()
     this.checkBadgesDeprecated()
   }
 
-  private getBadgesRecommended (): Badge[] {
+  private getBadgesRecommended(): Badge[] {
     const userRepo = `${this.data.userId}/${this.data.repoId}`
     const list = [
       new Badge('Project license', `https://github.com/${userRepo}/blob/master/LICENSE`, `https://img.shields.io/github/license/${userRepo}.svg?color=informational`),
       new Badge('Code Climate maintainability', `https://codeclimate.com/github/${userRepo}`, `https://img.shields.io/codeclimate/maintainability/${userRepo}?style=flat`),
     ]
-    if (this.data.isWebPublished && !this.fileContent.includes('shields.io/website/'))
-      list.push(new Badge('Website up', this.data.webUrl, `https://img.shields.io/website/https/${this.data.webUrl.replace('https://', '')}.svg`, true, this.data.webUrl !== dataDefaults.webUrl))
-    if (this.data.isPublishedPackage) list.push(
-      new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.packageName}`, `https://img.shields.io/npm/dm/${this.data.packageName}.svg?color=informational`),
-      new Badge('Npm version', `https://www.npmjs.com/package/${this.data.packageName}`, `https://img.shields.io/npm/v/${this.data.packageName}.svg?color=informational`),
-      new Badge('Publish size', `https://bundlephobia.com/package/${this.data.packageName}`, `https://img.shields.io/bundlephobia/min/${this.data.packageName}?label=publish%20size`),
-      new Badge('Install size', `https://packagephobia.com/result?p=${this.data.packageName}`, `https://badgen.net/packagephobia/install/${this.data.packageName}`),
-    )
+    if (this.data.isWebPublished && !this.fileContent.includes('shields.io/website/')) list.push(new Badge('Website up', this.data.webUrl, `https://img.shields.io/website/https/${this.data.webUrl.replace('https://', '')}.svg`, true, this.data.webUrl !== dataDefaults.webUrl))
+    if (this.data.isPublishedPackage)
+      list.push(
+        new Badge('Npm monthly downloads', `https://www.npmjs.com/package/${this.data.packageName}`, `https://img.shields.io/npm/dm/${this.data.packageName}.svg?color=informational`),
+        new Badge('Npm version', `https://www.npmjs.com/package/${this.data.packageName}`, `https://img.shields.io/npm/v/${this.data.packageName}.svg?color=informational`),
+        new Badge('Publish size', `https://bundlephobia.com/package/${this.data.packageName}`, `https://img.shields.io/bundlephobia/min/${this.data.packageName}?label=publish%20size`),
+        new Badge('Install size', `https://packagephobia.com/result?p=${this.data.packageName}`, `https://badgen.net/packagephobia/install/${this.data.packageName}`),
+      )
     return list
   }
 
-  private addThanks (line = ''): void {
+  private addThanks(line = ''): void {
     // just after Thank title
     this.fileContent = this.fileContent.replace(/(## Thank.*\n{2})/u, `$1${line}\n`)
     log.debug('added line', line)
   }
 
-  private checkTodos (): void {
+  private checkTodos(): void {
     const matches = this.fileContent.match(/- \[ \] (.*)/gu)
     if (matches === null) return
     for (const line of matches) {
@@ -109,14 +129,14 @@ export class ReadmeFile extends FileBase {
   }
 
   // eslint-disable-next-line max-statements
-  public async start (): Promise<void> {
-    const hasREADMEFile = await this.fileExists('README.md')
+  public async start(): Promise<void> {
+    const hasUpReadmeFile = await this.fileExists('README.md')
     const hasReadmeFile = await this.fileExists('readme.md')
-    if (!hasREADMEFile && !hasReadmeFile) {
+    if (!(hasUpReadmeFile || hasReadmeFile)) {
       this.test(false, 'no README.md or readme.md file found')
       return
     }
-    await this.inspectFile(hasREADMEFile ? 'README.md' : 'readme.md')
+    await this.inspectFile(hasUpReadmeFile ? 'README.md' : 'readme.md')
     this.shouldContains('a title', /^#\s\w+/u)
     this.couldContains('a logo image', /!\[logo\]\(.*\.\w{3,4}\)/u, 1, '![logo](folder/any-file.ext)')
     this.couldContains('a demo image or gif', /!\[demo\]\(.*\.\w{3,4}\)/u, 1, '![demo](folder/any-file.ext)')
@@ -128,21 +148,21 @@ export class ReadmeFile extends FileBase {
     await this.checkThanks()
   }
 
-  private async checkThanks (): Promise<void> {
+  private async checkThanks(): Promise<void> {
     const hasSection = this.couldContains('a thanks section', /## Thanks/u)
     if (!hasSection) return
     const thanks = await this.getThanks()
     for (const thank of thanks) {
-      const message = `${thank.expected ? 'a' : 'no remaining'} thanks to ${thank.label}`
+      const message = `${thank.isExpected ? 'a' : 'no remaining'} thanks to ${thank.label}`
       // eslint-disable-next-line security/detect-non-literal-regexp
       const regex = new RegExp(`\\[${thank.label}\\]`, 'iu')
-      const hasThanks = this.couldContains(message, regex, thank.expected ? 1 : 0, thank.markdown, thank.expected)
-      const shouldAdd = !hasThanks && thank.expected && thank.fixable && this.canFix
+      const hasThanks = this.couldContains(message, regex, thank.isExpected ? 1 : 0, thank.markdown, thank.isExpected)
+      const shouldAdd = !hasThanks && thank.isExpected && thank.isFixable && this.canFix
       if (shouldAdd) this.addThanks(thank.markdown)
     }
   }
 
-  private async getThanks (): Promise<Thanks[]> {
+  private async getThanks(): Promise<Thanks[]> {
     const list = [
       new Thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme', this.fileContent.includes('shields')),
       new Thanks('Travis-ci.com', 'https://travis-ci.com', 'for providing free continuous deployments', this.fileContent.includes('travis-ci')),
@@ -188,4 +208,3 @@ export class ReadmeFile extends FileBase {
   }
 }
 /* c8 ignore stop */
-

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.7.3/schema.json",
+  "files": {
+    "ignore": [
+      "node_modules/**",
+      "src/mocks/tsProject/sub-folder/.repo-checker.json"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 300
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "asNeeded",
+      "bracketSpacing": true,
+      "quoteStyle": "single",
+      "semicolons": "asNeeded"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "all": true,
+      "complexity": {
+        "noVoid": "off",
+        "useLiteralKeys": "off"
+      },
+      "style": {
+        "noImplicitBoolean": "off",
+        "useBlockStatements": "off"
+      }
+    }
+  },
+  "organizeImports": {
+    "enabled": true
+  }
+}

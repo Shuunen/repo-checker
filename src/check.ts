@@ -1,32 +1,34 @@
 /* c8 ignore next */
 import { ellipsis, green, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants'
-import { DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NpmRcFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile } from './files/index.js'
+import { DependencyCruiserFile } from './files/dependency-cruiser'
+import { EditorConfigFile } from './files/editor-config'
+import { EsLintFile } from './files/eslint.file'
+import { GithubWorkflowFile } from './files/gh-workflow'
+import { GitFile } from './files/git'
+import { LicenseFile } from './files/license'
+import { NpmRcFile } from './files/npmrc.file'
+import { NvmrcFile } from './files/nvmrc'
+import { NycRcFile } from './files/nycrc'
+import { PackageJsonFile } from './files/package.file'
+import { ReadmeFile } from './files/readme'
+import { RenovateFile } from './files/renovate'
+import { RepoCheckerConfigFile } from './files/repo-checker'
+import { TailwindFile } from './files/tailwind'
+import { TravisFile } from './files/travis'
+import { TsConfigFile } from './files/ts-config'
 import { log } from './logger'
 import { augmentData, getProjectFolders } from './utils'
 
-interface Indicators { failed: readonly string[]; passed: readonly string[]; warnings: readonly string[] }
+interface Indicators {
+  failed: readonly string[]
+  passed: readonly string[]
+  warnings: readonly string[]
+}
 
-const checkers = [
-  DependencyCruiserFile,
-  EditorConfigFile,
-  EsLintFile,
-  GitFile,
-  GithubWorkflowFile,
-  LicenseFile,
-  NpmRcFile,
-  NvmrcFile,
-  NycRcFile,
-  PackageJsonFile,
-  ReadmeFile,
-  RenovateFile,
-  RepoCheckerConfigFile,
-  TailwindFile,
-  TravisFile,
-  TsConfigFile,
-]
+const checkers = [DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NpmRcFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile]
 
-function reportLog (color: (string: string) => string, count: number, message: string) {
+function reportLog(color: (string: string) => string, count: number, message: string) {
   const line = `‣ ${count} check${count > 1 ? 's' : ''} ${message}`
   /* c8 ignore next */
   log.info(count === 0 ? line : color(line))
@@ -41,7 +43,7 @@ interface CheckOptions {
   folderPath: string
 }
 
-function report ({ failed = [], passed = [], warnings = [] }: Readonly<Indicators>) {
+function report({ failed = [], passed = [], warnings = [] }: Readonly<Indicators>) {
   log.info('Report :')
   reportLog(green, passed.length, 'are successful')
   reportLog(yellow, warnings.length, 'triggered warnings')
@@ -50,7 +52,7 @@ function report ({ failed = [], passed = [], warnings = [] }: Readonly<Indicator
 }
 
 // eslint-disable-next-line max-statements
-export async function check ({ canFailStop = false, canFix = false, canForce = false, canThrow = true, data, folderPath }: Readonly<CheckOptions>) {
+export async function check({ canFailStop = false, canFix = false, canForce = false, canThrow = true, data, folderPath }: Readonly<CheckOptions>) {
   const folders = await getProjectFolders(folderPath)
   let passed: string[] = []
   let warnings: string[] = []
@@ -66,7 +68,8 @@ export async function check ({ canFailStop = false, canFix = false, canForce = f
     }
     log.info('Checking folder :', folder)
     const dataFolder = await augmentData(folder, data, folders.length > 1)
-    for (const Checker of checkers) { // eslint-disable-line @typescript-eslint/naming-convention
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    for (const Checker of checkers) {
       const instance = new Checker(folder, dataFolder, canFix, canForce)
       await instance.start()
       await instance.end()
