@@ -2,7 +2,7 @@ import { FileBase } from '../file'
 
 // eslint-disable-next-line no-restricted-syntax
 export class DependencyCruiserFile extends FileBase {
-  public async start(): Promise<void> {
+  public async start() {
     const isUsingDepCruiser = this.test(this.data.isUsingDependencyCruiser, 'use dependency cruiser', true)
     if (!isUsingDepCruiser) return
     const hasJsFile = await this.fileExists('.dependency-cruiser.js')

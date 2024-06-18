@@ -2,7 +2,7 @@ import { Logger } from 'shuutils'
 
 // eslint-disable-next-line no-restricted-syntax
 class ExtendedLogger extends Logger {
-  public unknownError(error: unknown): void {
+  public unknownError(error: unknown) {
     if (error instanceof Error) {
       this.error(error.message)
       return

@@ -3,7 +3,7 @@ import { FileBase } from '../file'
 /* c8 ignore start */
 // eslint-disable-next-line no-restricted-syntax
 export class LicenseFile extends FileBase {
-  public async start(): Promise<void> {
+  public async start() {
     const hasFile = await this.checkFileExists('LICENSE')
     if (!hasFile) return
     await this.inspectFile('LICENSE')

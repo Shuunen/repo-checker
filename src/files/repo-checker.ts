@@ -4,14 +4,14 @@ import { deleteFile, join, jsToJson, readFileInFolder, writeFile } from '../util
 
 // eslint-disable-next-line no-restricted-syntax
 export class RepoCheckerConfigFile extends FileBase {
-  public async start(): Promise<void> {
+  public async start() {
     await this.migrateOldConfig('.repo-checker.js')
     await this.migrateOldConfig('repo-checker.config.js')
     await this.checkFileExists(dataFileName, true)
     await this.inspectFile(dataFileName)
   }
 
-  private async migrateOldConfig(fileName: string): Promise<void> {
+  private async migrateOldConfig(fileName: string) {
     const hasFile = await this.fileExists(fileName)
     /* c8 ignore next 4 */
     if (!hasFile) return

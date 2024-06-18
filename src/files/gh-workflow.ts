@@ -3,7 +3,7 @@ import { FileBase } from '../file'
 /* c8 ignore start */
 // eslint-disable-next-line no-restricted-syntax
 export class GithubWorkflowFile extends FileBase {
-  private checkPnpm(): void {
+  private checkPnpm() {
     const hasPnpmStep = this.couldContains('a pnpm setup step', /pnpm\/action-setup/u)
     if (!hasPnpmStep) return
     const hasRecentVersion = this.shouldContains('a recent pnpm version 8 or 9', /uses: pnpm\/action-setup@v\d\n +with:\n +version: [8|9]/u, 1, false, undefined, true)
@@ -12,14 +12,14 @@ export class GithubWorkflowFile extends FileBase {
     if (!hasNoFrozenFlag && this.canFix) this.fileContent = this.fileContent.replace(' --no-frozen-lockfile', '')
   }
 
-  private checkCheckout(): void {
+  private checkCheckout() {
     const hasCheckout = this.shouldContains('a checkout step in ci workflow', /actions\/checkout/u)
     if (!hasCheckout) return
     const hasRecentVersion = this.shouldContains('a recent checkout version', /uses: actions\/checkout@v[456]/u, 1, false, undefined, true)
     if (!hasRecentVersion && this.canFix) this.fileContent = this.fileContent.replace(/(?<=uses: actions\/checkout@)v\d/u, 'latest')
   }
 
-  public async start(): Promise<void> {
+  public async start() {
     const filePath = '.github/workflows/ci.yml'
     const hasFile = await this.fileExists(filePath)
     if (!hasFile) return

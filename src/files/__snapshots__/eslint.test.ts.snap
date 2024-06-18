@@ -912,6 +912,10 @@ exports[`eslint M fix rules in overrides 1`] = `
           {
             "message": "Don't specify return type on function",
             "selector": "FunctionDeclaration[returnType]"
+          },
+          {
+            "message": "Don't specify return type on function",
+            "selector": "FunctionExpression[returnType]"
           }
         ],
         "object-curly-spacing": [

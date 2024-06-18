@@ -37,7 +37,7 @@ interface TsConfigJsonFile {
 export class TsConfigFile extends FileBase {
   private fileContentObject: TsConfigJsonFile | undefined
 
-  private checkFileManagement(): void {
+  private checkFileManagement() {
     const files = this.fileContentObject?.files ?? []
     if (files.length > 0) {
       const hasNoWildcard = !files.some(file => file.includes('*'))
@@ -86,7 +86,7 @@ export class TsConfigFile extends FileBase {
   /* eslint-enable max-statements, complexity, sonarjs/cognitive-complexity */
 
   // eslint-disable-next-line max-statements
-  public async start(): Promise<void> {
+  public async start() {
     if (!this.data.isUsingTypescript) {
       log.debug('does not use typescript, skipping tsconfig.json checks')
       return

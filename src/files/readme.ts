@@ -57,7 +57,7 @@ const deprecatedBadges = [
 /* c8 ignore start */
 // eslint-disable-next-line no-restricted-syntax
 export class ReadmeFile extends FileBase {
-  private checkMarkdown(): void {
+  private checkMarkdown() {
     let hasNoCrLf = this.shouldContains('no CRLF Windows carriage return', /\r/u, 0, false, 'prefer Unix LF', true)
     if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\r\n/gu, '\n')
     const starLists = /\n\*\s[\w[]/gu
@@ -65,12 +65,12 @@ export class ReadmeFile extends FileBase {
     if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\n\*\s(?=[\w[])/gu, '\n- ')
   }
 
-  private addBadge(line = ''): void {
+  private addBadge(line = '') {
     // just after project title
     this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/u, `$1${line}\n`)
   }
 
-  private checkBadgesDeprecated(): void {
+  private checkBadgesDeprecated() {
     for (const badge of deprecatedBadges) {
       // eslint-disable-next-line security/detect-non-literal-regexp
       const isOk = this.shouldContains(`no deprecated ${badge} badge`, new RegExp(badge, 'u'), 0, false, `${badge} does not exist anymore`, true)
@@ -79,7 +79,7 @@ export class ReadmeFile extends FileBase {
     }
   }
 
-  private checkBadgesRecommended(): void {
+  private checkBadgesRecommended() {
     const badges = this.getBadgesRecommended()
     for (const badge of badges) {
       const message = `${badge.isExpected ? 'a' : 'no'} "${badge.label}" badge`
@@ -90,12 +90,12 @@ export class ReadmeFile extends FileBase {
     }
   }
 
-  private checkBadges(): void {
+  private checkBadges() {
     this.checkBadgesRecommended()
     this.checkBadgesDeprecated()
   }
 
-  private getBadgesRecommended(): Badge[] {
+  private getBadgesRecommended() {
     const userRepo = `${this.data.userId}/${this.data.repoId}`
     const list = [
       new Badge('Project license', `https://github.com/${userRepo}/blob/master/LICENSE`, `https://img.shields.io/github/license/${userRepo}.svg?color=informational`),
@@ -112,13 +112,13 @@ export class ReadmeFile extends FileBase {
     return list
   }
 
-  private addThanks(line = ''): void {
+  private addThanks(line = '') {
     // just after Thank title
     this.fileContent = this.fileContent.replace(/(## Thank.*\n{2})/u, `$1${line}\n`)
     log.debug('added line', line)
   }
 
-  private checkTodos(): void {
+  private checkTodos() {
     const matches = this.fileContent.match(/- \[ \] (.*)/gu)
     if (matches === null) return
     for (const line of matches) {
@@ -129,7 +129,7 @@ export class ReadmeFile extends FileBase {
   }
 
   // eslint-disable-next-line max-statements
-  public async start(): Promise<void> {
+  public async start() {
     const hasUpReadmeFile = await this.fileExists('README.md')
     const hasReadmeFile = await this.fileExists('readme.md')
     if (!(hasUpReadmeFile || hasReadmeFile)) {
@@ -148,7 +148,7 @@ export class ReadmeFile extends FileBase {
     await this.checkThanks()
   }
 
-  private async checkThanks(): Promise<void> {
+  private async checkThanks() {
     const hasSection = this.couldContains('a thanks section', /## Thanks/u)
     if (!hasSection) return
     const thanks = await this.getThanks()
@@ -162,7 +162,7 @@ export class ReadmeFile extends FileBase {
     }
   }
 
-  private async getThanks(): Promise<Thanks[]> {
+  private async getThanks() {
     const list = [
       new Thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme', this.fileContent.includes('shields')),
       new Thanks('Travis-ci.com', 'https://travis-ci.com', 'for providing free continuous deployments', this.fileContent.includes('travis-ci')),

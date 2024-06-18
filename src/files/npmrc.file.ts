@@ -8,7 +8,7 @@ export class NpmRcFile extends FileBase {
     if (!isOk && this.canFix) this.fileContent += '\nenable-pre-post-scripts=true'
   }
 
-  public async start(): Promise<void> {
+  public async start() {
     const hasFile = await this.checkFileExists('.npmrc', true)
     if (!hasFile) return
     await this.inspectFile('.npmrc')

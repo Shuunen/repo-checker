@@ -96,9 +96,7 @@ it('getData B non-existing target : default data', () => {
 
 it('getData C mal-formatted json target : default data', async () => {
   // we dont toThrowErrorMatchingSnapshot because the JSON parse error message is localized -.-''
-  await expect(async () => await getData('src/mocks/tsProject/sub-folder')).rejects.toThrowErrorMatchingInlineSnapshot(
-    String.raw`[Error: error at getting data, target "src/mocks/tsProject/sub-folder", dataPath "src\mocks\tsProject\sub-folder\.repo-checker.json", error "JSON invalide : Unexpected token '/', "// im a ma"... is not valid JSON"]`,
-  )
+  await expect(async () => await getData('src/mocks/tsProject/sub-folder')).rejects.toThrowError()
 })
 
 it('initDataFile A default to current folder but data file already exists', async () => {

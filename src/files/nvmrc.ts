@@ -3,7 +3,7 @@ import { FileBase } from '../file'
 /* c8 ignore start */
 // eslint-disable-next-line no-restricted-syntax
 export class NvmrcFile extends FileBase {
-  public async start(): Promise<void> {
+  public async start() {
     const hasFile = await this.checkFileExists('.nvmrc')
     if (!hasFile) return
     await this.inspectFile('.nvmrc')

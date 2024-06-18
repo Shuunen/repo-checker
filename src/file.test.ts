@@ -14,7 +14,7 @@ const fakeContent = 'zorglub'
 it('file A simple validator', async () => {
   // eslint-disable-next-line no-restricted-syntax
   class MyFile extends FileBase {
-    public async start(): Promise<void> {
+    public async start() {
       await writeFile(missingFilepath, 'Foobar content')
       await this.inspectFile(missingFilename)
       expect(this.passed, 'test 1').toStrictEqual([])
@@ -41,7 +41,7 @@ it('file A simple validator', async () => {
 it('file B validator with fix', async () => {
   // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
-    public async start(): Promise<void> {
+    public async start() {
       await this.checkFileExists(existingFilename)
       await deleteFile(existingFilepath)
       await this.checkFileExists(existingFilename)
@@ -59,7 +59,7 @@ it('file B validator with fix', async () => {
 it('file C validator with fix & force, overwrite a problematic file with template', async () => {
   // eslint-disable-next-line no-restricted-syntax
   class MyFileFixForce extends FileBase {
-    public async start(): Promise<void> {
+    public async start() {
       await this.inspectFile(existingFilename)
       this.shouldContains('two dots', /\./gu, 2)
       this.shouldContains('a regular nvmrc file content', /travers/u)
@@ -78,7 +78,7 @@ it('file D validator with fix & force, update a problematic file on the go', asy
   let originalContent = ''
   // eslint-disable-next-line no-restricted-syntax
   class MyFileFixForce extends FileBase {
-    public async start(): Promise<void> {
+    public async start() {
       await this.inspectFile(existingFilename)
       originalContent = this.fileContent
       this.fileContent = fakeContent
@@ -96,7 +96,7 @@ it('file E validator without force cannot fix a problematic file on the go', asy
   let originalContent = ''
   // eslint-disable-next-line no-restricted-syntax
   class MyFileFixForce extends FileBase {
-    public async start(): Promise<void> {
+    public async start() {
       await this.inspectFile(existingFilename)
       originalContent = this.fileContent
       this.shouldContains('a weird stuff', /zorglub/u)
@@ -113,7 +113,7 @@ it('file E validator without force cannot fix a problematic file on the go', asy
 it('file F validator with fix cannot fix if the template require data that is missing', async () => {
   // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
-    public async start(): Promise<void> {
+    public async start() {
       await this.checkFileExists('template-example.json')
     }
   }
@@ -126,7 +126,7 @@ it('file F validator with fix cannot fix if the template require data that is mi
 it('file G validator can detect a missing schema', async () => {
   // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
-    public async start(): Promise<void> {
+    public async start() {
       await sleep(1)
       this.fileContent = '{}'
       expect(this.couldContainsSchema('does-not-exist')).toBe(false)
@@ -141,7 +141,7 @@ it('file G validator can detect a missing schema', async () => {
 it('file H validator can detect an existing schema', async () => {
   // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
-    public async start(): Promise<void> {
+    public async start() {
       await sleep(1)
       this.fileContent = `{
         "something": "else",
@@ -160,7 +160,7 @@ it('file H validator can detect an existing schema', async () => {
 it('file I validator can fix a missing schema', async () => {
   // eslint-disable-next-line no-restricted-syntax
   class MyFileFix extends FileBase {
-    public async start(): Promise<void> {
+    public async start() {
       await sleep(1)
       this.fileContent = `{
         "something": "else",

@@ -36,7 +36,7 @@ export class FileBase {
   }
 
   // eslint-disable-next-line complexity, sonarjs/cognitive-complexity, @typescript-eslint/max-params
-  public shouldContains(name: string, regex?: Readonly<RegExp>, nbMatchExpected = defaultAmount, willJustWarn = false, helpMessage = '', canFix = false): boolean {
+  public shouldContains(name: string, regex?: Readonly<RegExp>, nbMatchExpected = defaultAmount, willJustWarn = false, helpMessage = '', canFix = false) {
     // eslint-disable-next-line security/detect-non-literal-regexp
     const regexp = regex ?? new RegExp(name, 'u')
     const isOk = this.checkContains(regexp, nbMatchExpected)
@@ -51,11 +51,11 @@ export class FileBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/max-params
-  public couldContains(name: string, regex?: Readonly<RegExp>, nbMatchExpected = defaultAmount, helpMessage = '', canFix = false): boolean {
+  public couldContains(name: string, regex?: Readonly<RegExp>, nbMatchExpected = defaultAmount, helpMessage = '', canFix = false) {
     return this.shouldContains(name, regex, nbMatchExpected, true, helpMessage, canFix)
   }
 
-  public checkContains(regex: Readonly<RegExp>, nbMatchExpected = defaultAmount): boolean {
+  public checkContains(regex: Readonly<RegExp>, nbMatchExpected = defaultAmount) {
     // eslint-disable-next-line regexp/prefer-regexp-exec
     const matches = this.fileContent.match(regex) ?? []
     const hasExpectedMatches = nbMatchExpected === defaultAmount ? matches.length > 0 : nbMatchExpected === matches.length
@@ -64,7 +64,7 @@ export class FileBase {
     return hasExpectedMatches
   }
 
-  public test(isValid: boolean, message: string, willJustWarn = false): boolean {
+  public test(isValid: boolean, message: string, willJustWarn = false) {
     const finalMessage = message.startsWith(this.fileName) ? message : `${this.fileName} ${message}`
     const code = messageToCode(finalMessage)
     if (isValid) {
@@ -80,7 +80,7 @@ export class FileBase {
     return isValid
   }
 
-  public couldContainsSchema(url: string): boolean {
+  public couldContainsSchema(url: string) {
     const line = `"$schema": "${url}",`
     const hasSchema = this.couldContains('a $schema declaration', /"\$schema": "/u, 1, `like ${line}`, true)
     if (hasSchema) return true
@@ -90,19 +90,19 @@ export class FileBase {
     return true
   }
 
-  public async end(): Promise<void> {
+  public async end() {
     await this.updateFile()
     await this.checkIssues()
   }
 
-  public async inspectFile(fileName: string): Promise<void> {
+  public async inspectFile(fileName: string) {
     this.fileName = fileName
     this.originalFileContent = await readFileInFolder(this.folderPath, fileName).catch(() => '')
     this.fileContent = this.originalFileContent
   }
 
   // eslint-disable-next-line max-statements
-  public async updateFile(): Promise<void> {
+  public async updateFile() {
     if (this.originalFileContent.trim() === this.fileContent.trim()) {
       log.debug('avoid file update when updated content is the same')
       return
@@ -123,7 +123,7 @@ export class FileBase {
     log.debug('updated', this.fileName, 'with the new content')
   }
 
-  public async fileExists(fileName: string): Promise<boolean> {
+  public async fileExists(fileName: string) {
     return await fileExists(join(this.folderPath, fileName))
   }
 
@@ -133,7 +133,7 @@ export class FileBase {
    * @param willJustWarn just warn if the file is not found
    * @returns true if the file is found
    */
-  public async checkFileExists(fileName: string, willJustWarn = false): Promise<boolean> {
+  public async checkFileExists(fileName: string, willJustWarn = false) {
     let hasFile = await this.fileExists(fileName)
     if (!hasFile && this.canFix) {
       const fileContent = await this.initFile(fileName)
@@ -143,16 +143,16 @@ export class FileBase {
     return hasFile
   }
 
-  public async checkNoFileExists(fileName: string): Promise<void> {
+  public async checkNoFileExists(fileName: string) {
     const hasFile = await this.fileExists(fileName)
     this.test(!hasFile, `has no ${fileName} file`)
   }
 
-  public async getFileSizeInKo(filePath: string): Promise<number> {
+  public async getFileSizeInKo(filePath: string) {
     return await getFileSizeInKo(join(this.folderPath, filePath))
   }
 
-  public async initFile(fileName: string): Promise<string> {
+  public async initFile(fileName: string) {
     const template = await readFileInFolder(templatePath, fileName).catch(() => '')
     if (template === '') {
       log.debug(`found no template ${fileName}, using a empty string instead`)
@@ -165,13 +165,13 @@ export class FileBase {
     return fileContent
   }
 
-  private async createFile(fileName: string, fileContent: string): Promise<void> {
+  private async createFile(fileName: string, fileContent: string) {
     void writeFile(join(this.folderPath, fileName), fileContent)
     await sleep(1)
     log.fix('created', fileName)
   }
 
-  private async checkIssues(): Promise<void> {
+  private async checkIssues() {
     if (this.failed.length > 0 && this.canFix) {
       if (this.canForce) {
         await this.initFile(this.fileName)

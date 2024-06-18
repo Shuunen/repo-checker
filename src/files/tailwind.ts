@@ -2,7 +2,7 @@ import { FileBase } from '../file'
 
 // eslint-disable-next-line no-restricted-syntax
 export class TailwindFile extends FileBase {
-  public async start(): Promise<void> {
+  public async start() {
     if (!this.data.isUsingTailwind) return
     const { fileName, hasTsFile } = await this.detectContext()
     await this.checkFileExists(fileName)
@@ -16,7 +16,7 @@ export class TailwindFile extends FileBase {
     this.shouldContains('a content (previously named purge) option', /content/u, 1, false, "like : content: ['./src/**/*.{vue,js,ts,jsx,tsx}']")
   }
 
-  private async detectContext(): Promise<{ fileName: string; hasTsFile: boolean }> {
+  private async detectContext() {
     const hasJsFile = await this.fileExists('tailwind.config.js')
     const hasTsFile = await this.fileExists('tailwind.config.ts')
     const hasMjsFile = await this.fileExists('tailwind.config.mjs')

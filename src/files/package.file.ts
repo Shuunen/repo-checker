@@ -66,23 +66,23 @@ export class PackageJsonFile extends FileBase {
     if (this.fileContent.includes('esbuild-plugin-run')) this.couldContains('not fat ts runner, use "typescript-run" like "dev": "ts-run src --watch" or "ts-run src -w src another-folder"')
   }
 
-  private regexForStringProp(name = ''): RegExp {
+  private regexForStringProp(name = '') {
     return new RegExp(`"${name}": ".+"`, 'u')
   }
 
-  private regexForStringValueProp(name = '', value = ''): RegExp {
+  private regexForStringValueProp(name = '', value = '') {
     return new RegExp(`"${name}": "${value}"`, 'u')
   }
 
-  private regexForObjectProp(name = ''): RegExp {
+  private regexForObjectProp(name = '') {
     return new RegExp(`"${name}": \\{\n`, 'u')
   }
 
-  private regexForArrayProp(name = ''): RegExp {
+  private regexForArrayProp(name = '') {
     return new RegExp(`"${name}": \\[\n`, 'u')
   }
 
-  private regexForBooleanProp(name = ''): RegExp {
+  private regexForBooleanProp(name = '') {
     return new RegExp(`"${name}": (?:false|true),\n`, 'u')
   }
 
@@ -120,7 +120,7 @@ export class PackageJsonFile extends FileBase {
     }
   }
 
-  public async start(): Promise<void> {
+  public async start() {
     const hasFile = await this.checkFileExists('package.json')
     if (!hasFile) return
     await this.inspectFile('package.json')
@@ -132,7 +132,7 @@ export class PackageJsonFile extends FileBase {
     this.suggestAlternatives()
   }
 
-  private async checkMaxSize(filePath: string, maxSizeKo: number): Promise<void> {
+  private async checkMaxSize(filePath: string, maxSizeKo: number) {
     const hasMaxSize = this.test(maxSizeKo !== dataDefaults.maxSizeKo, 'main file maximum size is specified in data file (ex: maxSizeKo: 100)', true)
     if (!hasMaxSize) return
     const hasFile = await this.checkFileExists(filePath)
@@ -144,7 +144,7 @@ export class PackageJsonFile extends FileBase {
     this.test(isSizeOk, `main file size (${sizeKo}ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
   }
 
-  private async checkMainFile(): Promise<void> {
+  private async checkMainFile() {
     const mainFilePath = /"main": "(?<path>.*)"/u.exec(this.fileContent)?.groups?.path
     if (mainFilePath === undefined) {
       log.debug('no main file specified in package.json')
@@ -153,7 +153,7 @@ export class PackageJsonFile extends FileBase {
     await this.checkMaxSize(mainFilePath, this.data.maxSizeKo)
   }
 
-  private async checkDependenciesUsagesUvu(): Promise<void> {
+  private async checkDependenciesUsagesUvu() {
     const badAsserts = await findInFolder(join(this.folderPath, 'tests'), /from 'assert'/u)
     const logMaxLength = 50
     this.test(badAsserts.length === 0, `assert dependency used in "${ellipsis(badAsserts.join(','), logMaxLength)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
@@ -170,7 +170,7 @@ export class PackageJsonFile extends FileBase {
     if (this.fileContent.includes('ts-node')) await this.checkDependenciesUsagesNode()
   }
 
-  private async checkDependencies(): Promise<void> {
+  private async checkDependencies() {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
     const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
     /* c8 ignore next */
