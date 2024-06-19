@@ -236,7 +236,6 @@ exports[`package C ts project isUsing* 1`] = `
     "package-json-does-not-have-a-name-property-name",
     "package-json-does-not-have-a-gpl-3-0-license-license-gpl-3-0",
     "package-json-does-not-have-a-typescript-build-or-check-btscb",
-    "package-json-does-not-have-a-typescript-lint-eslint-ts",
     "package-json-does-not-have-prepare-instead-of-prepublish-deprecated-prepublish",
     "package-json-does-not-have-a-depcruise-usage-like-depcruise-src-config",
     "package-json-assert-dependency-used-in-some-ts-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative",
@@ -516,7 +515,6 @@ exports[`package F fix project 1`] = `
   "originalFileContent": "",
   "passed": [
     "has-a-package-json-file",
-    "has-a-typescript-lint",
     "has-a-script-section",
     "has-no-ci-script",
     "has-no-sass-dependency-fat-useless",
