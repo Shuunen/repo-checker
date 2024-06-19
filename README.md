@@ -28,8 +28,8 @@
 Choose your favorite method :
 
 1. Via npx : `npx repo-check`
-2. Via npm locally : `npm install repo-check` then run `npx repo-check` or use it in your `package.json` scripts
-3. Via local installation : clone this repository, cd into the folder and use `pnpm start`, `pnpm start -- --target=../my-other-project` for single run or `pnpm dev`, `pnpm dev -- --target=../my-other-project`
+2. Via npm locally : `pnpm install repo-check` then run `npx repo-check` or use it in your `package.json` scripts
+3. Via local installation : clone this repository, cd into the folder and use `pnpm start`, `pnpm start --target=../my-other-project` for single run or `pnpm dev`, `pnpm dev --target=../my-other-project`
 
 Pro tip : [init](#init) repo-checker before [fixing](#fix) files.
 
