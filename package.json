@@ -59,7 +59,7 @@
     "mark": "unique-mark dist/repo-check.min.cjs && echo mark success",
     "postversion": "git push && git push --tags && pnpm build && npm publish",
     "preversion": "pnpm check",
-    "start": "pnpm build:start && echo start success",
+    "start": "pnpm build:start",
     "test": "vitest --coverage --run && echo test success",
     "test:bench": "vitest bench && echo test bench success",
     "test:update": "vitest --run --update && echo test update success",
