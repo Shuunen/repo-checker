@@ -19,8 +19,6 @@
     - [init](#init)
     - [quiet](#quiet)
   - [Todo](#todo)
-  - [Benchmarks](#benchmarks)
-    - [Old method](#old-method)
   - [Thanks](#thanks)
 
 ## Usage
@@ -69,60 +67,6 @@ If file already exists, use `--force` to overwrite it.
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
 - [ ] prepare a json schema for .repo-checker.json
 - [ ] try to avoid using class in this project and remove `eslint-disable-next-line no-restricted-syntax`
-
-## Benchmarks
-
-Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
-
-| command alias | date       | main lib targeted | delay  | node  | os    | comment |
-| ------------- | ---------- | ----------------- | ------ | ----- | ----- | ------- |
-| vitest-v8     | 2023-07-17 | npx & vitest & v8 | 2,16 s | 18.16 | Linux |         |
-| vitest        | 2023-07-17 | npx & vitest 0.33 | 1,97 s | 18.16 | Linux |         |
-| esbuild       | 2023-07-17 | esbuild 0.18      | 12 ms  | 18.16 | Linux |         |
-| repo-check    | 2023-07-17 | repo-checker 1.33 | 55 ms  | 18.16 | Linux |         |
-| repo-check    | 2023-06-19 | repo-checker 1.31 | 60 ms  | 18.16 | Linux |         |
-| esbuild       | 2023-06-19 | esbuild 0.18      | 12 ms  | 18.16 | Linux |         |
-| tsc-no-emit   | 2023-06-19 | typescript 5.1    | 760 ms | 18.16 | Linux |         |
-| eslint        | 2023-06-19 | eslint 8.43       | 7,4 s  | 18.16 | Linux |         |
-| vitest-v8     | 2023-06-19 | npx & vitest & v8 | 1,9 s  | 18.16 | Linux |         |
-| vitest        | 2023-06-19 | npx & vitest 0.32 | 1,8 s  | 18.16 | Linux |         |
-
-Command aliases :
-
-- repo-check : `node dist/repo-check.min.cjs`
-- repo-check-no-out : `node dist/repo-check.min.cjs --quiet --no-report`
-- esbuild : `node_modules/.bin/esbuild src/index.ts --target=esnext --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs`
-- ts-run : `node node_modules/typescript-run/src/index.js src`
-- tsc-no-emit : `node node_modules/typescript/bin/tsc --noEmit`
-- npx-tsc-no-emit : `npx tsc --noEmit`
-- eslint : `node node_modules/eslint/bin/eslint --fix --ignore-path .gitignore --ext .js,.ts .`
-- eslint-ts-src-only : `node node_modules/eslint/bin/eslint src/ --ext .ts`
-- uvu : `node node_modules/uvu/bin -r tsm tests`
-- c8-uvu : `node node_modules/c8/bin/c8 node_modules/uvu/bin -r tsm tests`
-- vitest : `npx vitest --run`
-- vitest-c8 : `npx vitest --run --coverage`
-- vitest-v8 : `npx vitest --run --coverage`
-
-### Old method
-
-Each task is run 3 times via `time npm run <task>` to get the average execution time in seconds.
-
-| task       | lib          | seconds    | comment                                            |
-| ---------- | ------------ | ---------- | -------------------------------------------------- |
-| build      | tsup         | 1          | 0 config, 1 dep only, super fast                   |
-| build      | rollup       | 2,7        | lots of deps (plugins) & config to do the same job |
-| build      | esbuild      | 0,2        | amazing 👍                                          |
-| check      | repo-checker | 3,2 (2019) | can surely be reduced ^^                           |
-| check      | repo-checker | 0,8 (2021) |                                                    |
-| lint       | xo           | 2,7        |                                                    |
-| lint       | eslint       | 3,5        |                                                    |
-| test       | ava          | 9          |                                                    |
-| test       | mocha        | 7,4        | a bit faster, same amount of setup                 |
-| test       | uvu          | 1,2        | amazing 👍                                          |
-| test + cov | ava + c8     | 16         | 7 seconds for c8 coverage ? wtf                    |
-| test + cov | mocha + c8   | 12         | 7 seconds for c8 coverage ? wtf                    |
-| test + cov | mocha + nyc  | 9,6        | 2 seconds for coverage seems more reasonable       |
-| test + cov | uvu + c8     | 1,6        | amazing 👍                                          |
 
 ## Thanks
 
