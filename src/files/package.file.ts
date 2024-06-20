@@ -1,5 +1,6 @@
 /* eslint-disable security/detect-non-literal-regexp */
 import { ellipsis } from 'shuutils'
+import { version } from '../../package.json'
 import { dataDefaults } from '../constants'
 import { FileBase } from '../file'
 import { log } from '../logger'
@@ -119,6 +120,14 @@ export class PackageJsonFile extends FileBase {
     }
   }
 
+  private checkDependenciesVersions() {
+    const [major, minor] = version.split('.').map(Number)
+    if (minor === undefined || major === undefined) throw new Error('version is not semver')
+    const hasLatestRegex = new RegExp(`"repo-check": "${major}.${minor}`, 'u')
+    const hasLatest = this.couldContains('latest version of repo-checker', hasLatestRegex, 1, `like "repo-check": "${major}.${minor}"`, true)
+    if (!hasLatest && this.canFix) this.fileContent = this.fileContent.replace(/"repo-check": ".+"/u, `"repo-check": "${major}.${minor}"`)
+  }
+
   public async start() {
     const hasFile = await this.checkFileExists('package.json')
     if (!hasFile) return
@@ -177,6 +186,7 @@ export class PackageJsonFile extends FileBase {
     this.checkDependenciesUnwanted()
     this.checkDependenciesPrecision()
     this.checkDependenciesTesting()
+    this.checkDependenciesVersions()
     await this.checkDependenciesUsages()
   }
 }
