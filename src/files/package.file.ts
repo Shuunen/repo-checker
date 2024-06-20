@@ -120,12 +120,17 @@ export class PackageJsonFile extends FileBase {
     }
   }
 
-  private checkDependenciesVersions() {
+  private checkDependenciesVersionRepoCheck() {
     const [major, minor] = version.split('.').map(Number)
+    /* c8 ignore next */
     if (minor === undefined || major === undefined) throw new Error('version is not semver')
     const hasLatestRegex = new RegExp(`"repo-check": "${major}.${minor}`, 'u')
     const hasLatest = this.couldContains('latest version of repo-checker', hasLatestRegex, 1, `like "repo-check": "${major}.${minor}"`, true)
     if (!hasLatest && this.canFix) this.fileContent = this.fileContent.replace(/"repo-check": ".+"/u, `"repo-check": "${major}.${minor}"`)
+  }
+
+  private checkDependenciesVersions() {
+    if (this.data.repoId !== 'repo-checker') this.checkDependenciesVersionRepoCheck()
   }
 
   public async start() {
