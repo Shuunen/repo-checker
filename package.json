@@ -23,7 +23,6 @@
     "eslint-config-hardcore": "46.0",
     "eslint-plugin-unicorn": "54.0",
     "typescript": "5.4",
-    "typescript-run": "0.1",
     "vitest": "1.6",
     "watchlist": "0.3"
   },
