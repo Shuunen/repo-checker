@@ -23,11 +23,15 @@ const recommendedCompilerOptions = {
   strict: true,
   // target: 'ESNext', dont enforce target, let the user choose
   verbatimModuleSyntax: true,
+}
+
+const recommendedCompilerOptionsStrictest = {
+  verbatimModuleSyntax: true,
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 interface TsConfigJsonFile {
-  compilerOptions?: Record<string, string[] | boolean | string | undefined> & typeof recommendedCompilerOptions
+  compilerOptions?: Record<string, string[] | boolean | string | undefined> & (typeof recommendedCompilerOptions | typeof recommendedCompilerOptionsStrictest)
   exclude: string[]
   files: string[]
   include: string[]
@@ -62,13 +66,14 @@ export class TsConfigFile extends FileBase {
     const json = this.fileContentObject
     let isOk = this.couldContains('an include section', /"include"/u, 1, undefined, true)
     if (!isOk && this.canFix) json.include = ['src']
-    if (this.canFix && json.compilerOptions === undefined) json.compilerOptions = clone(recommendedCompilerOptions)
+    const recommended = this.fileContent.includes('tsconfig/strictest') ? recommendedCompilerOptionsStrictest : recommendedCompilerOptions
+    if (this.canFix && json.compilerOptions === undefined) json.compilerOptions = clone(recommended)
     // eslint-disable-next-line guard-for-in
-    for (const inputKey in recommendedCompilerOptions) {
+    for (const inputKey in recommended) {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const key = inputKey as keyof typeof recommendedCompilerOptions
+      const key = inputKey as keyof typeof recommended
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      const value = recommendedCompilerOptions[key]
+      const value = recommended[key]
       // eslint-disable-next-line security/detect-non-literal-regexp
       const regex = new RegExp(`"${key}": ${String(value)}`, 'u')
       isOk = this.couldContains(`a ${key} compiler option`, regex, 1, undefined, true)
