@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "arg": "5.0",
-    "shuutils": "8.0",
+    "shuutils": "8.1",
     "sort-json": "2.0"
   },
   "description": "Repo cleaning made easy",
