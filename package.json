@@ -64,5 +64,5 @@
     "test:update": "vitest --run --update && echo test update success",
     "test:watch": "vitest --coverage"
   },
-  "version": "1.36.0"
+  "version": "1.37.0"
 }
