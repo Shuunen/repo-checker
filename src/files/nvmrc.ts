@@ -1,8 +1,11 @@
 import { FileBase } from '../file'
 
 /* c8 ignore start */
-// eslint-disable-next-line no-restricted-syntax
+// eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class NvmrcFile extends FileBase {
+  /**
+   * Start the nvmrc file check
+   */
   public async start() {
     const hasFile = await this.checkFileExists('.nvmrc')
     if (!hasFile) return

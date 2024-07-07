@@ -7,9 +7,13 @@ export const home = process.env.HOME ?? '' // when does HOME is not defined ?
  * The name of the file that contains the configuration for repo-checker
  */
 export const dataFileName = '.repo-checker.json'
+// eslint-disable-next-line unicorn/prefer-module
 export const repoCheckerPath = path.join(__dirname, '..')
 export const templatePath = path.join(repoCheckerPath, 'templates')
 
+/**
+ * The project data/configuration for repo-checker
+ */
 // eslint-disable-next-line no-restricted-syntax
 export class ProjectData {
   /**
@@ -69,6 +73,10 @@ export class ProjectData {
 
   public willGenerateReport = true
 
+  /**
+   * Create a new project data
+   * @param data the data to use
+   */
   public constructor(data: Readonly<Partial<ProjectData>> = {}) {
     Object.assign(this, data)
   }

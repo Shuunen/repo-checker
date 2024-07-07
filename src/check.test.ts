@@ -11,7 +11,7 @@ it('check A folder fails with low max size', async () => {
 })
 
 it('check B folder succeed', async () => {
-  const data = new ProjectData({ isPublishedPackage: true, isQuiet: true, maxSizeKo: 120 })
+  const data = new ProjectData({ isModule: true, isPublishedPackage: true, isQuiet: true, maxSizeKo: 120 })
   const indicators = await check({ data, folderPath: repoCheckerPath })
   expect(indicators).toMatchSnapshot()
 })

@@ -1,5 +1,4 @@
-/* eslint-disable regexp/no-unused-capturing-group */
-/* eslint-disable regexp/prefer-named-capture-group */
+/* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable prefer-named-capture-group */
 /* eslint-disable max-classes-per-file */
 import { dataDefaults } from '../constants'
@@ -9,12 +8,12 @@ import { fileExists, join, readFile } from '../utils'
 
 // eslint-disable-next-line no-restricted-syntax
 class Thanks {
-  public markdown = ''
-  public label = ''
-  public link = ''
   public description = ''
   public isExpected = true
   public isFixable = true
+  public label = ''
+  public link = ''
+  public markdown = ''
 
   // eslint-disable-next-line @typescript-eslint/max-params
   public constructor(label = '', link = '', description = '', isExpected = false, isFixable = true) {
@@ -29,12 +28,12 @@ class Thanks {
 
 // eslint-disable-next-line no-restricted-syntax
 class Badge {
-  public markdown = ''
-  public label = ''
-  public link = ''
   public image = ''
   public isExpected = true
   public isFixable = true
+  public label = ''
+  public link = ''
+  public markdown = ''
 
   // eslint-disable-next-line @typescript-eslint/max-params
   public constructor(label = '', link = '', image = '', isExpected = true, isFixable = true) {
@@ -57,24 +56,25 @@ const deprecatedBadges = [
 /* c8 ignore start */
 // eslint-disable-next-line no-restricted-syntax
 export class ReadmeFile extends FileBase {
-  private checkMarkdown() {
-    let hasNoCrLf = this.shouldContains('no CRLF Windows carriage return', /\r/u, 0, false, 'prefer Unix LF', true)
-    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\r\n/gu, '\n')
-    const starLists = /\n\*\s[\w[]/gu
-    hasNoCrLf = this.couldContains('no star flavored list', starLists, 0, 'should use dash flavor', true)
-    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\n\*\s(?=[\w[])/gu, '\n- ')
-  }
-
   private addBadge(line = '') {
     // just after project title
     this.fileContent = this.fileContent.replace(/^(# [\s\w-]+)/u, `$1${line}\n`)
   }
 
+  private addThanks(line = '') {
+    // just after Thank title
+    this.fileContent = this.fileContent.replace(/(## Thank.*\n{2})/u, `$1${line}\n`)
+    log.debug('added line', line)
+  }
+
+  private checkBadges() {
+    this.checkBadgesRecommended()
+    this.checkBadgesDeprecated()
+  }
+
   private checkBadgesDeprecated() {
     for (const badge of deprecatedBadges) {
-      // eslint-disable-next-line security/detect-non-literal-regexp
       const isOk = this.shouldContains(`no deprecated ${badge} badge`, new RegExp(badge, 'u'), 0, false, `${badge} does not exist anymore`, true)
-      // eslint-disable-next-line security/detect-non-literal-regexp
       if (!isOk && this.canFix) this.fileContent = this.fileContent.replace(new RegExp(`.*${badge}.*\n`, 'giu'), '')
     }
   }
@@ -83,16 +83,41 @@ export class ReadmeFile extends FileBase {
     const badges = this.getBadgesRecommended()
     for (const badge of badges) {
       const message = `${badge.isExpected ? 'a' : 'no'} "${badge.label}" badge`
-      // eslint-disable-next-line security/detect-non-literal-regexp, sonarjs/no-nested-template-literals
       const regex = new RegExp(`\\(${badge.link.replace('?', String.raw`\?`)}\\)`, 'u')
       const isOk = this.couldContains(message, regex, badge.isExpected ? 1 : 0, badge.markdown, badge.isExpected)
       if (!isOk && badge.isExpected && badge.isFixable && this.canFix) this.addBadge(badge.markdown)
     }
   }
 
-  private checkBadges() {
-    this.checkBadgesRecommended()
-    this.checkBadgesDeprecated()
+  private checkMarkdown() {
+    let hasNoCrLf = this.shouldContains('no CRLF Windows carriage return', /\r/u, 0, false, 'prefer Unix LF', true)
+    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\r\n/gu, '\n')
+    const starLists = /\n\*\s[\w[]/gu
+    hasNoCrLf = this.couldContains('no star flavored list', starLists, 0, 'should use dash flavor', true)
+    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\n\*\s(?=[\w[])/gu, '\n- ')
+  }
+
+  private async checkThanks() {
+    const hasSection = this.couldContains('a thanks section', /## Thanks/u)
+    if (!hasSection) return
+    const thanks = await this.getThanks()
+    for (const thank of thanks) {
+      const message = `${thank.isExpected ? 'a' : 'no remaining'} thanks to ${thank.label}`
+      const regex = new RegExp(`\\[${thank.label}\\]`, 'iu')
+      const hasThanks = this.couldContains(message, regex, thank.isExpected ? 1 : 0, thank.markdown, thank.isExpected)
+      const shouldAdd = !hasThanks && thank.isExpected && thank.isFixable && this.canFix
+      if (shouldAdd) this.addThanks(thank.markdown)
+    }
+  }
+
+  private checkTodos() {
+    const matches = this.fileContent.match(/- \[ \] (.*)/gu)
+    if (matches === null) return
+    for (const line of matches) {
+      // a todo line in markdown is like "- [ ] add some fancy gifs"
+      const todo = line.replace('- [ ] ', '')
+      log.info(`TODO : ${todo}`)
+    }
   }
 
   private getBadgesRecommended() {
@@ -110,56 +135,6 @@ export class ReadmeFile extends FileBase {
         new Badge('Install size', `https://packagephobia.com/result?p=${this.data.packageName}`, `https://badgen.net/packagephobia/install/${this.data.packageName}`),
       )
     return list
-  }
-
-  private addThanks(line = '') {
-    // just after Thank title
-    this.fileContent = this.fileContent.replace(/(## Thank.*\n{2})/u, `$1${line}\n`)
-    log.debug('added line', line)
-  }
-
-  private checkTodos() {
-    const matches = this.fileContent.match(/- \[ \] (.*)/gu)
-    if (matches === null) return
-    for (const line of matches) {
-      // a todo line in markdown is like "- [ ] add some fancy gifs"
-      const todo = line.replace('- [ ] ', '')
-      log.info(`TODO : ${todo}`)
-    }
-  }
-
-  // eslint-disable-next-line max-statements
-  public async start() {
-    const hasUpReadmeFile = await this.fileExists('README.md')
-    const hasReadmeFile = await this.fileExists('readme.md')
-    if (!(hasUpReadmeFile || hasReadmeFile)) {
-      this.test(false, 'no README.md or readme.md file found')
-      return
-    }
-    await this.inspectFile(hasUpReadmeFile ? 'README.md' : 'readme.md')
-    this.shouldContains('a title', /^#\s\w+/u)
-    this.couldContains('a logo image', /!\[logo\]\(.*\.\w{3,4}\)/u, 1, '![logo](folder/any-file.ext)')
-    this.couldContains('a demo image or gif', /!\[demo\]\(.*\.\w{3,4}\)/u, 1, '![demo](folder/any-file.ext)')
-    this.shouldContains('no link to deprecated *.netlify.com', /\.netlify\.com/u, 0)
-    this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/u, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
-    this.checkMarkdown()
-    this.checkTodos()
-    this.checkBadges()
-    await this.checkThanks()
-  }
-
-  private async checkThanks() {
-    const hasSection = this.couldContains('a thanks section', /## Thanks/u)
-    if (!hasSection) return
-    const thanks = await this.getThanks()
-    for (const thank of thanks) {
-      const message = `${thank.isExpected ? 'a' : 'no remaining'} thanks to ${thank.label}`
-      // eslint-disable-next-line security/detect-non-literal-regexp
-      const regex = new RegExp(`\\[${thank.label}\\]`, 'iu')
-      const hasThanks = this.couldContains(message, regex, thank.isExpected ? 1 : 0, thank.markdown, thank.isExpected)
-      const shouldAdd = !hasThanks && thank.isExpected && thank.isFixable && this.canFix
-      if (shouldAdd) this.addThanks(thank.markdown)
-    }
   }
 
   private async getThanks() {
@@ -205,6 +180,26 @@ export class ReadmeFile extends FileBase {
       // new Thanks('name', 'url', 'desc', json.includes('"xxx":')),
     )
     return list
+  }
+
+  // eslint-disable-next-line max-statements
+  public async start() {
+    const hasUpReadmeFile = await this.fileExists('README.md')
+    const hasReadmeFile = await this.fileExists('readme.md')
+    if (!(hasUpReadmeFile || hasReadmeFile)) {
+      this.test(false, 'no README.md or readme.md file found')
+      return
+    }
+    await this.inspectFile(hasUpReadmeFile ? 'README.md' : 'readme.md')
+    this.shouldContains('a title', /^#\s\w+/u)
+    this.couldContains('a logo image', /!\[logo\]\(.*\.\w{3,4}\)/u, 1, '![logo](folder/any-file.ext)')
+    this.couldContains('a demo image or gif', /!\[demo\]\(.*\.\w{3,4}\)/u, 1, '![demo](folder/any-file.ext)')
+    this.shouldContains('no link to deprecated *.netlify.com', /\.netlify\.com/u, 0)
+    this.shouldContains('no links without https scheme', /[^:]\/\/[\w-]+\.\w+/u, 0) // https://stackoverflow.com/questions/9161769/url-without-httphttps
+    this.checkMarkdown()
+    this.checkTodos()
+    this.checkBadges()
+    await this.checkThanks()
   }
 }
 /* c8 ignore stop */

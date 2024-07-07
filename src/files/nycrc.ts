@@ -1,8 +1,9 @@
 import { FileBase } from '../file'
 import { log } from '../logger'
 
-// eslint-disable-next-line no-restricted-syntax
+// eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class NycRcFile extends FileBase {
+  // eslint-disable-next-line jsdoc/require-jsdoc
   private async getConfigFileName() {
     const hasRc = await this.fileExists('.nycrc')
     const hasRcJson = await this.fileExists('.nycrc.json')
@@ -13,6 +14,7 @@ export class NycRcFile extends FileBase {
     return hasRc ? '.nycrc' : '.nycrc.json'
   }
 
+  // eslint-disable-next-line jsdoc/require-jsdoc
   public async start() {
     if (!this.data.isUsingNyc) {
       log.debug('does not use nyc')

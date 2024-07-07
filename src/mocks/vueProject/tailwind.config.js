@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/unambiguous, import/no-commonjs
+// eslint-disable-next-line unicorn/prefer-module
 module.exports = {
   content: ['public/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [

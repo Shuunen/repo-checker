@@ -1,4 +1,4 @@
-/* eslint-disable security/detect-non-literal-regexp */
+/* eslint-disable jsdoc/require-jsdoc */
 import { ellipsis } from 'shuutils'
 import { version } from '../../package.json'
 import { dataDefaults } from '../constants'
@@ -8,6 +8,111 @@ import { findInFolder, join } from '../utils'
 
 // eslint-disable-next-line no-restricted-syntax
 export class PackageJsonFile extends FileBase {
+  private async checkDependencies() {
+    const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
+    const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
+    /* c8 ignore next */
+    if (!(hasDependencies || hasDevelopmentDependencies)) return
+    this.checkDependenciesUnwanted()
+    this.checkDependenciesPrecision()
+    this.checkDependenciesTesting()
+    this.checkDependenciesVersions()
+    await this.checkDependenciesUsages()
+  }
+
+  private checkDependenciesPrecision() {
+    const hasNoPatch = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+"/gu, 0, 'patch precision is rarely useful', true)
+    // eslint-disable-next-line prefer-named-capture-group
+    if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gu, '$1')
+  }
+
+  private checkDependenciesTesting() {
+    const hasUt = /"(?<tool>mocha|uvu|vitest)"/u.exec(this.fileContent)?.groups?.tool !== undefined
+    this.test(hasUt, 'one unit testing dependency from : vitest, mocha, uvu', true)
+    const hasCoverage = /"(?<tool>c8|@vitest\/coverage-c8|@vitest\/coverage-v8|nyc)"/u.exec(this.fileContent)?.groups?.tool !== undefined
+    this.test(hasCoverage, 'one coverage dependency from : nyc, c8, v8', true)
+  }
+
+  private checkDependenciesUnwanted() {
+    if (this.data.shouldAvoidSass) this.shouldContains('no sass dependency (fat & useless)', /sass/u, 0)
+    this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/u, 0)
+    this.shouldContains('no tslint dependency (deprecated)', /tslint/u, 0)
+    this.shouldContains('no eslint-plugin-promise 5 dependency (require eslint 7)', /"eslint-plugin-promise": "\^?5/u, 0)
+  }
+
+  private async checkDependenciesUsages() {
+    if (this.data.isUsingEslint) this.checkDependenciesUsagesEslint()
+    if (this.fileContent.includes('"uvu"')) await this.checkDependenciesUsagesUvu()
+    if (this.fileContent.includes('ts-node')) await this.checkDependenciesUsagesNode()
+  }
+
+  private checkDependenciesUsagesEslint() {
+    this.shouldContains('an eslint dependency', /"eslint"/u)
+    this.shouldContains('no eslint@8 dependency', /"eslint": ".?8/u, 0)
+    const isUsingEslintCli = this.fileContent.includes('eslint ')
+    if (isUsingEslintCli) {
+      const hasCacheFlag = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/u, 1, 'like "eslint --cache ..."', true)
+      if (!hasCacheFlag && this.canFix) this.fileContent = this.fileContent.replace('eslint ', 'eslint --cache ')
+      this.couldContains(
+        'no eslint ignore flag, solution 1 : just remove it (useless most of the time, check "DEBUG=eslint:cli-engine npx eslint ..." to see linted files) or solution 2 : use ignorePatterns inside .eslintrc.json. The objective here is to let the eslint cli & vscode eslint use the same config',
+        /eslint[^\n"&']+--ignore-path/u,
+        0,
+      )
+    }
+  }
+
+  private async checkDependenciesUsagesNode() {
+    const badUsages = await findInFolder(this.folderPath, /ts-node(?:-esm)? (?:(?!transpileOnly).)*$/gmu)
+    this.test(badUsages.length === 0, `ts-node without --transpileOnly detected in file(s) : ${badUsages.join(', ')}`, true)
+  }
+
+  private async checkDependenciesUsagesUvu() {
+    const badAsserts = await findInFolder(join(this.folderPath, 'tests'), /from 'assert'/u)
+    const logMaxLength = 50
+    this.test(badAsserts.length === 0, `assert dependency used in "${ellipsis(badAsserts.join(','), logMaxLength)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
+  }
+
+  private checkDependenciesVersionRepoCheck() {
+    const [major, minor] = version.split('.').map(Number)
+    /* c8 ignore next */
+    if (minor === undefined || major === undefined) throw new Error('version is not semver')
+    const hasLatestRegex = new RegExp(`"repo-check": "${major}.${minor}`, 'u')
+    const hasLatest = this.couldContains('latest version of repo-checker', hasLatestRegex, 1, `like "repo-check": "${major}.${minor}"`, true)
+    if (!hasLatest && this.canFix) this.fileContent = this.fileContent.replace(/"repo-check": ".+"/u, `"repo-check": "${major}.${minor}"`)
+  }
+
+  private checkDependenciesVersions() {
+    if (this.data.repoId !== 'repo-checker') this.checkDependenciesVersionRepoCheck()
+  }
+
+  private checkEchoes() {
+    for (const task of ['build', 'check', 'lint', 'test']) {
+      if (!this.fileContent.includes(`"${task}":`)) return
+      this.couldContains(`a final echo for task "${task}"`, new RegExp(`"${task}": ".+ && echo [\\w\\s]*${task} \\w+"`, 'u'))
+    }
+  }
+
+  private async checkMainFile() {
+    const mainFilePath = /"main": "(?<path>.*)"/u.exec(this.fileContent)?.groups?.path
+    if (mainFilePath === undefined) {
+      log.debug('no main file specified in package.json')
+      return
+    }
+    await this.checkMaxSize(mainFilePath, this.data.maxSizeKo)
+  }
+
+  private async checkMaxSize(filePath: string, maxSizeKo: number) {
+    const hasMaxSize = this.test(maxSizeKo !== dataDefaults.maxSizeKo, 'main file maximum size is specified in data file (ex: maxSizeKo: 100)', true)
+    if (!hasMaxSize) return
+    const hasFile = await this.checkFileExists(filePath)
+    this.test(hasFile, `main file specified in package.json (${filePath}) exists on disk (be sure to build before run repo-check)`)
+    /* c8 ignore next */
+    if (!hasFile) return
+    const sizeKo = await this.getFileSizeInKo(filePath)
+    const isSizeOk = sizeKo <= maxSizeKo
+    this.test(isSizeOk, `main file size (${sizeKo}ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
+  }
+
   // eslint-disable-next-line max-statements
   private checkProperties() {
     this.couldContainsSchema('https://json.schemastore.org/package')
@@ -25,25 +130,6 @@ export class PackageJsonFile extends FileBase {
     if (hasLicence) this.shouldContains(`a ${this.data.license} license`, this.regexForStringValueProp('license', this.data.license))
   }
 
-  private checkEchoes() {
-    for (const task of ['build', 'check', 'lint', 'test']) {
-      if (!this.fileContent.includes(`"${task}":`)) return
-      this.couldContains(`a final echo for task "${task}"`, new RegExp(`"${task}": ".+ && echo [\\w\\s]*${task} \\w+"`, 'u'))
-    }
-  }
-
-  private checkScriptsTs() {
-    if (!this.data.isUsingTypescript) return
-    this.shouldContains('a typescript build or check', /\btsc\b/u)
-  }
-
-  private checkScriptsPrePost() {
-    this.couldContains('a pre-script for version automation', /"preversion": "/u, 1, 'like : "preversion": "pnpm check",')
-    if (this.data.isPublishedPackage) this.couldContains('a post-script for version automation', /"postversion": "/u, 1, 'like : "postversion": "git push && git push --tags && npm publish",')
-    else this.couldContains('a post-script for version automation', /"postversion": "/u, 1, 'like : "postversion": "git push && git push --tags",')
-    if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/u, 0)
-  }
-
   private checkScripts() {
     this.checkScriptsTs()
     this.shouldContains('a script section', this.regexForObjectProp('scripts'))
@@ -57,6 +143,43 @@ export class PackageJsonFile extends FileBase {
     this.couldContains('no ci script', /"ci": "/u, 0, 'avoid using "ci" script, use "check" instead')
   }
 
+  private checkScriptsPrePost() {
+    this.couldContains('a pre-script for version automation', /"preversion": "/u, 1, 'like : "preversion": "pnpm check",')
+    if (this.data.isPublishedPackage) this.couldContains('a post-script for version automation', /"postversion": "/u, 1, 'like : "postversion": "git push && git push --tags && npm publish",')
+    else this.couldContains('a post-script for version automation', /"postversion": "/u, 1, 'like : "postversion": "git push && git push --tags",')
+    if (this.fileContent.includes('"prepublish"')) this.shouldContains('"prepare" instead of "prepublish" (deprecated)', /"prepublish"/u, 0)
+  }
+
+  private checkScriptsTs() {
+    if (!this.data.isUsingTypescript) return
+    this.shouldContains('a typescript build or check', /\btsc\b/u)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  private regexForArrayProp(name = '') {
+    return new RegExp(`"${name}": \\[\n`, 'u')
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  private regexForBooleanProp(name = '') {
+    return new RegExp(`"${name}": (?:false|true),\n`, 'u')
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  private regexForObjectProp(name = '') {
+    return new RegExp(`"${name}": \\{\n`, 'u')
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  private regexForStringProp(name = '') {
+    return new RegExp(`"${name}": ".+"`, 'u')
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  private regexForStringValueProp(name = '', value = '') {
+    return new RegExp(`"${name}": "${value}"`, 'u')
+  }
+
   private suggestAlternatives() {
     this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(?:chalk|colorette|colors)"/u, 0)
     this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/u, 0)
@@ -64,73 +187,6 @@ export class PackageJsonFile extends FileBase {
     this.couldContains('no fat & slow jsdom dependency, use happy-dom instead', /jsdom/u, 0)
     this.couldContains('no fat task runner, use pnpm xyz && pnpm abc for sequential or zero-deps package : npm-parallel', /"npm-run-all"/u, 0)
     if (this.fileContent.includes('esbuild-plugin-run')) this.couldContains('not fat ts runner, use "typescript-run" like "dev": "ts-run src --watch" or "ts-run src -w src another-folder"')
-  }
-
-  private regexForStringProp(name = '') {
-    return new RegExp(`"${name}": ".+"`, 'u')
-  }
-
-  private regexForStringValueProp(name = '', value = '') {
-    return new RegExp(`"${name}": "${value}"`, 'u')
-  }
-
-  private regexForObjectProp(name = '') {
-    return new RegExp(`"${name}": \\{\n`, 'u')
-  }
-
-  private regexForArrayProp(name = '') {
-    return new RegExp(`"${name}": \\[\n`, 'u')
-  }
-
-  private regexForBooleanProp(name = '') {
-    return new RegExp(`"${name}": (?:false|true),\n`, 'u')
-  }
-
-  private checkDependenciesTesting() {
-    const hasUt = /"(?<tool>mocha|uvu|vitest)"/u.exec(this.fileContent)?.groups?.tool !== undefined
-    this.test(hasUt, 'one unit testing dependency from : vitest, mocha, uvu', true)
-    const hasCoverage = /"(?<tool>c8|@vitest\/coverage-c8|@vitest\/coverage-v8|nyc)"/u.exec(this.fileContent)?.groups?.tool !== undefined
-    this.test(hasCoverage, 'one coverage dependency from : nyc, c8, v8', true)
-  }
-
-  private checkDependenciesUnwanted() {
-    if (this.data.shouldAvoidSass) this.shouldContains('no sass dependency (fat & useless)', /sass/u, 0)
-    this.shouldContains('no cross-var dependency (old & deprecated)', /"cross-var"/u, 0)
-    this.shouldContains('no tslint dependency (deprecated)', /tslint/u, 0)
-    this.shouldContains('no eslint-plugin-promise 5 dependency (require eslint 7)', /"eslint-plugin-promise": "\^?5/u, 0)
-  }
-
-  private checkDependenciesPrecision() {
-    const hasNoPatch = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+"/gu, 0, 'patch precision is rarely useful', true)
-    // eslint-disable-next-line prefer-named-capture-group, regexp/prefer-named-capture-group
-    if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gu, '$1')
-  }
-
-  private checkDependenciesUsagesEslint() {
-    if (this.data.isUsingTailwind) this.couldContains('an eslint tailwindcss plugin', /"eslint-plugin-tailwindcss"/u)
-    const isUsingEslintCli = this.fileContent.includes('eslint ')
-    if (isUsingEslintCli) {
-      const hasCacheFlag = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/u, 1, 'like "eslint --cache ..."', true)
-      if (!hasCacheFlag && this.canFix) this.fileContent = this.fileContent.replace('eslint ', 'eslint --cache ')
-      this.couldContains(
-        'no eslint ignore flag, solution 1 : just remove it (useless most of the time, check "DEBUG=eslint:cli-engine npx eslint ..." to see linted files) or solution 2 : use ignorePatterns inside .eslintrc.json. The objective here is to let the eslint cli & vscode eslint use the same config',
-        /eslint[^\n"&']+--ignore-path/u,
-        0,
-      )
-    }
-  }
-
-  private checkDependenciesVersionRepoCheck() {
-    const [major, minor] = version.split('.').map(Number)
-    /* c8 ignore next */
-    if (minor === undefined || major === undefined) throw new Error('version is not semver')
-    const hasLatestRegex = new RegExp(`"repo-check": "${major}.${minor}`, 'u')
-    const hasLatest = this.couldContains('latest version of repo-checker', hasLatestRegex, 1, `like "repo-check": "${major}.${minor}"`, true)
-    if (!hasLatest && this.canFix) this.fileContent = this.fileContent.replace(/"repo-check": ".+"/u, `"repo-check": "${major}.${minor}"`)
-  }
-
-  private checkDependenciesVersions() {
-    if (this.data.repoId !== 'repo-checker') this.checkDependenciesVersionRepoCheck()
   }
 
   public async start() {
@@ -143,55 +199,5 @@ export class PackageJsonFile extends FileBase {
     this.checkEchoes()
     await this.checkDependencies()
     this.suggestAlternatives()
-  }
-
-  private async checkMaxSize(filePath: string, maxSizeKo: number) {
-    const hasMaxSize = this.test(maxSizeKo !== dataDefaults.maxSizeKo, 'main file maximum size is specified in data file (ex: maxSizeKo: 100)', true)
-    if (!hasMaxSize) return
-    const hasFile = await this.checkFileExists(filePath)
-    this.test(hasFile, `main file specified in package.json (${filePath}) exists on disk (be sure to build before run repo-check)`)
-    /* c8 ignore next */
-    if (!hasFile) return
-    const sizeKo = await this.getFileSizeInKo(filePath)
-    const isSizeOk = sizeKo <= maxSizeKo
-    this.test(isSizeOk, `main file size (${sizeKo}ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
-  }
-
-  private async checkMainFile() {
-    const mainFilePath = /"main": "(?<path>.*)"/u.exec(this.fileContent)?.groups?.path
-    if (mainFilePath === undefined) {
-      log.debug('no main file specified in package.json')
-      return
-    }
-    await this.checkMaxSize(mainFilePath, this.data.maxSizeKo)
-  }
-
-  private async checkDependenciesUsagesUvu() {
-    const badAsserts = await findInFolder(join(this.folderPath, 'tests'), /from 'assert'/u)
-    const logMaxLength = 50
-    this.test(badAsserts.length === 0, `assert dependency used in "${ellipsis(badAsserts.join(','), logMaxLength)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
-  }
-
-  private async checkDependenciesUsagesNode() {
-    const badUsages = await findInFolder(this.folderPath, /ts-node(?:-esm)? (?:(?!transpileOnly).)*$/gmu)
-    this.test(badUsages.length === 0, `ts-node without --transpileOnly detected in file(s) : ${badUsages.join(', ')}`, true)
-  }
-
-  private async checkDependenciesUsages() {
-    if (this.data.isUsingEslint) this.checkDependenciesUsagesEslint()
-    if (this.fileContent.includes('"uvu"')) await this.checkDependenciesUsagesUvu()
-    if (this.fileContent.includes('ts-node')) await this.checkDependenciesUsagesNode()
-  }
-
-  private async checkDependencies() {
-    const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
-    const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
-    /* c8 ignore next */
-    if (!(hasDependencies || hasDevelopmentDependencies)) return
-    this.checkDependenciesUnwanted()
-    this.checkDependenciesPrecision()
-    this.checkDependenciesTesting()
-    this.checkDependenciesVersions()
-    await this.checkDependenciesUsages()
   }
 }

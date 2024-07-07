@@ -1,7 +1,10 @@
 import { FileBase } from '../file'
 
-// eslint-disable-next-line no-restricted-syntax
+// eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class GitFile extends FileBase {
+  /**
+   * Start the git file check
+   */
   public async start() {
     this.test(!this.data.hasMainBranch, 'avoid "main" branch reference, use master instead & git bclean', true)
     const hasFile = await this.checkFileExists('.gitignore')

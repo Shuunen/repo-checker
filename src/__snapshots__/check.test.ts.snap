@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-50ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
+exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-47ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
 
 exports[`check B folder succeed 1`] = `
 {
@@ -17,11 +17,7 @@ exports[`check B folder succeed 1`] = `
     "editorconfig-has-final-new-line-rule",
     "editorconfig-has-no-specific-html-indent-rule",
     "has-no-xo-config-js-file",
-    "eslintrc-json-has-hardcore-rules-extend",
-    "eslintrc-json-has-unicorn-rules-extend",
-    "eslintrc-json-has-no-promise-plugin-require-eslint-7",
-    "eslintrc-json-has-hardcore-typescript-rules-extend",
-    "eslintrc-json-has-a-disabled-explicit-function-return-type",
+    "has-a-eslint-config-cjs-file",
     "avoid-main-branch-reference-use-master-instead-git-bclean",
     "has-a-gitignore-file",
     "gitignore-has-node-modules",
@@ -45,7 +41,7 @@ exports[`check B folder succeed 1`] = `
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-has-a-dist-repo-check-min-cjs-file",
     "package-json-main-file-specified-in-package-json-dist-repo-check-min-cjs-exists-on-disk-be-sure-to-build-before-run-repo-check",
-    "package-json-main-file-size-50ko-should-be-less-or-equal-to-max-size-allowed-120ko",
+    "package-json-main-file-size-47ko-should-be-less-or-equal-to-max-size-allowed-120ko",
     "package-json-has-a-schema-declaration",
     "package-json-has-a-bugs-property",
     "package-json-has-a-description-property",
@@ -80,6 +76,8 @@ exports[`check B folder succeed 1`] = `
     "package-json-has-no-patch-precision",
     "package-json-one-unit-testing-dependency-from-vitest-mocha-uvu",
     "package-json-one-coverage-dependency-from-nyc-c8-v8",
+    "package-json-has-an-eslint-dependency",
+    "package-json-has-no-eslint8-dependency",
     "package-json-has-eslint-cache-flag",
     "package-json-has-no-eslint-ignore-flag-solution-1-just-remove-it-useless-most-of-the-time-check-debugeslint-cli-engine-npx-eslint-to-see-linted-files-or-solution-2-use-ignore-patterns-inside-eslintrc-json-the-objective-here-is-to-let-the-eslint-cli-vscode-eslint-use-the-same-config",
     "package-json-has-no-fat-color-dependency-use-shuutils-or-nanocolors",
@@ -184,14 +182,8 @@ exports[`check C data/tsProject 1`] = `
     "package-json-does-not-have-a-name-property-name",
     "package-json-does-not-have-a-typescript-build-or-check-btscb",
     "package-json-does-not-have-prepare-instead-of-prepublish-deprecated-prepublish",
-    "package-json-assert-dependency-used-in-some-ts-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative",
   ],
   "passed": [
-    "has-no-xo-config-js-file",
-    "eslintrc-json-has-hardcore-rules-extend",
-    "eslintrc-json-has-no-promise-plugin-require-eslint-7",
-    "eslintrc-json-has-hardcore-typescript-rules-extend",
-    "eslintrc-json-has-a-disabled-explicit-function-return-type",
     "avoid-main-branch-reference-use-master-instead-git-bclean",
     "has-a-package-json-file",
     "package-json-has-a-description-property",
@@ -207,6 +199,7 @@ exports[`check C data/tsProject 1`] = `
     "package-json-has-no-eslint-plugin-promise-5-dependency-require-eslint-7",
     "package-json-has-no-patch-precision",
     "package-json-one-unit-testing-dependency-from-vitest-mocha-uvu",
+    "package-json-assert-dependency-used-in-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative",
     "package-json-has-no-fat-color-dependency-use-shuutils-or-nanocolors",
     "package-json-has-no-fat-fs-extra-dependency-use-native-fs",
     "package-json-has-no-utopian-shuunen-stack-dependency",
@@ -232,8 +225,6 @@ exports[`check C data/tsProject 1`] = `
   ],
   "warnings": [
     "use-dependency-cruiser",
-    "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-82-custom-rules-in-repo-checker-eslintrc-json",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",
@@ -274,14 +265,8 @@ exports[`check E data folders and not throw 1`] = `
     "package-json-does-not-have-a-name-property-name",
     "package-json-does-not-have-a-typescript-build-or-check-btscb",
     "package-json-does-not-have-prepare-instead-of-prepublish-deprecated-prepublish",
-    "package-json-assert-dependency-used-in-some-ts-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative",
   ],
   "passed": [
-    "has-no-xo-config-js-file",
-    "eslintrc-json-has-hardcore-rules-extend",
-    "eslintrc-json-has-no-promise-plugin-require-eslint-7",
-    "eslintrc-json-has-hardcore-typescript-rules-extend",
-    "eslintrc-json-has-a-disabled-explicit-function-return-type",
     "avoid-main-branch-reference-use-master-instead-git-bclean",
     "has-a-package-json-file",
     "package-json-has-a-description-property",
@@ -296,6 +281,7 @@ exports[`check E data folders and not throw 1`] = `
     "package-json-has-no-eslint-plugin-promise-5-dependency-require-eslint-7",
     "package-json-has-no-patch-precision",
     "package-json-one-unit-testing-dependency-from-vitest-mocha-uvu",
+    "package-json-assert-dependency-used-in-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative",
     "package-json-has-no-fat-color-dependency-use-shuutils-or-nanocolors",
     "package-json-has-no-fat-fs-extra-dependency-use-native-fs",
     "package-json-has-no-utopian-shuunen-stack-dependency",
@@ -321,8 +307,6 @@ exports[`check E data folders and not throw 1`] = `
   ],
   "warnings": [
     "use-dependency-cruiser",
-    "eslintrc-json-could-have-unicorn-rules-extend-plugin-unicorn-all",
-    "eslintrc-json-current-eslintrc-json-has-only-1-of-the-82-custom-rules-in-repo-checker-eslintrc-json",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",

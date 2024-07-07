@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc */
 import { Logger } from 'shuutils'
 
 // eslint-disable-next-line no-restricted-syntax

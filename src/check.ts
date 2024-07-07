@@ -28,6 +28,12 @@ interface Indicators {
 
 const checkers = [DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NpmRcFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile]
 
+/**
+ * Report a log
+ * @param color the color to use
+ * @param count the count of the message
+ * @param message the message to report
+ */
 function reportLog(color: (string: string) => string, count: number, message: string) {
   const line = `‣ ${count} check${count > 1 ? 's' : ''} ${message}`
   /* c8 ignore next */
@@ -43,6 +49,13 @@ interface CheckOptions {
   folderPath: string
 }
 
+/**
+ * Report the results of the checks
+ * @param options the options to report
+ * @param options.failed the failed checks
+ * @param options.passed the passed checks
+ * @param options.warnings the warnings checks
+ */
 function report({ failed = [], passed = [], warnings = [] }: Readonly<Indicators>) {
   log.info('Report :')
   reportLog(green, passed.length, 'are successful')
@@ -51,7 +64,18 @@ function report({ failed = [], passed = [], warnings = [] }: Readonly<Indicators
   /* c8 ignore next */
 }
 
-// eslint-disable-next-line max-statements
+/**
+ * Check the project
+ * @param options the options
+ * @param options.canFailStop true if the check should stop at the first failure
+ * @param options.canFix true if the check can fix the issues
+ * @param options.canForce true if the check can force the fix
+ * @param options.canThrow true if the check should throw an error
+ * @param options.data the project data
+ * @param options.folderPath the folder path to check
+ * @returns the indicators of the check
+ */
+// eslint-disable-next-line max-statements, complexity
 export async function check({ canFailStop = false, canFix = false, canForce = false, canThrow = true, data, folderPath }: Readonly<CheckOptions>) {
   const folders = await getProjectFolders(folderPath)
   let passed: string[] = []

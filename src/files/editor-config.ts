@@ -1,7 +1,10 @@
 import { FileBase } from '../file'
 
-// eslint-disable-next-line no-restricted-syntax
+// eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class EditorConfigFile extends FileBase {
+  /**
+   * Start the editorconfig file check
+   */
   public async start() {
     const hasFile = await this.checkFileExists('.editorconfig')
     if (!hasFile) return
@@ -12,7 +15,6 @@ export class EditorConfigFile extends FileBase {
     this.shouldContains('utf-8 encoding', /charset = utf-8/u)
     this.couldContains('whitespace trailing', /trim_trailing_whitespace = true/u)
     this.couldContains('final new line rule', /insert_final_newline = true/u)
-    // eslint-disable-next-line regexp/require-unicode-regexp, unicorn/better-regex
-    this.couldContains('no specific html indent rule', /\[\*\.html\]\nindent_size = 4/, 0)
+    this.couldContains('no specific html indent rule', /\[\*\.html\]\nindent_size = 4/u, 0)
   }
 }

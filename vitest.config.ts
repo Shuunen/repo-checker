@@ -1,6 +1,5 @@
 import { defineConfig } from 'vitest/config'
 
-/* eslint-disable import/no-anonymous-default-export, import/no-unused-modules */
 // biome-ignore lint/style/noDefaultExport: <explanation>
 export default defineConfig({
   test: {
@@ -14,4 +13,3 @@ export default defineConfig({
     },
   },
 })
-/* eslint-enable import/no-anonymous-default-export, import/no-unused-modules */

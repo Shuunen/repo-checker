@@ -1,3 +1,5 @@
+/* eslint-disable jsdoc/require-jsdoc */
+/* eslint-disable max-classes-per-file */
 import { sleep } from 'shuutils'
 import { expect, it } from 'vitest'
 import { ProjectData, repoCheckerPath } from './constants'

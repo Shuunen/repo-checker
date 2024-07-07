@@ -1,8 +1,9 @@
+/* eslint-disable jsdoc/require-jsdoc */
 import arg from 'arg'
 import { parseJson } from 'shuutils'
 import { name } from '../package.json'
 import { check } from './check'
-import { dataDefaults, dataFileName, templatePath, type ProjectData } from './constants'
+import { type ProjectData, dataDefaults, dataFileName, templatePath } from './constants'
 import { log } from './logger'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils'
 
@@ -113,11 +114,11 @@ export function getOptions(flags: Flags) {
 export async function start({ canFailStop, canFix, canForce, isQuiet, isVerbose, target, willInit, willShowHelp, willShowVersion }: Readonly<ReturnType<typeof getOptions>> = defaultOptions) {
   if (willShowVersion) return showVersion()
   if (willShowHelp) return showHelp()
-  if (willInit) return await initDataFile(target, canForce)
+  if (willInit) return initDataFile(target, canForce)
   /* c8 ignore next 4 */
   const data = await getData(target)
   log.options.isActive = !isQuiet
   log.options.minimumLevel = isVerbose ? '1-debug' : '3-info'
   log.info(`${String(name)} __unique-mark__ is starting ${canFix ? '(fix enabled)' : ''}`)
-  return await check({ canFailStop, canFix, canForce, data, folderPath: target })
+  return check({ canFailStop, canFix, canForce, data, folderPath: target })
 }

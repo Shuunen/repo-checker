@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc */
 // biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
 import path from 'node:path'
 import { clone, sleep } from 'shuutils'
@@ -25,6 +26,7 @@ export async function promiseVoid() {
   await sleep(1)
 }
 
+// eslint-disable-next-line unicorn/prefer-module
 export const sourceFolder = path.dirname(__filename)
 
 export const vueProjectFolder = join(sourceFolder, 'mocks', 'vueProject')

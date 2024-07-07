@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc */
 /* c8 ignore next */
 // biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
 import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'node:fs/promises'
@@ -12,7 +13,7 @@ const maxFilesToScan = 1000
 const jsonSpaceIndent = 2
 
 export async function fileExists(filePath: string) {
-  return await statAsync(filePath)
+  return statAsync(filePath)
     .then(() => true)
     .catch(() => false)
 }
@@ -24,10 +25,10 @@ export async function readFile(filePath: string) {
 
 export async function isProjectFolder(folderPath: string) {
   const statData = await statAsync(folderPath).catch(() => undefined) // eslint-disable-line unicorn/no-useless-undefined
-  if (statData === undefined || !statData.isDirectory()) return false
+  if (statData?.isDirectory() === false) return false
   const hasGitConfig = await fileExists(path.join(folderPath, '.git', 'config'))
   if (hasGitConfig) return true
-  return await fileExists(path.join(folderPath, 'package.json'))
+  return fileExists(path.join(folderPath, 'package.json'))
 }
 
 export async function getProjectFolders(folderPath: string) {
@@ -70,7 +71,7 @@ export async function augmentDataWithGit(folderPath: string, dataSource: Readonl
   return data
 }
 
-// eslint-disable-next-line max-statements, complexity, sonarjs/cognitive-complexity
+// eslint-disable-next-line max-statements, complexity
 export async function augmentDataWithPackageJson(folderPath: string, dataSource: Readonly<ProjectData>) {
   const data = new ProjectData(dataSource)
   if (!(await fileExists(path.join(folderPath, 'package.json')))) {
@@ -80,7 +81,6 @@ export async function augmentDataWithPackageJson(folderPath: string, dataSource:
   const content = await readFileInFolder(folderPath, 'package.json')
   data.packageName = /"name": "(?<packageName>[\w+/@-]+)"/u.exec(content)?.groups?.packageName ?? dataDefaults.packageName
   data.license = /"license": "(?<license>[\w+\-.]+)"/u.exec(content)?.groups?.license ?? dataDefaults.license
-  // eslint-disable-next-line security/detect-unsafe-regex
   const author = /"author": "(?<userName>[\s\w/@-]+)\b[\s<]*(?<userMail>[\w.@-]+)?>?"/u.exec(content)
   data.userName = author?.groups?.userName ?? data.userName
   data.userMail = author?.groups?.userMail ?? data.userMail
@@ -90,7 +90,7 @@ export async function augmentDataWithPackageJson(folderPath: string, dataSource:
   data.isUsingNyc = content.includes('"nyc"')
   data.isUsingC8 = content.includes('"c8"') || content.includes('coverage-c8')
   data.isUsingV8 = content.includes('coverage-v8')
-  data.isUsingEslint = content.includes('"eslint"')
+  data.isUsingEslint = content.includes('"eslint')
   data.isUsingShuutils = content.includes('"shuutils"')
   data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()
@@ -126,7 +126,7 @@ export async function getFileSizeInKo(filePath: string) {
   return size
 }
 
-// eslint-disable-next-line max-statements, sonarjs/cognitive-complexity, @typescript-eslint/max-params
+// eslint-disable-next-line max-statements, complexity, @typescript-eslint/max-params
 export async function findInFolder(folderPath: string, pattern: Readonly<RegExp>, ignoredInput: readonly string[] = ['node_modules', '.git'], count = 0) {
   const filePaths = await readDirectoryAsync(folderPath)
   const matches: string[] = []
@@ -136,16 +136,16 @@ export async function findInFolder(folderPath: string, pattern: Readonly<RegExp>
     ignored = arrayUnique([...ignored, ...content.split('\n')])
   }
   for (const filePath of filePaths) {
-    if (ignored.includes(filePath)) continue // eslint-disable-line no-continue
+    if (ignored.includes(filePath)) continue
     /* c8 ignore next */
     if (count > maxFilesToScan) throw new Error('too many files to scan, please reduce the scope')
     const target = path.join(folderPath, filePath)
     const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null, no-await-in-loop
     /* c8 ignore next */
-    if (!statData) continue // eslint-disable-line no-continue
+    if (!statData) continue
     if (statData.isDirectory()) {
       matches.push(...(await findInFolder(target, pattern, ignored, count + 1))) // eslint-disable-line no-await-in-loop
-      continue // eslint-disable-line no-continue
+      continue
     }
     // eslint-disable-next-line no-await-in-loop
     const content = await readFileInFolder(folderPath, filePath)

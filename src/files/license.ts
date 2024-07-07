@@ -1,8 +1,11 @@
 import { FileBase } from '../file'
 
 /* c8 ignore start */
-// eslint-disable-next-line no-restricted-syntax
+// eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class LicenseFile extends FileBase {
+  /**
+   * Start the license file check
+   */
   public async start() {
     const hasFile = await this.checkFileExists('LICENSE')
     if (!hasFile) return

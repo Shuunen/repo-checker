@@ -1,7 +1,10 @@
 import { FileBase } from '../file'
 
-// eslint-disable-next-line no-restricted-syntax
+// eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class DependencyCruiserFile extends FileBase {
+  /**
+   * Start the dependency cruiser file check
+   */
   public async start() {
     const isUsingDepCruiser = this.test(this.data.isUsingDependencyCruiser, 'use dependency cruiser', true)
     if (!isUsingDepCruiser) return

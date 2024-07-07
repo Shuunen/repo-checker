@@ -1,8 +1,9 @@
 import { FileBase } from '../file'
 
 /* c8 ignore start */
-// eslint-disable-next-line no-restricted-syntax
+// eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class RenovateFile extends FileBase {
+  // eslint-disable-next-line jsdoc/require-jsdoc
   public async start() {
     const hasFile = await this.checkFileExists('renovate.json', true)
     if (!hasFile) return

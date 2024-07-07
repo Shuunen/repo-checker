@@ -1,3 +1,6 @@
+/* eslint-disable complexity */
+/* eslint-disable max-statements */
+/* eslint-disable jsdoc/require-jsdoc */
 import { clone, parseJson } from 'shuutils'
 import { FileBase } from '../file'
 import { log } from '../logger'
@@ -31,7 +34,7 @@ const recommendedCompilerOptionsStrictest = {
 }
 
 interface TsConfigJsonFile {
-  compilerOptions?: Record<string, string[] | boolean | string | undefined> & (typeof recommendedCompilerOptions | typeof recommendedCompilerOptionsStrictest)
+  compilerOptions?: Record<string, boolean | string | string[] | undefined> & (typeof recommendedCompilerOptions | typeof recommendedCompilerOptionsStrictest)
   exclude: string[]
   files: string[]
   include: string[]
@@ -41,21 +44,6 @@ interface TsConfigJsonFile {
 export class TsConfigFile extends FileBase {
   private fileContentObject: TsConfigJsonFile | undefined
 
-  private checkFileManagement() {
-    const files = this.fileContentObject?.files ?? []
-    if (files.length > 0) {
-      const hasNoWildcard = !files.some(file => file.includes('*'))
-      this.test(hasNoWildcard, 'does not use wildcard in files section')
-    }
-    /* c8 ignore next */
-    const include = this.fileContentObject?.include ?? []
-    if (include.length > 0) {
-      const hasNoGlob = !include.some(file => file.endsWith('**/*'))
-      this.test(hasNoGlob, '"my-folder/**/*" is not needed in include section, "my-folder" is enough', true)
-    }
-  }
-
-  /* eslint-disable max-statements, complexity, sonarjs/cognitive-complexity */
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: refactor needed ^^'
   private checkCompilerOptions() {
     /* c8 ignore next 4 */
@@ -74,7 +62,6 @@ export class TsConfigFile extends FileBase {
       const key = inputKey as keyof typeof recommended
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const value = recommended[key]
-      // eslint-disable-next-line security/detect-non-literal-regexp
       const regex = new RegExp(`"${key}": ${String(value)}`, 'u')
       isOk = this.couldContains(`a ${key} compiler option`, regex, 1, undefined, true)
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -88,9 +75,21 @@ export class TsConfigFile extends FileBase {
     if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions.lib = ['ESNext']
     if (this.canFix) this.fileContent = objectToJson(json)
   }
-  /* eslint-enable max-statements, complexity, sonarjs/cognitive-complexity */
 
-  // eslint-disable-next-line max-statements
+  private checkFileManagement() {
+    const files = this.fileContentObject?.files ?? []
+    if (files.length > 0) {
+      const hasNoWildcard = !files.some(file => file.includes('*'))
+      this.test(hasNoWildcard, 'does not use wildcard in files section')
+    }
+    /* c8 ignore next */
+    const include = this.fileContentObject?.include ?? []
+    if (include.length > 0) {
+      const hasNoGlob = !include.some(file => file.endsWith('**/*'))
+      this.test(hasNoGlob, '"my-folder/**/*" is not needed in include section, "my-folder" is enough', true)
+    }
+  }
+
   public async start() {
     if (!this.data.isUsingTypescript) {
       log.debug('does not use typescript, skipping tsconfig.json checks')
