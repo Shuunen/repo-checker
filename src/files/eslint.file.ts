@@ -19,7 +19,10 @@ export class EsLintFile extends FileBase {
     await this.checkDeprecated()
     /* c8 ignore next */
     const filename = this.data.isModule ? 'eslint.config.js' : 'eslint.config.cjs'
-    await this.checkFileExists(filename)
+    const isThere = await this.checkFileExists(filename)
+    /* c8 ignore next */
+    if (!isThere) return
+    await this.inspectFile(filename)
     /* c8 ignore next */
     if (this.data.isUsingTailwind) this.shouldContains('browser config usage when using tailwind', /browser/u)
     // if (this.data.isUsingReact) this.shouldContains('react config usage', /react/u)

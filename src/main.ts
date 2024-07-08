@@ -118,7 +118,8 @@ export async function start({ canFailStop, canFix, canForce, isQuiet, isVerbose,
   /* c8 ignore next 4 */
   const data = await getData(target)
   log.options.isActive = !isQuiet
-  log.options.minimumLevel = isVerbose ? '1-debug' : '3-info'
+  // eslint-disable-next-line unicorn/no-nested-ternary
+  log.options.minimumLevel = isVerbose ? '1-debug' : isQuiet ? '7-error' : '3-info'
   log.info(`${String(name)} __unique-mark__ is starting ${canFix ? '(fix enabled)' : ''}`)
   return check({ canFailStop, canFix, canForce, data, folderPath: target })
 }
