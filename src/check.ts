@@ -90,7 +90,7 @@ export async function check({ canFailStop = false, canFix = false, canForce = fa
       log.warn('stop checking other folders because of failures & --fail-stop option')
       break
     }
-    log.info('Checking folder :', folder)
+    log.forceInfo('Checking folder :', folder)
     const dataFolder = await augmentData(folder, data, folders.length > 1)
     // eslint-disable-next-line @typescript-eslint/naming-convention
     for (const Checker of checkers) {

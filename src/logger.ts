@@ -3,6 +3,13 @@ import { Logger } from 'shuutils'
 
 // eslint-disable-next-line no-restricted-syntax
 class ExtendedLogger extends Logger {
+  // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
+  public forceInfo(...stuff: unknown[]) {
+    const previousLogLevel = this.options.minimumLevel
+    this.options.minimumLevel = '3-info'
+    this.info(...stuff)
+    this.options.minimumLevel = previousLogLevel
+  }
   public unknownError(error: unknown) {
     if (error instanceof Error) {
       this.error(error.message)
