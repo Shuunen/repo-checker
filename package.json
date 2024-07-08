@@ -16,13 +16,13 @@
     "@biomejs/biome": "1.8",
     "@types/node": "20.14",
     "@types/sort-json": "2.0",
-    "@vitest/coverage-v8": "1.6",
+    "@vitest/coverage-v8": "2.0",
     "dependency-cruiser": "16.3",
     "esbuild": "0.23",
     "eslint": "9.6",
     "eslint-plugin-shuunen": "0.1",
     "typescript": "5.5",
-    "vitest": "1.6",
+    "vitest": "2.0",
     "watchlist": "0.3"
   },
   "files": [
