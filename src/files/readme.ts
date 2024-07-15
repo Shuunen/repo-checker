@@ -50,6 +50,7 @@ const deprecatedBadges = [
   'bettercodehub.com',
   'david-dm.org',
   'lgtm.com',
+  'scrutinizer-ci.com', // fail at building some projects
   'libraries.io', // shows deprecated informations
 ]
 
