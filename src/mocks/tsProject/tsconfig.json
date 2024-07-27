@@ -4,10 +4,12 @@
     "lib": [
       "ESNext"
     ],
+    "allowSyntheticDefaultImports": true,
     "module": "ESNext",
     "moduleResolution": "Node",
     "outDir": "dist",
     "resolveJsonModule": true,
+    "strict": true,
     "verbatimModuleSyntax": true
   },
   "exclude": [
@@ -15,8 +17,8 @@
     "dist",
     "coverage"
   ],
-  "extends": "@tsconfig/strictest/tsconfig.json",
   "include": [
-    "configs"
+    "tsconfig/strictest.json",
+    "tests/**/*.ts"
   ]
 }
