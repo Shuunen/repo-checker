@@ -10,10 +10,4 @@ module.exports = [
   ...shuunen.configs.node,
   // ...shuunen.configs.browser,
   ...shuunen.configs.typescript,
-  {
-    rules: {
-      'line-comment-position': 'off',
-      'multiline-comment-style': 'off',
-    },
-  },
 ]
