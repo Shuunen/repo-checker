@@ -49,7 +49,7 @@ export class PackageJsonFile extends FileBase {
   private checkDependenciesUsagesEslint() {
     this.shouldContains('an eslint dependency', /"eslint"/u)
     this.shouldContains('no eslint@8 dependency', /"eslint": ".?8/u, 0)
-    const isUsingEslintCli = this.fileContent.includes('eslint ')
+    const isUsingEslintCli = this.fileContent.includes('"eslint ')
     if (isUsingEslintCli) {
       const hasCacheFlag = this.couldContains('eslint cache flag', /eslint[^\n"&']+--cache/u, 1, 'like "eslint --cache ..."', true)
       if (!hasCacheFlag && this.canFix) this.fileContent = this.fileContent.replace('eslint ', 'eslint --cache ')
@@ -76,8 +76,8 @@ export class PackageJsonFile extends FileBase {
     const [major, minor] = version.split('.').map(Number)
     /* c8 ignore next */
     if (minor === undefined || major === undefined) throw new Error('version is not semver')
-    const hasLatestRegex = new RegExp(`"repo-check": "${major}.${minor}`, 'u')
-    const hasLatest = this.couldContains('latest version of repo-checker', hasLatestRegex, 1, `like "repo-check": "${major}.${minor}"`, true)
+    const hasLatestRegex = new RegExp(`"repo-check": "\\^?${major}.${minor}`, 'u')
+    const hasLatest = this.couldContains('latest version of repo-checker', hasLatestRegex, 1, `like "repo-check": "^${major}.${minor}"`, true)
     if (!hasLatest && this.canFix) this.fileContent = this.fileContent.replace(/"repo-check": ".+"/u, `"repo-check": "${major}.${minor}"`)
   }
 
