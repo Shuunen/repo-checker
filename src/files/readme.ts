@@ -98,6 +98,12 @@ export class ReadmeFile extends FileBase {
     if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\n\*\s(?=[\w[])/gu, '\n- ')
   }
 
+  private checkStars() {
+    const hasChart = this.couldContains('a star chart', /starchart\.cc/u, 1, '## Stargazers over time', true)
+    if (hasChart) return
+    this.fileContent += `\n## Stargazers over time\n\n[![Stargazers over time](https://starchart.cc/${this.data.userId}/${this.data.repoId}.svg?variant=adaptive)](https://starchart.cc/${this.data.userId}/${this.data.repoId})\n`
+  }
+
   private async checkThanks() {
     const hasSection = this.couldContains('a thanks section', /## Thanks/u)
     if (!hasSection) return
@@ -119,6 +125,12 @@ export class ReadmeFile extends FileBase {
       const todo = line.replace('- [ ] ', '')
       log.info(`TODO : ${todo}`)
     }
+  }
+
+  private checkViews() {
+    const hasImage = this.couldContains('a page views counter', /websitecounterfree\.com\/c\.php\?d=\d+&id=\d+&s=\d+/u, 1, '![Free Website Counter](https://www.websitecounterfree.com/c.php?d=9&id=60667&s=12)', true)
+    if (hasImage) return
+    this.fileContent += '\n## Page views\n\n[![Free Website Counter](https://www.websitecounterfree.com/c.php?d=9&id=REPLACE_ME&s=12)](https://www.websitecounterfree.com)\n'
   }
 
   private getBadgesRecommended() {
@@ -201,6 +213,8 @@ export class ReadmeFile extends FileBase {
     this.checkTodos()
     this.checkBadges()
     await this.checkThanks()
+    this.checkStars()
+    this.checkViews()
   }
 }
 /* c8 ignore stop */

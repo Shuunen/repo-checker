@@ -20,7 +20,9 @@
     "repo",
     "simplegit",
     "sonarjs",
-    "vitepress"
+    "starchart",
+    "vitepress",
+    "websitecounterfree"
   ],
   "workbench.colorCustomizations": {
     "activityBar.background": "#232F3A",
