@@ -67,6 +67,7 @@ If file already exists, use `--force` to overwrite it.
 - [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
 - [ ] prepare a json schema for .repo-checker.json
 - [ ] try to avoid using class in this project and remove `eslint-disable-next-line no-restricted-syntax`
+- [ ] check if lint/performance/useTopLevelRegex worth fixing everywhere
 
 ## Thanks
 
