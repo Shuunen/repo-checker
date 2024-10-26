@@ -20,6 +20,8 @@
     - [quiet](#quiet)
   - [Todo](#todo)
   - [Thanks](#thanks)
+  - [Stargazers over time](#stargazers-over-time)
+  - [Page views](#page-views)
 
 ## Usage
 
@@ -82,3 +84,11 @@ If file already exists, use `--force` to overwrite it.
 - [V8](https://github.com/demurgos/v8-coverage) : simple & effective cli for code coverage
 - [Vitest](https://github.com/vitest-dev/vitest) : super fast vite-native testing framework
 - [Watchlist](https://github.com/lukeed/watchlist) : recursively watch a list of directories & run a command on any file system
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/Shuunen/repo-checker.svg?variant=adaptive)](https://starchart.cc/Shuunen/repo-checker)
+
+## Page views
+
+[![Free Website Counter](https://www.websitecounterfree.com/c.php?d=9&id=60669&s=12)](https://www.websitecounterfree.com)
