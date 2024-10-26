@@ -89,7 +89,7 @@ it('start G fix', () => {
 it('getData A empty target : current .repo-checker.json', async () => {
   expect(await getData()).toMatchInlineSnapshot(`
     {
-      "maxSizeKo": 70,
+      "maxSizeKo": 50,
     }
   `)
 })
