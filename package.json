@@ -55,7 +55,7 @@
     "lint:dep": "depcruise src --config && echo lint:dep success",
     "lint:eslint": "eslint --cache --max-warnings 0 src && echo lint:eslint success",
     "lint:tsc": "tsc --noEmit && echo lint:tsc success",
-    "mark": "unique-mark dist/repo-check.min.cjs && echo mark success",
+    "mark": "unique-mark dist/repo-check.min.{cjs} && echo mark success",
     "postversion": "git push && git push --tags && pnpm build && npm publish",
     "preversion": "pnpm check",
     "start": "pnpm build:start",
