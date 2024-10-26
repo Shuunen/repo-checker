@@ -51,7 +51,7 @@ ProjectData {
   "isUsingVue": false,
   "isWebPublished": false,
   "license": "GPL-3.0",
-  "maxSizeKo": 50,
+  "maxSizeKo": 70,
   "packageName": "repo-check",
   "repoId": "repo-checker",
   "shouldAvoidSass": true,
