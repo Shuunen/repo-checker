@@ -16,17 +16,20 @@ export const templatePath = path.join(repoCheckerPath, 'templates')
  */
 // eslint-disable-next-line no-restricted-syntax
 export class ProjectData {
-  /**
-   * Renovate auto-merge feature
-   */
+  /** Renovate auto-merge feature */
   public canAutoMergeDeps = true
 
   public hasMainBranch = false
 
   public hasTaskPrefix = false
 
+  /** If the project is a cli, meant to be run in a terminal */
+  public isCli = false
+
+  /** If the project is has a "type": "module" in its package.json */
   public isModule = false
 
+  /** If the project is being published via npm publish for example */
   public isPublishedPackage = false
 
   public isQuiet = false

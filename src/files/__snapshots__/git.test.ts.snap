@@ -8,6 +8,7 @@ exports[`git : detect a missing git ignore 1`] = `
     "canAutoMergeDeps": true,
     "hasMainBranch": false,
     "hasTaskPrefix": false,
+    "isCli": false,
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": true,

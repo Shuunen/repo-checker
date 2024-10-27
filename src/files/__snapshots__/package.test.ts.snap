@@ -8,6 +8,7 @@ exports[`package A on repo checker 1`] = `
     "canAutoMergeDeps": true,
     "hasMainBranch": false,
     "hasTaskPrefix": false,
+    "isCli": false,
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": true,
@@ -89,6 +90,7 @@ exports[`package B on ts project 1`] = `
     "canAutoMergeDeps": true,
     "hasMainBranch": false,
     "hasTaskPrefix": false,
+    "isCli": false,
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": true,
@@ -132,11 +134,12 @@ exports[`package B on ts project 1`] = `
   "scripts": {
     "build": "ts-node build.ts",
     "prepublish": "npm run build",
+    "postversion": "npm publish",
     "start": "node pathToMain"
   },
+  "type": "module",
   "version": "1.0.0"
-}
-",
+}",
   "fileName": "package.json",
   "originalFileContent": "{
   "author": "Michael Scott-Junior",
@@ -151,11 +154,12 @@ exports[`package B on ts project 1`] = `
   "scripts": {
     "build": "ts-node build.ts",
     "prepublish": "npm run build",
+    "postversion": "npm publish",
     "start": "node pathToMain"
   },
+  "type": "module",
   "version": "1.0.0"
-}
-",
+}",
   "passed": [
     "has-a-package-json-file",
     "package-json-has-a-description-property",
@@ -163,6 +167,7 @@ exports[`package B on ts project 1`] = `
     "package-json-has-a-version-property",
     "package-json-has-a-license-property",
     "package-json-has-a-script-section",
+    "package-json-has-a-post-script-for-version-automation",
     "package-json-has-no-ci-script",
     "package-json-has-no-sass-dependency-fat-useless",
     "package-json-has-no-cross-var-dependency-old-deprecated",
@@ -187,7 +192,6 @@ exports[`package B on ts project 1`] = `
     "package-json-could-have-a-private-property-private-falsetrue-n",
     "package-json-could-have-a-repository-property-repository-n",
     "package-json-could-have-a-pre-script-for-version-automation-like-preversion-pnpm-check",
-    "package-json-could-have-a-post-script-for-version-automation-like-postversion-git-push-git-push-tags",
     "package-json-could-have-pnpm-instead-of-npm-run-use-pnpm-instead-of-npm-run-for-performance-43m30m-fixable-39m49m",
     "package-json-could-have-a-check-script-like-check-pnpm-build-pnpm-lint",
     "package-json-could-have-a-final-echo-for-task-build-build-echo-wsbuild-w",
@@ -207,6 +211,7 @@ exports[`package C ts project isUsing* 1`] = `
     "canAutoMergeDeps": true,
     "hasMainBranch": false,
     "hasTaskPrefix": false,
+    "isCli": false,
     "isModule": false,
     "isPublishedPackage": true,
     "isQuiet": true,
@@ -241,6 +246,8 @@ exports[`package C ts project isUsing* 1`] = `
     "package-json-does-not-have-prepare-instead-of-prepublish-deprecated-prepublish",
     "package-json-does-not-have-a-depcruise-usage-like-depcruise-src-config",
     "package-json-does-not-have-an-eslint-dependency-eslint",
+    "package-json-does-not-have-a-types-field-in-exports-types-d-ts",
+    "package-json-does-not-have-a-main-field-pointing-to-a-cjs-cjs-like-main-dist-index-cjs",
   ],
   "fileContent": "{
   "author": "Michael Scott-Junior",
@@ -255,11 +262,12 @@ exports[`package C ts project isUsing* 1`] = `
   "scripts": {
     "build": "ts-node build.ts",
     "prepublish": "npm run build",
+    "postversion": "npm publish",
     "start": "node pathToMain"
   },
+  "type": "module",
   "version": "1.0.0"
-}
-",
+}",
   "fileName": "package.json",
   "originalFileContent": "{
   "author": "Michael Scott-Junior",
@@ -274,11 +282,12 @@ exports[`package C ts project isUsing* 1`] = `
   "scripts": {
     "build": "ts-node build.ts",
     "prepublish": "npm run build",
+    "postversion": "npm publish",
     "start": "node pathToMain"
   },
+  "type": "module",
   "version": "1.0.0"
-}
-",
+}",
   "passed": [
     "has-a-package-json-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
@@ -287,6 +296,7 @@ exports[`package C ts project isUsing* 1`] = `
     "package-json-has-a-version-property",
     "package-json-has-a-license-property",
     "package-json-has-a-script-section",
+    "package-json-has-a-post-script-for-version-automation",
     "package-json-has-no-ci-script",
     "package-json-has-no-sass-dependency-fat-useless",
     "package-json-has-no-cross-var-dependency-old-deprecated",
@@ -301,6 +311,7 @@ exports[`package C ts project isUsing* 1`] = `
     "package-json-has-no-utopian-shuunen-stack-dependency",
     "package-json-has-no-fat-slow-jsdom-dependency-use-happy-dom-instead",
     "package-json-has-no-fat-task-runner-use-pnpm-xyz-pnpm-abc-for-sequential-or-zero-deps-package-npm-parallel",
+    "package-json-has-a-type-module-declaration-for-modern-practices",
   ],
   "warnings": [
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",
@@ -311,7 +322,6 @@ exports[`package C ts project isUsing* 1`] = `
     "package-json-could-have-a-private-property-private-falsetrue-n",
     "package-json-could-have-a-repository-property-repository-n",
     "package-json-could-have-a-pre-script-for-version-automation-like-preversion-pnpm-check",
-    "package-json-could-have-a-post-script-for-version-automation-like-postversion-git-push-git-push-tags-npm-publish",
     "package-json-could-have-a-unique-mark-task-like-mark-unique-mark-public-my-file-echo-mark-success",
     "package-json-could-have-pnpm-instead-of-npm-run-use-pnpm-instead-of-npm-run-for-performance-43m30m-fixable-39m49m",
     "package-json-could-have-a-check-script-like-check-pnpm-build-pnpm-lint",
@@ -320,6 +330,8 @@ exports[`package C ts project isUsing* 1`] = `
     "package-json-could-have-latest-version-of-repo-checker-like-repo-check-1-38-43m30m-fixable-39m49m",
     "package-json-ts-node-without-transpile-only-detected-in-files-package-json",
     "package-json-could-have-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder",
+    "package-json-could-have-a-module-field-pointing-to-an-esm-mjs-like-module-dist-index-mjs",
+    "package-json-could-have-a-exports-field-with-import-esm-mjs-require-cjs-cjs-like-exports-import-dist-index-mjs-require-dist-index-cjs",
   ],
 }
 `;
@@ -332,6 +344,7 @@ exports[`package D no file exists 1`] = `
     "canAutoMergeDeps": true,
     "hasMainBranch": false,
     "hasTaskPrefix": false,
+    "isCli": false,
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": true,
@@ -374,6 +387,7 @@ exports[`package E vue project 1`] = `
     "canAutoMergeDeps": true,
     "hasMainBranch": false,
     "hasTaskPrefix": false,
+    "isCli": false,
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": true,
@@ -473,6 +487,7 @@ exports[`package F fix project 1`] = `
     "canAutoMergeDeps": true,
     "hasMainBranch": false,
     "hasTaskPrefix": false,
+    "isCli": false,
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": true,

@@ -11,7 +11,9 @@
   "scripts": {
     "build": "ts-node build.ts",
     "prepublish": "npm run build",
+    "postversion": "npm publish",
     "start": "node pathToMain"
   },
+  "type": "module",
   "version": "1.0.0"
 }

@@ -84,6 +84,7 @@ export async function augmentDataWithPackageJson(folderPath: string, dataSource:
   const author = /"author": "(?<userName>[\s\w/@-]+)\b[\s<]*(?<userMail>[\w.@-]+)?>?"/u.exec(content)
   data.userName = author?.groups?.userName ?? data.userName
   data.userMail = author?.groups?.userMail ?? data.userMail
+  data.isCli = content.includes('node . ') || content.includes('node ."')
   data.isModule = content.includes('"type": "module"')
   data.isUsingTailwind = content.includes('"tailwindcss"')
   data.isUsingDependencyCruiser = content.includes('"dependency-cruiser"')

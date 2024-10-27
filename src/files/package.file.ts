@@ -92,6 +92,22 @@ export class PackageJsonFile extends FileBase {
     }
   }
 
+  // eslint-disable-next-line max-statements
+  private checkExports() {
+    if (!this.data.isPublishedPackage) return
+    this.couldContains('a type module declaration for modern practices', /"type": "module"/u, 1)
+    if (!this.data.isCli && this.data.isUsingTypescript) this.shouldContains('a types field in exports', /"types": ".+\.d\.ts"/u, 1)
+    if (this.data.isModule) {
+      this.shouldContains('a main field pointing to an esm.js', /"main": ".+\.js"/u, 1, false, 'like "main": "./dist/index.js"')
+      this.shouldContains('no module field', this.regexForStringProp('module'), 0)
+      this.shouldContains('an exports field with import => esm.js / require => cjs.cjs', /"exports": \{\n +"\.": \{\n +"import": ".+\.js",\n +"require": ".+\.cjs"/u, 1, false, 'like "exports": { ".": { "import": "./dist/index.js", "require": "./dist/index.cjs" } }')
+      return
+    }
+    this.shouldContains('a main field pointing to a cjs.cjs', /"main": ".+\.cjs"/u, 1, false, 'like "main": "./dist/index.cjs"')
+    this.couldContains('a module field pointing to an esm.mjs', /"module": ".+\.mjs"/u, 1, 'like "module": "./dist/index.mjs"')
+    this.couldContains('a exports field with import => esm.mjs / require => cjs.cjs', /"exports": \{\n +"\.": \{\n +"import": ".+\.mjs",\n +"require": ".+\.cjs"/u, 1, 'like "exports": { ".": { "import": "./dist/index.mjs", "require": "./dist/index.cjs" } }')
+  }
+
   private async checkMainFile() {
     const mainFilePath = /"main": "(?<path>.*)"/u.exec(this.fileContent)?.groups?.path
     if (mainFilePath === undefined) {
@@ -199,5 +215,6 @@ export class PackageJsonFile extends FileBase {
     this.checkEchoes()
     await this.checkDependencies()
     this.suggestAlternatives()
+    this.checkExports()
   }
 }

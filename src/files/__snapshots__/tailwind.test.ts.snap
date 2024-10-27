@@ -8,6 +8,7 @@ exports[`tailwind : can detect valid config 1`] = `
     "canAutoMergeDeps": true,
     "hasMainBranch": false,
     "hasTaskPrefix": false,
+    "isCli": false,
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": true,
