@@ -77,7 +77,7 @@ exports[`package A on repo checker 1`] = `
   ],
   "warnings": [
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
-    "package-json-could-have-latest-version-of-repo-checker-like-repo-check-1-38-43m30m-fixable-39m49m",
+    "package-json-could-have-latest-version-of-repo-checker-like-repo-check-1-39-43m30m-fixable-39m49m",
   ],
 }
 `;
@@ -196,7 +196,7 @@ exports[`package B on ts project 1`] = `
     "package-json-could-have-a-check-script-like-check-pnpm-build-pnpm-lint",
     "package-json-could-have-a-final-echo-for-task-build-build-echo-wsbuild-w",
     "package-json-one-coverage-dependency-from-nyc-c8-v8",
-    "package-json-could-have-latest-version-of-repo-checker-like-repo-check-1-38-43m30m-fixable-39m49m",
+    "package-json-could-have-latest-version-of-repo-checker-like-repo-check-1-39-43m30m-fixable-39m49m",
     "package-json-ts-node-without-transpile-only-detected-in-files-package-json",
     "package-json-could-have-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder",
   ],
@@ -327,7 +327,7 @@ exports[`package C ts project isUsing* 1`] = `
     "package-json-could-have-a-check-script-like-check-pnpm-build-pnpm-lint",
     "package-json-could-have-a-final-echo-for-task-build-build-echo-wsbuild-w",
     "package-json-one-coverage-dependency-from-nyc-c8-v8",
-    "package-json-could-have-latest-version-of-repo-checker-like-repo-check-1-38-43m30m-fixable-39m49m",
+    "package-json-could-have-latest-version-of-repo-checker-like-repo-check-1-39-43m30m-fixable-39m49m",
     "package-json-ts-node-without-transpile-only-detected-in-files-package-json",
     "package-json-could-have-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder-not-fat-ts-runner-use-typescript-run-like-dev-ts-run-src-watch-or-ts-run-src-w-src-another-folder",
     "package-json-could-have-a-module-field-pointing-to-an-esm-mjs-like-module-dist-index-mjs",
@@ -474,7 +474,7 @@ exports[`package E vue project 1`] = `
     "package-json-could-have-a-check-script-like-check-pnpm-build-pnpm-lint",
     "package-json-one-unit-testing-dependency-from-vitest-mocha-uvu",
     "package-json-one-coverage-dependency-from-nyc-c8-v8",
-    "package-json-could-have-latest-version-of-repo-checker-like-repo-check-1-38-43m30m-fixable-39m49m",
+    "package-json-could-have-latest-version-of-repo-checker-like-repo-check-1-39-43m30m-fixable-39m49m",
   ],
 }
 `;

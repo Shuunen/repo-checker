@@ -137,7 +137,7 @@ export class ReadmeFile extends FileBase {
     const userRepo = `${this.data.userId}/${this.data.repoId}`
     const list = [
       new Badge('Project license', `https://github.com/${userRepo}/blob/master/LICENSE`, `https://img.shields.io/github/license/${userRepo}.svg?color=informational`),
-      new Badge('Code Climate maintainability', `https://codeclimate.com/github/${userRepo}`, `https://img.shields.io/codeclimate/maintainability/${userRepo}`),
+      // new Badge('Code Climate maintainability', `https://codeclimate.com/github/${userRepo}`, `https://img.shields.io/codeclimate/maintainability/${userRepo}`),
     ]
     if (this.data.isWebPublished && !this.fileContent.includes('shields.io/website/')) list.push(new Badge('Website up', this.data.webUrl, `https://img.shields.io/website/https/${this.data.webUrl.replace('https://', '')}.svg`, true, this.data.webUrl !== dataDefaults.webUrl))
     if (this.data.isPublishedPackage)
