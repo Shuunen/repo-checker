@@ -9,8 +9,8 @@ dependencies:
     specifier: '5.0'
     version: 5.0.2
   shuutils:
-    specifier: '10.0'
-    version: 10.0.0
+    specifier: '10.1'
+    version: 10.1.0
   sort-json:
     specifier: '2.0'
     version: 2.0.1
@@ -2903,8 +2903,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /shuutils@10.0.0:
-    resolution: {integrity: sha512-A5/PcShJU4VsJ2l6CIFNRz6INFWMeBZDd0memALTy5LY4RUyNlhZIIzyi5yl7Pjk5uyQG5SIbycvAj546YNonQ==}
+  /shuutils@10.1.0:
+    resolution: {integrity: sha512-Q+8PaUIik4W3bEE2xtDMZvYC7y4B8mnh3x7cneXPJmry0esVRir+hSZHh5Kjh6rtV0pYj+eKtAXBxJ8LDqPZhA==}
     hasBin: true
     dependencies:
       tiny-glob: 0.2.9
