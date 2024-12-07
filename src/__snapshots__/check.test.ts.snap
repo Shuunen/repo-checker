@@ -50,6 +50,7 @@ exports[`check B repo-checker folder succeed 1`] = `
     "package-json-has-a-keywords-property",
     "package-json-has-a-private-property",
     "package-json-has-a-repository-property",
+    "package-json-has-a-repository-url-starting-with-git-plus",
     "package-json-has-a-author-property",
     "package-json-has-a-name-property",
     "package-json-has-a-version-property",

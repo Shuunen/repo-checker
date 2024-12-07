@@ -138,7 +138,12 @@ export class PackageJsonFile extends FileBase {
     this.couldContains('a "homepage" property', this.regexForStringProp('homepage'))
     this.couldContains('a "keywords" property', this.regexForArrayProp('keywords'))
     this.couldContains('a "private" property', this.regexForBooleanProp('private'))
-    this.couldContains('a "repository" property', this.regexForObjectProp('repository'))
+    const hasRepository = this.couldContains('a "repository" property', this.regexForObjectProp('repository'))
+    if (hasRepository) {
+      const hasPlus = this.couldContains('a repository url starting with git plus', /"repository": [^u]+url": "git\+https/gu, 1, 'like "repository": "git+https..."', true)
+      /* c8 ignore next */
+      if (!hasPlus && this.canFix) this.fileContent = this.fileContent.replace(/(?<base>"repository": [^u]+url": ")(?<url>[^"]+")/gu, '$<base>git+$<url>')
+    }
     this.shouldContains('a "author" property', this.regexForStringProp('author'))
     this.shouldContains('a "name" property', this.regexForStringProp('name'))
     this.shouldContains('a "version" property', this.regexForStringProp('version'))

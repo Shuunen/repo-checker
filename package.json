@@ -42,7 +42,7 @@
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/Shuunen/repo-checker.git"
+    "url": "git+https://github.com/Shuunen/repo-checker.git"
   },
   "scripts": {
     "build": "pnpm build:app && pnpm mark && echo build success",
