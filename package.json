@@ -11,7 +11,7 @@
     "shuutils": "10.1",
     "sort-json": "2.0"
   },
-  "description": "Repo cleaning made easy",
+  "description": "Repo maintenance made easy",
   "devDependencies": {
     "@biomejs/biome": "1.9",
     "@types/node": "22.8",
