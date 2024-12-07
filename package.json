@@ -14,7 +14,7 @@
   "description": "Repo maintenance made easy",
   "devDependencies": {
     "@biomejs/biome": "1.9",
-    "@types/node": "22.8",
+    "@types/node": "22.10",
     "@types/sort-json": "2.0",
     "@vitest/coverage-v8": "2.1",
     "dependency-cruiser": "16.7",
