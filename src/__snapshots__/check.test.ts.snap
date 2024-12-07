@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`check A folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-49ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
+exports[`check A repo-checker folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-49ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
 
-exports[`check B folder succeed 1`] = `
+exports[`check B repo-checker folder succeed 1`] = `
 {
   "failed": [],
   "passed": [
@@ -178,7 +178,7 @@ exports[`check B folder succeed 1`] = `
 }
 `;
 
-exports[`check C data/tsProject 1`] = `
+exports[`check C ts-project folder 1`] = `
 {
   "failed": [
     "has-a-editorconfig-file",
@@ -270,9 +270,9 @@ exports[`check C data/tsProject 1`] = `
 }
 `;
 
-exports[`check D data folders and throw 1`] = `"failed at validating at least one rule in one folder : has-a-editorconfig-file, has-a-gitignore-file, has-a-license-file, has-a-nvmrc-file, package-json-do..."`;
+exports[`check D mocks-projects folders and throw 1`] = `"failed at validating at least one rule in one folder : has-a-editorconfig-file, has-a-gitignore-file, has-a-license-file, has-a-nvmrc-file, package-json-do..."`;
 
-exports[`check E data folders and not throw 1`] = `
+exports[`check E mocks-projects folders and not throw 1`] = `
 {
   "failed": [
     "has-a-editorconfig-file",
