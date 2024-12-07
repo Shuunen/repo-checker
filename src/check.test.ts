@@ -5,7 +5,7 @@ import { cleanIndicatorsForSnap, mocksProjectsFolder, tsProjectFolder } from './
 
 it('check A repo-checker folder fails with low max size', async () => {
   const data = new ProjectData({ isPublishedPackage: true, isQuiet: true, maxSizeKo: 2 })
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion
   const message = await check({ data, folderPath: repoCheckerPath }).catch((error: unknown) => (error as Error).message)
   expect(message).toMatchSnapshot()
 })
@@ -24,7 +24,7 @@ it('check C ts-project folder', async () => {
 
 it('check D mocks-projects folders and throw', async () => {
   const data = new ProjectData({ isQuiet: true })
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion
   const message = await check({ canFailStop: true, data, folderPath: mocksProjectsFolder }).catch((error: unknown) => (error as Error).message)
   expect(message).toMatchSnapshot()
 })

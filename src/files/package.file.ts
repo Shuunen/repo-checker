@@ -196,15 +196,6 @@ export class PackageJsonFile extends FileBase {
     return new RegExp(`"${name}": "${value}"`, 'u')
   }
 
-  private suggestAlternatives() {
-    this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(?:chalk|colorette|colors)"/u, 0)
-    this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/u, 0)
-    this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/u, 0)
-    this.couldContains('no fat & slow jsdom dependency, use happy-dom instead', /jsdom/u, 0)
-    this.couldContains('no fat task runner, use pnpm xyz && pnpm abc for sequential or zero-deps package : npm-parallel', /"npm-run-all"/u, 0)
-    if (this.fileContent.includes('esbuild-plugin-run')) this.couldContains('not fat ts runner, use "typescript-run" like "dev": "ts-run src --watch" or "ts-run src -w src another-folder"')
-  }
-
   public async start() {
     const hasFile = await this.checkFileExists('package.json')
     if (!hasFile) return
@@ -216,5 +207,14 @@ export class PackageJsonFile extends FileBase {
     await this.checkDependencies()
     this.suggestAlternatives()
     this.checkExports()
+  }
+
+  private suggestAlternatives() {
+    this.couldContains('no fat color dependency, use shuutils or nanocolors', /"(?:chalk|colorette|colors)"/u, 0)
+    this.couldContains('no fat fs-extra dependency, use native fs', /"fs-extra"/u, 0)
+    this.couldContains('no utopian shuunen-stack dependency', /"shuunen-stack"/u, 0)
+    this.couldContains('no fat & slow jsdom dependency, use happy-dom instead', /jsdom/u, 0)
+    this.couldContains('no fat task runner, use pnpm xyz && pnpm abc for sequential or zero-deps package : npm-parallel', /"npm-run-all"/u, 0)
+    if (this.fileContent.includes('esbuild-plugin-run')) this.couldContains('not fat ts runner, use "typescript-run" like "dev": "ts-run src --watch" or "ts-run src -w src another-folder"')
   }
 }

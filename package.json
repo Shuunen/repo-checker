@@ -19,8 +19,8 @@
     "@vitest/coverage-v8": "2.1",
     "dependency-cruiser": "16.7",
     "esbuild": "0.24",
-    "eslint": "9.14",
-    "eslint-plugin-shuunen": "0.3",
+    "eslint": "*",
+    "eslint-plugin-shuunen": "0.4",
     "typescript": "5.7",
     "vitest": "2.1",
     "watchlist": "0.3"

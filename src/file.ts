@@ -7,8 +7,7 @@ const defaultAmount = 99
 
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class FileBase {
-  private originalFileContent = ''
-
+  /** The file can be fixed and written to the disk */
   public canFix = false
 
   public canForce = false
@@ -22,6 +21,8 @@ export class FileBase {
   public fileName = ''
 
   public folderPath = ''
+
+  private originalFileContent = ''
 
   public passed: string[] = []
 
@@ -40,30 +41,6 @@ export class FileBase {
     this.data = data
     this.canFix = canFix
     this.canForce = canForce
-  }
-
-  /**
-   * Check if a file has at least one issue
-   */
-  private async checkIssues() {
-    if (this.failed.length > 0 && this.canFix) {
-      if (this.canForce) {
-        await this.initFile(this.fileName)
-        return
-      }
-      log.info('this file has at least one issue, if you want repo-checker to overwrite this file use --force')
-    }
-  }
-
-  /**
-   * Create a file with a given content
-   * @param fileName the file name
-   * @param fileContent the file content
-   */
-  private async createFile(fileName: string, fileContent: string) {
-    void writeFile(join(this.folderPath, fileName), fileContent)
-    await sleep(1)
-    log.fix('created', fileName)
   }
 
   /**
@@ -94,6 +71,19 @@ export class FileBase {
     }
     this.test(hasFile, `has a ${fileName} file`, willJustWarn)
     return hasFile
+  }
+
+  /**
+   * Check if a file has at least one issue
+   */
+  private async checkIssues() {
+    if (this.failed.length > 0 && this.canFix) {
+      if (this.canForce) {
+        await this.initFile(this.fileName)
+        return
+      }
+      log.info('this file has at least one issue, if you want repo-checker to overwrite this file use --force')
+    }
   }
 
   /**
@@ -136,6 +126,17 @@ export class FileBase {
   }
 
   /**
+   * Create a file with a given content
+   * @param fileName the file name
+   * @param fileContent the file content
+   */
+  private async createFile(fileName: string, fileContent: string) {
+    void writeFile(join(this.folderPath, fileName), fileContent)
+    await sleep(1)
+    log.fix('created', fileName)
+  }
+
+  /**
    *
    */
   public async end() {
@@ -172,7 +173,7 @@ export class FileBase {
       log.debug(`found no template ${fileName}, using a empty string instead`)
       return ''
     }
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion
     const fileContent = fillTemplate(template, this.data as unknown as Record<string, unknown>)
     if (fileContent.includes('{{')) log.warn(`please provide a data file to be able to fix a "${fileName}" file`)
     else void this.createFile(fileName, fileContent)

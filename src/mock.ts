@@ -16,12 +16,12 @@ function cleanStringForSnap(input: string) {
 // eslint-disable-next-line no-restricted-syntax
 function cleanUnknownValueForSnap<Type>(input: Type): Type {
   /* c8 ignore next 7 */
-  /* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-return */
+  /* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-type-assertion */
   if (typeof input === 'string') return cleanStringForSnap(input) as Type
   if (Array.isArray(input)) return input.map(item => cleanUnknownValueForSnap(item)) as Type
   if (typeof input === 'object') return JSON.parse(cleanStringForSnap(JSON.stringify(input))) as Type
   throw new Error(`cleanInstanceValueForSnap: unknown type ${typeof input}`)
-  /* eslint-enable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-return */
+  /* eslint-enable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-type-assertion */
 }
 
 export async function promiseValue<Type>(value: Type) {

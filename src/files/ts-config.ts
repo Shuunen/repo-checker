@@ -58,13 +58,13 @@ export class TsConfigFile extends FileBase {
     if (this.canFix && json.compilerOptions === undefined) json.compilerOptions = clone(recommended)
     // eslint-disable-next-line guard-for-in
     for (const inputKey in recommended) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion
       const key = inputKey as keyof typeof recommended
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const value = recommended[key]
       const regex = new RegExp(`"${key}": ${String(value)}`, 'u')
       isOk = this.couldContains(`a ${key} compiler option`, regex, 1, undefined, true)
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion
       if (!isOk && this.canFix && json.compilerOptions !== undefined) json.compilerOptions[key] = value as never
     }
     isOk = this.couldContains('a outDir compiler option', /"outDir": "/u, 1, 'ex : "outDir": "./dist",', true)
