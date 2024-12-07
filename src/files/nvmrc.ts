@@ -10,7 +10,7 @@ export class NvmrcFile extends FileBase {
     const hasFile = await this.checkFileExists('.nvmrc')
     if (!hasFile) return
     await this.inspectFile('.nvmrc')
-    this.couldContains('a recent lts node version', /20\.\d+\.\d+/u)
+    this.couldContains('a recent lts node version', /22\.\d+\.\d+/u)
   }
 }
 /* c8 ignore stop */
