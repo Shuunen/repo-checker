@@ -17,7 +17,7 @@
     "@types/node": "22.10",
     "@types/sort-json": "2.0",
     "@vitest/coverage-v8": "2.1",
-    "dependency-cruiser": "16.7",
+    "dependency-cruiser": "16.8",
     "esbuild": "0.24",
     "eslint": "*",
     "eslint-plugin-shuunen": "0.4",

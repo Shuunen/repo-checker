@@ -31,8 +31,8 @@ importers:
         specifier: '2.1'
         version: 2.1.8(vitest@2.1.8(@types/node@22.10.1))
       dependency-cruiser:
-        specifier: '16.7'
-        version: 16.7.0
+        specifier: '16.8'
+        version: 16.8.0
       esbuild:
         specifier: '0.24'
         version: 0.24.0
@@ -917,8 +917,8 @@ packages:
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
-  dependency-cruiser@16.7.0:
-    resolution: {integrity: sha512-522LLjHINl9r0RIZ8/6s6TqIHTuEJG3XDU2WPSm9dG0rvLUYVyQwE9ID31tDFs4OOyEhdOPaqAaAG1jRv/Zwbg==}
+  dependency-cruiser@16.8.0:
+    resolution: {integrity: sha512-VyBzIrLHfG7rT36URln+CTy8VSjrLB7YDlMx5vtBSHRHCOXgLUCcP4n5ZoD+s166T0i5LN33q1CvBkEOGsDTSg==}
     engines: {node: ^18.17||>=20}
     hasBin: true
 
@@ -2648,7 +2648,7 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  dependency-cruiser@16.7.0:
+  dependency-cruiser@16.8.0:
     dependencies:
       acorn: 8.14.0
       acorn-jsx: 5.3.2(acorn@8.14.0)
