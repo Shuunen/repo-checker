@@ -57,7 +57,7 @@
   "scripts": {
     "build": "tsup-node && pnpm build:mark && echo build success",
     "build:mark": "unique-mark dist/repo-check.{cjs,js} && echo mark success",
-    "check": "pnpm i && echo install success && pnpm start && pnpm lint && npm test && echo check success",
+    "check": "pnpm i && echo install success && pnpm build && pnpm start && pnpm lint && npm test && echo check success",
     "dev": "watchlist src -eager -- pnpm start",
     "lint": "pnpm lint:biome && pnpm lint:tsc && pnpm lint:eslint && pnpm lint:dep && echo lint success",
     "lint:biome": "biome check --error-on-warnings --write --unsafe src && echo lint:biome success",
