@@ -32,11 +32,12 @@ Running the typescript file directly using node new flag `--experimental-strip-t
 
 ## Build
 
-`hyperfine --runs 20 --warmup 5 'node node_modules/esbuild/bin/esbuild src/index.ts --target=esnext --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs'`
+`hyperfine --runs 6 --warmup 2 'node ./node_modules/tsup/dist/cli-node.js'`
 
-|    date    | version | delay  | node  | machine          | comment |
-| :--------: | :-----: | :----: | ----- | ---------------- | ------- |
-| 2024-12-29 |  0.24   | 177 ms | 22.11 | romain duc win11 |         |
+|    date    | version | delay  | node  | machine          | comment                                                |
+| :--------: | :-----: | :----: | ----- | ---------------- | ------------------------------------------------------ |
+| 2024-12-29 |   n/a   | 177 ms | 22.11 | romain duc win11 | using esbuild 0.24 and producing a single cjs output   |
+| 2024-12-29 |   8.3   | 1.2 s  | 22.11 | romain duc win11 | using tsup, producing 4 outputs : cjs, js, d.cts, d.ts |
 
 ## Eslint
 

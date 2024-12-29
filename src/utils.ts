@@ -82,7 +82,7 @@ export async function augmentDataWithPackageJson(folderPath: string, dataSource:
   const author = /"author": "(?<userName>[\s\w/@-]+)\b[\s<]*(?<userMail>[\w.@-]+)?>?"/u.exec(content)
   data.userName = author?.groups?.userName ?? data.userName
   data.userMail = author?.groups?.userMail ?? data.userMail
-  data.isCli = content.includes('node . ') || content.includes('node ."')
+  data.isCli = content.includes('node . ') || content.includes('node ."') || content.includes('"cli"')
   data.isModule = content.includes('"type": "module"')
   data.isUsingTailwind = content.includes('"tailwindcss"')
   data.isUsingDependencyCruiser = content.includes('"dependency-cruiser"')
@@ -182,5 +182,4 @@ export function readableRegex(regex: Readonly<RegExp>) {
 // biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
 export { unlink as deleteFile, writeFile } from 'node:fs/promises'
 /* c8 ignore next */
-// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
 export { join, resolve } from 'node:path'
