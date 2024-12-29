@@ -41,7 +41,7 @@ exports[`check B repo-checker folder succeed 1`] = `
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-has-a-dist-repo-check-js-file",
     "package-json-main-file-specified-in-package-json-dist-repo-check-js-exists-on-disk-be-sure-to-build-before-run-repo-check",
-    "package-json-main-file-size-60ko-should-be-less-or-equal-to-max-size-allowed-120ko",
+    "package-json-main-file-size-XYZko-should-be-less-or-equal-to-max-size-allowed-120ko",
     "package-json-has-a-schema-declaration",
     "package-json-has-a-bugs-property",
     "package-json-has-a-description-property",

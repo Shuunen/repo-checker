@@ -9,7 +9,13 @@ const fileBaseKeysToDelete: (keyof FileBase)[] = ['fileExists', 'checkFileExists
 const indicatorsKeys: ReadonlyArray<keyof Awaited<ReturnType<typeof check>>> = ['failed', 'passed', 'warnings'] as const
 
 function cleanStringForSnap(input: string) {
-  return input.replace(/repo-check-\d-\d+/gu, 'repo-check-x-yy') // replace repo-check-1-40 by repo-check-x-yy
+  return (
+    input
+      // replace repo-check-1-40 by repo-check-x-yy
+      .replace(/repo-check-\d-\d+/gu, 'repo-check-x-yy')
+      // replace package-json-main-file-size-63ko by package-json-main-file-size-XYZko
+      .replace(/package-json-main-file-size-\d+ko/gu, 'package-json-main-file-size-XYZko')
+  )
 }
 
 // eslint-disable-next-line no-restricted-syntax
