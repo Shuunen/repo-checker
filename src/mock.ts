@@ -8,7 +8,7 @@ import { join } from './utils.ts'
 const fileBaseKeysToDelete: (keyof FileBase)[] = ['fileExists', 'checkFileExists', 'folderPath', 'inspectFile', 'updateFile', 'initFile']
 const indicatorsKeys: ReadonlyArray<keyof Awaited<ReturnType<typeof check>>> = ['failed', 'passed', 'warnings'] as const
 
-function cleanStringForSnap(input: string) {
+export function cleanStringForSnap(input: string) {
   return (
     input
       // replace repo-check-1-40 by repo-check-x-yy
@@ -19,7 +19,7 @@ function cleanStringForSnap(input: string) {
 }
 
 // eslint-disable-next-line no-restricted-syntax
-function cleanUnknownValueForSnap<Type>(input: Type): Type {
+export function cleanUnknownValueForSnap<Type>(input: Type): Type {
   /* c8 ignore next 7 */
   /* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-type-assertion */
   if (typeof input === 'string') return cleanStringForSnap(input) as Type

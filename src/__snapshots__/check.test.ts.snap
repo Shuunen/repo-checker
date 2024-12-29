@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`check A repo-checker folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-60ko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
+exports[`check A repo-checker folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-XYZko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
 
 exports[`check B repo-checker folder succeed 1`] = `
 {

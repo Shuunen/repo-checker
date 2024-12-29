@@ -1,13 +1,13 @@
 import { expect, it } from 'vitest'
 import { check } from './check'
 import { ProjectData, repoCheckerPath } from './constants'
-import { cleanIndicatorsForSnap, mocksProjectsFolder, tsProjectFolder } from './mock'
+import { cleanIndicatorsForSnap, cleanUnknownValueForSnap, mocksProjectsFolder, tsProjectFolder } from './mock'
 
 it('check A repo-checker folder fails with low max size', async () => {
   const data = new ProjectData({ isPublishedPackage: true, isQuiet: true, maxSizeKo: 2 })
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion
   const message = await check({ data, folderPath: repoCheckerPath }).catch((error: unknown) => (error as Error).message)
-  expect(message).toMatchSnapshot()
+  expect(cleanUnknownValueForSnap(message)).toMatchSnapshot()
 })
 
 it('check B repo-checker folder succeed', async () => {

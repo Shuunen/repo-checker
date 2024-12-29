@@ -1,4 +1,4 @@
-/* c8 ignore next 2 */
+/* c8 ignore next 4 */
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
