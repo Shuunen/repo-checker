@@ -50,7 +50,7 @@
     "build:meta": "pnpm build:app --metafile=meta.json && echo build:meta success",
     "build:start": "pnpm build:app && node .",
     "check": "pnpm i && echo install success && pnpm start && pnpm lint && npm test && echo check success",
-    "dev": "watchlist src -eager -- pnpm build:start",
+    "dev": "watchlist src -eager -- pnpm start",
     "lint": "pnpm lint:biome && pnpm lint:tsc && pnpm lint:eslint && pnpm lint:dep && echo lint success",
     "lint:biome": "biome check --error-on-warnings --write --unsafe src && echo lint:biome success",
     "lint:dep": "depcruise src --config && echo lint:dep success",
@@ -59,11 +59,12 @@
     "mark": "unique-mark dist/repo-check.min.{cjs} && echo mark success",
     "postversion": "git push && git push --tags && pnpm build && npm publish",
     "preversion": "pnpm check",
-    "start": "pnpm build:start",
+    "start": "node --experimental-strip-types src/repo-check.ts",
     "test": "vitest --coverage --run && echo test success",
     "test:bench": "vitest bench && echo test bench success",
     "test:update": "vitest --run --update && echo test update success",
     "test:watch": "vitest --coverage"
   },
+  "type": "module",
   "version": "1.40.0"
 }

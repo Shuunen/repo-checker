@@ -183,6 +183,7 @@ exports[`ts config file no check 1`] = `
   },
   "failed": [],
   "fileContent": "",
+  "fileContentObject": undefined,
   "fileName": "",
   "originalFileContent": "",
   "passed": [],

@@ -1,10 +1,7 @@
-/* eslint-disable @stylistic/quotes */
-/* eslint-disable import/no-commonjs */
-/* eslint-disable import/unambiguous */
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable max-lines */
-/* eslint-disable multiline-comment-style */
 /** @type {import('dependency-cruiser').IConfiguration} */
-module.exports = {
+export default {
   forbidden: [
     /* rules from the 'recommended' preset: */
     {

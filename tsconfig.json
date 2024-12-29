@@ -9,7 +9,7 @@
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
     "lib": [
-      "ES2020"
+      "ESNext"
     ],
     "module": "ESNext",
     "moduleResolution": "node",
@@ -26,7 +26,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2020",
+    "target": "ESNext",
     "verbatimModuleSyntax": true
   },
   "include": [
@@ -34,7 +34,8 @@
     "tests",
     "*.ts",
     "*.js",
+    ".*.js",
     "*.cjs",
-    "*.config.mts"
+    "*.mts"
   ]
 }
