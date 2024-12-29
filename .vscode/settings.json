@@ -24,6 +24,7 @@
     "vitepress",
     "websitecounterfree"
   ],
+  "editor.formatOnSave": true,
   "workbench.colorCustomizations": {
     "activityBar.background": "#232F3A",
     "titleBar.activeBackground": "#304251",
