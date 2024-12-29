@@ -1,44 +1,72 @@
 
 # Benchmarks
 
-## Via `hyperfine`
+- [Benchmarks](#benchmarks)
+  - [Repo-checker execution](#repo-checker-execution)
+  - [Build](#build)
+  - [Eslint](#eslint)
+  - [Tsc](#tsc)
+  - [Vitest](#vitest)
+  - [Old method](#old-method)
 
-Each bench result is from `hyperfine --runs 20 --warmup 3 'COMMAND_TO_BENCH'`.
+## Repo-checker execution
 
-| date       | command / target | delay  | node  | machine           | comment                     |
-| ---------- | ---------------- | ------ | ----- | ----------------- | --------------------------- |
-| 2023-06-19 | esbuild 0.18     | 12 ms  | 18.16 | Linux             |                             |
-| 2023-06-19 | eslint 8.43      | 7,4 s  | 18.16 | Linux             |                             |
-| 2023-06-19 | repo-check 1.31  | 60 ms  | 18.16 | Linux             |                             |
-| 2023-06-19 | tsc-no-emit 5.1  | 760 ms | 18.16 | Linux             |                             |
-| 2023-06-19 | vitest 0.32      | 1,8 s  | 18.16 | Linux             |                             |
-| 2023-06-19 | vitest-v8        | 1,9 s  | 18.16 | Linux             |                             |
-| 2023-07-17 | esbuild 0.18     | 12 ms  | 18.16 | Linux             |                             |
-| 2023-07-17 | repo-check 1.33  | 55 ms  | 18.16 | Linux             |                             |
-| 2023-07-17 | vitest 0.33      | 1,97 s | 18.16 | Linux             |                             |
-| 2023-07-17 | vitest-v8        | 2,16 s | 18.16 | Linux             |                             |
-| 2024-06-19 | eslint 8.57      | 6,05 s | 20.14 | romain duc win11  |                             |
-| 2024-06-19 | repo-check 1.35  | 72 ms  | 20.14 | romain duc win11  |                             |
-| 2024-06-19 | tsc-no-emit 5.4  | 750 ms | 20.14 | romain duc win11  |                             |
-| 2024-06-19 | vitest 1.6       | 1,79 s | 20.14 | romain duc win11  |                             |
-| 2024-06-19 | vitest-v8 1.6    | 2,19 s | 20.14 | romain duc win11  |                             |
-| 2024-07-08 | eslint 9.6       | 3,88 s | 20.15 | romain gram zorin | after eslint plugin shuunen |
+`pnpm build` then `hyperfine --runs 20 --warmup 3 'node dist/repo-check.min.cjs'`
 
-Command aliases :
+|    date    | version | delay  | node  | machine          | comment                                                           |
+| :--------: | :-----: | :----: | ----- | ---------------- | ----------------------------------------------------------------- |
+| 2023-06-19 |  1.31   | 60 ms  | 18.16 | romain linux     |                                                                   |
+| 2023-07-17 |  1.33   | 55 ms  | 18.16 | romain linux     |                                                                   |
+| 2024-06-19 |  1.35   | 72 ms  | 20.14 | romain duc win11 |                                                                   |
+| 2024-12-29 |  1.40   | 172 ms | 22.11 | romain duc win11 | way slow but 6 months have passed :'/ not sure what happened here |
 
-- repo-check : `node dist/repo-check.min.cjs`
-- esbuild : `node_modules/.bin/esbuild src/index.ts --target=esnext --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs`
-- tsc-no-emit : `node node_modules/typescript/bin/tsc --noEmit`
-- npx-tsc-no-emit : `npx tsc --noEmit`
-- eslint : `node node_modules/eslint/bin/eslint src`
-- eslint-ts-src-only : `node node_modules/eslint/bin/eslint src/ --ext .ts`
-- uvu : `node node_modules/uvu/bin -r tsm tests`
-- c8-uvu : `node node_modules/c8/bin/c8 node_modules/uvu/bin -r tsm tests`
-- vitest : `npx vitest --run`
-- vitest-c8 : `npx vitest --run --coverage`
-- vitest-v8 : `npx vitest --run --coverage`
+## Build
 
-## Old method via `time`
+`hyperfine --runs 20 --warmup 5 'node node_modules/esbuild/bin/esbuild src/index.ts --target=esnext --bundle --platform=node --minify --outfile=dist/repo-check.min.cjs'`
+
+|    date    | version | delay  | node  | machine          | comment |
+| :--------: | :-----: | :----: | ----- | ---------------- | ------- |
+| 2024-12-29 |  0.24   | 177 ms | 22.11 | romain duc win11 |         |
+
+## Eslint
+
+`hyperfine --runs 4 --warmup 1 'node node_modules/eslint/bin/eslint src'`
+
+|    date    | version | eslint-plugin-shuunen | delay | node  | machine           | comment                           |
+| :--------: | :-----: | :-------------------: | :---: | ----- | ----------------- | --------------------------------- |
+| 2023-06-19 |  8.43   |                       | 7,4 s | 18.16 | romain linux      |                                   |
+| 2024-06-19 |  8.57   |                       | 6,0 s | 20.14 | romain duc win11  |                                   |
+| 2024-07-08 |  9.60   |          0.1          | 3,9 s | 20.15 | romain gram zorin | introducing eslint plugin shuunen |
+| 2024-12-29 |  9.17   |          0.4          | 3,6 s | 22.11 | romain duc win11  |                                   |
+
+## Tsc
+
+`hyperfine --runs 10 --warmup 2 'node node_modules/typescript/bin/tsc --noEmit'`
+
+|    date    | version | delay  | node  | machine          | comment |
+| :--------: | :-----: | :----: | ----- | ---------------- | ------- |
+| 2023-06-19 |   5.1   | 760 ms | 18.16 | romain linux     |         |
+| 2024-06-19 |   5.4   | 750 ms | 20.14 | romain duc win11 |         |
+| 2024-12-29 |   5.7   | 818 ms | 22.11 | romain duc win11 |         |
+
+For fun, proving `npx` is damn slow : `hyperfine --runs 10 --warmup 2 'npx tsc --noEmit'`
+
+|    date    | version | delay  | node  | machine          | comment                        |
+| :--------: | :-----: | :----: | ----- | ---------------- | ------------------------------ |
+| 2024-12-29 |   5.7   | 1.78 s | 22.11 | romain duc win11 | same objective, 2 times slower |
+
+## Vitest
+
+`hyperfine --runs 5 --warmup 1 'node node_modules/vitest/dist/cli.js --run'`.
+
+|    date    | version | delay | node  | machine          | comment       |
+| :--------: | :-----: | :---: | ----- | ---------------- | ------------- |
+| 2023-06-19 |  0.32   | 1,8 s | 18.16 | romain linux     |               |
+| 2023-07-17 |  0.33   | 2,0 s | 18.16 | romain linux     |               |
+| 2024-06-19 |   1.6   | 1,8 s | 20.14 | romain duc win11 |               |
+| 2024-12-29 |   1.7   | 4,5 s | 22.11 | romain duc win11 | damn slow :'/ |
+
+## Old method
 
 Each task is run 3 times via `time npm run <task>` to get the average execution time in seconds.
 
