@@ -2,23 +2,33 @@
 # Benchmarks
 
 - [Benchmarks](#benchmarks)
-  - [Repo-checker execution](#repo-checker-execution)
+  - [Execution](#execution)
   - [Build](#build)
   - [Eslint](#eslint)
   - [Tsc](#tsc)
   - [Vitest](#vitest)
   - [Old method](#old-method)
 
-## Repo-checker execution
+## Execution
 
-`pnpm build` then `hyperfine --runs 20 --warmup 3 'node dist/repo-check.min.cjs'`
+Using Tsup to build the checker, then using node to run the common-js build.
 
-|    date    | version | delay  | node  | machine          | comment                                                           |
-| :--------: | :-----: | :----: | ----- | ---------------- | ----------------------------------------------------------------- |
-| 2023-06-19 |  1.31   | 60 ms  | 18.16 | romain linux     |                                                                   |
-| 2023-07-17 |  1.33   | 55 ms  | 18.16 | romain linux     |                                                                   |
-| 2024-06-19 |  1.35   | 72 ms  | 20.14 | romain duc win11 |                                                                   |
-| 2024-12-29 |  1.40   | 172 ms | 22.11 | romain duc win11 | way slow but 6 months have passed :'/ not sure what happened here |
+`pnpm build` then `hyperfine --runs 20 --warmup 3 'node dist/repo-check.cjs'`
+
+|    date    | version | delay  | node  | machine          | comment                                                       |
+| :--------: | :-----: | :----: | ----- | ---------------- | ------------------------------------------------------------- |
+| 2023-06-19 |  1.31   | 60 ms  | 18.16 | romain linux     |                                                               |
+| 2023-07-17 |  1.33   | 55 ms  | 18.16 | romain linux     |                                                               |
+| 2024-06-19 |  1.35   | 72 ms  | 20.14 | romain duc win11 |                                                               |
+| 2024-12-29 |  1.40   | 179 ms | 22.11 | romain duc win11 | 2x slow but 6 months have passed, not sure what happened here |
+
+Running the typescript file directly using node new flag `--experimental-strip-types`.
+
+`hyperfine --runs 20 --warmup 3 'node --experimental-strip-types src/repo-check.ts'`
+
+|    date    | version | delay  | node  | machine          | comment                          |
+| :--------: | :-----: | :----: | ----- | ---------------- | -------------------------------- |
+| 2024-12-29 |  1.40   | 235 ms | 22.11 | romain duc win11 | wow not far from the cjs build ! |
 
 ## Build
 

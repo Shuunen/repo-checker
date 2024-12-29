@@ -1,14 +1,23 @@
-/* c8 ignore next 4 */
-// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
+/* c8 ignore next 2 */
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 export const home = process.env.HOME ?? '' // when does HOME is not defined ?
 /**
  * The name of the file that contains the configuration for repo-checker
  */
 export const dataFileName = '.repo-checker.json'
-// eslint-disable-next-line unicorn/prefer-module
-export const repoCheckerPath = path.join(__dirname, '..')
+
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
+
+/**
+ * The path to the repo-checker project folder
+ */
+export const repoCheckerPath = path.join(currentDirectory, '..')
+
+/**
+ * The path to the templates folder
+ */
 export const templatePath = path.join(repoCheckerPath, 'templates')
 
 /**

@@ -1,4 +1,4 @@
-import { FileBase } from '../file'
+import { FileBase } from '../file.ts'
 
 /* c8 ignore start */
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc

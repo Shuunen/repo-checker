@@ -1,4 +1,4 @@
-import { FileBase } from '../file'
+import { FileBase } from '../file.ts'
 
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class DependencyCruiserFile extends FileBase {

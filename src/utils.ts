@@ -6,8 +6,8 @@ import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAs
 import path from 'node:path'
 import { arrayUnique, parseJson, slugify } from 'shuutils'
 import sortJson from 'sort-json'
-import { ProjectData, dataDefaults, dataFileName } from './constants'
-import { log } from './logger'
+import { ProjectData, dataDefaults, dataFileName } from './constants.ts'
+import { log } from './logger.ts'
 
 const maxFilesToScan = 1000
 const jsonSpaceIndent = 2

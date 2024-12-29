@@ -1,11 +1,12 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import arg from 'arg'
 import { parseJson } from 'shuutils'
-import { name } from '../package.json'
-import { check } from './check'
-import { type ProjectData, dataDefaults, dataFileName, templatePath } from './constants'
-import { log } from './logger'
-import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils'
+import { check } from './check.ts'
+import { type ProjectData, dataDefaults, dataFileName, templatePath } from './constants.ts'
+import { log } from './logger.ts'
+import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils.ts'
+
+const name = 'repo-check'
 
 function getTarget(argument = '') {
   if (argument.length > 0) return resolve(argument)

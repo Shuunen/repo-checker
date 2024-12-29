@@ -1,10 +1,10 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import { ellipsis } from 'shuutils'
-import { version } from '../../package.json'
-import { dataDefaults } from '../constants'
-import { FileBase } from '../file'
-import { log } from '../logger'
-import { findInFolder, join } from '../utils'
+import packageJson from '../../package.json' with { type: 'json' }
+import { dataDefaults } from '../constants.ts'
+import { FileBase } from '../file.ts'
+import { log } from '../logger.ts'
+import { findInFolder, join } from '../utils.ts'
 
 // eslint-disable-next-line no-restricted-syntax
 export class PackageJsonFile extends FileBase {
@@ -73,6 +73,7 @@ export class PackageJsonFile extends FileBase {
   }
 
   private checkDependenciesVersionRepoCheck() {
+    const { version } = packageJson
     const [major, minor] = version.split('.').map(Number)
     /* c8 ignore next */
     if (minor === undefined || major === undefined) throw new Error('version is not semver')

@@ -2,9 +2,9 @@
 /* eslint-disable max-statements */
 /* eslint-disable jsdoc/require-jsdoc */
 import { clone, parseJson } from 'shuutils'
-import { FileBase } from '../file'
-import { log } from '../logger'
-import { objectToJson } from '../utils'
+import { FileBase } from '../file.ts'
+import { log } from '../logger.ts'
+import { objectToJson } from '../utils.ts'
 
 const recommendedCompilerOptions = {
   /* eslint-disable @typescript-eslint/naming-convention */

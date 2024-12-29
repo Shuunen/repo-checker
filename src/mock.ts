@@ -2,9 +2,9 @@
 // biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
 import path from 'node:path'
 import { clone, sleep } from 'shuutils'
-import type { check } from './check'
-import type { FileBase } from './file'
-import { join } from './utils'
+import type { check } from './check.ts'
+import type { FileBase } from './file.ts'
+import { join } from './utils.ts'
 
 const fileBaseKeysToDelete: (keyof FileBase)[] = ['fileExists', 'checkFileExists', 'folderPath', 'inspectFile', 'updateFile', 'initFile']
 const indicatorsKeys: ReadonlyArray<keyof Awaited<ReturnType<typeof check>>> = ['failed', 'passed', 'warnings'] as const

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { log } from './logger'
-import { getFlags, getOptions, start } from './main'
+import { log } from './logger.ts'
+import { getFlags, getOptions, start } from './main.ts'
 
 const options = getOptions(getFlags())
 

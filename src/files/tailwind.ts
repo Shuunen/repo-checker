@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { FileBase } from '../file'
+import { FileBase } from '../file.ts'
 
 // eslint-disable-next-line no-restricted-syntax
 export class TailwindFile extends FileBase {

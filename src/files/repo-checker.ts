@@ -1,6 +1,6 @@
-import { dataFileName } from '../constants'
-import { FileBase } from '../file'
-import { deleteFile, join, jsToJson, readFileInFolder, writeFile } from '../utils'
+import { dataFileName } from '../constants.ts'
+import { FileBase } from '../file.ts'
+import { deleteFile, join, jsToJson, readFileInFolder, writeFile } from '../utils.ts'
 
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class RepoCheckerConfigFile extends FileBase {

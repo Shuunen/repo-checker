@@ -1,10 +1,10 @@
 /* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable prefer-named-capture-group */
 /* eslint-disable max-classes-per-file */
-import { dataDefaults } from '../constants'
-import { FileBase } from '../file'
-import { log } from '../logger'
-import { fileExists, join, readFile } from '../utils'
+import { dataDefaults } from '../constants.ts'
+import { FileBase } from '../file.ts'
+import { log } from '../logger.ts'
+import { fileExists, join, readFile } from '../utils.ts'
 
 // eslint-disable-next-line no-restricted-syntax
 class Thanks {

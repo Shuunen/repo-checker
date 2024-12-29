@@ -1,5 +1,5 @@
-import { FileBase } from '../file'
-import { log } from '../logger'
+import { FileBase } from '../file.ts'
+import { log } from '../logger.ts'
 
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class NycRcFile extends FileBase {
