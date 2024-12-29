@@ -13,22 +13,31 @@
 
 Using Tsup to build the checker, then using node to run the common-js build.
 
-`pnpm build` then `hyperfine --runs 20 --warmup 3 'node dist/repo-check.cjs'`
+`pnpm build` then `hyperfine --runs 20 --warmup 3 'node dist/repo-check.cjs' 'bun src/repo-check.cjs' 'deno --allow-env --allow-read dist/repo-check.cjs'`
 
-|    date    | version | delay  | node  | machine          | comment                                                       |
-| :--------: | :-----: | :----: | ----- | ---------------- | ------------------------------------------------------------- |
-| 2023-06-19 |  1.31   | 60 ms  | 18.16 | romain linux     |                                                               |
-| 2023-07-17 |  1.33   | 55 ms  | 18.16 | romain linux     |                                                               |
-| 2024-06-19 |  1.35   | 72 ms  | 20.14 | romain duc win11 |                                                               |
-| 2024-12-29 |  1.40   | 179 ms | 22.11 | romain duc win11 | 2x slow but 6 months have passed, not sure what happened here |
+|    date    | version |   runner   | delay  | node  | machine          | comment                                                       |
+| :--------: | :-----: | :--------: | :----: | ----- | ---------------- | ------------------------------------------------------------- |
+| 2023-06-19 |  1.31   |    node    | 60 ms  | 18.16 | romain linux     |                                                               |
+| 2023-07-17 |  1.33   |    node    | 55 ms  | 18.16 | romain linux     |                                                               |
+| 2024-06-19 |  1.35   |    node    | 72 ms  | 20.14 | romain duc win11 |                                                               |
+| 2024-12-29 |  1.40   |    node    | 179 ms | 22.11 | romain duc win11 | 2x slow but 6 months have passed, not sure what happened here |
+| 2024-12-29 |  1.40   | bun 1.1.42 | 78 ms  | 22.11 | romain duc win11 | what the ?!? bun is 2x faster than node                       |
+| 2024-12-29 |  1.40   | deno 2.1.4 | 68 ms  | 22.11 | romain duc win11 | deno is also 2x faster than node                              |
 
-Running the typescript file directly using node new flag `--experimental-strip-types`.
+Running the typescript file directly.
 
-`hyperfine --runs 20 --warmup 3 'node --experimental-strip-types src/repo-check.ts'`
+`hyperfine --runs 20 --warmup 3 'node --experimental-strip-types src/repo-check.ts' 'bun src/repo-check.ts' 'deno --allow-env --allow-read src/repo-check.ts'`
 
-|    date    | version | delay  | node  | machine          | comment                          |
-| :--------: | :-----: | :----: | ----- | ---------------- | -------------------------------- |
-| 2024-12-29 |  1.40   | 235 ms | 22.11 | romain duc win11 | wow not far from the cjs build ! |
+|    date    | version | runner       | delay  | node  | machine          | comment                                                |
+| :--------: | :-----: | ------------ | :----: | ----- | ---------------- | ------------------------------------------------------ |
+| 2024-12-29 |  1.40   | node --strip | 235 ms | 22.11 | romain duc win11 | wow not far from the cjs build !                       |
+| 2024-12-29 |  1.40   | bun 1.1.42   | 84 ms  | 22.11 | romain duc win11 | what the ?!? 2x faster than node running the cjs build |
+| 2024-12-29 |  1.40   | deno 2.1.4   | 68 ms  | 22.11 | romain duc win11 | why even build things at this point xD                 |
+
+Notes :
+
+1. `ts-node src/repo-check.ts` is simply not working, and give this error : `TypeError: Unknown file extension ".ts" for C:\Users\Huei\Projects\github\repo-checker\src\repo-check.ts`, for sure `.ts` is not that common in the typescript world.
+2. `tsx src/repo-check.ts` is working and giving a 554 ms delay, but it's not a runner, it's compiling via esbuild and then running the build.
 
 ## Build
 

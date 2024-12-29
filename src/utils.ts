@@ -17,8 +17,7 @@ export async function fileExists(filePath: string) {
 }
 
 export async function readFile(filePath: string) {
-  const fileContent = await nodeReadFile(filePath, { encoding: 'utf8' })
-  return Buffer.from(fileContent).toString()
+  return nodeReadFile(filePath, { encoding: 'utf8' })
 }
 
 export async function isProjectFolder(folderPath: string) {
