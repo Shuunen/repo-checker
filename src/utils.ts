@@ -1,8 +1,6 @@
 /* eslint-disable jsdoc/require-jsdoc */
 /* c8 ignore next */
-// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
 import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'node:fs/promises'
-// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
 import path from 'node:path'
 import { arrayUnique, parseJson, slugify } from 'shuutils'
 import sortJson from 'sort-json'

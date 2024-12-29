@@ -1,4 +1,3 @@
-// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
 import { mkdirSync, rmSync } from 'node:fs'
 import { expect, it } from 'vitest'
 import { dataDefaults, dataFileName, repoCheckerPath } from './constants'
