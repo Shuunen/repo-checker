@@ -15,16 +15,29 @@ function cleanTargetForSnap(options: Readonly<ReturnType<typeof getOptions>>) {
   return clean
 }
 
-it('parseOptions A defaults', () => {
+it('getOptions A defaults', () => {
   expect(cleanTargetForSnap(getOptions({}))).toMatchSnapshot()
 })
 
-it('parseOptions B non existing target', () => {
+it('getOptions B non existing target', () => {
   expect(cleanTargetForSnap(getOptions({ '--fix': true, '--target': 'my-folder' }))).toMatchSnapshot()
 })
 
-it('parseOptions C show help', () => {
+it('getOptions C show help', () => {
   expect(cleanTargetForSnap(getOptions({ '--help': true }))).toMatchSnapshot()
+})
+
+const logLevels = [
+  { in: { '--verbose': true }, out: '1-debug' },
+  { in: { '--debug': true }, out: '1-debug' },
+  { in: { '--warn': true }, out: '5-warn' },
+  { in: { '--log-level': 'warn' }, out: '5-warn' },
+  { in: { '--error': true }, out: '7-error' },
+  { in: { '--log-level': 'error' }, out: '7-error' },
+]
+
+it('getOptions D check log levels', () => {
+  for (const { in: input, out: output } of logLevels) expect(getOptions(input).logLevel).toBe(output)
 })
 
 it('getFlags A', () => {
@@ -68,16 +81,6 @@ it('start C show version', async () => {
 
 it('start D init', () => {
   const options = { ...defaultOptions, willInit: true }
-  expect(start(options)).toMatchInlineSnapshot('Promise {}')
-})
-
-it('start E verbose', () => {
-  const options = { ...defaultOptions, isVerbose: true }
-  expect(start(options)).toMatchInlineSnapshot('Promise {}')
-})
-
-it('start F quiet', () => {
-  const options = { ...defaultOptions, isQuiet: true }
   expect(start(options)).toMatchInlineSnapshot('Promise {}')
 })
 

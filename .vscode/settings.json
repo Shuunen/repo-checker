@@ -24,6 +24,9 @@
     "vitepress",
     "websitecounterfree"
   ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
   "editor.formatOnSave": true,
   "workbench.colorCustomizations": {
     "activityBar.background": "#232F3A",

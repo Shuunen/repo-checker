@@ -1,12 +1,20 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import arg from 'arg'
-import { parseJson } from 'shuutils'
+import { type LoggerOptions, blue, gray, parseJson } from 'shuutils'
 import { check } from './check.ts'
 import { type ProjectData, dataDefaults, dataFileName, templatePath } from './constants.ts'
 import { log } from './logger.ts'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils.ts'
 
 const name = 'repo-check'
+
+function getLogLevel(flags: Flags) {
+  const logLevel = flags['--log-level']
+  if (flags['--verbose'] !== undefined || flags['--debug'] !== undefined || logLevel === 'debug') return '1-debug' as const satisfies LoggerOptions['minimumLevel']
+  if (flags['--warn'] !== undefined || logLevel === 'warn') return '5-warn' as const satisfies LoggerOptions['minimumLevel']
+  if (flags['--error'] !== undefined || logLevel === 'error') return '7-error' as const satisfies LoggerOptions['minimumLevel']
+  return '3-info' as const satisfies LoggerOptions['minimumLevel']
+}
 
 function getTarget(argument = '') {
   if (argument.length > 0) return resolve(argument)
@@ -28,23 +36,28 @@ function showHelp() {
       --target      target directory
       --fix         fix issues
       --fail-stop   stop process on first error
-      --quiet       quiet mode
-      --verbose     verbose mode
+      --log-level   the log level to use, info by default, possible values : debug, info, warn, error
+      --debug       or --verbose, equivalent to --log-level=debug
+      --warn        equivalent to --log-level=warn
+      --error       equivalent to --log-level=error
       -v --version  show version
       -h --help     show this help`)
   return { failed: [], passed: ['show-help'], warnings: [] }
 }
 
 const availableFlags = {
+  '--debug': Boolean,
+  '--error': Boolean,
   '--fail-stop': Boolean,
   '--fix': Boolean,
   '--force': Boolean,
   '--help': Boolean,
   '--init': Boolean,
-  '--quiet': Boolean,
+  '--log-level': String,
   '--target': String,
   '--verbose': Boolean,
   '--version': Boolean,
+  '--warn': Boolean,
   '-h': Boolean,
   '-v': Boolean,
 }
@@ -82,8 +95,7 @@ export const defaultOptions = {
   canFailStop: false,
   canFix: false,
   canForce: false,
-  isQuiet: false,
-  isVerbose: false,
+  logLevel: getLogLevel({}),
   target: '.',
   willInit: false,
   willShowHelp: false,
@@ -97,14 +109,12 @@ export function getFlags() {
   return flags as Flags
 }
 
-// eslint-disable-next-line complexity
 export function getOptions(flags: Flags) {
   return {
     canFailStop: flags['--fail-stop'] ?? defaultOptions.canFailStop,
     canFix: flags['--fix'] ?? defaultOptions.canFix,
     canForce: flags['--force'] ?? defaultOptions.canForce,
-    isQuiet: flags['--quiet'] ?? defaultOptions.isQuiet,
-    isVerbose: flags['--verbose'] ?? defaultOptions.isVerbose,
+    logLevel: getLogLevel(flags),
     target: getTarget(flags['--target']),
     willInit: flags['--init'] ?? defaultOptions.willInit,
     willShowHelp: flags['--help'] ?? flags['-h'] ?? defaultOptions.willShowHelp,
@@ -112,15 +122,14 @@ export function getOptions(flags: Flags) {
   }
 }
 
-export async function start({ canFailStop, canFix, canForce, isQuiet, isVerbose, target, willInit, willShowHelp, willShowVersion }: Readonly<ReturnType<typeof getOptions>> = defaultOptions) {
+export async function start(options: Readonly<ReturnType<typeof getOptions>> = defaultOptions) {
+  const { canFailStop, canFix, canForce, logLevel, target, willInit, willShowHelp, willShowVersion } = options
   if (willShowVersion) return showVersion()
   if (willShowHelp) return showHelp()
   if (willInit) return initDataFile(target, canForce)
   /* c8 ignore next 4 */
   const data = await getData(target)
-  log.options.isActive = !isQuiet
-  // eslint-disable-next-line unicorn/no-nested-ternary
-  log.options.minimumLevel = isVerbose ? '1-debug' : isQuiet ? '7-error' : '3-info'
-  log.info(`${String(name)} __unique-mark__ is starting ${canFix ? '(fix enabled)' : ''}`)
+  log.options.minimumLevel = logLevel
+  log.forceInfo([`${name} __unique-mark__ is starting`, canFix ? blue('fix active') : gray('fix inactive'), `log level is ${blue(logLevel.split('-')[1] ?? '')}`].join(', '))
   return check({ canFailStop, canFix, canForce, data, folderPath: target })
 }
