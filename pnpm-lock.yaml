@@ -12,8 +12,8 @@ importers:
         specifier: '5.0'
         version: 5.0.2
       shuutils:
-        specifier: '10.3'
-        version: 10.3.0
+        specifier: '10.4'
+        version: 10.4.0
       sort-json:
         specifier: '2.0'
         version: 2.0.1
@@ -1873,8 +1873,8 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shuutils@10.3.0:
-    resolution: {integrity: sha512-Vo4USo3D0W59T2qAojxWx9BDnIZQrzhVh+8rnSXN757MpQ9gPr396HAYsO1jP+lkqjlxKOqbnk7IiFtfJOpyKQ==}
+  shuutils@10.4.0:
+    resolution: {integrity: sha512-PMeon5coA7kQEjB0HQUalqqWBd9RLbeopVW3CwGd1sE9wFsgwNm1aBTKi+QMhym+toHLHoSr9ai5kFMe/VUa7g==}
     hasBin: true
 
   siginfo@2.0.0:
@@ -3905,7 +3905,7 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  shuutils@10.3.0:
+  shuutils@10.4.0:
     dependencies:
       resultx: 2.0.2
       tiny-glob: 0.2.9
