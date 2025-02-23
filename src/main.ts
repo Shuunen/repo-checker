@@ -1,6 +1,6 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import arg from 'arg'
-import { type LoggerOptions, blue, gray, parseJson } from 'shuutils'
+import { type LoggerOptions, blue, gray, isTestEnvironment, parseJson } from 'shuutils'
 import { check } from './check.ts'
 import { type ProjectData, dataDefaults, dataFileName, templatePath } from './constants.ts'
 import { log } from './logger.ts'
@@ -8,7 +8,9 @@ import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils.
 
 const name = 'repo-check'
 
-function getLogLevel(flags: Flags) {
+// eslint-disable-next-line complexity
+function getLogLevel(flags: Flags, shouldBypass = false) {
+  if (!shouldBypass && isTestEnvironment()) return '7-error' as const satisfies LoggerOptions['minimumLevel']
   const logLevel = flags['--log-level']
   if (flags['--verbose'] !== undefined || flags['--debug'] !== undefined || logLevel === 'debug') return '1-debug' as const satisfies LoggerOptions['minimumLevel']
   if (flags['--warn'] !== undefined || logLevel === 'warn') return '5-warn' as const satisfies LoggerOptions['minimumLevel']
@@ -109,12 +111,13 @@ export function getFlags() {
   return flags as Flags
 }
 
-export function getOptions(flags: Flags) {
+// eslint-disable-next-line complexity
+export function getOptions(flags: Flags, shouldBypass = false) {
   return {
     canFailStop: flags['--fail-stop'] ?? defaultOptions.canFailStop,
     canFix: flags['--fix'] ?? defaultOptions.canFix,
     canForce: flags['--force'] ?? defaultOptions.canForce,
-    logLevel: getLogLevel(flags),
+    logLevel: getLogLevel(flags, shouldBypass),
     target: getTarget(flags['--target']),
     willInit: flags['--init'] ?? defaultOptions.willInit,
     willShowHelp: flags['--help'] ?? flags['-h'] ?? defaultOptions.willShowHelp,

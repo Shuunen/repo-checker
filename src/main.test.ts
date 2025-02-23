@@ -34,10 +34,11 @@ const logLevels = [
   { in: { '--log-level': 'warn' }, out: '5-warn' },
   { in: { '--error': true }, out: '7-error' },
   { in: { '--log-level': 'error' }, out: '7-error' },
+  { in: { '--hehe': 'error' }, out: '3-info' },
 ]
 
 it('getOptions D check log levels', () => {
-  for (const { in: input, out: output } of logLevels) expect(getOptions(input).logLevel).toBe(output)
+  for (const { in: input, out: output } of logLevels) expect(getOptions(input, true).logLevel).toBe(output)
 })
 
 it('getFlags A', () => {
