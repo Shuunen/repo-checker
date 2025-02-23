@@ -64,7 +64,6 @@ module.exports = {
 }
 ",
   "passed": [
-    "has-a-tailwind-config-js-file",
     "tailwind-config-js-has-a-content-previously-named-purge-option",
   ],
   "warnings": [],

@@ -7,16 +7,17 @@ export class TailwindFile extends FileBase {
     const hasJsFile = await this.fileExists('tailwind.config.js')
     const hasTsFile = await this.fileExists('tailwind.config.ts')
     const hasMjsFile = await this.fileExists('tailwind.config.mjs')
-    /* c8 ignore next 2 */
+    /* c8 ignore next 3 */
     // eslint-disable-next-line unicorn/no-nested-ternary
     const fileName = `tailwind.config.${hasMjsFile ? 'mjs' : hasTsFile ? 'ts' : hasJsFile ? 'js' : 'cjs'}`
-    return { fileName, hasTsFile }
+    return { fileName, hasFile: hasJsFile || hasTsFile || hasMjsFile, hasTsFile }
   }
 
   public async start() {
     if (!this.data.isUsingTailwind) return
-    const { fileName, hasTsFile } = await this.detectContext()
-    await this.checkFileExists(fileName)
+    const { fileName, hasFile, hasTsFile } = await this.detectContext()
+    /* c8 ignore next */
+    if (!hasFile) return
     await this.inspectFile(fileName)
     if (!hasTsFile) {
       const hasTypes = this.shouldContains('type definitions', /@type/u, 1, true, "like : /** @type {import('tailwindcss').Config} */", true)
