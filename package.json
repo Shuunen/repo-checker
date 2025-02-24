@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "arg": "5.0",
-    "shuutils": "10.4",
+    "shuutils": "10.5",
     "sort-json": "2.0"
   },
   "description": "Repo maintenance made easy",
