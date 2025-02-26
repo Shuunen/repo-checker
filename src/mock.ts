@@ -8,7 +8,7 @@ import { join } from './utils.ts'
 const fileBaseKeysToDelete: (keyof FileBase)[] = ['fileExists', 'checkFileExists', 'folderPath', 'inspectFile', 'updateFile', 'initFile']
 const indicatorsKeys: ReadonlyArray<keyof Awaited<ReturnType<typeof check>>> = ['failed', 'passed', 'warnings'] as const
 
-export function cleanStringForSnap(input: string) {
+function cleanStringForSnap(input: string) {
   return (
     input
       // replace repo-check-1-40 by repo-check-x-yy

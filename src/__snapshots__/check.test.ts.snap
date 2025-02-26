@@ -117,7 +117,6 @@ exports[`check B repo-checker folder succeed 1`] = `
     "readme-md-has-no-remaining-thanks-to-chokidar",
     "readme-md-has-no-remaining-thanks-to-cypress-io",
     "readme-md-has-a-thanks-to-dependency-cruiser",
-    "readme-md-has-a-thanks-to-esbuild",
     "readme-md-has-a-thanks-to-eslint",
     "readme-md-has-no-remaining-thanks-to-mocha",
     "readme-md-has-no-remaining-thanks-to-npm-run-all",
@@ -175,6 +174,7 @@ exports[`check B repo-checker folder succeed 1`] = `
   ],
   "warnings": [
     "readme-md-could-have-a-demo-image-or-gif-demofolder-any-file-ext",
+    "readme-md-could-have-no-remaining-thanks-to-esbuild-esbuildhttps-github-com-evanw-esbuild-an-extremely-fast-java-script-bundler-and-minifier",
   ],
 }
 `;
