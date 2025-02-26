@@ -44,15 +44,20 @@ it('package F fix project', async () => {
   instance.fileExists = promiseTrue
   instance.inspectFile = promiseVoid
   instance.fileContent = `{
-    "devDependencies": {
-      "@types/jest": "^26.0.23",
-      "node": "14.14.37",
-    },
-    "scripts": {
-      "eslint": "eslint --ext .js,.ts,.vue src",
-      "test": "npm run jest",
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "node": "14.14.37",
+  },
+  "pnpm": {
+    "overrides": {
+      "tinypool": "0.8.0"
     }
-  }`
+  },
+  "scripts": {
+    "eslint": "eslint --ext .js,.ts,.vue src",
+    "test": "npm run jest",
+  }
+}`
   await instance.start()
   await instance.end()
   expect(cleanInstanceForSnap(instance)).toMatchSnapshot()

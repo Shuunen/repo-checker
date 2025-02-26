@@ -21,9 +21,9 @@ export class PackageJsonFile extends FileBase {
   }
 
   private checkDependenciesPrecision() {
-    const hasNoPatch = this.couldContains('no patch precision', /\s{4}".+":\s"\^?\d+\.\d+\.\d+"/gu, 0, 'patch precision is rarely useful', true)
+    const hasNoPatch = this.couldContains('no patch precision', /^\s{4}".+":\s"\^?\d+\.\d+\.\d+"/gmu, 0, 'patch precision is rarely useful', true)
     // eslint-disable-next-line prefer-named-capture-group
-    if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replace(/(\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gu, '$1')
+    if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replace(/(^\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gmu, '$1')
   }
 
   private checkDependenciesTesting() {

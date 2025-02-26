@@ -522,16 +522,21 @@ exports[`package F fix project 1`] = `
     "does-not-have-a-typescript-build-or-check-btscb",
   ],
   "fileContent": "{
-    "$schema": "https://json.schemastore.org/package",
-    "devDependencies": {
-      "@types/jest": "^26.0",
-      "node": "14.14",
-    },
-    "scripts": {
-      "eslint": "eslint --cache --ext .js,.ts,.vue src",
-      "test": "pnpm jest",
+  "$schema": "https://json.schemastore.org/package",
+  "devDependencies": {
+    "@types/jest": "^26.0",
+    "node": "14.14",
+  },
+  "pnpm": {
+    "overrides": {
+      "tinypool": "0.8.0"
     }
-  }",
+  },
+  "scripts": {
+    "eslint": "eslint --cache --ext .js,.ts,.vue src",
+    "test": "pnpm jest",
+  }
+}",
   "fileName": "",
   "originalFileContent": "",
   "passed": [
