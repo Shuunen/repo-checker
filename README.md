@@ -12,6 +12,7 @@
 ![logo](docs/banner.svg)
 
 - [Repo Checker](#repo-checker)
+  - [Demo](#demo)
   - [Usage](#usage)
   - [Parameters](#parameters)
     - [target](#target)
@@ -22,6 +23,10 @@
   - [Thanks](#thanks)
   - [Stargazers over time](#stargazers-over-time)
   - [Page views](#page-views)
+
+## Demo
+
+![demo](docs/demo-1.42.jpg)
 
 ## Usage
 
