@@ -24,7 +24,7 @@
     "eslint-plugin-shuunen": "1.0",
     "knip": "latest",
     "tsup": "^8.3",
-    "typescript": "5.7",
+    "typescript": "5.8",
     "vitest": "3.0",
     "watchlist": "0.3"
   },
