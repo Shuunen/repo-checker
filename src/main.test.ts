@@ -1,4 +1,4 @@
-import { clone } from 'shuutils'
+import { Result, clone } from 'shuutils'
 import { expect, it } from 'vitest'
 import { defaultOptions, getData, getFlags, getOptions, initDataFile, start } from './main'
 
@@ -56,7 +56,8 @@ it('start A defaults', () => {
 
 it('start B show help', async () => {
   const options = { ...defaultOptions, willShowHelp: true }
-  expect(await start(options)).toMatchInlineSnapshot(`
+  const result = Result.unwrap(await start(options))
+  expect(result.value).toMatchInlineSnapshot(`
     {
       "failed": [],
       "passed": [
@@ -69,7 +70,8 @@ it('start B show help', async () => {
 
 it('start C show version', async () => {
   const options = { ...defaultOptions, willShowVersion: true }
-  expect(await start(options)).toMatchInlineSnapshot(`
+  const result = Result.unwrap(await start(options))
+  expect(result.value).toMatchInlineSnapshot(`
     {
       "failed": [],
       "passed": [
@@ -91,7 +93,8 @@ it('start G fix', () => {
 })
 
 it('getData A empty target : current .repo-checker.json', async () => {
-  expect(await getData()).toMatchInlineSnapshot(`
+  const result = Result.unwrap(await getData())
+  expect(result.value).toMatchInlineSnapshot(`
     {
       "maxSizeKo": 65,
     }
@@ -104,12 +107,14 @@ it('getData B non-existing target : default data', () => {
 })
 
 it('getData C mal-formatted json target : default data', async () => {
-  // we dont toThrowErrorMatchingSnapshot because the JSON parse error message is localized -.-''
-  await expect(async () => getData('src/mocks/tsProject/sub-folder')).rejects.toThrowError()
+  const result = Result.unwrap(await getData('src/mocks/tsProject/sub-folder'))
+  expect(result.value).toBeUndefined()
+  expect(result.error).not.toBeUndefined()
 })
 
 it('initDataFile A default to current folder but data file already exists', async () => {
-  expect(await initDataFile()).toMatchInlineSnapshot(`
+  const result = await initDataFile()
+  expect(result.value).toMatchInlineSnapshot(`
     {
       "failed": [],
       "passed": [],
@@ -121,7 +126,8 @@ it('initDataFile A default to current folder but data file already exists', asyn
 })
 
 it('initDataFile B in a temp folder', async () => {
-  expect(await initDataFile('node_modules', true)).toMatchInlineSnapshot(`
+  const result = await initDataFile('node_modules', true)
+  expect(result.value).toMatchInlineSnapshot(`
     {
       "failed": [],
       "passed": [

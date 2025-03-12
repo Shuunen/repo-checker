@@ -1,8 +1,9 @@
 /* eslint-disable jsdoc/require-jsdoc */
 /* c8 ignore next */
+// eslint-disable-next-line unicorn/prevent-abbreviations
 import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'node:fs/promises'
 import path from 'node:path'
-import { arrayUnique, parseJson, slugify } from 'shuutils'
+import { Result, arrayUnique, parseJson, slugify } from 'shuutils'
 import sortJson from 'sort-json'
 import { ProjectData, dataDefaults, dataFileName } from './constants.ts'
 import { log } from './logger.ts'
@@ -41,21 +42,27 @@ export async function getProjectFolders(folderPath: string) {
 
 export async function readFileInFolder(folderPath: string, fileName: string) {
   const filePath = path.join(folderPath, fileName)
-  if (!(await fileExists(filePath))) throw new Error(`file "${filePath}" does not exists`)
+  if (!(await fileExists(filePath))) return Result.error(`file "${filePath}" does not exists`)
   const statData = await statAsync(filePath)
-  if (statData.isDirectory()) throw new Error(`filepath "${filePath}" is a directory`)
+  if (statData.isDirectory()) return Result.error(`filepath "${filePath}" is a directory`)
   const content = await readFile(filePath)
-  return content.replace(/\r\n/gu, '\n') // normalize line endings
+  return Result.ok(content.replace(/\r\n/gu, '\n')) // normalize line endings
 }
 
-// eslint-disable-next-line max-statements
+// eslint-disable-next-line max-statements, complexity
 export async function augmentDataWithGit(folderPath: string, dataSource: Readonly<ProjectData>) {
   const data = new ProjectData(dataSource)
   const gitFolder = path.join(folderPath, '.git')
   if (!(await fileExists(path.join(gitFolder, 'config')))) return data
   const gitConfigContent = await readFileInFolder(gitFolder, 'config')
-  data.hasMainBranch = gitConfigContent.includes('branch "main"')
-  const matches = /url = .*[/:](?<userId>[\w-]+)\/(?<repoId>[\w-]+)/u.exec(gitConfigContent)
+  /* c8 ignore next 5 */
+  if (!gitConfigContent.ok) {
+    if (gitConfigContent.error.includes('does not exists')) return data // no git config file, it's ok
+    log.error('error while reading git config file', gitConfigContent.error)
+    return data
+  }
+  data.hasMainBranch = gitConfigContent.value.includes('branch "main"')
+  const matches = /url = .*[/:](?<userId>[\w-]+)\/(?<repoId>[\w-]+)/u.exec(gitConfigContent.value)
   if (matches?.groups?.userId !== undefined) {
     data.userId = matches.groups.userId
     log.debug('found userId in git config :', data.userId)
@@ -68,14 +75,8 @@ export async function augmentDataWithGit(folderPath: string, dataSource: Readonl
   return data
 }
 
-// eslint-disable-next-line max-statements, complexity
-export async function augmentDataWithPackageJson(folderPath: string, dataSource: Readonly<ProjectData>) {
-  const data = new ProjectData(dataSource)
-  if (!(await fileExists(path.join(folderPath, 'package.json')))) {
-    log.debug('cannot augment, no package.json found in', folderPath)
-    return data
-  }
-  const content = await readFileInFolder(folderPath, 'package.json')
+// eslint-disable-next-line max-statements, complexity, @typescript-eslint/prefer-readonly-parameter-types
+function augmentDataWithPackageJsonData(data: ProjectData, content: string) {
   data.packageName = /"name": "(?<packageName>[\w+/@-]+)"/u.exec(content)?.groups?.packageName ?? dataDefaults.packageName
   data.license = /"license": "(?<license>[\w+\-.]+)"/u.exec(content)?.groups?.license ?? dataDefaults.license
   const author = /"author": "(?<userName>[\s\w/@-]+)\b[\s<]*(?<userMail>[\w.@-]+)?>?"/u.exec(content)
@@ -97,17 +98,33 @@ export async function augmentDataWithPackageJson(folderPath: string, dataSource:
   if (/ts-node|typescript|@types/u.test(content)) data.isUsingTypescript = true
   if (/webapp|webcomponent|website/u.test(content) || data.isUsingVue) data.isWebPublished = true
   if (content.includes('npm publish')) data.isPublishedPackage = true
+}
+
+export async function augmentDataWithPackageJson(folderPath: string, dataSource: Readonly<ProjectData>) {
+  const data = new ProjectData(dataSource)
+  const result = await readFileInFolder(folderPath, 'package.json')
+  if (result.ok) augmentDataWithPackageJsonData(data, result.value)
+  /* c8 ignore next 2*/ else if (result.error.includes('does not exists')) log.debug('cannot augment, no package.json found in', folderPath)
+  else log.error('error while reading package.json file', result.error)
   return data
 }
 
+// eslint-disable-next-line max-statements
 export async function augmentData(folderPath: string, dataSource: Readonly<ProjectData>, shouldLoadLocal = false) {
   let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
   data = await augmentDataWithPackageJson(folderPath, data)
-  const hasLocalData = shouldLoadLocal && (await fileExists(path.join(folderPath, dataFileName)))
-  if (hasLocalData) {
+  if (shouldLoadLocal) {
+    const result = await readFileInFolder(folderPath, dataFileName)
+    if (!result.ok) {
+      /* c8 ignore next 3 */
+      if (result.error.includes('does not exists'))
+        log.debug('no custom data file found in', folderPath) // no custom data file, it's ok
+      else log.error('error while reading data file', result.error)
+      return data
+    }
     // local data overwrite the rest
-    const { error, value } = parseJson<ProjectData>(await readFileInFolder(folderPath, dataFileName))
+    const { error, value } = parseJson<ProjectData>(result.value)
     /* c8 ignore next */
     if (error) log.error('error while parsing data file', folderPath, dataFileName, error)
     Object.assign(data, value)
@@ -130,12 +147,14 @@ export async function findInFolder(folderPath: string, pattern: Readonly<RegExp>
   const matches: string[] = []
   let ignored = arrayUnique(ignoredInput)
   if (filePaths.includes('.gitignore')) {
-    const content = await readFileInFolder(folderPath, '.gitignore')
+    /* c8 ignore next */
+    const content = Result.unwrap(await readFileInFolder(folderPath, '.gitignore')).value ?? ''
     ignored = arrayUnique([...ignored, ...content.split('\n')])
   }
   for (const filePath of filePaths) {
     if (ignored.includes(filePath)) continue
-    /* c8 ignore next */
+    /* c8 ignore next 2 */
+    // eslint-disable-next-line no-restricted-syntax
     if (count > maxFilesToScan) throw new Error('too many files to scan, please reduce the scope')
     const target = path.join(folderPath, filePath)
     const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null, no-await-in-loop
@@ -145,8 +164,9 @@ export async function findInFolder(folderPath: string, pattern: Readonly<RegExp>
       matches.push(...(await findInFolder(target, pattern, ignored, count + 1))) // eslint-disable-line no-await-in-loop
       continue
     }
+    /* c8 ignore next 2 */
     // eslint-disable-next-line no-await-in-loop
-    const content = await readFileInFolder(folderPath, filePath)
+    const content = Result.unwrap(await readFileInFolder(folderPath, filePath)).value ?? ''
     if (pattern.test(content)) matches.push(filePath)
   }
   return matches

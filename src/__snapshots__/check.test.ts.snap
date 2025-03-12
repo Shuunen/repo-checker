@@ -1,7 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`check A repo-checker folder fails with low max size 1`] = `"failed at validating at least one rule in one folder : package-json-main-file-size-XYZko-should-be-less-or-equal-to-max-size-allowed-2ko"`;
-
 exports[`check B repo-checker folder succeed 1`] = `
 {
   "failed": [],
@@ -269,8 +267,6 @@ exports[`check C ts-project folder 1`] = `
   ],
 }
 `;
-
-exports[`check D mocks-projects folders and throw 1`] = `"failed at validating at least one rule in one folder : has-a-editorconfig-file, has-a-gitignore-file, has-a-license-file, has-a-nvmrc-file, package-json-do..."`;
 
 exports[`check E mocks-projects folders and not throw 1`] = `
 {

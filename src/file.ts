@@ -1,4 +1,4 @@
-import { bgYellow, black, fillTemplate, sleep } from 'shuutils'
+import { Result, bgYellow, black, fillTemplate, sleep } from 'shuutils'
 import { ProjectData, templatePath } from './constants.ts'
 import { log } from './logger.ts'
 import { fileExists, getFileSizeInKo, join, messageToCode, readFileInFolder, readableRegex, writeFile } from './utils.ts'
@@ -168,7 +168,7 @@ export class FileBase {
    * @returns the file content
    */
   public async initFile(fileName: string) {
-    const template = await readFileInFolder(templatePath, fileName).catch(() => '')
+    const template = Result.unwrap(await readFileInFolder(templatePath, fileName)).value ?? ''
     if (template === '') {
       log.debug(`found no template ${fileName}, using a empty string instead`)
       return ''
@@ -186,7 +186,9 @@ export class FileBase {
    */
   public async inspectFile(fileName: string) {
     this.fileName = fileName
-    this.originalFileContent = await readFileInFolder(this.folderPath, fileName).catch(() => '')
+    const result = await readFileInFolder(this.folderPath, fileName)
+    if (!result.ok) return
+    this.originalFileContent = result.value
     this.fileContent = this.originalFileContent
   }
 

@@ -1,4 +1,5 @@
 import { mkdirSync, rmSync } from 'node:fs'
+import { Result } from 'shuutils'
 import { expect, it } from 'vitest'
 import { dataDefaults, dataFileName, repoCheckerPath } from './constants'
 import { promiseValue, sourceFolder, tsProjectFolder, vueProjectFolder } from './mock'
@@ -24,14 +25,18 @@ it('isProjectFolder B folders listing', async () => {
   for (const name of projects) rmSync(join(sourceFolder, name), { recursive: true })
 })
 
-it('read folder instead of file', async () => {
-  expect(await readFileInFolder(sourceFolder, '').catch(() => 'failed')).toBe('failed')
+it('readFileInFolder A read folder instead of file', async () => {
+  const result = Result.unwrap(await readFileInFolder(sourceFolder, ''))
+  expect(result.value).toBeUndefined()
+  expect(result.error).toContain('is a directory')
 })
 
 const filename = 'test-file.log'
 
-it('file creation, detection, read', async () => {
-  expect(await readFileInFolder('/', filename).catch(() => 'failed')).toBe('failed')
+it('readFileInFolder B file does not exists', async () => {
+  const result = Result.unwrap(await readFileInFolder('/', filename))
+  expect(result.value).toBeUndefined()
+  expect(result.error).toMatchInlineSnapshot(`"file "\\test-file.log" does not exists"`)
 })
 
 it('file size calculation', async () => {
@@ -77,6 +82,9 @@ it('augmentDataWithGit C tsProjectFolder', async () => {
 })
 it('augmentDataWithGit D testFolder', async () => {
   expect(await augmentDataWithGit(sourceFolder, dataDefaults)).toMatchSnapshot()
+})
+it('augmentDataWithGit E non-existing folder', async () => {
+  expect(await augmentDataWithGit('/non-existing-folder', dataDefaults)).toMatchSnapshot()
 })
 
 it('augmentDataWithPackageJson A repoCheckerPath', async () => {

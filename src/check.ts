@@ -1,5 +1,5 @@
 /* c8 ignore next */
-import { ellipsis, green, red, yellow } from 'shuutils'
+import { Result, ellipsis, green, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants.ts'
 import { DependencyCruiserFile } from './files/dependency-cruiser.ts'
 import { EditorConfigFile } from './files/editor-config.ts'
@@ -20,7 +20,7 @@ import { TsConfigFile } from './files/ts-config.ts'
 import { log } from './logger.ts'
 import { augmentData, getProjectFolders } from './utils.ts'
 
-interface Indicators {
+export interface Indicators {
   failed: readonly string[]
   passed: readonly string[]
   warnings: readonly string[]
@@ -105,6 +105,6 @@ export async function check({ canFailStop = false, canFix = false, canForce = fa
   /* eslint-enable no-await-in-loop */
   report({ failed, passed, warnings })
   const maxLogLength = 100
-  if (canThrow && failed.length > 0) throw new Error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), maxLogLength)}`)
-  return { failed, passed, warnings }
+  if (canThrow && failed.length > 0) return Result.error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), maxLogLength)}`)
+  return Result.ok({ failed, passed, warnings })
 }

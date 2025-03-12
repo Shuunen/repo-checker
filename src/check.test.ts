@@ -1,3 +1,4 @@
+import { Result } from 'shuutils'
 import { expect, it } from 'vitest'
 import { check } from './check'
 import { ProjectData, repoCheckerPath } from './constants'
@@ -5,32 +6,36 @@ import { cleanIndicatorsForSnap, cleanUnknownValueForSnap, mocksProjectsFolder, 
 
 it('check A repo-checker folder fails with low max size', async () => {
   const data = new ProjectData({ isPublishedPackage: true, isQuiet: true, maxSizeKo: 2 })
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion
-  const message = await check({ data, folderPath: repoCheckerPath }).catch((error: unknown) => (error as Error).message)
-  expect(cleanUnknownValueForSnap(message)).toMatchSnapshot()
+  const result = Result.unwrap(await check({ data, folderPath: repoCheckerPath }))
+  expect(result.value).toBeUndefined()
+  expect(cleanUnknownValueForSnap(result.error)).toMatchInlineSnapshot(`"failed at validating at least one rule in one folder : package-json-main-file-size-XYZko-should-be-less-or-equal-to-max-size-allowed-2ko"`)
 })
 
 it('check B repo-checker folder succeed', async () => {
   const data = new ProjectData({ isModule: true, isPublishedPackage: true, isQuiet: true, maxSizeKo: 120 })
-  const indicators = await check({ data, folderPath: repoCheckerPath })
-  expect(cleanIndicatorsForSnap(indicators)).toMatchSnapshot()
+  const result = Result.unwrap(await check({ data, folderPath: repoCheckerPath }))
+  expect(cleanIndicatorsForSnap(result.value)).toMatchSnapshot()
+  expect(result.error).toBeUndefined()
 })
 
 it('check C ts-project folder', async () => {
   const data = new ProjectData({ isQuiet: true })
-  const indicators = await check({ canThrow: false, data, folderPath: tsProjectFolder })
-  expect(cleanIndicatorsForSnap(indicators)).toMatchSnapshot()
+  const result = Result.unwrap(await check({ canThrow: false, data, folderPath: tsProjectFolder }))
+  expect(cleanIndicatorsForSnap(result.value)).toMatchSnapshot()
+  expect(cleanIndicatorsForSnap()).toBeUndefined()
+  expect(result.error).toBeUndefined()
 })
 
 it('check D mocks-projects folders and throw', async () => {
   const data = new ProjectData({ isQuiet: true })
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion
-  const message = await check({ canFailStop: true, data, folderPath: mocksProjectsFolder }).catch((error: unknown) => (error as Error).message)
-  expect(message).toMatchSnapshot()
+  const result = Result.unwrap(await check({ canFailStop: true, data, folderPath: mocksProjectsFolder }))
+  expect(result.value).toBeUndefined()
+  expect(result.error).toMatchInlineSnapshot(`"failed at validating at least one rule in one folder : has-a-editorconfig-file, has-a-gitignore-file, has-a-license-file, has-a-nvmrc-file, package-json-do..."`)
 })
 
 it('check E mocks-projects folders and not throw', async () => {
   const data = new ProjectData({ isQuiet: true })
-  const indicators = await check({ canFailStop: true, canThrow: false, data, folderPath: mocksProjectsFolder })
-  expect(cleanIndicatorsForSnap(indicators)).toMatchSnapshot()
+  const result = Result.unwrap(await check({ canFailStop: true, canThrow: false, data, folderPath: mocksProjectsFolder }))
+  expect(cleanIndicatorsForSnap(result.value)).toMatchSnapshot()
+  expect(result.error).toBeUndefined()
 })

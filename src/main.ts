@@ -1,6 +1,6 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import arg from 'arg'
-import { type LoggerOptions, blue, gray, isTestEnvironment, parseJson } from 'shuutils'
+import { type LoggerOptions, Result, blue, gray, isTestEnvironment, parseJson } from 'shuutils'
 import { check } from './check.ts'
 import { type ProjectData, dataDefaults, dataFileName, templatePath } from './constants.ts'
 import { log } from './logger.ts'
@@ -27,7 +27,7 @@ function getTarget(argument = '') {
 
 function showVersion() {
   log.info(`${name} version : __unique-mark__`)
-  return { failed: [], passed: ['show-version'], warnings: [] }
+  return Result.ok({ failed: [], passed: ['show-version'], warnings: [] })
 }
 
 function showHelp() {
@@ -44,7 +44,7 @@ function showHelp() {
       --error       equivalent to --log-level=error
       -v --version  show version
       -h --help     show this help`)
-  return { failed: [], passed: ['show-help'], warnings: [] }
+  return Result.ok({ failed: [], passed: ['show-help'], warnings: [] })
 }
 
 const availableFlags = {
@@ -68,15 +68,16 @@ type Flags = { readonly [Key in keyof typeof availableFlags]?: ReturnType<(typeo
 
 export async function initDataFile(directoryPath = '', shouldForce = false) {
   const dataPath = join(directoryPath, dataFileName)
-  const isPresent = await fileExists(dataPath)
-  if (isPresent && !shouldForce) {
+  const result = await readFileInFolder(templatePath, dataFileName)
+  /* c8 ignore next */
+  if (!result.ok) return Result.ok({ failed: [], passed: [], warnings: ['no-data-file-template-found'] })
+  if (!shouldForce) {
     log.warn('repo-checker data file', dataPath, 'already exists, use --force to overwrite it')
-    return { failed: [], passed: [], warnings: ['data-file-already-exists'] }
+    return Result.ok({ failed: [], passed: [], warnings: ['data-file-already-exists'] })
   }
-  const fileContent = await readFileInFolder(templatePath, dataFileName)
-  void writeFile(dataPath, fileContent)
+  void writeFile(dataPath, result.value)
   log.info('repo-checker data file successfully init, you should edit :', dataPath)
-  return { failed: [], passed: ['init-data-file'], warnings: [] }
+  return Result.ok({ failed: [], passed: ['init-data-file'], warnings: [] })
 }
 
 export async function getData(directoryPath = '') {
@@ -85,12 +86,13 @@ export async function getData(directoryPath = '') {
   if (!isPresent) {
     log.warn('you should use --init to prepare a data file to enhance fix')
     log.info('because no custom data file has been found, default data will be used')
-    return dataDefaults
+    return Result.ok(dataDefaults)
   }
   log.info('loading data from', dataPath)
-  const { error, value } = parseJson<ProjectData>(await readFileInFolder(dataPath, ''))
-  if (error) throw new Error(`error at getting data, target "${directoryPath}", dataPath "${dataPath}", error "${error}"`)
-  return value
+  /* c8 ignore next */
+  const { error, value } = parseJson<ProjectData>(Result.unwrap(await readFileInFolder(dataPath, '')).value ?? '')
+  if (error) return Result.error(`error at getting data, target "${directoryPath}", dataPath "${dataPath}", error "${error}"`)
+  return Result.ok(value)
 }
 
 export const defaultOptions = {
@@ -132,7 +134,8 @@ export async function start(options: Readonly<ReturnType<typeof getOptions>> = d
   if (willInit) return initDataFile(target, canForce)
   /* c8 ignore next 4 */
   const data = await getData(target)
+  if (!data.ok) return data
   log.options.minimumLevel = logLevel
   log.forceInfo([`${name} __unique-mark__ is starting`, canFix ? blue('fix active') : gray('fix inactive'), `log level is ${blue(logLevel.split('-')[1] ?? '')}`].join(', '))
-  return check({ canFailStop, canFix, canForce, data, folderPath: target })
+  return check({ canFailStop, canFix, canForce, data: data.value, folderPath: target })
 }

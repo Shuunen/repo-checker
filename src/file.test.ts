@@ -18,6 +18,7 @@ it('file A simple validator', async () => {
   class MyFile extends FileBase {
     public async start() {
       await writeFile(missingFilepath, 'Foobar content')
+      await this.inspectFile(existingFilepath)
       await this.inspectFile(missingFilename)
       expect(this.passed, 'test 1').toStrictEqual([])
       this.shouldContains('Foobar')

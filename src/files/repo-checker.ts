@@ -9,11 +9,10 @@ export class RepoCheckerConfigFile extends FileBase {
    * @param fileName - The file name to migrate
    */
   private async migrateOldConfig(fileName: string) {
-    const hasFile = await this.fileExists(fileName)
-    /* c8 ignore next 4 */
-    if (!hasFile) return
     const oldConfig = await readFileInFolder(this.folderPath, fileName)
-    await writeFile(join(this.folderPath, dataFileName), jsToJson(oldConfig))
+    /* c8 ignore next 3 */
+    if (!oldConfig.ok) return
+    await writeFile(join(this.folderPath, dataFileName), jsToJson(oldConfig.value))
     await deleteFile(join(this.folderPath, fileName))
   }
 
