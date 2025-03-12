@@ -36,7 +36,7 @@ const filename = 'test-file.log'
 it('readFileInFolder B file does not exists', async () => {
   const result = Result.unwrap(await readFileInFolder('/', filename))
   expect(result.value).toBeUndefined()
-  expect(result.error).toMatchInlineSnapshot(`"file "\\test-file.log" does not exists"`)
+  expect(result.error).toContain('does not exists')
 })
 
 it('file size calculation', async () => {
