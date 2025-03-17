@@ -4,6 +4,7 @@ import { getFlags, getOptions, start } from './main.ts'
 
 const options = getOptions(getFlags())
 
+// eslint-disable-next-line require-hook
 start(options)
   // eslint-disable-next-line max-nested-callbacks
   .then(result => {

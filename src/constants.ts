@@ -61,6 +61,8 @@ export class ProjectData {
 
   public isUsingV8 = false
 
+  public isUsingVitest = false
+
   public isUsingVue = false
 
   public isWebPublished = false

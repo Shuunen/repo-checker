@@ -21,6 +21,7 @@ exports[`tailwind : can detect valid config 1`] = `
     "isUsingTailwind": true,
     "isUsingTypescript": false,
     "isUsingV8": false,
+    "isUsingVitest": false,
     "isUsingVue": false,
     "isWebPublished": false,
     "license": "GPL-3.0",
@@ -37,7 +38,12 @@ exports[`tailwind : can detect valid config 1`] = `
   },
   "failed": [],
   "fileContent": "/** @type {import('tailwindcss').Config} */
-// eslint-disable-next-line no-undef
+import { readFileSync } from 'node:fs'
+
+// eslint-disable-next-line no-undef, no-console
+if (process.env.NODE_ENV === 'hey') process.env.hey = readFileSync('hey.log', 'utf8')
+
+// eslint-disable-next-line no-commonjs, no-undef
 module.exports = {
   content: ['public/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [
@@ -51,7 +57,12 @@ module.exports = {
 }
 ",
   "fileName": "",
-  "originalFileContent": "// eslint-disable-next-line no-undef
+  "originalFileContent": "import { readFileSync } from 'node:fs'
+
+// eslint-disable-next-line no-undef, no-console
+if (process.env.NODE_ENV === 'hey') process.env.hey = readFileSync('hey.log', 'utf8')
+
+// eslint-disable-next-line no-commonjs, no-undef
 module.exports = {
   content: ['public/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [

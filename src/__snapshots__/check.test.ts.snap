@@ -166,6 +166,7 @@ exports[`check B repo-checker folder succeed 1`] = `
     "tsconfig-json-has-a-module-resolution-compiler-option",
     "tsconfig-json-has-a-non-empty-lib-compiler-option",
     "tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough",
+    "vitest-config-mts-has-a-pool-thread-setting",
   ],
   "warnings": [],
 }

@@ -5,6 +5,7 @@ import { expect, it } from 'vitest'
 import { ProjectData, repoCheckerPath } from './constants'
 import { FileBase } from './file'
 import { cleanInstanceForSnap } from './mock'
+// eslint-disable-next-line max-dependencies
 import { deleteFile, join, readFile, writeFile } from './utils'
 
 const existingFilename = '.nvmrc'

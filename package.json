@@ -60,7 +60,7 @@
     "lint": "pnpm lint:biome && pnpm lint:knip && pnpm lint:tsc && pnpm lint:oxlint && pnpm lint:dep && echo lint success",
     "lint:biome": "biome check --error-on-warnings --write --unsafe src && echo lint:biome success",
     "lint:dep": "depcruise src --config && echo lint:dep success",
-    "lint:oxlint": "oxlint src --deny-warnings && echo lint:oxlint success",
+    "lint:oxlint": "oxlint src --deny-warnings --fix --fix-suggestions --fix-dangerously && echo lint:oxlint success",
     "lint:knip": "knip",
     "lint:tsc": "tsc --noEmit && echo lint:tsc success",
     "postversion": "git push && git push --tags && pnpm build && npm publish",

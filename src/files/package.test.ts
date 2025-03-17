@@ -1,6 +1,7 @@
 import { expect, it } from 'vitest'
 import { ProjectData, repoCheckerPath } from '../constants'
 import { cleanInstanceForSnap, promiseFalse, promiseTrue, promiseVoid, tsProjectFolder, vueProjectFolder } from '../mock'
+// eslint-disable-next-line max-dependencies
 import { PackageJsonFile } from './package.file'
 
 it('package A on repo checker', async () => {

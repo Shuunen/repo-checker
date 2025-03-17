@@ -21,6 +21,14 @@
       }
     }
   ],
+  "plugins": [
+    "import",
+    "jsdoc",
+    "oxc",
+    "typescript",
+    "unicorn",
+    "vitest"
+  ],
   "rules": {
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-indexed-object-style": "off",
@@ -46,6 +54,9 @@
         "allowArrowFunctions": true
       }
     ],
+    "import/exports-last": "off",
+    "jsdoc/require-param-type": "off",
+    "jsdoc/require-returns-type": "off",
     "no-async-await": "off",
     "no-continue": "off",
     "no-magic-numbers": [
@@ -65,6 +76,8 @@
     "no-void": "off",
     "oxc/no-optional-chaining": "off",
     "sort-imports": "off",
-    "unicorn/no-useless-undefined": "off"
+    "unicorn/no-useless-undefined": "off",
+    "vitest/prefer-to-be-falsy": "off",
+    "vitest/prefer-to-be-truthy": "off"
   }
 }

@@ -59,14 +59,15 @@ Notes :
 
 `hyperfine --runs 40 --warmup 3 'bun ./node_modules/oxlint/bin/oxlint src'`
 
-|    date    |   runner    | eslint-plugin-shuunen | delay | node  | bun   | machine           | comment                           |
-| :--------: | :---------: | :-------------------: | :---: | ----- | ----- | ----------------- | --------------------------------- |
-| 2023-06-19 | eslint 8.43 |                       | 7,4 s | 18.16 |       | romain linux      |                                   |
-| 2024-06-19 | eslint 8.57 |                       | 6,0 s | 20.14 |       | romain duc win11  |                                   |
-| 2024-07-08 | eslint 9.60 |          0.1          | 3,9 s | 20.15 |       | romain gram zorin | introducing eslint plugin shuunen |
-| 2024-12-29 | eslint 9.17 |          0.4          | 3,6 s | 22.11 |       | romain duc win11  |                                   |
-| 2025-03-17 | eslint 9.22 |          1.1          | 4,2 s | 22.14 | 1.2.4 | romain duc win11  |                                   |
-| 2025-03-17 | oxlint 0.16 |       adios :'/       | 97 ms | 22.14 | 1.2.4 | romain duc win11  | omg ^^''                          |
+|    date    |   runner    | eslint-plugin-shuunen | delay  | node  | bun   | machine           | comment                           |
+| :--------: | :---------: | :-------------------: | :----: | ----- | ----- | ----------------- | --------------------------------- |
+| 2023-06-19 | eslint 8.43 |                       | 7,4 s  | 18.16 |       | romain linux      |                                   |
+| 2024-06-19 | eslint 8.57 |                       | 6,0 s  | 20.14 |       | romain duc win11  |                                   |
+| 2024-07-08 | eslint 9.60 |          0.1          | 3,9 s  | 20.15 |       | romain gram zorin | introducing eslint plugin shuunen |
+| 2024-12-29 | eslint 9.17 |          0.4          | 3,6 s  | 22.11 |       | romain duc win11  |                                   |
+| 2025-03-17 | eslint 9.22 |          1.1          | 4,2 s  | 22.14 | 1.2.4 | romain duc win11  |                                   |
+| 2025-03-17 | oxlint 0.16 |       adios :'/       | 97 ms  | 22.14 | 1.2.4 | romain duc win11  | omg ^^'' with 324 rules           |
+| 2025-03-17 | oxlint 0.16 |                       | 112 ms | 22.14 | 1.2.4 | romain duc win11  | still great with 382 rules        |
 
 ## Tsc
 
@@ -90,13 +91,14 @@ For fun, proving `npx` is damn slow : `hyperfine --runs 10 --warmup 2 'npx tsc -
 
 `hyperfine --runs 5 --warmup 1 'node node_modules/vitest/dist/cli.js --run'`.
 
-|    date    |   runner    | delay | node  | machine          | comment             |
-| :--------: | :---------: | :---: | ----- | ---------------- | ------------------- |
-| 2023-06-19 | vitest 0.32 | 1,8 s | 18.16 | romain linux     |                     |
-| 2023-07-17 | vitest 0.33 | 2,0 s | 18.16 | romain linux     |                     |
-| 2024-06-19 | vitest 1.6  | 1,8 s | 20.14 | romain duc win11 |                     |
-| 2024-12-29 | vitest 1.7  | 4,5 s | 22.11 | romain duc win11 | damn slow :'/       |
-| 2025-03-17 | vitest 3.0  | 6,6 s | 22.14 | romain duc win11 | slower & slower :'/ |
+|    date    |   runner    | delay | node  | machine          | comment                            |
+| :--------: | :---------: | :---: | ----- | ---------------- | ---------------------------------- |
+| 2023-06-19 | vitest 0.32 | 1,8 s | 18.16 | romain linux     |                                    |
+| 2023-07-17 | vitest 0.33 | 2,0 s | 18.16 | romain linux     |                                    |
+| 2024-06-19 | vitest 1.6  | 1,8 s | 20.14 | romain duc win11 |                                    |
+| 2024-12-29 | vitest 1.7  | 4,5 s | 22.11 | romain duc win11 | damn slow :'/                      |
+| 2025-03-17 | vitest 3.0  | 6,6 s | 22.14 | romain duc win11 | slower & slower :'/                |
+| 2025-03-17 | vitest 3.0  | 1,0 s | 22.14 | romain duc win11 | with pool: 'threads' 👍 thanks Jojo |
 
 ## Old method
 

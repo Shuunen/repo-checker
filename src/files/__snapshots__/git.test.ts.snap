@@ -21,6 +21,7 @@ exports[`git : detect a missing git ignore 1`] = `
     "isUsingTailwind": false,
     "isUsingTypescript": false,
     "isUsingV8": false,
+    "isUsingVitest": false,
     "isUsingVue": false,
     "isWebPublished": false,
     "license": "GPL-3.0",

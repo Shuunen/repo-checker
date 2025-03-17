@@ -3,6 +3,7 @@ import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAs
 import path from 'node:path'
 import { Result, arrayUnique, parseJson, slugify } from 'shuutils'
 import sortJson from 'sort-json'
+// eslint-disable-next-line max-dependencies
 import { ProjectData, dataDefaults, dataFileName } from './constants.ts'
 import { log } from './logger.ts'
 
@@ -91,6 +92,7 @@ function augmentDataWithPackageJsonData(data: ProjectData, content: string) {
   data.isUsingEslint = content.includes('"eslint')
   data.isUsingOxc = content.includes('"oxc"') || content.includes('oxlint ')
   data.isUsingShuutils = content.includes('"shuutils"')
+  data.isUsingVitest = content.includes('"vitest ')
   data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()
   if (/ "(?:post|pre)[^"]+": "[^"]+"/u.test(content)) data.hasTaskPrefix = true

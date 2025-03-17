@@ -5,6 +5,7 @@ import { DependencyCruiserFile } from './files/dependency-cruiser.ts'
 import { EditorConfigFile } from './files/editor-config.ts'
 import { EsLintFile } from './files/eslint.file.ts'
 import { GithubWorkflowFile } from './files/gh-workflow.ts'
+// eslint-disable-next-line max-dependencies
 import { GitFile } from './files/git.ts'
 import { LicenseFile } from './files/license.ts'
 import { NpmRcFile } from './files/npmrc.file.ts'
@@ -17,6 +18,7 @@ import { RepoCheckerConfigFile } from './files/repo-checker.ts'
 import { TailwindFile } from './files/tailwind.ts'
 import { TravisFile } from './files/travis.ts'
 import { TsConfigFile } from './files/ts-config.ts'
+import { VitestFile } from './files/vitest.ts'
 import { log } from './logger.ts'
 import { augmentData, getProjectFolders } from './utils.ts'
 
@@ -26,7 +28,7 @@ export interface Indicators {
   warnings: readonly string[]
 }
 
-const checkers = [DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NpmRcFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile]
+const checkers = [DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NpmRcFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile, VitestFile]
 
 /**
  * Report a log

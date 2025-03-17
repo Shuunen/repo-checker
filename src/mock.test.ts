@@ -2,6 +2,7 @@ import { mkdirSync, rmSync } from 'node:fs'
 import { Result } from 'shuutils'
 import { expect, it } from 'vitest'
 import { dataDefaults, dataFileName, repoCheckerPath } from './constants'
+// eslint-disable-next-line max-dependencies
 import { promiseValue, sourceFolder, tsProjectFolder, vueProjectFolder } from './mock'
 import { augmentData, augmentDataWithGit, augmentDataWithPackageJson, findInFolder, getFileSizeInKo, getProjectFolders, isProjectFolder, join, jsToJson, messageToCode, objectToJson, readFileInFolder, writeFile } from './utils'
 

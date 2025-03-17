@@ -2,6 +2,7 @@
 import arg from 'arg'
 import { type LoggerOptions, Result, blue, gray, isTestEnvironment, parseJson } from 'shuutils'
 import { check } from './check.ts'
+// eslint-disable-next-line max-dependencies
 import { type ProjectData, dataDefaults, dataFileName, templatePath } from './constants.ts'
 import { log } from './logger.ts'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils.ts'
