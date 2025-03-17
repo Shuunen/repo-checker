@@ -12,17 +12,18 @@ function cleanStringForSnap(input: string) {
   return (
     input
       // replace repo-check-1-40 by repo-check-x-yy
-      .replace(/repo-check-\d-\d+/gu, 'repo-check-x-yy')
+      .replaceAll(/repo-check-\d-\d+/gu, 'repo-check-x-yy')
       // replace package-json-main-file-size-63ko by package-json-main-file-size-XYZko
-      .replace(/package-json-main-file-size-\d+ko/gu, 'package-json-main-file-size-XYZko')
+      .replaceAll(/package-json-main-file-size-\d+ko/gu, 'package-json-main-file-size-XYZko')
   )
 }
 
 // eslint-disable-next-line no-restricted-syntax
 export function cleanUnknownValueForSnap<Type>(input: Type): Type {
-  /* c8 ignore next 8 */
+  /* c8 ignore next 9 */
   /* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-type-assertion */
   if (typeof input === 'string') return cleanStringForSnap(input) as Type
+  // eslint-disable-next-line max-nested-callbacks
   if (Array.isArray(input)) return input.map(item => cleanUnknownValueForSnap(item)) as Type
   if (typeof input === 'object') return JSON.parse(cleanStringForSnap(JSON.stringify(input))) as Type
   // eslint-disable-next-line no-restricted-syntax

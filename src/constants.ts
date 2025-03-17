@@ -51,6 +51,8 @@ export class ProjectData {
 
   public isUsingNyc = false
 
+  public isUsingOxc = false
+
   public isUsingShuutils = false
 
   public isUsingTailwind = false

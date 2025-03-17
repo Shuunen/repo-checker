@@ -16,6 +16,7 @@ exports[`tailwind : can detect valid config 1`] = `
     "isUsingDependencyCruiser": false,
     "isUsingEslint": false,
     "isUsingNyc": false,
+    "isUsingOxc": false,
     "isUsingShuutils": false,
     "isUsingTailwind": true,
     "isUsingTypescript": false,
@@ -36,7 +37,7 @@ exports[`tailwind : can detect valid config 1`] = `
   },
   "failed": [],
   "fileContent": "/** @type {import('tailwindcss').Config} */
-// eslint-disable-next-line unicorn/prefer-module
+// eslint-disable-next-line no-undef
 module.exports = {
   content: ['public/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [
@@ -50,7 +51,7 @@ module.exports = {
 }
 ",
   "fileName": "",
-  "originalFileContent": "// eslint-disable-next-line unicorn/prefer-module
+  "originalFileContent": "// eslint-disable-next-line no-undef
 module.exports = {
   content: ['public/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [

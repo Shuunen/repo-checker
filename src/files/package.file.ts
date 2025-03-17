@@ -23,7 +23,7 @@ export class PackageJsonFile extends FileBase {
   private checkDependenciesPrecision() {
     const hasNoPatch = this.couldContains('no patch precision', /^\s{4}".+":\s"\^?\d+\.\d+\.\d+"/gmu, 0, 'patch precision is rarely useful', true)
     // eslint-disable-next-line prefer-named-capture-group
-    if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replace(/(^\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gmu, '$1')
+    if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replaceAll(/(^\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gmu, '$1')
   }
 
   private checkDependenciesTesting() {
@@ -46,6 +46,7 @@ export class PackageJsonFile extends FileBase {
     if (this.fileContent.includes('ts-node')) await this.checkDependenciesUsagesNode()
   }
 
+  // eslint-disable-next-line max-lines-per-function
   private checkDependenciesUsagesEslint() {
     this.shouldContains('an eslint dependency', /"eslint"/u)
     this.shouldContains('no eslint@8 dependency', /"eslint": ".?8/u, 0)
@@ -92,11 +93,11 @@ export class PackageJsonFile extends FileBase {
   private checkEchoes() {
     for (const task of ['build', 'check', 'lint', 'test']) {
       if (!this.fileContent.includes(`"${task}":`)) return
-      this.couldContains(`a final echo for task "${task}"`, new RegExp(`"${task}": ".+ && echo [\\w\\s]*${task} \\w+"`, 'u'))
+      this.couldContains(`a final echo for task "${task}"`, new RegExp(`"${task}": ".+ && echo [\\w\\s]*${task} \\w+"`, 'u'), 1, `like "${task}": "${task} && echo ${task} success"`)
     }
   }
 
-  // eslint-disable-next-line max-statements
+  // eslint-disable-next-line max-lines-per-function
   private checkExports() {
     if (!this.data.isPublishedPackage) return
     this.couldContains('a type module declaration for modern practices', /"type": "module"/u, 1)
@@ -133,7 +134,7 @@ export class PackageJsonFile extends FileBase {
     this.test(isSizeOk, `main file size (${sizeKo}ko) should be less or equal to max size allowed (${maxSizeKo}Ko)`)
   }
 
-  // eslint-disable-next-line max-statements
+  // eslint-disable-next-line max-lines-per-function
   private checkProperties() {
     this.couldContainsSchema('https://json.schemastore.org/package')
     this.couldContains('a "bugs" property', this.regexForStringProp('bugs'))
@@ -146,7 +147,7 @@ export class PackageJsonFile extends FileBase {
     if (hasRepository) {
       const hasPlus = this.couldContains('a repository url starting with git plus', /"repository": [^u]+url": "git\+https/gu, 1, 'like "repository": "git+https..."', true)
       /* c8 ignore next */
-      if (!hasPlus && this.canFix) this.fileContent = this.fileContent.replace(/(?<base>"repository": [^u]+url": ")(?<url>[^"]+")/gu, '$<base>git+$<url>')
+      if (!hasPlus && this.canFix) this.fileContent = this.fileContent.replaceAll(/(?<base>"repository": [^u]+url": ")(?<url>[^"]+")/gu, '$<base>git+$<url>')
     }
     this.shouldContains('a "author" property', this.regexForStringProp('author'))
     this.shouldContains('a "name" property', this.regexForStringProp('name'))
@@ -163,7 +164,7 @@ export class PackageJsonFile extends FileBase {
     if (this.data.isUsingDependencyCruiser) this.shouldContains('a depcruise usage', /depcruise\s/u, 1, false, 'like "depcruise src --config"')
     if (this.fileContent.includes('"build": "') && this.data.isUsingShuutils) this.couldContains('a unique-mark task', /unique-mark/u, 1, 'like "mark": "unique-mark public/my-file && echo mark success",')
     const isOk = this.couldContains('pnpm instead of npm run', /npm run/u, 0, 'use pnpm instead of npm run for performance', true)
-    if (!isOk && this.canFix) this.fileContent = this.fileContent.replace(/npm run/gu, 'pnpm').replace(/pnpm (?<task>[\w:]+) -- -/gu, 'pnpm $<task> -') // don't use -- for pnpm
+    if (!isOk && this.canFix) this.fileContent = this.fileContent.replaceAll('npm run', 'pnpm').replaceAll(/pnpm (?<task>[\w:]+) -- -/gu, 'pnpm $<task> -') // don't use -- for pnpm
     this.couldContains('a check script', /"check": "/u, 1, 'like "check": "pnpm build && pnpm lint ...')
     this.couldContains('no ci script', /"ci": "/u, 0, 'avoid using "ci" script, use "check" instead')
   }
@@ -177,7 +178,7 @@ export class PackageJsonFile extends FileBase {
 
   private checkScriptsTs() {
     if (!this.data.isUsingTypescript) return
-    this.shouldContains('a typescript build or check', /\btsc\b/u)
+    this.shouldContains('a typescript build or check', /\btsc\b/u, 1, false, 'like "build": "tsc" or "check": "tsc --noEmit"')
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

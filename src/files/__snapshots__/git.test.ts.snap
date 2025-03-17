@@ -16,6 +16,7 @@ exports[`git : detect a missing git ignore 1`] = `
     "isUsingDependencyCruiser": false,
     "isUsingEslint": false,
     "isUsingNyc": false,
+    "isUsingOxc": false,
     "isUsingShuutils": false,
     "isUsingTailwind": false,
     "isUsingTypescript": false,

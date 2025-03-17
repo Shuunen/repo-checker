@@ -30,6 +30,7 @@ function showVersion() {
   return Result.ok({ failed: [], passed: ['show-version'], warnings: [] })
 }
 
+// eslint-disable-next-line max-lines-per-function
 function showHelp() {
   log.info(`usage : ${name} [options]
     options :
@@ -66,6 +67,7 @@ const availableFlags = {
 
 type Flags = { readonly [Key in keyof typeof availableFlags]?: ReturnType<(typeof availableFlags)[Key]> }
 
+// eslint-disable-next-line max-lines-per-function
 export async function initDataFile(directoryPath = '', shouldForce = false) {
   const dataPath = join(directoryPath, dataFileName)
   const result = await readFileInFolder(templatePath, dataFileName)
@@ -80,6 +82,7 @@ export async function initDataFile(directoryPath = '', shouldForce = false) {
   return Result.ok({ failed: [], passed: ['init-data-file'], warnings: [] })
 }
 
+// eslint-disable-next-line max-lines-per-function
 export async function getData(directoryPath = '') {
   const dataPath = join(directoryPath, dataFileName)
   const isPresent = await fileExists(dataPath)

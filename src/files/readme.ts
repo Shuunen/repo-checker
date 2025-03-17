@@ -76,7 +76,7 @@ export class ReadmeFile extends FileBase {
   private checkBadgesDeprecated() {
     for (const badge of deprecatedBadges) {
       const isOk = this.shouldContains(`no deprecated ${badge} badge`, new RegExp(badge, 'u'), 0, false, `${badge} does not exist anymore`, true)
-      if (!isOk && this.canFix) this.fileContent = this.fileContent.replace(new RegExp(`.*${badge}.*\n`, 'giu'), '')
+      if (!isOk && this.canFix) this.fileContent = this.fileContent.replaceAll(new RegExp(`.*${badge}.*\n`, 'giu'), '')
     }
   }
 
@@ -92,10 +92,10 @@ export class ReadmeFile extends FileBase {
 
   private checkMarkdown() {
     let hasNoCrLf = this.shouldContains('no CRLF Windows carriage return', /\r/u, 0, false, 'prefer Unix LF', true)
-    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\r\n/gu, '\n')
+    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replaceAll(String.raw`\r\n`, '\n')
     const starLists = /\n\*\s[\w[]/gu
     hasNoCrLf = this.couldContains('no star flavored list', starLists, 0, 'should use dash flavor', true)
-    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replace(/\n\*\s(?=[\w[])/gu, '\n- ')
+    if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replaceAll(/\n\*\s(?=[\w[])/gu, '\n- ')
   }
 
   private checkStars() {
@@ -133,6 +133,7 @@ export class ReadmeFile extends FileBase {
     this.fileContent += '\n## Page views\n\n[![Free Website Counter](https://www.websitecounterfree.com/c.php?d=9&id=REPLACE_ME&s=12)](https://www.websitecounterfree.com)\n'
   }
 
+  // eslint-disable-next-line max-lines-per-function
   private getBadgesRecommended() {
     const userRepo = `${this.data.userId}/${this.data.repoId}`
     const list = [
@@ -150,6 +151,7 @@ export class ReadmeFile extends FileBase {
     return list
   }
 
+  // eslint-disable-next-line max-lines-per-function
   private async getThanks() {
     const list = [
       new Thanks('Shields.io', 'https://shields.io', 'for the nice badges on top of this readme', this.fileContent.includes('shields')),
@@ -175,6 +177,7 @@ export class ReadmeFile extends FileBase {
       new Thanks('Npm-parallel', 'https://github.com/spion/npm-parallel', 'to keep my npm scripts clean & readable', json.includes('npm-parallel"')),
       new Thanks('Nuxt', 'https://github.com/nuxt/nuxt.js', 'minimalist framework for server-rendered Vue.js applications', json.includes('"nuxt"')),
       new Thanks('Nyc', 'https://github.com/istanbuljs/nyc', 'simple & effective cli for code coverage', this.data.isUsingNyc),
+      new Thanks('Oxc', 'https://oxc.rs', 'a lovely super-fast collection of JavaScript tools written in Rust', this.data.isUsingOxc),
       new Thanks('Reef', 'https://github.com/cferdinandi/reef', 'a lightweight library for creating reactive, state-based components and UI', json.includes('reefjs"')),
       new Thanks('Repo-checker', 'https://github.com/Shuunen/repo-checker', 'eslint cover /src code and this tool the rest ^^', json.includes('repo-check"')),
       new Thanks('Rollup', 'https://rollupjs.org', 'a fast & efficient js module bundler', json.includes('rollup"')),
@@ -195,7 +198,7 @@ export class ReadmeFile extends FileBase {
     return list
   }
 
-  // eslint-disable-next-line max-statements
+  // eslint-disable-next-line max-lines-per-function
   public async start() {
     const hasUpReadmeFile = await this.fileExists('README.md')
     const hasReadmeFile = await this.fileExists('readme.md')

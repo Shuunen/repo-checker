@@ -150,7 +150,7 @@ export class FileBase {
    * @returns true if the file exists
    */
   public async fileExists(fileName: string) {
-    return fileExists(join(this.folderPath, fileName))
+    return await fileExists(join(this.folderPath, fileName))
   }
 
   /**
@@ -159,7 +159,7 @@ export class FileBase {
    * @returns the file size in Ko
    */
   public async getFileSizeInKo(filePath: string) {
-    return getFileSizeInKo(join(this.folderPath, filePath))
+    return await getFileSizeInKo(join(this.folderPath, filePath))
   }
 
   /**
@@ -202,7 +202,7 @@ export class FileBase {
    * @param canFix if the file can be auto-fixed
    * @returns true if the file contains the regex
    */
-  // eslint-disable-next-line @typescript-eslint/max-params, complexity
+  // eslint-disable-next-line max-params
   public shouldContains(name: string, regex?: Readonly<RegExp>, nbMatchExpected = defaultAmount, willJustWarn = false, helpMessage = '', canFix = false) {
     const regexp = regex ?? new RegExp(name, 'u')
     const isOk = this.checkContains(regexp, nbMatchExpected)
@@ -223,6 +223,7 @@ export class FileBase {
    * @param willJustWarn if the test will just warn
    * @returns true if the condition is valid
    */
+  // eslint-disable-next-line max-lines-per-function
   public test(isValid: boolean, message: string, willJustWarn = false) {
     const finalMessage = message.startsWith(this.fileName) ? message : `${this.fileName} ${message}`
     const code = messageToCode(finalMessage)
@@ -242,7 +243,7 @@ export class FileBase {
   /**
    * Update a file with a new content
    */
-  // eslint-disable-next-line max-statements
+  // eslint-disable-next-line max-lines-per-function
   public async updateFile() {
     if (this.originalFileContent.trim() === this.fileContent.trim()) {
       log.debug('avoid file update when updated content is the same')

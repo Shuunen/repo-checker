@@ -16,6 +16,7 @@ exports[`dependency cruiser config missing file 1`] = `
     "isUsingDependencyCruiser": false,
     "isUsingEslint": false,
     "isUsingNyc": false,
+    "isUsingOxc": false,
     "isUsingShuutils": false,
     "isUsingTailwind": false,
     "isUsingTypescript": false,

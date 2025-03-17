@@ -1,6 +1,4 @@
-/* eslint-disable jsdoc/require-jsdoc */
 /* c8 ignore next */
-// eslint-disable-next-line unicorn/prevent-abbreviations
 import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'node:fs/promises'
 import path from 'node:path'
 import { Result, arrayUnique, parseJson, slugify } from 'shuutils'
@@ -12,17 +10,17 @@ const maxFilesToScan = 1000
 const jsonSpaceIndent = 2
 
 export async function fileExists(filePath: string) {
-  return statAsync(filePath)
-    .then(() => true)
-    .catch(() => false)
+  return await statAsync(filePath)
+    .then(() => true) // eslint-disable-line max-nested-callbacks
+    .catch(() => false) // eslint-disable-line max-nested-callbacks
 }
 
 export async function readFile(filePath: string) {
-  return nodeReadFile(filePath, { encoding: 'utf8' })
+  return await nodeReadFile(filePath, { encoding: 'utf8' })
 }
 
 export async function isProjectFolder(folderPath: string) {
-  const statData = await statAsync(folderPath).catch(() => undefined) // eslint-disable-line unicorn/no-useless-undefined
+  const statData = await statAsync(folderPath).catch(() => undefined) // eslint-disable-line max-nested-callbacks
   if (statData?.isDirectory() === false) return false
   const hasGitConfig = await fileExists(path.join(folderPath, '.git', 'config'))
   if (hasGitConfig) return true
@@ -46,10 +44,11 @@ export async function readFileInFolder(folderPath: string, fileName: string) {
   const statData = await statAsync(filePath)
   if (statData.isDirectory()) return Result.error(`filepath "${filePath}" is a directory`)
   const content = await readFile(filePath)
-  return Result.ok(content.replace(/\r\n/gu, '\n')) // normalize line endings
+  // eslint-disable-next-line unicorn/prefer-string-replace-all
+  return Result.ok(content.replaceAll(/\r\n/gu, '\n')) // normalize line endings
 }
 
-// eslint-disable-next-line max-statements, complexity
+// eslint-disable-next-line max-lines-per-function
 export async function augmentDataWithGit(folderPath: string, dataSource: Readonly<ProjectData>) {
   const data = new ProjectData(dataSource)
   const gitFolder = path.join(folderPath, '.git')
@@ -75,7 +74,7 @@ export async function augmentDataWithGit(folderPath: string, dataSource: Readonl
   return data
 }
 
-// eslint-disable-next-line max-statements, complexity, @typescript-eslint/prefer-readonly-parameter-types
+// eslint-disable-next-line max-lines-per-function
 function augmentDataWithPackageJsonData(data: ProjectData, content: string) {
   data.packageName = /"name": "(?<packageName>[\w+/@-]+)"/u.exec(content)?.groups?.packageName ?? dataDefaults.packageName
   data.license = /"license": "(?<license>[\w+\-.]+)"/u.exec(content)?.groups?.license ?? dataDefaults.license
@@ -90,6 +89,7 @@ function augmentDataWithPackageJsonData(data: ProjectData, content: string) {
   data.isUsingC8 = content.includes('"c8"') || content.includes('coverage-c8')
   data.isUsingV8 = content.includes('coverage-v8')
   data.isUsingEslint = content.includes('"eslint')
+  data.isUsingOxc = content.includes('"oxc"') || content.includes('oxlint ')
   data.isUsingShuutils = content.includes('"shuutils"')
   data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()
@@ -109,7 +109,7 @@ export async function augmentDataWithPackageJson(folderPath: string, dataSource:
   return data
 }
 
-// eslint-disable-next-line max-statements
+// eslint-disable-next-line max-lines-per-function
 export async function augmentData(folderPath: string, dataSource: Readonly<ProjectData>, shouldLoadLocal = false) {
   let data = new ProjectData(dataSource)
   data = await augmentDataWithGit(folderPath, data)
@@ -117,7 +117,8 @@ export async function augmentData(folderPath: string, dataSource: Readonly<Proje
   if (shouldLoadLocal) {
     const result = await readFileInFolder(folderPath, dataFileName)
     if (!result.ok) {
-      /* c8 ignore next 3 */
+      /* c8 ignore next 4 */
+      // eslint-disable-next-line max-depth
       if (result.error.includes('does not exists'))
         log.debug('no custom data file found in', folderPath) // no custom data file, it's ok
       else log.error('error while reading data file', result.error)
@@ -141,7 +142,7 @@ export async function getFileSizeInKo(filePath: string) {
   return size
 }
 
-// eslint-disable-next-line max-statements, complexity, @typescript-eslint/max-params
+// eslint-disable-next-line max-lines-per-function, max-params
 export async function findInFolder(folderPath: string, pattern: Readonly<RegExp>, ignoredInput: readonly string[] = ['node_modules', '.git'], count = 0) {
   const filePaths = await readDirectoryAsync(folderPath)
   const matches: string[] = []
@@ -157,7 +158,7 @@ export async function findInFolder(folderPath: string, pattern: Readonly<RegExp>
     // eslint-disable-next-line no-restricted-syntax
     if (count > maxFilesToScan) throw new Error('too many files to scan, please reduce the scope')
     const target = path.join(folderPath, filePath)
-    const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null, no-await-in-loop
+    const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null, no-await-in-loop, max-nested-callbacks
     /* c8 ignore next */
     if (!statData) continue
     if (statData.isDirectory()) {
@@ -173,16 +174,16 @@ export async function findInFolder(folderPath: string, pattern: Readonly<RegExp>
 }
 
 export function messageToCode(message: string) {
-  return slugify(message.replace(/[,./:\\_]/gu, '-').replace(/(?<=[a-z])(?=[A-Z])/gu, '-'))
+  return slugify(message.replaceAll(/[,./:\\_]/gu, '-').replaceAll(/(?<=[a-z])(?=[A-Z])/gu, '-'))
 }
 
 export function jsToJson(js: string) {
   return js
-    .replace(/\/\*[^*]+\*\/\n?/gu, '') // remove comments
+    .replaceAll(/\/\*[^*]+\*\/\n?/gu, '') // remove comments
     .replace('module.exports = ', '') // remove module.exports
-    .replace(/ {2,4}(?<key>\w+):/gu, '  "$<key>":') // add quotes to keys
-    .replace(/,\n\}/gu, '\n}') // remove last comma
-    .replace(/'/gu, '"') // replace single quotes with double quotes
+    .replaceAll(/ {2,4}(?<key>\w+):/gu, '  "$<key>":') // add quotes to keys
+    .replaceAll(/,\s*\}/gu, '\n}') // remove last comma
+    .replaceAll("'", '"') // replace single quotes with double quotes
 }
 
 export function objectToJson(object: object) {
@@ -190,11 +191,10 @@ export function objectToJson(object: object) {
 }
 
 export function readableRegex(regex: Readonly<RegExp>) {
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   return regex
     .toString()
-    .replace(/\/[gui]\b/giu, '')
-    .replace(/\\/gu, '')
+    .replaceAll(/\/[gui]\b/giu, '')
+    .replaceAll('\\\\', '')
 }
 
 // biome-ignore lint/performance/noBarrelFile: <explanation>

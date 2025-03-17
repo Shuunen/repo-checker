@@ -75,18 +75,20 @@ function report({ failed = [], passed = [], warnings = [] }: Readonly<Indicators
  * @param options.folderPath the folder path to check
  * @returns the indicators of the check
  */
-// eslint-disable-next-line max-statements, complexity
+// eslint-disable-next-line max-lines-per-function
 export async function check({ canFailStop = false, canFix = false, canForce = false, canThrow = true, data, folderPath }: Readonly<CheckOptions>) {
   const folders = await getProjectFolders(folderPath)
-  let passed: string[] = []
-  let warnings: string[] = []
-  let failed: string[] = []
+  const indicators = {
+    failed: [] as string[],
+    passed: [] as string[],
+    warnings: [] as string[],
+  }
   log.options.isActive = !data.isQuiet
   /* c8 ignore next */
   if (folders.length === 0) log.warn('no folder to check', folderPath)
   /* eslint-disable no-await-in-loop */
   for (const folder of folders) {
-    if (canFailStop && failed.length > 0) {
+    if (canFailStop && indicators.failed.length > 0) {
       log.warn('stop checking other folders because of failures & --fail-stop option')
       break
     }
@@ -97,14 +99,14 @@ export async function check({ canFailStop = false, canFix = false, canForce = fa
       const instance = new Checker(folder, dataFolder, canFix, canForce)
       await instance.start()
       await instance.end()
-      passed = [...passed, ...instance.passed]
-      warnings = [...warnings, ...instance.warnings]
-      failed = [...failed, ...instance.failed]
+      indicators.passed.push(...instance.passed)
+      indicators.warnings.push(...instance.warnings)
+      indicators.failed.push(...instance.failed)
     }
   }
   /* eslint-enable no-await-in-loop */
-  report({ failed, passed, warnings })
+  report(indicators)
   const maxLogLength = 100
-  if (canThrow && failed.length > 0) return Result.error(`failed at validating at least one rule in one folder : ${ellipsis(failed.join(', '), maxLogLength)}`)
-  return Result.ok({ failed, passed, warnings })
+  if (canThrow && indicators.failed.length > 0) return Result.error(`failed at validating at least one rule in one folder : ${ellipsis(indicators.failed.join(', '), maxLogLength)}`)
+  return Result.ok(indicators)
 }

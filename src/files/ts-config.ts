@@ -46,6 +46,7 @@ export class TsConfigFile extends FileBase {
 
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: refactor needed ^^'
   private checkCompilerOptions() {
+    // eslint-disable-line max-lines-per-function
     /* c8 ignore next 4 */
     if (this.fileContentObject === undefined) {
       log.error('cannot check compiler options without file content')
@@ -76,20 +77,22 @@ export class TsConfigFile extends FileBase {
     if (this.canFix) this.fileContent = objectToJson(json)
   }
 
+  // eslint-disable-next-line max-lines-per-function
   private checkFileManagement() {
     const files = this.fileContentObject?.files ?? []
     if (files.length > 0) {
-      const hasNoWildcard = !files.some(file => file.includes('*'))
+      const hasNoWildcard = !files.some(file => file.includes('*')) // eslint-disable-line max-nested-callbacks
       this.test(hasNoWildcard, 'does not use wildcard in files section')
     }
     /* c8 ignore next */
     const include = this.fileContentObject?.include ?? []
     if (include.length > 0) {
-      const hasNoGlob = !include.some(file => file.endsWith('**/*'))
+      const hasNoGlob = !include.some(file => file.endsWith('**/*')) // eslint-disable-line max-nested-callbacks
       this.test(hasNoGlob, '"my-folder/**/*" is not needed in include section, "my-folder" is enough', true)
     }
   }
 
+  // eslint-disable-next-line max-lines-per-function
   public async start() {
     if (!this.data.isUsingTypescript) {
       log.debug('does not use typescript, skipping tsconfig.json checks')
