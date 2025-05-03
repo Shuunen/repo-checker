@@ -18,6 +18,7 @@ export class PackageJsonFile extends FileBase {
     this.checkDependenciesTesting()
     this.checkDependenciesVersions()
     await this.checkDependenciesUsages()
+    this.checkTasks()
   }
 
   private checkDependenciesPrecision() {
@@ -181,6 +182,13 @@ export class PackageJsonFile extends FileBase {
   private checkScriptsTs() {
     if (!this.data.isUsingTypescript) return
     this.shouldContains('a typescript build or check', /\btsc\b/u, 1, false, 'like "build": "tsc" or "check": "tsc --noEmit"')
+  }
+
+  private checkTasks() {
+    this.couldContains('no task run via npm', /\bnpm run/u, 0, 'use <pnpm|bun> my-task instead')
+    this.couldContains('no npm test', /\bnpm test/u, 0, 'use <pnpm|bun> test instead')
+    /* c8 ignore next */
+    if (this.data.isUsingBun) this.shouldContains('no misleading bun test in check task', /"check": ".*bun test.*"/u, 0, false, 'use bun run test instead')
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
