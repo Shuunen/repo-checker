@@ -96,7 +96,7 @@ it('getData A empty target : current .repo-checker.json', async () => {
   const result = Result.unwrap(await getData())
   expect(result.value).toMatchInlineSnapshot(`
     {
-      "maxSizeKo": 65,
+      "maxSizeKo": 70,
     }
   `)
 })

@@ -79,12 +79,15 @@ If file already exists, use `--force` to overwrite it.
 ## Thanks
 
 - [Arg](https://github.com/vercel/arg) : un-opinionated, no-frills CLI argument parser
+- [Boxy Svg](https://boxy-svg.com) : simple & effective svg editor
 - [Dependency-cruiser](https://github.com/sverweij/dependency-cruiser) : handy tool to validate and visualize dependencies
 - [Github](https://github.com) : for all their great work year after year, pushing OSS forward
+- [Knip](https://github.com/webpro/knip) : super tool to find & fix problems
 - [Oxc](https://oxc.rs) : a lovely super-fast collection of JavaScript tools written in Rust
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
 - [Shuutils](https://github.com/Shuunen/shuutils) : collection of pure JS utils
+- [Svg Omg](https://jakearchibald.github.io/svgomg) : the great king of svg file size reduction
 - [Tsup](https://github.com/egoist/tsup) : super fast js/ts bundler with no config, powered by esbuild <3
 - [V8](https://github.com/demurgos/v8-coverage) : simple & effective cli for code coverage
 - [Vitest](https://github.com/vitest-dev/vitest) : super fast vite-native testing framework
