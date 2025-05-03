@@ -16,7 +16,7 @@ class Thanks {
   public markdown = ''
 
   // eslint-disable-next-line @typescript-eslint/max-params
-  public constructor (label = '', link = '', description = '', isExpected = false, isFixable = true) {
+  public constructor(label = '', link = '', description = '', isExpected = false, isFixable = true) {
     this.label = label
     this.link = link
     this.description = description
@@ -36,7 +36,7 @@ class Badge {
   public markdown = ''
 
   // eslint-disable-next-line @typescript-eslint/max-params
-  public constructor (label = '', link = '', image = '', isExpected = true, isFixable = true) {
+  public constructor(label = '', link = '', image = '', isExpected = true, isFixable = true) {
     this.label = label
     this.link = link
     this.image = image
