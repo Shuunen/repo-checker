@@ -55,6 +55,7 @@
       }
     ],
     "import/exports-last": "off",
+    "import/group-exports": "off",
     "jsdoc/require-param-type": "off",
     "jsdoc/require-returns-type": "off",
     "no-async-await": "off",
@@ -76,6 +77,12 @@
     "no-void": "off",
     "oxc/no-optional-chaining": "off",
     "sort-imports": "off",
+    "unicorn/filename-case": [
+      "error",
+      {
+        "case": "kebabCase"
+      }
+    ],
     "unicorn/no-useless-undefined": "off",
     "vitest/prefer-to-be-falsy": "off",
     "vitest/prefer-to-be-truthy": "off"
