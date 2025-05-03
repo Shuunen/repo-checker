@@ -43,8 +43,10 @@ export class ProjectData {
 
   public isQuiet = false
 
+  /** If the project is using c8 for coverage */
   public isUsingC8 = false
 
+  /** If the project is using dependency cruiser for dependency analysis */
   public isUsingDependencyCruiser = false
 
   public isUsingEslint = false
@@ -59,9 +61,17 @@ export class ProjectData {
 
   public isUsingTypescript = false
 
+  /** If the project is using v8 for coverage */
   public isUsingV8 = false
 
+  /** If the project is using vitest for testing */
   public isUsingVitest = false
+
+  /** If the project is using Bun as its runtime */
+  public isUsingBun = false
+
+  /** If the project is using Knip for linting */
+  public isUsingKnip = false
 
   public isUsingVue = false
 

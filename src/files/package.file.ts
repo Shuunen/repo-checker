@@ -27,10 +27,12 @@ export class PackageJsonFile extends FileBase {
   }
 
   private checkDependenciesTesting() {
+    const useBunTest = this.fileContent.includes('bun test')
     const hasUt = /"(?<tool>mocha|uvu|vitest)"/u.exec(this.fileContent)?.groups?.tool !== undefined
-    this.test(hasUt, 'one unit testing dependency from : vitest, mocha, uvu', true)
-    const hasCoverage = /"(?<tool>c8|@vitest\/coverage-c8|@vitest\/coverage-v8|nyc)"/u.exec(this.fileContent)?.groups?.tool !== undefined
-    this.test(hasCoverage, 'one coverage dependency from : nyc, c8, v8', true)
+    this.test(hasUt || useBunTest, 'should have one unit testing dependency from : vitest, mocha, uvu or use bun test', true)
+    const useBunTestCoverage = this.fileContent.includes('bun test --coverage')
+    const hasCoverage = /"(?<tool>c8|@vitest\/coverage-c8|@vitest\/coverage-v8|nyc|bun test)"/u.exec(this.fileContent)?.groups?.tool !== undefined
+    this.test(hasCoverage || useBunTestCoverage, 'should have one coverage dependency from : nyc, c8, v8 or use bun test --coverage', true)
   }
 
   private checkDependenciesUnwanted() {

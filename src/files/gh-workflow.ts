@@ -26,6 +26,33 @@ export class GithubWorkflowFile extends FileBase {
   }
 
   /**
+   * Check Bun setup
+   */
+  private checkBun() {
+    const hasBunStep = this.couldContains('a bun setup step', /oven-sh\/setup-bun/u)
+    if (!hasBunStep) return
+    const hasRecentVersion = this.couldContains('a recent Bun version', /uses: oven-sh\/setup-bun@v\d/u, 1, undefined, true)
+    if (!hasRecentVersion && this.canFix) this.fileContent = this.fileContent.replace(/(?<=uses: oven-sh\/setup-bun@)v\d/u, 'latest')
+  }
+
+  /**
+   * Check runtime setup (Pnpm or Bun)
+   */
+  private checkRuntime() {
+    if (this.data.isUsingBun) this.checkBun()
+    else this.checkPnpm()
+  }
+
+  /**
+   * Check node version
+   */
+  private checkNodeVersion() {
+    this.couldContains('no main branch reference', /- main/u, 0)
+    this.shouldContains('a node step in ci workflow', /actions\/setup-node/u)
+    this.couldContains('a recent node version', /node: \[22\]|node-version: 22/u, 1)
+  }
+
+  /**
    * Start the ci workflow file check
    */
   public async start() {
@@ -34,10 +61,8 @@ export class GithubWorkflowFile extends FileBase {
     if (!hasFile) return
     await this.inspectFile(filePath)
     this.checkCheckout()
-    this.shouldContains('a node step in ci workflow', /actions\/setup-node/u)
-    this.checkPnpm()
-    this.couldContains('no main branch reference', /- main/u, 0)
-    this.couldContains('a recent node version', /node: \[22\]|node-version: 22/u, 1)
+    this.checkRuntime()
+    this.checkNodeVersion()
   }
 }
 /* c8 ignore stop */

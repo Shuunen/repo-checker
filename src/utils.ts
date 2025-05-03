@@ -93,6 +93,8 @@ function augmentDataWithPackageJsonData(data: ProjectData, content: string) {
   data.isUsingOxc = content.includes('"oxc"') || content.includes('oxlint ')
   data.isUsingShuutils = content.includes('"shuutils"')
   data.isUsingVitest = content.includes('"vitest ')
+  data.isUsingBun = content.includes('"bun"') || content.includes('bun install')
+  data.isUsingKnip = content.includes('"knip"')
   data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()
   if (/ "(?:post|pre)[^"]+": "[^"]+"/u.test(content)) data.hasTaskPrefix = true

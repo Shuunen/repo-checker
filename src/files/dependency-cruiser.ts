@@ -6,11 +6,12 @@ export class DependencyCruiserFile extends FileBase {
    * Start the dependency cruiser file check
    */
   public async start() {
+    if (this.data.isUsingKnip) return
     const isUsingDepCruiser = this.test(this.data.isUsingDependencyCruiser, 'use dependency cruiser', true)
+    /* c8 ignore next 4 */
     if (!isUsingDepCruiser) return
     const hasJsFile = await this.fileExists('.dependency-cruiser.js')
     const hasCjsFile = await this.fileExists('.dependency-cruiser.cjs')
-    /* c8 ignore next */
     this.test(hasJsFile || hasCjsFile, 'has a .dependency-cruiser config file')
   }
 }
