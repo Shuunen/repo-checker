@@ -172,7 +172,7 @@ exports[`check B repo-checker folder succeed 1`] = `
     "tsconfig-json-has-a-module-resolution-compiler-option",
     "tsconfig-json-has-a-non-empty-lib-compiler-option",
     "tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough",
-    "vitest-config-mts-has-a-pool-thread-setting",
+    "vitest-config-mts-has-a-pool-thread-setting-in-the-vitest-config-file",
   ],
   "warnings": [],
 }
@@ -238,7 +238,7 @@ exports[`check C ts-project folder 1`] = `
     "tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough",
   ],
   "warnings": [
-    "use-dependency-cruiser",
+    "use-32mhttps-knip-dev39m-or-34mhttps-www-npmjs-com-package-dependency-cruiser39m",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",
@@ -330,7 +330,7 @@ exports[`check E mocks-projects folders and not throw 1`] = `
     "tsconfig-json-my-folder-is-not-needed-in-include-section-my-folder-is-enough",
   ],
   "warnings": [
-    "use-dependency-cruiser",
+    "use-32mhttps-knip-dev39m-or-34mhttps-www-npmjs-com-package-dependency-cruiser39m",
     "has-a-npmrc-file",
     "package-json-main-file-maximum-size-is-specified-in-data-file-ex-max-size-ko-100",
     "package-json-could-have-a-schema-declaration-like-schema-https-json-schemastore-org-package-43m30m-fixable-39m49m",

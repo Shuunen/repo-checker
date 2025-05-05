@@ -44,7 +44,7 @@ exports[`dependency cruiser config missing file 1`] = `
   "originalFileContent": "",
   "passed": [],
   "warnings": [
-    "use-dependency-cruiser",
+    "use-32mhttps-knip-dev39m-or-34mhttps-www-npmjs-com-package-dependency-cruiser39m",
   ],
 }
 `;
