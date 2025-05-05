@@ -15,14 +15,10 @@ export class TailwindFile extends FileBase {
 
   public async start() {
     if (!this.data.isUsingTailwind) return
-    const { fileName, hasFile, hasTsFile } = await this.detectContext()
+    const { fileName, hasFile } = await this.detectContext()
     /* c8 ignore next */
     if (!hasFile) return
     await this.inspectFile(fileName)
-    if (!hasTsFile) {
-      const hasTypes = this.shouldContains('type definitions', /@type/u, 1, true, "like : /** @type {import('tailwindcss').Config} */", true)
-      if (!hasTypes && this.canFix) this.fileContent = `/** @type {import('tailwindcss').Config} */\n${this.fileContent}`
-    }
     this.shouldContains('a content (previously named purge) option', /content/u, 1, false, "like : content: ['./src/**/*.{vue,js,ts,jsx,tsx}']")
   }
 }
