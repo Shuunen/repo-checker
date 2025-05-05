@@ -74,6 +74,9 @@ If file already exists, use `--force` to overwrite it.
 - [ ] prepare a json schema for .repo-checker.json
 - [ ] try to avoid using class in this project and remove `eslint-disable-next-line no-restricted-syntax`
 - [ ] check if lint/performance/useTopLevelRegex worth fixing everywhere
+- [ ] use [cosmic config](https://github.com/davidtheclark/cosmiconfig) which is pretty huge, or [lil config](https://github.com/antonk52/lilconfig/) instead or nothing at all ^^
+- [ ] suggest lighthouse budget like [3f052df](https://github.com/Shuunen/stuff-finder/commit/3f052df076b23503d3692883319c618c2d045a99) & [1c4c2f3](https://github.com/Shuunen/stuff-finder/commit/1c4c2f365bc53ba158d7e4eeda596094cad8accb) add appropriate thanks to [lighthouse-ci-action](https://github.com/treosh/lighthouse-ci-action) & lighthouse
+- [ ] enhance readme headers via snippets/banner or [socialify.git.ci](https://socialify.git.ci/Shuunen/repo-checker?font=Inter&language=1&owner=1&pattern=Circuit%20Board&stargazers=1&theme=Light) or [satori](https://github.com/vercel/satori)
 
 ## Thanks
 
