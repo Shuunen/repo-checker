@@ -98,11 +98,13 @@ export class ReadmeFile extends FileBase {
     if (!hasNoCrLf && this.canFix) this.fileContent = this.fileContent.replaceAll(/\n\*\s(?=[\w[])/gu, '\n- ')
   }
 
-  private checkStars() {
-    const hasChart = this.couldContains('a star chart', /starchart\.cc/u, 1, '## Stargazers over time', true)
-    if (hasChart) return
-    this.fileContent += `\n## Stargazers over time\n\n[![Stargazers over time](https://starchart.cc/${this.data.userId}/${this.data.repoId}.svg?variant=adaptive)](https://starchart.cc/${this.data.userId}/${this.data.repoId})\n`
-  }
+  // Used to works nicely but starchart.cc graph is broken most of the time
+  // There is this competitor : star-history.com but image take 30 seconds to load... -.-'' so nope
+  // private checkStars() {
+  //   const hasChart = this.couldContains('a star chart', /starchart\.cc/u, 1, '## Stargazers over time', true)
+  //   if (hasChart) return
+  //   this.fileContent += `\n## Stargazers over time\n\n[![Stargazers over time](https://starchart.cc/${this.data.userId}/${this.data.repoId}.svg?variant=adaptive)](https://starchart.cc/${this.data.userId}/${this.data.repoId})\n`
+  // }
 
   private async checkThanks() {
     const hasSection = this.couldContains('a thanks section', /## Thanks/u)
@@ -128,9 +130,11 @@ export class ReadmeFile extends FileBase {
   }
 
   private checkViews() {
-    const hasImage = this.couldContains('a page views counter', /websitecounterfree\.com\/c\.php\?d=\d+&id=\d+&s=\d+/u, 1, '![Free Website Counter](https://www.websitecounterfree.com/c.php?d=9&id=60667&s=12)', true)
+    // exemple : https://views-counter.vercel.app/badge?pageId=Shuunen%2Fgoals&leftColor=5c5c5c&rightColor=07a62f&type=total&label=Visitors&style=none
+    const url = `https://views-counter.vercel.app/badge?pageId=${this.data.userId}%2F${this.data.repoId}&leftColor=5c5c5c&rightColor=07a62f&type=total&label=Visitors&style=none`
+    const hasImage = this.couldContains('a views counter', new RegExp(url.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`), 'u'), 1, `![Views Counter](${url})`, true)
     if (hasImage) return
-    this.fileContent += '\n## Page views\n\n[![Free Website Counter](https://www.websitecounterfree.com/c.php?d=9&id=REPLACE_ME&s=12)](https://www.websitecounterfree.com)\n'
+    this.fileContent += `\n## Page views\n\n[![Views Counter](${url})](https://github.com/Kumara2mahe/Views-Counter)\n`
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -224,7 +228,7 @@ export class ReadmeFile extends FileBase {
     this.checkTodos()
     this.checkBadges()
     await this.checkThanks()
-    this.checkStars()
+    // this.checkStars()
     this.checkViews()
   }
 }
