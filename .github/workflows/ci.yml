@@ -16,7 +16,7 @@ jobs:
           node-version: 22
 
       - name: Setup bun
-        uses: oven-sh/setup-bun@latest
+        uses: oven-sh/setup-bun@v2
 
       - name: Run check 👀
         run: bun run check
