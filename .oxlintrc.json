@@ -33,6 +33,7 @@
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-indexed-object-style": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
+    "consistent-type-specifier-style": "off",
     "curly": [
       "error",
       "multi"

@@ -19,8 +19,8 @@ export class GithubWorkflowFile extends FileBase {
   private checkPnpm() {
     const hasPnpmStep = this.couldContains('a pnpm setup step', /pnpm\/action-setup/u)
     if (!hasPnpmStep) return
-    const hasRecentVersion = this.couldContains('a recent pnpm version', /uses: pnpm\/action-setup@v\d\n +with:\n +version: 9/u, 1, undefined, true)
-    if (!hasRecentVersion && this.canFix) this.fileContent = this.fileContent.replace(/(?<step>uses: pnpm\/action-setup@v\d\n +with:\n +version:) \d/u, '$<step> 9')
+    const hasRecentVersion = this.couldContains('a recent pnpm version', /uses: pnpm\/action-setup@v\d\n +with:\n +version: 10/u, 1, undefined, true)
+    if (!hasRecentVersion && this.canFix) this.fileContent = this.fileContent.replace(/(?<step>uses: pnpm\/action-setup@v\d\n +with:\n +version:) \d/u, '$<step> 10')
     const hasNoFrozenFlag = this.shouldContains('no frozen lockfile flag', /--no-frozen-lockfile/u, 0, false, undefined, true)
     if (!hasNoFrozenFlag && this.canFix) this.fileContent = this.fileContent.replace(' --no-frozen-lockfile', '')
   }
@@ -28,10 +28,18 @@ export class GithubWorkflowFile extends FileBase {
   /**
    * Check Bun setup
    */
+  // eslint-disable-next-line max-lines-per-function
   private checkBun() {
+    const noPnpmUsage = this.couldContains('no pnpm use', /pnpm/u, 0, undefined, true)
+    if (!noPnpmUsage && this.canFix) {
+      const setupRegex = /Setup (pnpm[\s\S\n]+version: \d)/
+      const setupBun = 'Setup bun\n        uses: oven-sh/setup-bun@latest'
+      this.fileContent = this.fileContent.replace(setupRegex, setupBun).replace('pnpm run check', 'bun run check')
+    }
+    if (!noPnpmUsage) return
     const hasBunStep = this.couldContains('a bun setup step', /oven-sh\/setup-bun/u)
     if (!hasBunStep) return
-    const hasRecentVersion = this.couldContains('a recent Bun version', /uses: oven-sh\/setup-bun@v\d/u, 1, undefined, true)
+    const hasRecentVersion = this.couldContains('a recent setup bun action', /uses: oven-sh\/setup-bun@v1/u, 0, undefined, true)
     if (!hasRecentVersion && this.canFix) this.fileContent = this.fileContent.replace(/(?<=uses: oven-sh\/setup-bun@)v\d/u, 'latest')
   }
 

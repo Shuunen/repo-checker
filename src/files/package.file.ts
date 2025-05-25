@@ -188,7 +188,9 @@ export class PackageJsonFile extends FileBase {
     this.couldContains('no task run via npm', /\bnpm run/u, 0, 'use <pnpm|bun> my-task instead')
     this.couldContains('no npm test', /\bnpm test/u, 0, 'use <pnpm|bun> test instead')
     /* c8 ignore next */
-    if (this.data.isUsingBun) this.shouldContains('no misleading bun test in check task', /"check": ".*bun test.*"/u, 0, false, 'use bun run test instead')
+    if (!this.data.isUsingBun) return
+    this.shouldContains('no misleading bun test in check task', /"check": ".*bun test.*"/u, 0, false, 'use bun run test instead')
+    this.shouldContains('no misleading bun i', /bun i\b/u, 0, false, 'use bun install instead')
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
