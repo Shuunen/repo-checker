@@ -63,7 +63,7 @@
     "lint:knip": "knip",
     "lint:oxlint": "oxlint src --deny-warnings --fix --fix-suggestions --fix-dangerously && echo lint:oxlint success",
     "lint:tsc": "tsc --noEmit && echo lint:tsc success",
-    "postversion": "git push && git push --tags && bun build && npm publish",
+    "postversion": "git push && git push --tags && bun run build && npm publish",
     "preversion": "bun check",
     "start": "node --experimental-strip-types src/repo-check.ts",
     "test": "vitest --coverage --run && echo test success",

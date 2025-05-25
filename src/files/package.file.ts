@@ -190,6 +190,8 @@ export class PackageJsonFile extends FileBase {
     /* c8 ignore next */
     if (!this.data.isUsingBun) return
     this.shouldContains('no misleading bun test in check task', /"check": ".*bun test.*"/u, 0, false, 'use bun run test instead')
+    this.shouldContains('no misleading bun build in check task', /"check": ".*bun build.*"/u, 0, false, 'use bun run build instead')
+    this.shouldContains('no misleading bun build in postversion task', /"postversion": ".*bun build.*"/u, 0, false, 'use bun run build instead')
     this.shouldContains('no misleading bun i', /bun i\b/u, 0, false, 'use bun install instead')
   }
 

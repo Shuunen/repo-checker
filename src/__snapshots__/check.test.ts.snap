@@ -74,6 +74,8 @@ exports[`check B repo-checker folder succeed 1`] = `
     "package-json-has-no-task-run-via-npm",
     "package-json-has-no-npm-test",
     "package-json-has-no-misleading-bun-test-in-check-task",
+    "package-json-has-no-misleading-bun-build-in-check-task",
+    "package-json-has-no-misleading-bun-build-in-postversion-task",
     "package-json-has-no-misleading-bun-i",
     "package-json-has-no-fat-color-dependency-use-shuutils-or-nanocolors",
     "package-json-has-no-fat-fs-extra-dependency-use-native-fs",
