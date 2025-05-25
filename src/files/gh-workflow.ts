@@ -33,14 +33,14 @@ export class GithubWorkflowFile extends FileBase {
     const noPnpmUsage = this.couldContains('no pnpm use', /pnpm/u, 0, undefined, true)
     if (!noPnpmUsage && this.canFix) {
       const setupRegex = /Setup (pnpm[\s\S\n]+version: \d)/
-      const setupBun = 'Setup bun\n        uses: oven-sh/setup-bun@latest'
+      const setupBun = 'Setup bun\n        uses: oven-sh/setup-bun@v2'
       this.fileContent = this.fileContent.replace(setupRegex, setupBun).replace('pnpm run check', 'bun run check')
     }
     if (!noPnpmUsage) return
     const hasBunStep = this.couldContains('a bun setup step', /oven-sh\/setup-bun/u)
     if (!hasBunStep) return
-    const hasRecentVersion = this.couldContains('a recent setup bun action', /uses: oven-sh\/setup-bun@v1/u, 0, undefined, true)
-    if (!hasRecentVersion && this.canFix) this.fileContent = this.fileContent.replace(/(?<=uses: oven-sh\/setup-bun@)v\d/u, 'latest')
+    const hasRecentVersion = this.couldContains('a recent setup bun action', /uses: oven-sh\/setup-bun@v2/u, 1, undefined, true)
+    if (!hasRecentVersion && this.canFix) this.fileContent = this.fileContent.replace(/(?<=uses: oven-sh\/setup-bun@)\w+/u, 'v2')
   }
 
   /**
