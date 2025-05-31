@@ -21,7 +21,7 @@
     "@vitest/coverage-v8": "3.1",
     "dependency-cruiser": "16.10",
     "knip": "5.59",
-    "oxlint": "0.16",
+    "oxlint": "0.17",
     "tsup": "8.5",
     "typescript": "5.8",
     "vitest": "3.1",
