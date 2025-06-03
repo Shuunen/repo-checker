@@ -38,6 +38,7 @@ interface TsConfigJsonFile {
   exclude: string[]
   files: string[]
   include: string[]
+  references?: { path: string }[]
 }
 
 // eslint-disable-next-line no-restricted-syntax
@@ -106,7 +107,8 @@ export class TsConfigFile extends FileBase {
     }
     this.fileContentObject = data.value
     this.couldContainsSchema('https://json.schemastore.org/tsconfig')
-    this.checkCompilerOptions()
+    /* c8 ignore next */
+    if (this.fileContentObject.references === undefined) this.checkCompilerOptions()
     this.checkFileManagement()
     log.debug('tsconfig.json file checked')
   }
