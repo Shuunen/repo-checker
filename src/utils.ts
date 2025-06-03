@@ -95,6 +95,8 @@ function augmentDataWithPackageJsonData(data: ProjectData, content: string) {
   data.isUsingVitest = content.includes('"vitest ')
   data.isUsingBun = content.includes('"bun"') || content.includes('bun install')
   data.isUsingKnip = content.includes('"knip"')
+  data.isUsingReact = content.includes('"react"')
+  data.isUsingPreact = content.includes('"preact"')
   data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()
   if (/ "(?:post|pre)[^"]+": "[^"]+"/u.test(content)) data.hasTaskPrefix = true

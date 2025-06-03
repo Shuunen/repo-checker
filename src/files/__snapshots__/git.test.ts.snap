@@ -19,6 +19,8 @@ exports[`git : detect a missing git ignore 1`] = `
     "isUsingKnip": false,
     "isUsingNyc": false,
     "isUsingOxc": false,
+    "isUsingPreact": false,
+    "isUsingReact": false,
     "isUsingShuutils": false,
     "isUsingTailwind": false,
     "isUsingTypescript": false,

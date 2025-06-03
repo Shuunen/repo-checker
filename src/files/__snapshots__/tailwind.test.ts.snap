@@ -19,6 +19,8 @@ exports[`tailwind : can detect valid config 1`] = `
     "isUsingKnip": false,
     "isUsingNyc": false,
     "isUsingOxc": false,
+    "isUsingPreact": false,
+    "isUsingReact": false,
     "isUsingShuutils": false,
     "isUsingTailwind": true,
     "isUsingTypescript": false,

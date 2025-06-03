@@ -70,6 +70,12 @@ export class ProjectData {
   /** If the project is using Bun as its runtime */
   public isUsingBun = false
 
+  /** If the project is using React */
+  public isUsingReact = false
+
+  /** If the project is using Preact */
+  public isUsingPreact = false
+
   /** If the project is using Knip for linting */
   public isUsingKnip = false
 
