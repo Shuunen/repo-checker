@@ -12,6 +12,7 @@ exports[`git : detect a missing git ignore 1`] = `
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": true,
+    "isUsingBiome": false,
     "isUsingBun": false,
     "isUsingC8": false,
     "isUsingDependencyCruiser": false,

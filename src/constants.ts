@@ -70,6 +70,9 @@ export class ProjectData {
   /** If the project is using Bun as its runtime */
   public isUsingBun = false
 
+  /** If the project is using Biome for formatting/linting */
+  public isUsingBiome = false
+
   /** If the project is using React */
   public isUsingReact = false
 

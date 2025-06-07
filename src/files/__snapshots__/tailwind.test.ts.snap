@@ -12,6 +12,7 @@ exports[`tailwind : can detect valid config 1`] = `
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": true,
+    "isUsingBiome": false,
     "isUsingBun": false,
     "isUsingC8": false,
     "isUsingDependencyCruiser": false,

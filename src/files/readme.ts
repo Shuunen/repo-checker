@@ -172,6 +172,7 @@ export class ReadmeFile extends FileBase {
       new Thanks('AppWrite', 'https://appwrite.io', 'great db provider with a nice free tier <3', this.fileContent.includes('appwrite')),
       new Thanks('Arg', 'https://github.com/vercel/arg', 'un-opinionated, no-frills CLI argument parser', json.includes('"arg":')),
       new Thanks('Ava', 'https://github.com/avajs/ava', 'great test runner easy to setup & use', json.includes('ava"')),
+      new Thanks('Biome', 'https://biomejs.dev', 'super fast linter & formatter', this.data.isUsingBiome),
       new Thanks('Boxy Svg', 'https://boxy-svg.com', 'simple & effective svg editor', useSvg),
       new Thanks('Bun', 'https://bun.sh', 'super fast runtime for JavaScript and TypeScript', this.data.isUsingBun),
       new Thanks('C8', 'https://github.com/bcoe/c8', 'simple & effective cli for code coverage', this.data.isUsingC8),

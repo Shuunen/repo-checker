@@ -96,6 +96,7 @@ function augmentDataWithPackageJsonData(data: ProjectData, content: string) {
   data.isUsingBun = content.includes('"bun"') || content.includes('bun install')
   data.isUsingKnip = content.includes('"knip"')
   data.isUsingReact = content.includes('"react"')
+  data.isUsingBiome = content.includes('"@biomejs/biome"')
   data.isUsingPreact = content.includes('"preact"')
   data.userId = /github\.com\/(?<userId>[\w-]+)\//u.exec(content)?.groups?.userId ?? dataDefaults.userId
   data.userIdLowercase = data.userId.toLowerCase()

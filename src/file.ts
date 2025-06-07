@@ -116,13 +116,23 @@ export class FileBase {
    * @param url the schema url to check
    * @returns true if the file contains the schema
    */
+  // oxlint-disable-next-line max-lines-per-function
   public couldContainsSchema(url: string) {
     const line = `"$schema": "${url}",`
-    const hasSchema = this.couldContains('a $schema declaration', /"\$schema": "/u, 1, `like ${line}`, true)
+    const hasSchema = this.couldContains('a $schema declaration', new RegExp(`"\\$schema":\\s"${url}"`, 'u'), 1, `like ${line}`, true)
     if (hasSchema) return true
     if (!this.canFix) return hasSchema
-    // eslint-disable-next-line prefer-named-capture-group
-    this.fileContent = this.fileContent.replace(/(^\{\n)(\s+)/u, `$1$2${line}\n$2`)
+    if (this.fileContent.trim() === '') {
+      log.error('file is empty, cannot add a $schema declaration, did you forget to inspectFile ?')
+      return false
+    }
+    if (this.fileContent.includes('"$schema":')) {
+      log.debug('using the correct $schema declaration')
+      this.fileContent = this.fileContent.replace(/"(\$schema)":\s".*",?/u, line)
+    } else {
+      log.debug('adding a $schema declaration')
+      this.fileContent = this.fileContent.replace(/(^\{\n)(\s+)/u, `$1$2${line}\n$2`)
+    }
     return true
   }
 
@@ -222,10 +232,11 @@ export class FileBase {
    * @param isValid the condition to test
    * @param message the message to display
    * @param willJustWarn if the test will just warn
+   * @param canFix if the test is fixable (optional, default false)
    * @returns true if the condition is valid
    */
-  // eslint-disable-next-line max-lines-per-function
-  public test(isValid: boolean, message: string, willJustWarn = false) {
+  // eslint-disable-next-line max-lines-per-function, max-params
+  public test(isValid: boolean, message: string, willJustWarn = false, canFix = false) {
     const finalMessage = message.startsWith(this.fileName) ? message : `${this.fileName} ${message}`
     const code = messageToCode(finalMessage)
     if (isValid) {
@@ -233,7 +244,10 @@ export class FileBase {
       log.test(isValid, finalMessage)
     } else if (willJustWarn) {
       this.warnings.push(code)
-      log.warn(finalMessage)
+      log.warn(`${finalMessage} ${canFix ? bgYellow(black('[ fixable ]')) : ''}`)
+    } else if (canFix && this.canFix) {
+      this.failed.push(code)
+      log.fix(finalMessage)
     } else {
       this.failed.push(code)
       log.error(finalMessage)
@@ -247,7 +261,7 @@ export class FileBase {
   // eslint-disable-next-line max-lines-per-function
   public async updateFile() {
     if (this.originalFileContent.trim() === this.fileContent.trim()) {
-      log.debug('avoid file update when updated content is the same')
+      log.debug(`avoid ${this.fileName} update when updated content is the same`)
       return
     }
     if (!this.canFix) {

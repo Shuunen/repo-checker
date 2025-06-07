@@ -1,11 +1,12 @@
 /* c8 ignore next */
 import { Result, ellipsis, green, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants.ts'
+import { BiomeFile } from './files/biome.file.ts'
 import { DependencyCruiserFile } from './files/dependency-cruiser.ts'
 import { EditorConfigFile } from './files/editor-config.ts'
 import { EsLintFile } from './files/eslint.file.ts'
-import { GithubWorkflowFile } from './files/gh-workflow.ts'
 // eslint-disable-next-line max-dependencies
+import { GithubWorkflowFile } from './files/gh-workflow.ts'
 import { GitFile } from './files/git.ts'
 import { LicenseFile } from './files/license.ts'
 import { NpmRcFile } from './files/npmrc.file.ts'
@@ -28,7 +29,7 @@ export interface Indicators {
   warnings: readonly string[]
 }
 
-const checkers = [DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NpmRcFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile, VitestFile]
+const checkers = [BiomeFile, DependencyCruiserFile, EditorConfigFile, EsLintFile, GitFile, GithubWorkflowFile, LicenseFile, NpmRcFile, NvmrcFile, NycRcFile, PackageJsonFile, ReadmeFile, RenovateFile, RepoCheckerConfigFile, TailwindFile, TravisFile, TsConfigFile, VitestFile]
 
 /**
  * Report a log

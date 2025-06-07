@@ -12,6 +12,7 @@ exports[`dependency cruiser config missing file 1`] = `
     "isModule": false,
     "isPublishedPackage": false,
     "isQuiet": false,
+    "isUsingBiome": false,
     "isUsingBun": false,
     "isUsingC8": false,
     "isUsingDependencyCruiser": false,
