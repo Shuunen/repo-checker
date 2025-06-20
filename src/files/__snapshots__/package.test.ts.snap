@@ -74,7 +74,6 @@ exports[`package A on repo checker 1`] = `
     "package-json-has-no-cross-var-dependency-old-deprecated",
     "package-json-has-no-tslint-dependency-deprecated",
     "package-json-has-no-eslint-plugin-promise-5-dependency-require-eslint-7",
-    "package-json-has-no-patch-precision",
     "package-json-should-have-one-unit-testing-dependency-from-vitest-mocha-uvu-or-use-bun-test",
     "package-json-should-have-one-coverage-dependency-from-nyc-c8-v8-or-use-bun-test-coverage",
     "package-json-has-no-task-run-via-npm",
@@ -190,7 +189,6 @@ exports[`package B on ts project 1`] = `
     "package-json-has-no-cross-var-dependency-old-deprecated",
     "package-json-has-no-tslint-dependency-deprecated",
     "package-json-has-no-eslint-plugin-promise-5-dependency-require-eslint-7",
-    "package-json-has-no-patch-precision",
     "package-json-should-have-one-unit-testing-dependency-from-vitest-mocha-uvu-or-use-bun-test",
     "package-json-assert-dependency-used-in-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative",
     "package-json-has-no-npm-test",
@@ -328,7 +326,6 @@ exports[`package C ts project isUsing* 1`] = `
     "package-json-has-no-cross-var-dependency-old-deprecated",
     "package-json-has-no-tslint-dependency-deprecated",
     "package-json-has-no-eslint-plugin-promise-5-dependency-require-eslint-7",
-    "package-json-has-no-patch-precision",
     "package-json-should-have-one-unit-testing-dependency-from-vitest-mocha-uvu-or-use-bun-test",
     "package-json-has-no-eslint8-dependency",
     "package-json-assert-dependency-used-in-import-equal-from-uvu-assert-instead-works-also-as-deep-equal-alternative",
@@ -497,7 +494,6 @@ exports[`package E vue project 1`] = `
     "package-json-has-no-cross-var-dependency-old-deprecated",
     "package-json-has-no-tslint-dependency-deprecated",
     "package-json-has-no-eslint-plugin-promise-5-dependency-require-eslint-7",
-    "package-json-has-no-patch-precision",
     "package-json-has-no-task-run-via-npm",
     "package-json-has-no-npm-test",
     "package-json-has-no-fat-color-dependency-use-shuutils-or-nanocolors",
@@ -574,8 +570,8 @@ exports[`package F fix project 1`] = `
   "fileContent": "{
   "$schema": "https://json.schemastore.org/package",
   "devDependencies": {
-    "@types/jest": "^26.0",
-    "node": "14.14",
+    "@types/jest": "^26.0.23",
+    "node": "14.14.37",
   },
   "pnpm": {
     "overrides": {

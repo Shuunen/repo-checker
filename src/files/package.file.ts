@@ -14,17 +14,10 @@ export class PackageJsonFile extends FileBase {
     /* c8 ignore next */
     if (!(hasDependencies || hasDevelopmentDependencies)) return
     this.checkDependenciesUnwanted()
-    this.checkDependenciesPrecision()
     this.checkDependenciesTesting()
     this.checkDependenciesVersions()
     await this.checkDependenciesUsages()
     this.checkTasks()
-  }
-
-  private checkDependenciesPrecision() {
-    const hasNoPatch = this.couldContains('no patch precision', /^\s{4}".+":\s"\^?\d+\.\d+\.\d+"/gmu, 0, 'patch precision is rarely useful', true)
-    // eslint-disable-next-line prefer-named-capture-group
-    if (!hasNoPatch && this.canFix) this.fileContent = this.fileContent.replaceAll(/(^\s{4}".+":\s"\^?\d+\.\d+)\.\d+/gmu, '$1')
   }
 
   private checkDependenciesTesting() {
