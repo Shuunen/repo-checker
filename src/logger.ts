@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { Logger, isTestEnvironment } from 'shuutils'
+import { isTestEnvironment, Logger } from 'shuutils'
 
 // eslint-disable-next-line no-restricted-syntax
 class ExtendedLogger extends Logger {

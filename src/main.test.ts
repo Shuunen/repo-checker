@@ -1,4 +1,4 @@
-import { Result, clone } from 'shuutils'
+import { clone, Result } from 'shuutils'
 import { expect, it } from 'vitest'
 import { defaultOptions, getData, getFlags, getOptions, initDataFile, start } from './main'
 
@@ -10,7 +10,6 @@ import { defaultOptions, getData, getFlags, getOptions, initDataFile, start } fr
 function cleanTargetForSnap(options: Readonly<ReturnType<typeof getOptions>>) {
   const clean = clone<Partial<typeof options>>(options)
   // we need to get rid of targets like c:\Users\MyUser or /home/another-variable/ because they are not the same on every machine
-  // biome-ignore lint/performance/noDelete: let me clean the snapshot ^^'
   delete clean.target
   return clean
 }

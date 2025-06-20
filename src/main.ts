@@ -1,9 +1,9 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import arg from 'arg'
-import { type LoggerOptions, Result, blue, gray, isTestEnvironment, parseJson } from 'shuutils'
+import { blue, gray, isTestEnvironment, type LoggerOptions, parseJson, Result } from 'shuutils'
 import { check } from './check.ts'
 // eslint-disable-next-line max-dependencies
-import { type ProjectData, dataDefaults, dataFileName, templatePath } from './constants.ts'
+import { dataDefaults, dataFileName, type ProjectData, templatePath } from './constants.ts'
 import { log } from './logger.ts'
 import { fileExists, join, readFileInFolder, resolve, writeFile } from './utils.ts'
 

@@ -108,7 +108,7 @@ it('biome K throws if organizeImports section is missing when checkOrganizeImpor
   const instance = new BiomeFile(repoCheckerPath, new ProjectData({ isQuiet: true }))
   // @ts-expect-error: direct assignment for test
   instance.fileContentObject = {}
-  expect(() => instance['checkOrganizeImportsSection']()).toThrow('organizeImports section is undefined')
+  expect(() => instance['checkAssistSection']()).toThrowErrorMatchingInlineSnapshot(`[Error: assist section is undefined, this should not happen]`)
 })
 
 it('biome L throws if vcs section is missing when checkVcsSection is called', () => {

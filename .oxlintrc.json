@@ -9,6 +9,10 @@
     "style": "warn",
     "suspicious": "warn"
   },
+  "globals": {
+    "process": "readonly",
+    "__filename": "readonly"
+  },
   "overrides": [
     {
       "files": [

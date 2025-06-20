@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { ProjectData, home, repoCheckerPath } from './constants'
+import { home, ProjectData, repoCheckerPath } from './constants'
 
 it('home (process.env.HOME) is defined', () => {
   expect(home.length > 0).toBe(true)

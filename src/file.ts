@@ -1,8 +1,8 @@
-import { Result, bgYellow, black, fillTemplate, sleep } from 'shuutils'
+import { bgYellow, black, fillTemplate, Result, sleep } from 'shuutils'
 import { ProjectData, templatePath } from './constants.ts'
 import { log } from './logger.ts'
 // eslint-disable-next-line max-dependencies
-import { fileExists, getFileSizeInKo, join, messageToCode, readFileInFolder, readableRegex, writeFile } from './utils.ts'
+import { fileExists, getFileSizeInKo, join, messageToCode, readableRegex, readFileInFolder, writeFile } from './utils.ts'
 
 const defaultAmount = 99
 

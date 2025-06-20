@@ -1,10 +1,10 @@
 /* c8 ignore next */
 import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'node:fs/promises'
 import path from 'node:path'
-import { Result, arrayUnique, parseJson, slugify } from 'shuutils'
+import { arrayUnique, parseJson, Result, slugify } from 'shuutils'
 import sortJson from 'sort-json'
 // eslint-disable-next-line max-dependencies
-import { ProjectData, dataDefaults, dataFileName } from './constants.ts'
+import { dataDefaults, dataFileName, ProjectData } from './constants.ts'
 import { log } from './logger.ts'
 
 const maxFilesToScan = 1000
@@ -204,8 +204,6 @@ export function readableRegex(regex: Readonly<RegExp>) {
     .replaceAll('\\\\', '')
 }
 
-// biome-ignore lint/performance/noBarrelFile: <explanation>
-// biome-ignore lint/correctness/noNodejsModules: we are in a nodejs environment
 export { unlink as deleteFile, writeFile } from 'node:fs/promises'
 /* c8 ignore next */
 export { join, resolve } from 'node:path'

@@ -45,9 +45,8 @@ interface TsConfigJsonFile {
 export class TsConfigFile extends FileBase {
   private fileContentObject: TsConfigJsonFile | undefined
 
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: refactor needed ^^'
+  // oxlint-disable-next-line max-lines-per-function
   private checkCompilerOptions() {
-    // eslint-disable-line max-lines-per-function
     /* c8 ignore next 4 */
     if (this.fileContentObject === undefined) {
       log.error('cannot check compiler options without file content')

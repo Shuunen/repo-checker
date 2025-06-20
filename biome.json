@@ -1,8 +1,16 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "files": {
-    "ignore": [
-      "src/mocks/tsProject/sub-folder/.repo-checker.json"
+    "includes": [
+      "**",
+      "!src/mocks/tsProject/sub-folder/.repo-checker.json"
     ]
   },
   "formatter": {
@@ -30,9 +38,13 @@
     }
   },
   "linter": {
+    "domains": {
+      "project": "all",
+      "react": "none",
+      "test": "all"
+    },
     "enabled": true,
     "rules": {
-      "all": true,
       "complexity": {
         "noVoid": "off",
         "useLiteralKeys": "off"
@@ -41,9 +53,13 @@
         "noNodejsModules": "off",
         "useImportExtensions": "off"
       },
+      "nursery": {
+        "noUnresolvedImports": "off"
+      },
       "performance": {
         "useTopLevelRegex": "off"
       },
+      "recommended": true,
       "style": {
         "noImplicitBoolean": "off",
         "useBlockStatements": "off"
@@ -53,16 +69,11 @@
       }
     }
   },
-  "organizeImports": {
-    "enabled": true
-  },
   "overrides": [
     {
-      "include": [
+      "includes": [
         ".*.js",
-        "*.config.js",
-        "*.config.mts",
-        "*.config.ts"
+        "*.config.*"
       ],
       "linter": {
         "rules": {
@@ -76,8 +87,8 @@
       }
     },
     {
-      "include": [
-        "*.test.ts"
+      "includes": [
+        "**/*.test.ts"
       ],
       "linter": {
         "rules": {

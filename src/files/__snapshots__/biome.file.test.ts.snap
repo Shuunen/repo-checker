@@ -154,7 +154,7 @@ exports[`biome C empty file 1`] = `
     "has-a-javascript-section",
     "has-a-json-section",
     "has-a-linter-section",
-    "has-a-organize-imports-section",
+    "has-a-assist-section",
     "has-a-vcs-section",
     "has-an-overrides-section-array",
   ],
@@ -267,7 +267,7 @@ exports[`biome E minimal valid biome.json 1`] = `
     "has-a-javascript-section",
     "has-a-json-section",
     "has-a-linter-section",
-    "has-a-organize-imports-section",
+    "has-a-assist-section",
     "has-a-vcs-section",
     "has-an-overrides-section-array",
   ],
@@ -318,6 +318,13 @@ exports[`biome F fix missing sections 1`] = `
   "failed": [],
   "fileContent": "{
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "formatter": {
     "indentStyle": "space",
     "indentWidth": 2,
@@ -339,6 +346,10 @@ exports[`biome F fix missing sections 1`] = `
     }
   },
   "linter": {
+    "domains": {
+      "project": "all",
+      "test": "all"
+    },
     "enabled": true,
     "rules": {
       "recommended": true,
@@ -347,13 +358,10 @@ exports[`biome F fix missing sections 1`] = `
       }
     }
   },
-  "organizeImports": {
-    "enabled": true
-  },
   "overrides": [
     {
-      "include": [
-        "*.test.ts"
+      "includes": [
+        "**/*.test.ts"
       ],
       "linter": {
         "rules": {
@@ -372,6 +380,13 @@ exports[`biome F fix missing sections 1`] = `
 }",
   "fileContentObject": {
     "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+    "assist": {
+      "actions": {
+        "source": {
+          "organizeImports": "on",
+        },
+      },
+    },
     "formatter": {
       "indentStyle": "space",
       "indentWidth": 2,
@@ -393,6 +408,10 @@ exports[`biome F fix missing sections 1`] = `
       },
     },
     "linter": {
+      "domains": {
+        "project": "all",
+        "test": "all",
+      },
       "enabled": true,
       "rules": {
         "recommended": true,
@@ -401,13 +420,10 @@ exports[`biome F fix missing sections 1`] = `
         },
       },
     },
-    "organizeImports": {
-      "enabled": true,
-    },
     "overrides": [
       {
-        "include": [
-          "*.test.ts",
+        "includes": [
+          "**/*.test.ts",
         ],
         "linter": {
           "rules": {
@@ -432,7 +448,7 @@ exports[`biome F fix missing sections 1`] = `
     "has-a-javascript-section",
     "has-a-json-section",
     "has-a-linter-section",
-    "has-a-organize-imports-section",
+    "has-a-assist-section",
     "has-a-vcs-section",
     "has-an-overrides-section-array",
   ],
@@ -448,9 +464,11 @@ exports[`biome F fix missing sections 1`] = `
     "could-use-false-in-json-parser-allow-comments",
     "could-use-false-in-json-parser-allow-trailing-commas",
     "could-use-true-in-linter-enabled",
-    "could-use-all-preferred-but-more-strict-or-recommended-in-linter-rules",
+    "could-use-true-in-linter-rules-recommended",
     "could-use-off-in-linter-rules-style-use-block-statements",
-    "could-use-true-in-organize-imports-enabled",
+    "could-use-all-in-linter-domains-project",
+    "could-use-all-in-linter-domains-test",
+    "could-use-on-in-assist-actions-source-organize-imports",
     "could-use-true-in-vcs-enabled",
     "could-use-git-in-vcs-client-kind",
     "could-use-true-in-vcs-use-ignore-file",
@@ -525,6 +543,7 @@ exports[`biome G full valid biome.json 1`] = `
       },
     },
     "linter": {
+      "domains": {},
       "enabled": true,
       "rules": {
         "recommended": true,
@@ -561,16 +580,17 @@ exports[`biome G full valid biome.json 1`] = `
     "could-use-false-in-json-parser-allow-trailing-commas",
     "has-a-linter-section",
     "could-use-true-in-linter-enabled",
-    "could-use-all-preferred-but-more-strict-or-recommended-in-linter-rules",
+    "could-use-true-in-linter-rules-recommended",
     "could-use-off-in-linter-rules-style-use-block-statements",
-    "has-a-organize-imports-section",
-    "could-use-true-in-organize-imports-enabled",
     "has-a-vcs-section",
     "could-use-true-in-vcs-enabled",
     "could-use-git-in-vcs-client-kind",
     "could-use-true-in-vcs-use-ignore-file",
   ],
   "warnings": [
+    "could-use-all-in-linter-domains-project",
+    "could-use-all-in-linter-domains-test",
+    "has-a-assist-section",
     "has-an-overrides-section-array",
   ],
 }

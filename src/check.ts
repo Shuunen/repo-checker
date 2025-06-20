@@ -1,5 +1,5 @@
 /* c8 ignore next */
-import { Result, ellipsis, green, red, yellow } from 'shuutils'
+import { ellipsis, green, Result, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants.ts'
 import { BiomeFile } from './files/biome.file.ts'
 import { DependencyCruiserFile } from './files/dependency-cruiser.ts'

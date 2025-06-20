@@ -27,20 +27,28 @@ interface BiomeJsonFile {
     }
   }
   linter?: {
+    domains?: {
+      project?: string // "all" ideally
+      react?: string // "all" ideally if using React
+      test?: string // "all" ideally
+    }
     enabled?: boolean // true ideally
     rules?: {
-      all?: boolean // true ideally but optional
-      recommended?: boolean // true ideally, enforced if "all" is undefined
+      recommended?: boolean // true ideally
       style?: {
         useBlockStatements?: string // "off" ideally
       }
     }
   }
-  organizeImports?: {
-    enabled?: boolean // true ideally
+  assist?: {
+    actions?: {
+      source?: {
+        organizeImports?: string // "on" ideally
+      }
+    }
   }
   overrides?: {
-    include?: string[] // ideally ["*.test.ts"]
+    includes?: string[] // ideally ["*.test.ts"]
     linter?: {
       rules?: {
         style?: {
@@ -92,7 +100,7 @@ export class BiomeFile extends FileBase {
 
   private checkRootKeys() {
     this.checkProp({ expected: schema, key: '$schema', message: 'use the correct $schema', obj: this.fileContentObject })
-    const rootKeys = ['formatter', 'javascript', 'json', 'linter', 'organizeImports', 'vcs'] as const
+    const rootKeys = ['formatter', 'javascript', 'json', 'linter', 'assist', 'vcs'] as const
     // create any missing root sections if canFix is true
     // oxlint-disable-next-line max-depth
     if (this.fileContentObject && this.canFix) for (const key of rootKeys) if (this.fileContentObject[key] === undefined) (this.fileContentObject as unknown as Record<string, unknown>)[key] = {}
@@ -101,7 +109,7 @@ export class BiomeFile extends FileBase {
     this.checkSection('javascript', this.checkJavaScriptSection)
     this.checkSection('json', this.checkJsonSection)
     this.checkSection('linter', this.checkLinterSection)
-    this.checkSection('organizeImports', this.checkOrganizeImportsSection)
+    this.checkSection('assist', this.checkAssistSection)
     this.checkSection('vcs', this.checkVcsSection)
     const hasOverrides = this.test(Array.isArray(this.fileContentObject?.overrides), 'has an overrides section (array)', true, true)
     if (hasOverrides) this.checkOverridesSection()
@@ -138,18 +146,22 @@ export class BiomeFile extends FileBase {
     this.checkProp({ expected: true, key: 'enabled', message: 'could use true in "linter.enabled"', obj: section })
     section.rules = section.rules ?? {}
     const rules = section.rules
-    const hasRecommended = rules.recommended === true
-    const hasAll = rules.all === true
-    const hasAllOrRecommended = this.test(hasAll || hasRecommended, 'could use "all" (preferred but more strict) or "recommended" in "linter.rules"', true, true)
-    if (!hasAllOrRecommended && this.canFix) rules.recommended = true
+    this.checkProp({ expected: true, key: 'recommended', message: 'could use true in "linter.rules.recommended"', obj: rules })
     rules.style = rules.style ?? {}
     this.checkProp({ expected: 'off', key: 'useBlockStatements', message: 'could use "off" in "linter.rules.style.useBlockStatements"', obj: rules.style })
+    section.domains = section.domains ?? {}
+    this.checkProp({ expected: 'all', key: 'project', message: 'could use "all" in "linter.domains.project"', obj: section.domains })
+    /* c8 ignore next */
+    if (this.data.isUsingReact) this.checkProp({ expected: 'all', key: 'react', message: 'could use "all" in "linter.domains.react"', obj: section.domains })
+    this.checkProp({ expected: 'all', key: 'test', message: 'could use "all" in "linter.domains.test"', obj: section.domains })
   }
 
-  private checkOrganizeImportsSection() {
-    const section = this.fileContentObject?.organizeImports
-    if (!section) throw new Error('organizeImports section is undefined, this should not happen')
-    this.checkProp({ expected: true, key: 'enabled', message: 'could use true in "organizeImports.enabled"', obj: section })
+  private checkAssistSection() {
+    const section = this.fileContentObject?.assist
+    if (!section) throw new Error('assist section is undefined, this should not happen')
+    section.actions = section.actions ?? {}
+    section.actions.source = section.actions.source ?? {}
+    this.checkProp({ expected: 'on', key: 'organizeImports', message: 'could use "on" in "assist.actions.source.organizeImports"', obj: section.actions.source })
   }
 
   private checkVcsSection() {
@@ -176,11 +188,11 @@ export class BiomeFile extends FileBase {
     this.fileContentObject.overrides = this.fileContentObject.overrides ?? []
     const overrides = this.fileContentObject.overrides
     // oxlint-disable-next-line max-nested-callbacks
-    const hasTestOverride = overrides.some(o => o.include?.includes('*.test.ts'))
+    const hasTestOverride = overrides.some(o => o.includes?.includes('**/*.test.ts'))
     this.test(hasTestOverride, 'has a test override', true, true)
     if (!hasTestOverride && this.canFix)
       overrides.push({
-        include: ['*.test.ts'],
+        includes: ['**/*.test.ts'],
         linter: {
           rules: {
             style: {
