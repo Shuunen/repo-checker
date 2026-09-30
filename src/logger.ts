@@ -23,5 +23,5 @@ class ExtendedLogger extends Logger {
   }
 }
 
-/* c8 ignore next */
+/* v8 ignore next -- @preserve */
 export const log = new ExtendedLogger({ minimumLevel: isTestEnvironment() ? '7-error' : '3-info' })

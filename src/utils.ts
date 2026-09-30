@@ -1,4 +1,4 @@
-/* c8 ignore next */
+/* v8 ignore next -- @preserve */
 import { readFile as nodeReadFile, readdir as readDirectoryAsync, stat as statAsync } from 'node:fs/promises'
 import path from 'node:path'
 import { arrayUnique, parseJson, Result, slugify } from 'shuutils'
@@ -55,12 +55,13 @@ export async function augmentDataWithGit(folderPath: string, dataSource: Readonl
   const gitFolder = path.join(folderPath, '.git')
   if (!(await fileExists(path.join(gitFolder, 'config')))) return data
   const gitConfigContent = await readFileInFolder(gitFolder, 'config')
-  /* c8 ignore next 5 */
+  /* v8 ignore start -- @preserve */
   if (!gitConfigContent.ok) {
     if (gitConfigContent.error.includes('does not exists')) return data // no git config file, it's ok
     log.error('error while reading git config file', gitConfigContent.error)
     return data
   }
+  /* v8 ignore stop -- @preserve */
   data.hasMainBranch = gitConfigContent.value.includes('branch "main"')
   const matches = /url = .*[/:](?<userId>[\w-]+)\/(?<repoId>[\w-]+)/u.exec(gitConfigContent.value)
   if (matches?.groups?.userId !== undefined) {
@@ -75,7 +76,7 @@ export async function augmentDataWithGit(folderPath: string, dataSource: Readonl
   return data
 }
 
-// eslint-disable-next-line max-lines-per-function
+// eslint-disable-next-line complexity, max-lines-per-function
 function augmentDataWithPackageJsonData(data: ProjectData, content: string) {
   data.packageName = /"name": "(?<packageName>[\w+/@-]+)"/u.exec(content)?.groups?.packageName ?? dataDefaults.packageName
   data.license = /"license": "(?<license>[\w+\-.]+)"/u.exec(content)?.groups?.license ?? dataDefaults.license
@@ -111,8 +112,9 @@ export async function augmentDataWithPackageJson(folderPath: string, dataSource:
   const data = new ProjectData(dataSource)
   const result = await readFileInFolder(folderPath, 'package.json')
   if (result.ok) augmentDataWithPackageJsonData(data, result.value)
-  /* c8 ignore next 2*/ else if (result.error.includes('does not exists')) log.debug('cannot augment, no package.json found in', folderPath)
+  /* v8 ignore start -- @preserve */ else if (result.error.includes('does not exists')) log.debug('cannot augment, no package.json found in', folderPath)
   else log.error('error while reading package.json file', result.error)
+  /* v8 ignore stop -- @preserve */
   return data
 }
 
@@ -124,18 +126,19 @@ export async function augmentData(folderPath: string, dataSource: Readonly<Proje
   if (shouldLoadLocal) {
     const result = await readFileInFolder(folderPath, dataFileName)
     if (!result.ok) {
-      /* c8 ignore next 4 */
+      /* v8 ignore start -- @preserve */
       // eslint-disable-next-line max-depth
       if (result.error.includes('does not exists'))
         log.debug('no custom data file found in', folderPath) // no custom data file, it's ok
       else log.error('error while reading data file', result.error)
+      /* v8 ignore stop -- @preserve */
       return data
     }
     // local data overwrite the rest
-    const { error, value } = parseJson<ProjectData>(result.value)
-    /* c8 ignore next */
-    if (error) log.error('error while parsing data file', folderPath, dataFileName, error)
-    Object.assign(data, value)
+    const parsed = parseJson<ProjectData>(result.value)
+    /* v8 ignore next -- @preserve */
+    if (parsed.ok) Object.assign(data, parsed.value)
+    else log.error('error while parsing data file', folderPath, dataFileName, parsed.error)
   }
   return data
 }
@@ -155,26 +158,28 @@ export async function findInFolder(folderPath: string, pattern: Readonly<RegExp>
   const matches: string[] = []
   let ignored = arrayUnique(ignoredInput)
   if (filePaths.includes('.gitignore')) {
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     const content = Result.unwrap(await readFileInFolder(folderPath, '.gitignore')).value ?? ''
     ignored = arrayUnique([...ignored, ...content.split('\n')])
   }
   for (const filePath of filePaths) {
     if (ignored.includes(filePath)) continue
-    /* c8 ignore next 2 */
+    /* v8 ignore start -- @preserve */
     // eslint-disable-next-line no-restricted-syntax
     if (count > maxFilesToScan) throw new Error('too many files to scan, please reduce the scope')
+    /* v8 ignore stop -- @preserve */
     const target = path.join(folderPath, filePath)
     const statData = await statAsync(target).catch(() => null) // eslint-disable-line unicorn/no-null, no-await-in-loop, max-nested-callbacks
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (!statData) continue
     if (statData.isDirectory()) {
       matches.push(...(await findInFolder(target, pattern, ignored, count + 1))) // eslint-disable-line no-await-in-loop
       continue
     }
-    /* c8 ignore next 2 */
+    /* v8 ignore start -- @preserve */
     // eslint-disable-next-line no-await-in-loop
     const content = Result.unwrap(await readFileInFolder(folderPath, filePath)).value ?? ''
+    /* v8 ignore stop -- @preserve */
     if (pattern.test(content)) matches.push(filePath)
   }
   return matches
@@ -201,9 +206,9 @@ export function readableRegex(regex: Readonly<RegExp>) {
   return regex
     .toString()
     .replaceAll(/\/[gui]\b/giu, '')
-    .replaceAll('\\\\', '')
+    .replaceAll(String.raw`\\`, '')
 }
 
 export { unlink as deleteFile, writeFile } from 'node:fs/promises'
-/* c8 ignore next */
+/* v8 ignore next -- @preserve */
 export { join, resolve } from 'node:path'

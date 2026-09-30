@@ -1,15 +1,15 @@
-/* c8 ignore next */
+/* v8 ignore next -- @preserve */
 import { ellipsis, green, Result, red, yellow } from 'shuutils'
 import type { ProjectData } from './constants.ts'
 import { BiomeFile } from './files/biome.file.ts'
 import { DependencyCruiserFile } from './files/dependency-cruiser.ts'
 import { EditorConfigFile } from './files/editor-config.ts'
 import { EsLintFile } from './files/eslint.file.ts'
-// eslint-disable-next-line max-dependencies
 import { GithubWorkflowFile } from './files/gh-workflow.ts'
 import { GitFile } from './files/git.ts'
 import { LicenseFile } from './files/license.ts'
 import { NpmRcFile } from './files/npmrc.file.ts'
+// oxlint-disable-next-line max-dependencies
 import { NvmrcFile } from './files/nvmrc.ts'
 import { NycRcFile } from './files/nycrc.ts'
 import { PackageJsonFile } from './files/package.file.ts'
@@ -39,7 +39,7 @@ const checkers = [BiomeFile, DependencyCruiserFile, EditorConfigFile, EsLintFile
  */
 function reportLog(color: (string: string) => string, count: number, message: string) {
   const line = `‣ ${count} check${count > 1 ? 's' : ''} ${message}`
-  /* c8 ignore next */
+  /* v8 ignore next -- @preserve */
   log.info(count === 0 ? line : color(line))
 }
 
@@ -64,7 +64,7 @@ function report({ failed = [], passed = [], warnings = [] }: Readonly<Indicators
   reportLog(green, passed.length, 'are successful')
   reportLog(yellow, warnings.length, 'triggered warnings')
   reportLog(red, failed.length, 'are problematic')
-  /* c8 ignore next */
+  /* v8 ignore next -- @preserve */
 }
 
 /**
@@ -87,7 +87,7 @@ export async function check({ canFailStop = false, canFix = false, canForce = fa
     warnings: [] as string[],
   }
   log.options.isActive = !data.isQuiet
-  /* c8 ignore next */
+  /* v8 ignore next -- @preserve */
   if (folders.length === 0) log.warn('no folder to check', folderPath)
   /* eslint-disable no-await-in-loop */
   for (const folder of folders) {

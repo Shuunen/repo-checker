@@ -10,10 +10,11 @@ export class RepoCheckerConfigFile extends FileBase {
    */
   private async migrateOldConfig(fileName: string) {
     const oldConfig = await readFileInFolder(this.folderPath, fileName)
-    /* c8 ignore next 3 */
+    /* v8 ignore start -- @preserve */
     if (!oldConfig.ok) return
     await writeFile(join(this.folderPath, dataFileName), jsToJson(oldConfig.value))
     await deleteFile(join(this.folderPath, fileName))
+    /* v8 ignore stop -- @preserve */
   }
 
   // eslint-disable-next-line jsdoc/require-jsdoc

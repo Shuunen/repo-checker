@@ -12,7 +12,7 @@
       "ESNext"
     ],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -27,6 +27,10 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
     "verbatimModuleSyntax": true
   },
   "include": [

@@ -51,14 +51,14 @@
       },
       "correctness": {
         "noNodejsModules": "off",
+        "noUnresolvedImports": "off",
         "useImportExtensions": "off"
       },
-      "nursery": {
-        "noUnresolvedImports": "off"
-      },
+      "nursery": {},
       "performance": {
         "useTopLevelRegex": "off"
       },
+      "preset": "recommended",
       "recommended": true,
       "style": {
         "noImplicitBoolean": "off",

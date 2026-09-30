@@ -20,7 +20,7 @@ function cleanStringForSnap(input: string) {
 
 // eslint-disable-next-line no-restricted-syntax
 export function cleanUnknownValueForSnap<Type>(input: Type): Type {
-  /* c8 ignore next 9 */
+  /* v8 ignore start -- @preserve */
   /* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-type-assertion */
   if (typeof input === 'string') return cleanStringForSnap(input) as Type
   // eslint-disable-next-line max-nested-callbacks
@@ -30,6 +30,7 @@ export function cleanUnknownValueForSnap<Type>(input: Type): Type {
   throw new Error(`cleanInstanceValueForSnap: unknown type ${typeof input}`)
   /* eslint-enable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-type-assertion */
 }
+/* v8 ignore stop -- @preserve */
 
 export async function promiseValue<Type>(value: Type) {
   await sleep(1)

@@ -10,7 +10,7 @@ export class NycRcFile extends FileBase {
     const hasConfigFile = hasRc || hasRcJson
     this.test(hasConfigFile, 'nycrc file exists')
     if (!hasConfigFile) return ''
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     return hasRc ? '.nycrc' : '.nycrc.json'
   }
 

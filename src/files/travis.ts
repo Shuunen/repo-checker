@@ -1,6 +1,6 @@
 import { FileBase } from '../file.ts'
 
-/* c8 ignore start */
+/* v8 ignore start -- @preserve */
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class TravisFile extends FileBase {
   // eslint-disable-next-line jsdoc/require-jsdoc
@@ -13,4 +13,4 @@ export class TravisFile extends FileBase {
     this.shouldContains('a "run ci" task', /npm run ci/u)
   }
 }
-/* c8 ignore stop */
+/* v8 ignore stop -- @preserve */

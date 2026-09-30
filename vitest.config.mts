@@ -4,13 +4,14 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     coverage: {
-      exclude: ['src/repo-check.ts', 'src/mocks/*'],
+      exclude: ['src/repo-check.ts', 'src/mocks/*', 'src/**/__snapshots__/*'],
       include: ['src'],
       reporter: ['text', 'lcov', 'html'],
       thresholds: {
         100: true, // eslint-disable-line no-magic-numbers
       },
     },
+    globals: true,
     pool: 'threads',
   },
 })

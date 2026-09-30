@@ -72,10 +72,10 @@ export class BiomeFile extends FileBase {
   private fileContentObject: BiomeJsonFile | undefined
 
   // Helper to check and fix a property
-  private checkProp<T, K extends keyof T>(opts: { expected: T[K]; key: K; message: string; obj: T | undefined }) {
+  private checkProp<Target, Key extends keyof Target>(opts: { expected: Target[Key]; key: Key; message: string; obj: Target | undefined }) {
     const { expected, key, message, obj } = opts
     const has = this.test(obj?.[key] === expected, message, true, true)
-    if (!has && this.canFix && obj) (obj as T)[key] = expected
+    if (!has && this.canFix && obj) (obj as Target)[key] = expected
     return has
   }
 
@@ -88,8 +88,8 @@ export class BiomeFile extends FileBase {
     const hasFile = await this.checkFileExists('biome.json')
     if (!hasFile) return
     await this.inspectFile('biome.json')
-    const data = parseJson<BiomeJsonFile>(this.fileContent)
-    if (data.error) {
+    const data = parseJson<BiomeJsonFile>(this.fileContent || '{}')
+    if (!data.ok) {
       log.error('cannot check empty or invalid tsconfig.json file')
       return
     }
@@ -115,7 +115,7 @@ export class BiomeFile extends FileBase {
     if (hasOverrides) this.checkOverridesSection()
   }
 
-  private checkSection<K extends keyof BiomeJsonFile>(key: K, checkFn: () => void) {
+  private checkSection<Key extends keyof BiomeJsonFile>(key: Key, checkFn: () => void) {
     const hasSection = this.test(this.fileContentObject?.[key] !== undefined, `has a "${key}" section`, true, true)
     if (hasSection) checkFn.call(this)
   }
@@ -124,7 +124,7 @@ export class BiomeFile extends FileBase {
     const section = this.fileContentObject?.javascript
     if (!section) throw new Error('JavaScript section is undefined, this should not happen')
     section.formatter = section.formatter ?? {}
-    const formatter = section.formatter
+    const { formatter } = section
     this.checkProp({ expected: 'asNeeded', key: 'arrowParentheses', message: 'could use "asNeeded" in "javascript.formatter.arrowParentheses"', obj: formatter })
     this.checkProp({ expected: true, key: 'bracketSpacing', message: 'could use true in "javascript.formatter.bracketSpacing"', obj: formatter })
     this.checkProp({ expected: 'single', key: 'quoteStyle', message: 'could use "single" in "javascript.formatter.quoteStyle"', obj: formatter })
@@ -135,7 +135,7 @@ export class BiomeFile extends FileBase {
     const section = this.fileContentObject?.json
     if (!section) throw new Error('JSON section is undefined, this should not happen')
     section.parser = section.parser ?? {}
-    const parser = section.parser
+    const { parser } = section
     this.checkProp({ expected: false, key: 'allowComments', message: 'could use false in "json.parser.allowComments"', obj: parser })
     this.checkProp({ expected: false, key: 'allowTrailingCommas', message: 'could use false in "json.parser.allowTrailingCommas"', obj: parser })
   }
@@ -145,13 +145,13 @@ export class BiomeFile extends FileBase {
     if (!section) throw new Error('Linter section is undefined, this should not happen')
     this.checkProp({ expected: true, key: 'enabled', message: 'could use true in "linter.enabled"', obj: section })
     section.rules = section.rules ?? {}
-    const rules = section.rules
+    const { rules } = section
     this.checkProp({ expected: true, key: 'recommended', message: 'could use true in "linter.rules.recommended"', obj: rules })
     rules.style = rules.style ?? {}
     this.checkProp({ expected: 'off', key: 'useBlockStatements', message: 'could use "off" in "linter.rules.style.useBlockStatements"', obj: rules.style })
     section.domains = section.domains ?? {}
     this.checkProp({ expected: 'all', key: 'project', message: 'could use "all" in "linter.domains.project"', obj: section.domains })
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (this.data.isUsingReact) this.checkProp({ expected: 'all', key: 'react', message: 'could use "all" in "linter.domains.react"', obj: section.domains })
     this.checkProp({ expected: 'all', key: 'test', message: 'could use "all" in "linter.domains.test"', obj: section.domains })
   }
@@ -184,11 +184,11 @@ export class BiomeFile extends FileBase {
 
   private checkOverridesSection() {
     if (!this.fileContentObject) throw new Error('overrides section is undefined, this should not happen')
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     this.fileContentObject.overrides = this.fileContentObject.overrides ?? []
-    const overrides = this.fileContentObject.overrides
+    const { overrides } = this.fileContentObject
     // oxlint-disable-next-line max-nested-callbacks
-    const hasTestOverride = overrides.some(o => o.includes?.includes('**/*.test.ts'))
+    const hasTestOverride = overrides.some(override => override.includes?.includes('**/*.test.ts'))
     this.test(hasTestOverride, 'has a test override', true, true)
     if (!hasTestOverride && this.canFix)
       overrides.push({

@@ -11,7 +11,7 @@ export class PackageJsonFile extends FileBase {
   private async checkDependencies() {
     const hasDependencies = this.checkContains(this.regexForObjectProp('dependencies'))
     const hasDevelopmentDependencies = this.checkContains(this.regexForObjectProp('devDependencies'))
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (!(hasDependencies || hasDevelopmentDependencies)) return
     this.checkDependenciesUnwanted()
     this.checkDependenciesTesting()
@@ -69,14 +69,16 @@ export class PackageJsonFile extends FileBase {
     this.test(badAsserts.length === 0, `assert dependency used in "${ellipsis(badAsserts.join(','), logMaxLength)}", import { equal } from 'uvu/assert' instead (works also as deepEqual alternative)`)
   }
 
+  // eslint-disable-next-line max-lines-per-function
   private checkDependenciesVersionRepoCheck() {
     const { version } = packageJson
     const [major, minor] = version.split('.').map(Number)
-    /* c8 ignore next 4 */
+    /* v8 ignore start -- @preserve */
     if (minor === undefined || major === undefined) {
       this.test(false, 'should have a valid semver version in package.json')
       return
     }
+    /* v8 ignore stop -- @preserve */
     const hasLatestRegex = new RegExp(`"repo-check": "\\^?${major}.${minor}`, 'u')
     const hasLatest = this.couldContains('latest version of repo-checker', hasLatestRegex, 1, `like "repo-check": "^${major}.${minor}"`, true)
     if (!hasLatest && this.canFix) this.fileContent = this.fileContent.replace(/"repo-check": ".+"/u, `"repo-check": "${major}.${minor}"`)
@@ -123,7 +125,7 @@ export class PackageJsonFile extends FileBase {
     if (!hasMaxSize) return
     const hasFile = await this.checkFileExists(filePath)
     this.test(hasFile, `main file specified in package.json (${filePath}) exists on disk (be sure to build before run repo-check)`)
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (!hasFile) return
     const sizeKo = await this.getFileSizeInKo(filePath)
     const isSizeOk = sizeKo <= maxSizeKo
@@ -142,7 +144,7 @@ export class PackageJsonFile extends FileBase {
     const hasRepository = this.couldContains('a "repository" property', this.regexForObjectProp('repository'))
     if (hasRepository) {
       const hasPlus = this.couldContains('a repository url starting with git plus', /"repository": [^u]+url": "git\+https/gu, 1, 'like "repository": "git+https..."', true)
-      /* c8 ignore next */
+      /* v8 ignore next -- @preserve */
       if (!hasPlus && this.canFix) this.fileContent = this.fileContent.replaceAll(/(?<base>"repository": [^u]+url": ")(?<url>[^"]+")/gu, '$<base>git+$<url>')
     }
     this.shouldContains('a "author" property', this.regexForStringProp('author'))
@@ -180,7 +182,7 @@ export class PackageJsonFile extends FileBase {
   private checkTasks() {
     this.couldContains('no task run via npm', /\bnpm run/u, 0, 'use <pnpm|bun> my-task instead')
     this.couldContains('no npm test', /\bnpm test/u, 0, 'use <pnpm|bun> test instead')
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (!this.data.isUsingBun) return
     this.shouldContains('no misleading bun test in check task', /"check": ".*bun test.*"/u, 0, false, 'use bun run test instead')
     this.shouldContains('no misleading bun build in check task', /"check": ".*bun build.*"/u, 0, false, 'use bun run build instead')
