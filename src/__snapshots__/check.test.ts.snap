@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`check B repo-checker folder succeed 1`] = `
+exports[`project checks > check B repo-checker folder succeed 1`] = `
 {
   "failed": [],
   "passed": [
@@ -211,7 +211,7 @@ exports[`check B repo-checker folder succeed 1`] = `
 }
 `;
 
-exports[`check C ts-project folder 1`] = `
+exports[`project checks > check C ts-project folder 1`] = `
 {
   "failed": [
     "has-a-editorconfig-file",
@@ -303,7 +303,7 @@ exports[`check C ts-project folder 1`] = `
 }
 `;
 
-exports[`check E mocks-projects folders and not throw 1`] = `
+exports[`project checks > check E mocks-projects folders and not throw 1`] = `
 {
   "failed": [
     "has-a-editorconfig-file",

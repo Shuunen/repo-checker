@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`git : detect a missing git ignore 1`] = `
+exports[`git > git : detect a missing git ignore 1`] = `
 {
   "canFix": false,
   "canForce": false,

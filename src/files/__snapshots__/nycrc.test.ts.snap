@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`nyc rc A file exists 1`] = `
+exports[`nycrc > nyc rc A file exists 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -52,7 +52,7 @@ exports[`nyc rc A file exists 1`] = `
 }
 `;
 
-exports[`nyc rc B check skip on a non nyc/c8 project 1`] = `
+exports[`nycrc > nyc rc B check skip on a non nyc/c8 project 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -102,7 +102,7 @@ exports[`nyc rc B check skip on a non nyc/c8 project 1`] = `
 }
 `;
 
-exports[`nyc rc C file missing 1`] = `
+exports[`nycrc > nyc rc C file missing 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -154,7 +154,7 @@ exports[`nyc rc C file missing 1`] = `
 }
 `;
 
-exports[`nyc rc D file exists but not a json ext file 1`] = `
+exports[`nycrc > nyc rc D file exists but not a json ext file 1`] = `
 {
   "canFix": false,
   "canForce": false,

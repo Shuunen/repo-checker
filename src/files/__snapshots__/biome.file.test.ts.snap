@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`biome A not using biome 1`] = `
+exports[`biome.file > biome A not using biome 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -51,7 +51,7 @@ exports[`biome A not using biome 1`] = `
 }
 `;
 
-exports[`biome B missing file 1`] = `
+exports[`biome.file > biome B missing file 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -101,7 +101,7 @@ exports[`biome B missing file 1`] = `
 }
 `;
 
-exports[`biome C empty file 1`] = `
+exports[`biome.file > biome C empty file 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -161,7 +161,7 @@ exports[`biome C empty file 1`] = `
 }
 `;
 
-exports[`biome D invalid json 1`] = `
+exports[`biome.file > biome D invalid json 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -211,7 +211,7 @@ exports[`biome D invalid json 1`] = `
 }
 `;
 
-exports[`biome E minimal valid biome.json 1`] = `
+exports[`biome.file > biome E minimal valid biome.json 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -274,7 +274,7 @@ exports[`biome E minimal valid biome.json 1`] = `
 }
 `;
 
-exports[`biome F fix missing sections 1`] = `
+exports[`biome.file > biome F fix missing sections 1`] = `
 {
   "canFix": true,
   "canForce": false,
@@ -477,7 +477,7 @@ exports[`biome F fix missing sections 1`] = `
 }
 `;
 
-exports[`biome G full valid biome.json 1`] = `
+exports[`biome.file > biome G full valid biome.json 1`] = `
 {
   "canFix": false,
   "canForce": false,

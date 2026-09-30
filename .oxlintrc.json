@@ -9,6 +9,9 @@
     "style": "warn",
     "suspicious": "warn"
   },
+  "env": {
+    "vitest": true
+  },
   "globals": {
     "process": "readonly",
     "__filename": "readonly"
@@ -42,6 +45,8 @@
       "error",
       "multi"
     ],
+    "eslint/capitalized-comments": "off",
+    "eslint/logical-assignment-operators": "off",
     "eslint/max-depth": [
       "error",
       2
@@ -50,7 +55,10 @@
       "error",
       12
     ],
+    "eslint/max-statements": "off",
+    "eslint/no-inline-comments": "off",
     "eslint/no-undefined": "off",
+    "eslint/one-var": "off",
     "eslint/yoda": "off",
     "func-style": [
       "error",
@@ -61,6 +69,10 @@
     ],
     "import/exports-last": "off",
     "import/group-exports": "off",
+    "import/no-named-export": "off",
+    "import/no-nodejs-modules": "off",
+    "import/no-relative-parent-imports": "off",
+    "import/prefer-default-export": "off",
     "jsdoc/require-param-type": "off",
     "jsdoc/require-returns-type": "off",
     "no-async-await": "off",
@@ -82,6 +94,7 @@
     "no-void": "off",
     "oxc/no-optional-chaining": "off",
     "sort-imports": "off",
+    "typescript/explicit-module-boundary-types": "off",
     "unicorn/filename-case": [
       "error",
       {
@@ -89,7 +102,19 @@
       }
     ],
     "unicorn/no-useless-undefined": "off",
+    "unicorn/prefer-import-meta-properties": "off",
+    "unicorn/prefer-top-level-await": "off",
+    "vitest/consistent-test-it": [
+      "error",
+      {
+        "fn": "it",
+        "withinDescribe": "it"
+      }
+    ],
+    "vitest/prefer-importing-vitest-globals": "off",
+    "vitest/prefer-lowercase-title": "off",
     "vitest/prefer-to-be-falsy": "off",
-    "vitest/prefer-to-be-truthy": "off"
+    "vitest/prefer-to-be-truthy": "off",
+    "vitest/require-test-timeout": "off"
   }
 }

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`npm rc A file exists & hasTaskPrefix 1`] = `
+exports[`npmrc > npm rc A file exists & hasTaskPrefix 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -55,7 +55,7 @@ exports[`npm rc A file exists & hasTaskPrefix 1`] = `
 }
 `;
 
-exports[`npm rc B file exists & !hasTaskPrefix 1`] = `
+exports[`npmrc > npm rc B file exists & !hasTaskPrefix 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -109,7 +109,7 @@ exports[`npm rc B file exists & !hasTaskPrefix 1`] = `
 }
 `;
 
-exports[`npm rc C file !exists & hasTaskPrefix 1`] = `
+exports[`npmrc > npm rc C file !exists & hasTaskPrefix 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -161,7 +161,7 @@ exports[`npm rc C file !exists & hasTaskPrefix 1`] = `
 }
 `;
 
-exports[`npm rc D fix file 1`] = `
+exports[`npmrc > npm rc D fix file 1`] = `
 {
   "canFix": true,
   "canForce": false,
