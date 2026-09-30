@@ -1,6 +1,6 @@
 import { FileBase } from '../file.ts'
 
-/* c8 ignore start */
+/* v8 ignore start -- @preserve */
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class NvmrcFile extends FileBase {
   /**
@@ -10,7 +10,7 @@ export class NvmrcFile extends FileBase {
     const hasFile = await this.checkFileExists('.nvmrc')
     if (!hasFile) return
     await this.inspectFile('.nvmrc')
-    this.couldContains('a recent lts node version', /22\.\d+\.\d+/u)
+    this.couldContains('a recent lts node version', /24\.\d+\.\d+/u)
   }
 }
-/* c8 ignore stop */
+/* v8 ignore stop -- @preserve */
