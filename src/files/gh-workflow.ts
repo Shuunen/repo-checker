@@ -1,6 +1,6 @@
 import { FileBase } from '../file.ts'
 
-/* c8 ignore start */
+/* v8 ignore start -- @preserve */
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class GithubWorkflowFile extends FileBase {
   /**
@@ -9,7 +9,7 @@ export class GithubWorkflowFile extends FileBase {
   private checkCheckout() {
     const hasCheckout = this.shouldContains('a checkout step in ci workflow', /actions\/checkout/u)
     if (!hasCheckout) return
-    const hasRecentVersion = this.shouldContains('a recent checkout version', /uses: actions\/checkout@v[456]/u, 1, false, undefined, true)
+    const hasRecentVersion = this.shouldContains('a recent checkout version', /uses: actions\/checkout@v[567]/u, 1, false, undefined, true)
     if (!hasRecentVersion && this.canFix) this.fileContent = this.fileContent.replace(/(?<=uses: actions\/checkout@)v\d/u, 'latest')
   }
 
@@ -32,7 +32,7 @@ export class GithubWorkflowFile extends FileBase {
   private checkBun() {
     const noPnpmUsage = this.couldContains('no pnpm use', /pnpm/u, 0, undefined, true)
     if (!noPnpmUsage && this.canFix) {
-      const setupRegex = /Setup (pnpm[\s\S\n]+version: \d)/
+      const setupRegex = /Setup (?:pnpm[\s\S\n]+version: \d)/u
       const setupBun = 'Setup bun\n        uses: oven-sh/setup-bun@v2'
       this.fileContent = this.fileContent.replace(setupRegex, setupBun).replace('pnpm run check', 'bun run check')
     }
@@ -57,7 +57,7 @@ export class GithubWorkflowFile extends FileBase {
   private checkNodeVersion() {
     this.couldContains('no main branch reference', /- main/u, 0)
     this.shouldContains('a node step in ci workflow', /actions\/setup-node/u)
-    this.couldContains('a recent node version', /node: \[22\]|node-version: 22/u, 1)
+    this.couldContains('a recent node version', /node: \[24\]|node-version: 24/u, 1)
   }
 
   /**
@@ -73,4 +73,4 @@ export class GithubWorkflowFile extends FileBase {
     this.checkNodeVersion()
   }
 }
-/* c8 ignore stop */
+/* v8 ignore stop -- @preserve */
