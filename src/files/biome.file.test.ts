@@ -70,6 +70,20 @@ describe('biome.file', () => {
     expect(cleanInstanceForSnap(instance)).toMatchSnapshot()
   })
 
+  it('biome F2 keeps existing root sections untouched when canFix is true', async () => {
+    expect.hasAssertions()
+    const instance = new BiomeFile(repoCheckerPath, new ProjectData({ isQuiet: true }), true)
+    instance.data.isUsingBiome = true
+    instance.checkFileExists = promiseTrue
+    instance.inspectFile = promiseVoid
+    instance.updateFile = promiseVoid
+    instance.fileContent = JSON.stringify({ $schema: './node_modules/@biomejs/biome/configuration_schema.json', assist: { enabled: true }, formatter: { lineWidth: 100 }, javascript: {}, json: {}, linter: {}, vcs: { enabled: true } })
+    await instance.start()
+    await instance.end()
+    expect(instance.fileContent).toContain('"lineWidth": 100')
+    expect(instance.fileContent).toContain('"vcs"')
+  })
+
   it('biome G full valid biome.json', async () => {
     expect.hasAssertions()
     const instance = new BiomeFile(repoCheckerPath, new ProjectData({ isQuiet: true }))
