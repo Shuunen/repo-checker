@@ -8,7 +8,7 @@ export class GitFile extends FileBase {
   public async start() {
     this.test(!this.data.hasMainBranch, 'avoid "main" branch reference, use master instead & git bclean', true)
     const hasFile = await this.checkFileExists('.gitignore')
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (!hasFile) return
     await this.inspectFile('.gitignore')
     this.couldContains('node_modules', /node_modules/u)

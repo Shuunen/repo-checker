@@ -1,8 +1,9 @@
-/* c8 ignore next 4 */
+/* v8 ignore start -- @preserve */
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export const home = process.env.HOME ?? '' // when does HOME is not defined ?
+/* v8 ignore stop -- @preserve */
 /**
  * The name of the file that contains the configuration for repo-checker
  */

@@ -128,10 +128,10 @@ export class FileBase {
     }
     if (this.fileContent.includes('"$schema":')) {
       log.debug('using the correct $schema declaration')
-      this.fileContent = this.fileContent.replace(/"(\$schema)":\s".*",?/u, line)
+      this.fileContent = this.fileContent.replace(/"\$schema":\s".*",?/u, line)
     } else {
       log.debug('adding a $schema declaration')
-      this.fileContent = this.fileContent.replace(/(^\{\n)(\s+)/u, `$1$2${line}\n$2`)
+      this.fileContent = this.fileContent.replace(/(?<open>^\{\n)(?<indent>\s+)/u, `$<open>$<indent>${line}\n$<indent>`)
     }
     return true
   }
@@ -148,7 +148,7 @@ export class FileBase {
   }
 
   /**
-   *
+   * Apply pending fixes to the file then report the issues found
    */
   public async end() {
     await this.updateFile()

@@ -47,11 +47,12 @@ export class TsConfigFile extends FileBase {
 
   // oxlint-disable-next-line max-lines-per-function
   private checkCompilerOptions() {
-    /* c8 ignore next 4 */
+    /* v8 ignore start -- @preserve */
     if (this.fileContentObject === undefined) {
       log.error('cannot check compiler options without file content')
       return
     }
+    /* v8 ignore stop -- @preserve */
     const json = this.fileContentObject
     let isOk = this.couldContains('an include section', /"include"/u, 1, undefined, true)
     if (!isOk && this.canFix) json.include = ['src']
@@ -84,7 +85,7 @@ export class TsConfigFile extends FileBase {
       const hasNoWildcard = !files.some(file => file.includes('*')) // eslint-disable-line max-nested-callbacks
       this.test(hasNoWildcard, 'does not use wildcard in files section')
     }
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     const include = this.fileContentObject?.include ?? []
     if (include.length > 0) {
       const hasNoGlob = !include.some(file => file.endsWith('**/*')) // eslint-disable-line max-nested-callbacks
@@ -99,14 +100,14 @@ export class TsConfigFile extends FileBase {
       return
     }
     await this.inspectFile('tsconfig.json')
-    const data = parseJson<TsConfigJsonFile>(this.fileContent)
-    if (data.error) {
+    const data = parseJson<TsConfigJsonFile>(this.fileContent || '{}')
+    if (!data.ok) {
       log.error('cannot check empty or invalid tsconfig.json file')
       return
     }
     this.fileContentObject = data.value
     this.couldContainsSchema('https://json.schemastore.org/tsconfig')
-    /* c8 ignore next */
+    /* v8 ignore next -- @preserve */
     if (this.fileContentObject.references === undefined) this.checkCompilerOptions()
     this.checkFileManagement()
     log.debug('tsconfig.json file checked')

@@ -72,7 +72,7 @@ type Flags = { readonly [Key in keyof typeof availableFlags]?: ReturnType<(typeo
 export async function initDataFile(directoryPath = '', shouldForce = false) {
   const dataPath = join(directoryPath, dataFileName)
   const result = await readFileInFolder(templatePath, dataFileName)
-  /* c8 ignore next */
+  /* v8 ignore next -- @preserve */
   if (!result.ok) return Result.ok({ failed: [], passed: [], warnings: ['no-data-file-template-found'] })
   if (!shouldForce) {
     log.warn('repo-checker data file', dataPath, 'already exists, use --force to overwrite it')
@@ -93,10 +93,10 @@ export async function getData(directoryPath = '') {
     return Result.ok(dataDefaults)
   }
   log.info('loading data from', dataPath)
-  /* c8 ignore next */
-  const { error, value } = parseJson<ProjectData>(Result.unwrap(await readFileInFolder(dataPath, '')).value ?? '')
-  if (error) return Result.error(`error at getting data, target "${directoryPath}", dataPath "${dataPath}", error "${error}"`)
-  return Result.ok(value)
+  /* v8 ignore next -- @preserve */
+  const parsed = parseJson<ProjectData>(Result.unwrap(await readFileInFolder(dataPath, '')).value ?? '')
+  if (!parsed.ok) return Result.error(`error at getting data, target "${directoryPath}", dataPath "${dataPath}", error "${parsed.error}"`)
+  return Result.ok(parsed.value)
 }
 
 export const defaultOptions = {
@@ -131,15 +131,17 @@ export function getOptions(flags: Flags, shouldBypass = false) {
   }
 }
 
+// eslint-disable-next-line max-lines-per-function
 export async function start(options: Readonly<ReturnType<typeof getOptions>> = defaultOptions) {
   const { canFailStop, canFix, canForce, logLevel, target, willInit, willShowHelp, willShowVersion } = options
   if (willShowVersion) return showVersion()
   if (willShowHelp) return showHelp()
   if (willInit) return initDataFile(target, canForce)
-  /* c8 ignore next 4 */
+  /* v8 ignore start -- @preserve */
   const data = await getData(target)
   if (!data.ok) return data
   log.options.minimumLevel = logLevel
   log.forceInfo([`${name} __unique-mark__ is starting`, canFix ? blue('fix active') : gray('fix inactive'), `log level is ${blue(logLevel.split('-')[1] ?? '')}`].join(', '))
+  /* v8 ignore stop -- @preserve */
   return check({ canFailStop, canFix, canForce, data: data.value, folderPath: target })
 }

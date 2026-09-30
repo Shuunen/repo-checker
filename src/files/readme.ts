@@ -54,7 +54,7 @@ const deprecatedBadges = [
   'libraries.io', // shows deprecated informations
 ]
 
-/* c8 ignore start */
+/* v8 ignore start -- @preserve */
 // eslint-disable-next-line no-restricted-syntax
 export class ReadmeFile extends FileBase {
   private addBadge(line = '') {
@@ -132,7 +132,7 @@ export class ReadmeFile extends FileBase {
   private checkViews() {
     // exemple : https://views-counter.vercel.app/badge?pageId=Shuunen%2Fgoals&leftColor=5c5c5c&rightColor=07a62f&type=total&label=Visitors&style=none
     const url = `https://views-counter.vercel.app/badge?pageId=${this.data.userId}%2F${this.data.repoId}&leftColor=5c5c5c&rightColor=07a62f&type=total&label=Visitors&style=none`
-    const hasImage = this.couldContains('a views counter', new RegExp(url.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`), 'u'), 1, `![Views Counter](${url})`, true)
+    const hasImage = this.couldContains('a views counter', new RegExp(url.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`), 'u'), 1, `![Views Counter](${url})`, true)
     if (hasImage) return
     this.fileContent += `\n## Page views\n\n[![Views Counter](${url})](https://github.com/Kumara2mahe/Views-Counter)\n`
   }
@@ -234,4 +234,4 @@ export class ReadmeFile extends FileBase {
     this.checkViews()
   }
 }
-/* c8 ignore stop */
+/* v8 ignore stop -- @preserve */

@@ -2,15 +2,16 @@ import { FileBase } from '../file.ts'
 
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class EsLintFile extends FileBase {
-  /* c8 ignore start */
+  /* v8 ignore start -- @preserve */
   /**
    * Check if deprecated files are present
    */
   private async checkDeprecated() {
     await this.checkNoFileExists('xo.config.js')
-    /* c8 ignore next 2 */
+    /* v8 ignore start -- @preserve */
     if (await this.fileExists('.eslintrc.json')) this.test(false, 'use eslint.config.js config file', true)
     else if (await this.fileExists('.eslintrc.js')) this.test(false, 'use eslint.config.js config file', true)
+    /* v8 ignore stop -- @preserve */
   }
   /**
    * Start the eslint file check
@@ -26,5 +27,5 @@ export class EsLintFile extends FileBase {
     if (this.data.isUsingTailwind) this.shouldContains('browser config usage when using tailwind', /browser/u)
     // if (this.data.isUsingReact) this.shouldContains('react config usage', /react/u)
   }
-  /* c8 ignore stop */
+  /* v8 ignore stop -- @preserve */
 }

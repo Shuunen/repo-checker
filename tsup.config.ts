@@ -7,7 +7,7 @@ export default defineConfig([
   {
     banner: { js: banner },
     clean: true,
-    dts: true,
+    dts: { compilerOptions: { ignoreDeprecations: '6.0' } },
     entry: ['src/repo-check.ts'],
     format: ['cjs', 'esm'],
     minify: false,

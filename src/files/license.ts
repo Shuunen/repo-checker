@@ -1,6 +1,6 @@
 import { FileBase } from '../file.ts'
 
-/* c8 ignore start */
+/* v8 ignore start -- @preserve */
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class LicenseFile extends FileBase {
   /**
@@ -19,4 +19,4 @@ export class LicenseFile extends FileBase {
     if (license === 'MIT') this.shouldContains('a MIT title', /MIT License/u)
   }
 }
-/* c8 ignore stop */
+/* v8 ignore stop -- @preserve */

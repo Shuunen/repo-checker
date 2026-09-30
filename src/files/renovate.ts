@@ -1,6 +1,6 @@
 import { FileBase } from '../file.ts'
 
-/* c8 ignore start */
+/* v8 ignore start -- @preserve */
 // eslint-disable-next-line no-restricted-syntax, jsdoc/require-jsdoc
 export class RenovateFile extends FileBase {
   // eslint-disable-next-line jsdoc/require-jsdoc
@@ -15,4 +15,4 @@ export class RenovateFile extends FileBase {
     if (this.data.canAutoMergeDeps) this.shouldContains('an auto merge preset', /":automergeAll"/u)
   }
 }
-/* c8 ignore stop */
+/* v8 ignore stop -- @preserve */
