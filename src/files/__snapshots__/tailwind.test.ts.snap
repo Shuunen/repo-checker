@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`tailwind : can detect valid config 1`] = `
+exports[`tailwind > tailwind : can detect valid config 1`] = `
 {
   "canFix": true,
   "canForce": false,
@@ -47,7 +47,7 @@ exports[`tailwind : can detect valid config 1`] = `
 // eslint-disable-next-line no-undef, no-console
 if (process.env.NODE_ENV === 'hey') process.env.hey = readFileSync('hey.log', 'utf8')
 
-// eslint-disable-next-line no-commonjs, no-undef
+// eslint-disable-next-line no-commonjs, no-undef, unicorn/prefer-module
 module.exports = {
   content: ['public/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [
@@ -66,7 +66,7 @@ module.exports = {
 // eslint-disable-next-line no-undef, no-console
 if (process.env.NODE_ENV === 'hey') process.env.hey = readFileSync('hey.log', 'utf8')
 
-// eslint-disable-next-line no-commonjs, no-undef
+// eslint-disable-next-line no-commonjs, no-undef, unicorn/prefer-module
 module.exports = {
   content: ['public/*.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: [

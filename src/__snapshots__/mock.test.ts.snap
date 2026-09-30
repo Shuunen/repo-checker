@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`augmentData A repoCheckerPath 1`] = `
+exports[`mock > augmentData A repoCheckerPath 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -40,7 +40,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentData A repoCheckerPath with local 1`] = `
+exports[`mock > augmentData A repoCheckerPath with local 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -80,7 +80,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentData B vueProjectFolder 1`] = `
+exports[`mock > augmentData B vueProjectFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -120,7 +120,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentData B vueProjectFolder with local 1`] = `
+exports[`mock > augmentData B vueProjectFolder with local 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -160,7 +160,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentData C tsProjectFolder 1`] = `
+exports[`mock > augmentData C tsProjectFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -200,7 +200,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentData C tsProjectFolder with local 1`] = `
+exports[`mock > augmentData C tsProjectFolder with local 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -240,7 +240,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentData D testFolder 1`] = `
+exports[`mock > augmentData D testFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -280,7 +280,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentData D testFolder with local 1`] = `
+exports[`mock > augmentData D testFolder with local 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -320,7 +320,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentDataWithGit A repoCheckerPath 1`] = `
+exports[`mock > augmentDataWithGit A repoCheckerPath 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -360,7 +360,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentDataWithGit B vueProjectFolder 1`] = `
+exports[`mock > augmentDataWithGit B vueProjectFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -400,7 +400,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentDataWithGit C tsProjectFolder 1`] = `
+exports[`mock > augmentDataWithGit C tsProjectFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -440,7 +440,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentDataWithGit D testFolder 1`] = `
+exports[`mock > augmentDataWithGit D testFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -480,7 +480,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentDataWithGit E non-existing folder 1`] = `
+exports[`mock > augmentDataWithGit E non-existing folder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -520,7 +520,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentDataWithPackageJson A repoCheckerPath 1`] = `
+exports[`mock > augmentDataWithPackageJson A repoCheckerPath 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -560,7 +560,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentDataWithPackageJson B vueProjectFolder 1`] = `
+exports[`mock > augmentDataWithPackageJson B vueProjectFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -600,7 +600,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentDataWithPackageJson C tsProjectFolder 1`] = `
+exports[`mock > augmentDataWithPackageJson C tsProjectFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -640,7 +640,7 @@ ProjectData {
 }
 `;
 
-exports[`augmentDataWithPackageJson D testFolder 1`] = `
+exports[`mock > augmentDataWithPackageJson D testFolder 1`] = `
 ProjectData {
   "canAutoMergeDeps": true,
   "hasMainBranch": false,
@@ -680,20 +680,20 @@ ProjectData {
 }
 `;
 
-exports[`objectToJson A nothing to sort 1`] = `
+exports[`mock > objectToJson A nothing to sort 1`] = `
 "{
   "keyA": "A"
 }"
 `;
 
-exports[`objectToJson B already sorted 1`] = `
+exports[`mock > objectToJson B already sorted 1`] = `
 "{
   "keyA": "A",
   "keyB": "B"
 }"
 `;
 
-exports[`objectToJson C sort 1`] = `
+exports[`mock > objectToJson C sort 1`] = `
 "{
   "keyA": "A",
   "keyB": "B"

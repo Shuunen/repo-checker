@@ -1,5 +1,4 @@
 import { clone, Result } from 'shuutils'
-import { expect, it } from 'vitest'
 import { defaultOptions, getData, getFlags, getOptions, initDataFile, start } from './main'
 
 /**
@@ -14,49 +13,57 @@ function cleanTargetForSnap(options: Readonly<ReturnType<typeof getOptions>>) {
   return clean
 }
 
-it('getOptions A defaults', () => {
-  expect(cleanTargetForSnap(getOptions({}))).toMatchSnapshot()
-})
+describe('main', () => {
+  it('getOptions A defaults', () => {
+    expect.hasAssertions()
+    expect(cleanTargetForSnap(getOptions({}))).toMatchSnapshot()
+  })
 
-it('getOptions B non existing target', () => {
-  expect(cleanTargetForSnap(getOptions({ '--fix': true, '--target': 'my-folder' }))).toMatchSnapshot()
-})
+  it('getOptions B non existing target', () => {
+    expect.hasAssertions()
+    expect(cleanTargetForSnap(getOptions({ '--fix': true, '--target': 'my-folder' }))).toMatchSnapshot()
+  })
 
-it('getOptions C show help', () => {
-  expect(cleanTargetForSnap(getOptions({ '--help': true }))).toMatchSnapshot()
-})
+  it('getOptions C show help', () => {
+    expect.hasAssertions()
+    expect(cleanTargetForSnap(getOptions({ '--help': true }))).toMatchSnapshot()
+  })
 
-const logLevels = [
-  { in: { '--verbose': true }, out: '1-debug' },
-  { in: { '--debug': true }, out: '1-debug' },
-  { in: { '--warn': true }, out: '5-warn' },
-  { in: { '--log-level': 'warn' }, out: '5-warn' },
-  { in: { '--error': true }, out: '7-error' },
-  { in: { '--log-level': 'error' }, out: '7-error' },
-  { in: { '--hehe': 'error' }, out: '3-info' },
-]
+  const logLevels = [
+    { in: { '--verbose': true }, out: '1-debug' },
+    { in: { '--debug': true }, out: '1-debug' },
+    { in: { '--warn': true }, out: '5-warn' },
+    { in: { '--log-level': 'warn' }, out: '5-warn' },
+    { in: { '--error': true }, out: '7-error' },
+    { in: { '--log-level': 'error' }, out: '7-error' },
+    { in: { '--hehe': 'error' }, out: '3-info' },
+  ]
 
-it('getOptions D check log levels', () => {
-  for (const { in: input, out: output } of logLevels) expect(getOptions(input, true).logLevel).toBe(output)
-})
+  it('getOptions D check log levels', () => {
+    expect.hasAssertions()
+    for (const { in: input, out: output } of logLevels) expect(getOptions(input, true).logLevel).toBe(output)
+  })
 
-it('getFlags A', () => {
-  expect(getFlags()).toMatchInlineSnapshot(`
+  it('getFlags A', () => {
+    expect.hasAssertions()
+    expect(getFlags()).toMatchInlineSnapshot(`
     {
       "_": [],
     }
   `)
-})
+  })
 
-it('start A defaults', () => {
-  // we dont await here because there no need to pollute the get the whole check result here, see check.test.ts
-  expect(start()).toMatchInlineSnapshot('Promise {}')
-})
+  it('start A defaults', () => {
+    expect.hasAssertions()
+    // we dont await here because there no need to pollute the get the whole check result here, see check.test.ts
+    expect(start()).toMatchInlineSnapshot('Promise {}')
+  })
 
-it('start B show help', async () => {
-  const options = { ...defaultOptions, willShowHelp: true }
-  const result = Result.unwrap(await start(options))
-  expect(result.value).toMatchInlineSnapshot(`
+  it('start B show help', async () => {
+    expect.hasAssertions()
+    const options = { ...defaultOptions, willShowHelp: true }
+    const result = Result.unwrap(await start(options))
+    expect(result.value).toMatchInlineSnapshot(`
     {
       "failed": [],
       "passed": [
@@ -65,12 +72,13 @@ it('start B show help', async () => {
       "warnings": [],
     }
   `)
-})
+  })
 
-it('start C show version', async () => {
-  const options = { ...defaultOptions, willShowVersion: true }
-  const result = Result.unwrap(await start(options))
-  expect(result.value).toMatchInlineSnapshot(`
+  it('start C show version', async () => {
+    expect.hasAssertions()
+    const options = { ...defaultOptions, willShowVersion: true }
+    const result = Result.unwrap(await start(options))
+    expect(result.value).toMatchInlineSnapshot(`
     {
       "failed": [],
       "passed": [
@@ -79,41 +87,47 @@ it('start C show version', async () => {
       "warnings": [],
     }
   `)
-})
+  })
 
-it('start D init', () => {
-  const options = { ...defaultOptions, willInit: true }
-  expect(start(options)).toMatchInlineSnapshot('Promise {}')
-})
+  it('start D init', () => {
+    expect.hasAssertions()
+    const options = { ...defaultOptions, willInit: true }
+    expect(start(options)).toMatchInlineSnapshot('Promise {}')
+  })
 
-it('start G fix', () => {
-  const options = { ...defaultOptions, canFix: true }
-  expect(start(options)).toMatchInlineSnapshot('Promise {}')
-})
+  it('start G fix', () => {
+    expect.hasAssertions()
+    const options = { ...defaultOptions, canFix: true }
+    expect(start(options)).toMatchInlineSnapshot('Promise {}')
+  })
 
-it('getData A empty target : current .repo-checker.json', async () => {
-  const result = Result.unwrap(await getData())
-  expect(result.value).toMatchInlineSnapshot(`
+  it('getData A empty target : current .repo-checker.json', async () => {
+    expect.hasAssertions()
+    const result = Result.unwrap(await getData())
+    expect(result.value).toMatchInlineSnapshot(`
     {
       "maxSizeKo": 80,
     }
   `)
-})
+  })
 
-it('getData B non-existing target : default data', () => {
-  // we dont await here because there no need to pollute the get the whole default data here, see utils.test.ts
-  expect(getData('unknown')).toMatchInlineSnapshot('Promise {}')
-})
+  it('getData B non-existing target : default data', () => {
+    expect.hasAssertions()
+    // we dont await here because there no need to pollute the get the whole default data here, see utils.test.ts
+    expect(getData('unknown')).toMatchInlineSnapshot('Promise {}')
+  })
 
-it('getData C mal-formatted json target : default data', async () => {
-  const result = Result.unwrap(await getData('src/mocks/tsProject/sub-folder'))
-  expect(result.value).toBeUndefined()
-  expect(result.error).not.toBeUndefined()
-})
+  it('getData C mal-formatted json target : default data', async () => {
+    expect.hasAssertions()
+    const result = Result.unwrap(await getData('src/mocks/tsProject/sub-folder'))
+    expect(result.value).toBeUndefined()
+    expect(result.error).toBeDefined()
+  })
 
-it('initDataFile A default to current folder but data file already exists', async () => {
-  const result = await initDataFile()
-  expect(result.value).toMatchInlineSnapshot(`
+  it('initDataFile A default to current folder but data file already exists', async () => {
+    expect.hasAssertions()
+    const result = await initDataFile()
+    expect(result.value).toMatchInlineSnapshot(`
     {
       "failed": [],
       "passed": [],
@@ -122,11 +136,12 @@ it('initDataFile A default to current folder but data file already exists', asyn
       ],
     }
   `)
-})
+  })
 
-it('initDataFile B in a temp folder', async () => {
-  const result = await initDataFile('node_modules', true)
-  expect(result.value).toMatchInlineSnapshot(`
+  it('initDataFile B in a temp folder', async () => {
+    expect.hasAssertions()
+    const result = await initDataFile('node_modules', true)
+    expect(result.value).toMatchInlineSnapshot(`
     {
       "failed": [],
       "passed": [
@@ -135,4 +150,5 @@ it('initDataFile B in a temp folder', async () => {
       "warnings": [],
     }
   `)
+  })
 })

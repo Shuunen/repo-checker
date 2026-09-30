@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`getOptions A defaults 1`] = `
+exports[`main > getOptions A defaults 1`] = `
 {
   "canFailStop": false,
   "canFix": false,
@@ -12,7 +12,7 @@ exports[`getOptions A defaults 1`] = `
 }
 `;
 
-exports[`getOptions B non existing target 1`] = `
+exports[`main > getOptions B non existing target 1`] = `
 {
   "canFailStop": false,
   "canFix": true,
@@ -24,7 +24,7 @@ exports[`getOptions B non existing target 1`] = `
 }
 `;
 
-exports[`getOptions C show help 1`] = `
+exports[`main > getOptions C show help 1`] = `
 {
   "canFailStop": false,
   "canFix": false,

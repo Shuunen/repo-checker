@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ts config file fix 1`] = `
+exports[`ts-config > ts config file fix > file content 1`] = `
 "{
   "compilerOptions": {
     "allowUnreachableCode": false,
@@ -36,7 +36,7 @@ exports[`ts config file fix 1`] = `
 }"
 `;
 
-exports[`ts config file fix 2`] = `
+exports[`ts-config > ts config file fix > instance 1`] = `
 {
   "canFix": true,
   "canForce": false,
@@ -154,7 +154,7 @@ exports[`ts config file fix 2`] = `
 }
 `;
 
-exports[`ts config file no check 1`] = `
+exports[`ts-config > ts config file no check 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -205,7 +205,7 @@ exports[`ts config file no check 1`] = `
 }
 `;
 
-exports[`ts config malformed 1`] = `
+exports[`ts-config > ts config malformed 1`] = `
 {
   "canFix": false,
   "canForce": false,

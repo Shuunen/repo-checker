@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`package A on repo checker 1`] = `
+exports[`package > package A on repo checker 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -91,7 +91,7 @@ exports[`package A on repo checker 1`] = `
 }
 `;
 
-exports[`package B on ts project 1`] = `
+exports[`package > package B on ts project 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -220,7 +220,7 @@ exports[`package B on ts project 1`] = `
 }
 `;
 
-exports[`package C ts project isUsing* 1`] = `
+exports[`package > package C ts project isUsing* 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -361,7 +361,7 @@ exports[`package C ts project isUsing* 1`] = `
 }
 `;
 
-exports[`package D no file exists 1`] = `
+exports[`package > package D no file exists 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -411,7 +411,7 @@ exports[`package D no file exists 1`] = `
 }
 `;
 
-exports[`package E vue project 1`] = `
+exports[`package > package E vue project 1`] = `
 {
   "canFix": false,
   "canForce": false,
@@ -519,7 +519,7 @@ exports[`package E vue project 1`] = `
 }
 `;
 
-exports[`package F fix project 1`] = `
+exports[`package > package F fix project 1`] = `
 {
   "canFix": true,
   "canForce": false,
