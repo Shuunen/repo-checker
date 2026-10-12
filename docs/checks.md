@@ -43,10 +43,10 @@ State of each clone and of its git history.
 - 📋 🔵 `stale-local-branch`: a local branch that is already merged, deleted on GitHub, or untouched for N months.
 - 📋 🔵 `stale-remote-branch`: the same, for branches on GitHub.
 - 📋 🔵 `stale-last-tag`: the last git tag is old, suggest tagging. From the old README todo list.
-- 📋 🟡 `avoid-main-branch`: avoid the `main` branch name, use `master` (`git.ts`).
-- 📋 🔴 `gitignore-exists`: a `.gitignore` file exists (`git.ts`).
-- 📋 🟡 `gitignore-node-modules`: `.gitignore` lists `node_modules` (`git.ts`).
-- 📋 🟡 `gitignore-keeps-pnpm-lock`: `.gitignore` does not exclude `pnpm-lock.yaml` (`git.ts`).
+- ✅ 🟡 `avoid-main-branch`: avoid the `main` branch name, use `master` (`git.ts`).
+- ✅ 🔴 `gitignore-exists`: a `.gitignore` file exists (`git.ts`).
+- ✅ 🟡 `gitignore-node-modules`: `.gitignore` lists `node_modules` (`git.ts`).
+- ✅ 🟡 `gitignore-keeps-pnpm-lock`: `.gitignore` does not exclude `pnpm-lock.yaml` (`git.ts`).
 
 ## Dependencies
 
@@ -68,21 +68,21 @@ What the project depends on, and how current and safe that is.
 - ✅ 🟡 `no-npm-run-all-dependency`: no `npm-run-all`, chain tasks with `&&` or use `npm-parallel` (`package.file.ts`).
 - ✅ 🟡 `esbuild-plugin-run-alternative`: when `esbuild-plugin-run` is used, suggest `typescript-run` (`ts-run src --watch`) (`package.file.ts`).
 - ✅ 🟡 `latest-repo-check-version`: the `repo-check` dependency matches the latest major.minor. Skipped in repo-checker itself (`package.file.ts`).
-- 📋 🟡 `renovate-config-exists`: a `renovate.json` file exists (`renovate.ts`).
-- 📋 🟡 `renovate-schema`: `renovate.json` declares the Renovate `$schema` (`renovate.ts`).
-- 📋 🔴 `renovate-extends`: `renovate.json` has an `extends` section (`renovate.ts`).
-- 📋 🔴 `renovate-no-config-base`: no deprecated `config:base`, use `config:semverAllMonthly` (`renovate.ts`).
-- 📋 🔴 `renovate-dashboard-off`: `dependencyDashboard` is set to false (`renovate.ts`).
-- 📋 🔴 `renovate-automerge`: the `:automergeAll` preset is used, when the project data allows auto-merge (`renovate.ts`).
+- ✅ 🟡 `renovate-config-exists`: a `renovate.json` file exists (`renovate.ts`).
+- ✅ 🟡 `renovate-schema`: `renovate.json` declares the Renovate `$schema` (`renovate.ts`).
+- ✅ 🔴 `renovate-extends`: `renovate.json` has an `extends` section (`renovate.ts`).
+- ✅ 🔴 `renovate-no-config-base`: no deprecated `config:base`, use `config:semverAllMonthly` (`renovate.ts`).
+- ✅ 🔴 `renovate-dashboard-off`: `dependencyDashboard` is set to false (`renovate.ts`).
+- ✅ 🔴 `renovate-automerge`: the `:automergeAll` preset is used, when the project data allows auto-merge (`renovate.ts`).
 
 ## Runtime and package manager
 
 Which Node and which package manager the project uses, and how that is pinned.
 
-- 📋 🔴 `nvmrc-exists`: a `.nvmrc` file exists (`nvmrc.ts`).
-- 📋 🟡 `nvmrc-recent-node`: `.nvmrc` pins a recent LTS Node version (currently 24.x) (`nvmrc.ts`).
-- 📋 🟡 `npmrc-exists`: an `.npmrc` file exists (`npmrc.file.ts`).
-- 📋 🟡 `npmrc-pre-post-scripts`: `.npmrc` has `enable-pre-post-scripts=true`, when the project uses task prefixes (`npmrc.file.ts`).
+- ✅ 🔴 `nvmrc-exists`: a `.nvmrc` file exists (`nvmrc.ts`).
+- ✅ 🟡 `nvmrc-recent-node`: `.nvmrc` pins a recent LTS Node version (currently 24.x) (`nvmrc.ts`).
+- ✅ 🟡 `npmrc-exists`: an `.npmrc` file exists (`npmrc.file.ts`).
+- ✅ 🟡 `npmrc-pre-post-scripts`: `.npmrc` has `enable-pre-post-scripts=true`, when the project uses task prefixes (`npmrc.file.ts`).
 - 📋 🟡 `outdated-package-manager`: the `packageManager` version is behind.
 - 📋 🔴 `multiple-lockfiles`: more than one lockfile in the same project.
 - 📋 🟡 `old-lockfile-format`: a lockfile in an obsolete format, for example `bun.lockb`.
@@ -142,19 +142,19 @@ For projects published as a package.
 
 Linting, formatting, typing and architecture config files.
 
-- 📋 🟡 `repo-checker-config`: the tool's own `.repo-checker.json` exists, and old `.repo-checker.js` or `repo-checker.config.js` files are migrated into it (`repo-checker.ts`).
-- 📋 🔴 `editorconfig-exists`: an `.editorconfig` file exists (`editor-config.ts`).
-- 📋 🔴 `editorconfig-indent`: `indent_style = space` and `indent_size = 2` (`editor-config.ts`).
-- 📋 🔴 `editorconfig-line-endings`: `end_of_line = lf` (`editor-config.ts`).
-- 📋 🔴 `editorconfig-charset`: `charset = utf-8` (`editor-config.ts`).
-- 📋 🟡 `editorconfig-trim-whitespace`: `trim_trailing_whitespace = true` (`editor-config.ts`).
-- 📋 🟡 `editorconfig-final-newline`: `insert_final_newline = true` (`editor-config.ts`).
-- 📋 🟡 `editorconfig-no-html-indent`: no specific `[*.html]` indent rule (`editor-config.ts`).
-- 📋 🔴 `eslint-config-exists`: `eslint.config.js` (ESM project) or `eslint.config.cjs` (CommonJS project) exists, when the project uses ESLint (`eslint.file.ts`).
-- 📋 🟡 `eslint-no-deprecated-config`: no `.eslintrc.json` or `.eslintrc.js`, use the flat config (`eslint.file.ts`).
-- 📋 🔴 `eslint-no-xo-config`: no `xo.config.js` (`eslint.file.ts`).
+- ✅ 🟡 `repo-checker-config`: the tool's own `.repo-checker.json` exists. The old tool also migrated `.repo-checker.js` and `repo-checker.config.js` into it, the new one does not (`repo-checker.ts`).
+- ✅ 🔴 `editorconfig-exists`: an `.editorconfig` file exists (`editor-config.ts`).
+- ✅ 🔴 `editorconfig-indent`: `indent_style = space` and `indent_size = 2` (`editor-config.ts`).
+- ✅ 🔴 `editorconfig-line-endings`: `end_of_line = lf` (`editor-config.ts`).
+- ✅ 🔴 `editorconfig-charset`: `charset = utf-8` (`editor-config.ts`).
+- ✅ 🟡 `editorconfig-trim-whitespace`: `trim_trailing_whitespace = true` (`editor-config.ts`).
+- ✅ 🟡 `editorconfig-final-newline`: `insert_final_newline = true` (`editor-config.ts`).
+- ✅ 🟡 `editorconfig-no-html-indent`: no specific `[*.html]` indent rule (`editor-config.ts`).
+- ✅ 🔴 `eslint-config-exists`: an ESLint flat config exists (`eslint.config.js`, `.mjs`, `.cjs`, `.ts` or `.mts`), when the project uses ESLint (`eslint.file.ts`).
+- ✅ 🟡 `eslint-no-deprecated-config`: no `.eslintrc.json` or `.eslintrc.js`, use the flat config (`eslint.file.ts`).
+- ✅ 🔴 `eslint-no-xo-config`: no `xo.config.js` (`eslint.file.ts`).
 - ✅ 🔴 `eslint-dependency`: an `eslint` dependency, and not version 8 (`package.file.ts`).
-- 📋 🔴 `eslint-browser-config`: the ESLint config references a browser environment when the project uses Tailwind (`eslint.file.ts`).
+- ✅ 🔴 `eslint-browser-config`: the ESLint config references a browser environment when the project uses Tailwind (`eslint.file.ts`).
 - 📋 🔴 `biome-config-exists`: a `biome.json` file exists, when the project uses Biome (`biome.file.ts`).
 - 📋 🟡 `biome-schema`: `$schema` points to `./node_modules/@biomejs/biome/configuration_schema.json` (`biome.file.ts`).
 - 📋 🟡 `biome-sections`: the sections `formatter`, `javascript`, `json`, `linter`, `assist`, `vcs` and `overrides` exist (`biome.file.ts`).
@@ -173,17 +173,17 @@ Linting, formatting, typing and architecture config files.
 - 📋 🟡 `tsconfig-lib`: a non-empty `lib` compiler option (`ts-config.ts`).
 - 📋 🔴 `tsconfig-no-wildcard-files`: no wildcard in the `files` section (`ts-config.ts`).
 - 📋 🟡 `tsconfig-no-useless-glob`: no `my-folder/**/*` in `include`, `my-folder` is enough (`ts-config.ts`).
-- 📋 🟡 `dependency-tool-choice`: use knip or dependency-cruiser. Skipped when the project uses knip (`dependency-cruiser.ts`).
-- 📋 🔴 `dependency-cruiser-config`: a `.dependency-cruiser.js` or `.dependency-cruiser.cjs` file exists, when the project uses dependency-cruiser (`dependency-cruiser.ts`).
-- 📋 🔴 `tailwind-content`: the Tailwind config (`.js`, `.ts`, `.mjs` or `.cjs`) has a `content` option, like `content: ['./src/**/*.{vue,js,ts,jsx,tsx}']`, when the project uses Tailwind (`tailwind.ts`).
+- ✅ 🟡 `dependency-tool-choice`: use knip or dependency-cruiser. Skipped when the project uses knip (`dependency-cruiser.ts`).
+- ✅ 🔴 `dependency-cruiser-config`: a `.dependency-cruiser.js` or `.dependency-cruiser.cjs` file exists, when the project uses dependency-cruiser (`dependency-cruiser.ts`).
+- ✅ 🔴 `tailwind-content`: the Tailwind config (`.js`, `.ts`, `.mjs` or `.cjs`) has a `content` option, like `content: ['./src/**/*.{vue,js,ts,jsx,tsx}']`, when the project uses Tailwind (`tailwind.ts`).
 
 ## Testing
 
 - ✅ 🟡 `unit-testing-dependency`: one unit testing tool among vitest, mocha, uvu, or `bun test` (`package.file.ts`).
 - ✅ 🟡 `coverage-dependency`: one coverage tool among nyc, c8, `@vitest/coverage-v8`, `@vitest/coverage-c8`, or `bun test --coverage` (`package.file.ts`).
-- 📋 🟡 `vitest-pool-threads`: the vitest config (`.mts`, `.js`, `.ts` or `.mjs`) sets `pool: 'threads'`, when the project uses vitest (`vitest.ts`).
-- 📋 🔴 `nycrc-exists`: a `.nycrc` or `.nycrc.json` file exists, when the project uses nyc (`nycrc.ts`).
-- 📋 🟡 `nycrc-schema`: the nyc config declares the schemastore `$schema` (`nycrc.ts`).
+- ✅ 🟡 `vitest-pool-threads`: the vitest config (`.mts`, `.js`, `.ts` or `.mjs`) sets `pool: 'threads'`, when the project uses vitest (`vitest.ts`).
+- ✅ 🔴 `nycrc-exists`: a `.nycrc` or `.nycrc.json` file exists, when the project uses nyc (`nycrc.ts`).
+- ✅ 🟡 `nycrc-schema`: the nyc config declares the schemastore `$schema` (`nycrc.ts`).
 - ✅ 🔴 `uvu-assert`: with uvu, tests import `equal` from `uvu/assert` and not from `assert` (`package.file.ts`).
 
 ## CI
@@ -199,9 +199,9 @@ Linting, formatting, typing and architecture config files.
 - 📋 🔴 `ci-no-frozen-lockfile-flag`: no `--no-frozen-lockfile` flag (`gh-workflow.ts`).
 - 📋 🟡 `ci-bun-step`: when the project uses Bun, no pnpm left in the workflow and a `oven-sh/setup-bun` step (`gh-workflow.ts`).
 - 📋 🟡 `ci-bun-version`: the setup-bun action is v2 to v9 (`gh-workflow.ts`).
-- 📋 🔴 `travis-language`: `.travis.yml`, when present, declares `language: node_js` (`travis.ts`).
-- 📋 🔴 `travis-install-task`: `.travis.yml`, when present, runs `npm ci` (`travis.ts`).
-- 📋 🔴 `travis-ci-task`: `.travis.yml`, when present, runs `npm run ci` (`travis.ts`).
+- ✅ 🔴 `travis-language`: `.travis.yml`, when present, declares `language: node_js` (`travis.ts`).
+- ✅ 🔴 `travis-install-task`: `.travis.yml`, when present, runs `npm ci` (`travis.ts`).
+- ✅ 🔴 `travis-ci-task`: `.travis.yml`, when present, runs `npm run ci` (`travis.ts`).
 
 ## Website
 
@@ -222,8 +222,8 @@ How the project introduces itself, on GitHub and in the repo.
 - 📋 🟡 `missing-description`: the repo has no description.
 - 📋 🔵 `missing-topics`: the repo has no topics.
 - 📋 🔵 `missing-homepage`: the repo has no homepage.
-- 📋 🔴 `license-file-exists`: a `LICENSE` file exists (`license.ts`).
-- 📋 🔴 `license-file-content`: the `LICENSE` file matches the declared license: GPL-3.0 has the "GNU GENERAL PUBLIC LICENSE" title and the "Version 3, 29 June 2007" subtitle, MIT has the "MIT License" title (`license.ts`).
+- ✅ 🔴 `license-file-exists`: a `LICENSE` file exists (`license.ts`).
+- ✅ 🔴 `license-file-content`: the `LICENSE` file matches the declared license: GPL-3.0 has the "GNU GENERAL PUBLIC LICENSE" title and the "Version 3, 29 June 2007" subtitle, MIT has the "MIT License" title (`license.ts`).
 - ✅ 🔴 `package-license`: a `license` property, with the expected license value (`package.file.ts`).
 - ✅ 🔴 `package-author`: an `author` property (`package.file.ts`).
 - ✅ 🟡 `package-description`: a `description` property (`package.file.ts`).
