@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 import { runCli } from './cli.ts'
 import { ghCli } from './inventory/github.ts'
 

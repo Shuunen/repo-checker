@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     coverage: {
-      exclude: ['src/repo-check.ts', 'src/server/bin.ts', 'src/mocks/*', 'src/**/__snapshots__/*'],
+      exclude: ['src/server/bin.ts'],
       include: ['src'],
       reporter: ['text', 'lcov', 'html'],
       thresholds: {

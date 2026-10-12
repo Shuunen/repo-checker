@@ -2,42 +2,27 @@
   "$schema": "https://json.schemastore.org/package",
   "author": "Romain Racamier-Lafon <romain.racamier@gmail.com>",
   "bin": {
-    "repo-check": "dist/repo-check.cjs"
+    "repo-check": "dist/server/bin.js"
   },
   "bugs": "https://github.com/Shuunen/repo-checker/issues",
-  "config": {
-    "logFile": "repo-check.log"
-  },
   "dependencies": {
-    "arg": "~5.0.2",
     "es-toolkit": "~1.52.0",
-    "jsonc-parser": "~3.3.1",
-    "shuutils": "~11.0.0",
-    "sort-json": "~2.0.1"
+    "jsonc-parser": "~3.3.1"
   },
   "description": "Repo maintenance made easy",
   "devDependencies": {
     "@types/node": "~26.6.3",
-    "@types/sort-json": "~2.0.3",
     "@vitest/coverage-v8": "~5.0.2",
     "dependency-cruiser": "~18.4.0",
     "knip": "~6.38.0",
     "oxfmt": "~0.72.0",
     "oxlint": "~1.86.0",
-    "tsup": "~8.5.1",
+    "tsdown": "~0.23.1",
     "typescript": "~6.0.3",
-    "vitest": "~5.0.2",
-    "watchlist": "~0.3.1"
-  },
-  "exports": {
-    ".": {
-      "import": "./dist/repo-check.js",
-      "require": "./dist/repo-check.cjs"
-    }
+    "vitest": "~5.0.2"
   },
   "files": [
-    "dist",
-    "templates"
+    "dist"
   ],
   "homepage": "https://github.com/Shuunen/repo-checker",
   "keywords": [
@@ -47,7 +32,6 @@
     "checker"
   ],
   "license": "GPL-3.0",
-  "main": "dist/repo-check.js",
   "name": "repo-check",
   "private": false,
   "repository": {
@@ -55,26 +39,21 @@
     "url": "git+https://github.com/Shuunen/repo-checker.git"
   },
   "scripts": {
-    "build": "tsup-node && bun build:mark && echo build success",
-    "build:mark": "unique-mark \"dist/repo-check.{cjs,js}\" && echo mark success",
-    "check": "bun install && echo install success && bun run build && bun start && bun lint && bun run test && echo check success",
-    "dev": "watchlist src -eager -- bun start",
+    "build": "tsdown && echo build success",
+    "check": "bun install && echo install success && bun run build && node dist/server/bin.js --help > /dev/null && echo bin success && bun lint && bun run test && echo check success",
     "lint": "bun lint:format && bun lint:knip && bun lint:tsc && bun lint:oxlint && bun lint:dep && echo lint success",
-    "lint:format": "oxfmt src && echo lint:format success",
     "lint:dep": "depcruise src --config && echo lint:dep success",
+    "lint:format": "oxfmt src && echo lint:format success",
     "lint:knip": "knip",
     "lint:oxlint": "oxlint src --deny-warnings --fix --fix-suggestions --fix-dangerously && echo lint:oxlint success",
     "lint:tsc": "tsc --noEmit && echo lint:tsc success",
     "postversion": "git push && git push --tags && bun run build && npm publish",
     "preversion": "bun check",
     "scan": "bun src/server/bin.ts",
-    "start": "bun src/repo-check.ts",
     "test": "vitest --coverage --run && echo test success",
-    "test:bench": "vitest bench && echo test bench success",
     "test:update": "vitest --run --update && echo test update success",
     "test:watch": "vitest --coverage"
   },
   "type": "module",
-  "types": "./dist/repo-check.d.ts",
   "version": "1.46.0"
 }

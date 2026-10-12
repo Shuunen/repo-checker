@@ -6,7 +6,7 @@ Format: an emoji for the status, an emoji for the severity, then `` `check-id` `
 
 - 🚀 v1: built in the first release.
 - ✅ ported: built in the new engine, next to the Sync checks. Most come from the old tool, the file in parentheses says which.
-- 📋 todo: wanted, not built yet. This includes every rule of the previous version not ported yet. The file in parentheses is where the rule lives in the old code (`src/files/`), and its exact behavior is in the old snapshot tests in git history.
+- 📋 todo: wanted, not built yet. The file in parentheses of a ✅ check is where it lived in the old code (`src/files/`, removed, see git history).
 
 Severity, one scale for every check:
 

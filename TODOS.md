@@ -2,12 +2,11 @@
 
 v1 is the Sync checks only (see `docs/features.md`). Every check, built or wanted, lives in `docs/checks.md`. This file holds the rest of the backlog: work that is not a check.
 
-## Porting the old tool
+## Release
 
-- Port the remaining old file checks (the 📋 entries with a source file in `docs/checks.md`) into the new codebase. The `package.json` and README checks are done (✅). The old snapshot tests, in git history, are the spec.
-- Let the UI trigger the old `--fix` behavior.
+- Every old check is ported (✅ in `docs/checks.md`) and the old code is removed. Ship the rewrite as a new major version.
+- Let the UI apply the fixes the rules already plan (`planFixes`, `fixProject`), the successor of the old `--fix`.
 - A json schema for `.repo-checker.json`, from the old README todo list.
-- Ship the rewrite as a new major version only once this is done.
 
 ## Actions
 

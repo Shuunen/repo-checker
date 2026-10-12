@@ -35,7 +35,6 @@ export default {
           String.raw`\.d\.ts$`, // TypeScript declaration files
           String.raw`(^|/)tsconfig\.json$`, // TypeScript config
           String.raw`(^|/)(babel|webpack)\.config\.(js|cjs|mjs|ts|json)$`, // other configs
-          String.raw`src/mocks/vueProject/tailwind.config.js`,
         ],
       },
       name: 'no-orphans',

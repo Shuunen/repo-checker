@@ -108,10 +108,10 @@ None blocking. Anything new that comes up while scaffolding is added here.
 
 ## Next Steps
 
-1. Approve these docs, then remove the old code in one separate commit.
+1. Approve these docs, then remove the old code in one separate commit. Done once every old check was ported (2026-10-12).
 2. Scaffold: bun, oxlint + oxfmt, vitest, `tsdown` for the server build, folders `src/server`, `src/shared`, `src/web`.
 3. Scan engine in `src/server`: local inventory (git state), GitHub inventory (`gh api`), matching by `origin`, the five Sync checks, all unit-tested with fixture repos. Done, built on the old toolchain since steps 1 and 2 are not done yet.
-4. CLI report (`repo-check`), report-only. Done, runs as `bun scan` until the old code is removed.
+4. CLI report (`repo-check`), report-only. Done, built by `tsdown` to `dist/server/bin.js`.
 5. Hono server with the streaming scan endpoint.
 6. UI: project list, then project view.
 7. Confirmed actions: clone, unarchive + push + re-archive, discard, delete local clone, delete fork.

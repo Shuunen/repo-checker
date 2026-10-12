@@ -1,6 +1,6 @@
 # Architecture
 
-Status: partly built. The inventory, the checks engine, the five Sync checks, 72 ported file checks and the report-only CLI exist. The HTTP server, the web app and the actions do not yet, so the routes below are still a sketch.
+Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks and the report-only CLI exist, and the old code is removed. The HTTP server, the web app and the actions do not yet, so the routes below are still a sketch.
 
 ## Shape
 
@@ -42,7 +42,7 @@ Hono server (127.0.0.1)  <----  React app (static files)
 
 The inventory lives in `src/server/inventory`: `shell.ts` (the only place that runs `git` and `gh`), `git.ts` (one `LocalClone` per folder: origin, branches with ahead, behind and gone upstreams, changed files, stash, unpushed commit subjects, local-only branches), `github.ts` (`gh api --paginate --slurp`, private repos included when the owner is the `gh` login) and `match.ts` (one `Project` per clone and per repo without clone, other owners flagged). `forks.ts` reads each fork's `ForkStatus` during the scan: the parent, every branch compared with the parent's default branch, the open pull requests from each branch, and every failed call. A single failure makes the fork "cannot verify". On 2026-10-12 the 30 forks (120 branches, 2 calls per branch) took about 7 seconds with 8 forks at a time in a pool (13 seconds with 4, 7.8 with 8 in fixed batches), the slowest part of the scan, which is why results stream per project. The types are in `src/shared/project.ts`. A clone whose origin points to the owner but matches no repo keeps `github` undefined: that is the "origin 404" case of `broken-clone`.
 
-The CLI is `src/server/cli.ts` (`scan.ts` reads the inventory and checks each project, `report.ts` groups the findings by severity, then prints a summary line: checks run and skipped, counts per severity). `--verbose` also lists every passed and skipped check per project, and progress lines go to stderr so they never mix with the report. Until the old code is removed it runs with `bun scan` (`--target`, `--owner`, `--no-fetch`, `--verbose`, a leading `~` in the target is expanded), the published `repo-check` bin still points to the old tool.
+The CLI is `src/server/cli.ts` (`scan.ts` reads the inventory and checks each project, `report.ts` groups the findings by severity, then prints a summary line: checks run and skipped, counts per severity). `--verbose` also lists every passed and skipped check per project, and progress lines go to stderr so they never mix with the report. It runs as `repo-check` from the built package (`dist/server/bin.js`, built by `tsdown` with one file per rule) and as `bun scan` from the sources (`--target`, `--owner`, `--no-fetch`, `--verbose`, a leading `~` in the target is expanded).
 
 The server streams those events to the page (server-sent events through Hono's streaming helper). The page writes them into a TanStack Query cache, so rows appear one by one.
 

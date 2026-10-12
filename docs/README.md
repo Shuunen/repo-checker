@@ -10,4 +10,4 @@ The `rewrite/projects-dashboard` branch rewrites repo-checker from scratch. The 
 - [conventions.md](conventions.md) : tooling and code rules.
 - [../TODOS.md](../TODOS.md) : future work that is not a check (actions, output, ideas).
 
-`banner.svg`, `benchmarks.md`, `build.md` and `demo-1.42.jpg` belong to the old tool and stay until the old code is removed.
+`banner.svg` is the project logo. `demo-1.42.jpg` shows the old tool's output, replace it with a capture of the new report.
