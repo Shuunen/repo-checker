@@ -3,6 +3,13 @@
 /** @type {import('dependency-cruiser').IConfiguration} */
 export default {
   forbidden: [
+    {
+      comment: 'The engine runs rules and knows no rule, rules import from the engine, never the reverse (see docs/architecture.md)',
+      from: { path: '^src/server/engine' },
+      name: 'engine-knows-no-rule',
+      severity: 'error',
+      to: { path: '^src/server/rules' },
+    },
     /* rules from the 'recommended' preset: */
     {
       comment: 'This dependency is part of a circular relationship. You might want to revise your solution (i.e. use dependency inversion, make sure the modules have a single responsibility) ',

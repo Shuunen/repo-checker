@@ -1,0 +1,112 @@
+/**
+ * Test a rule ESLint RuleTester style: a list of valid cases that must report nothing, and invalid cases with the expected message ids and fixed package.json.
+ * Cases run on in-memory files, never on the disk.
+ * @module
+ */
+import { buildContext, type PackageJson, type ProjectFlags } from './context.ts'
+import type { Rule } from './define-rule.ts'
+import { memoryIo } from './io.ts'
+import { checkProject, fixProject } from './runner.ts'
+
+/** The json indent of the fake package.json, the most common one */
+const indent = 2
+
+/** A fake project on which the rule must report nothing */
+interface ValidCase {
+  /** Other files of the fake project, by path */
+  files?: Record<string, string>
+  /** The project flags */
+  flags?: ProjectFlags
+  /** The test name, shown as `valid: <name>` or `invalid: <name>` */
+  name: string
+  /** Written as package.json with a two spaces indent, leave it out for a project without package.json */
+  pkg?: PackageJson
+}
+
+/** A fake project on which the rule must report the given errors */
+interface InvalidCase extends ValidCase {
+  /** The expected message ids, in report order */
+  errors: string[]
+  /** The package.json expected after every fix is applied, leave it out when the rule cannot fix. When set, nothing must be reported after the fix */
+  output?: PackageJson
+}
+
+/**
+ * Serialize a package.json like most projects do: two spaces indent and a final new line
+ * @param pkg the package.json content
+ * @returns the text
+ */
+export function toJsonText(pkg: Readonly<PackageJson>) {
+  return `${JSON.stringify(pkg, undefined, indent)}\n`
+}
+
+/**
+ * Build the fake files of a case
+ * @param testCase the case
+ * @param testCase.files the other files
+ * @param testCase.pkg the package.json content
+ * @returns the files by path
+ */
+function toFiles({ files = {}, pkg }: Readonly<ValidCase>) {
+  return pkg === undefined ? { ...files } : { ...files, 'package.json': toJsonText(pkg) }
+}
+
+/**
+ * Check a valid case
+ * @param rule the rule
+ * @param testCase the case
+ * @returns the findings, expected to be empty
+ */
+async function checkValid(rule: Readonly<Rule>, testCase: Readonly<ValidCase>) {
+  const context = await buildContext(memoryIo(toFiles(testCase)), testCase.flags)
+  return await checkProject([rule], context)
+}
+
+/**
+ * Check an invalid case, then fix it and check again
+ * @param rule the rule
+ * @param testCase the case
+ * @returns the reported message ids, the fixed files and the count of findings left, to compare with `expectedInvalid`
+ */
+async function runInvalid(rule: Readonly<Rule>, testCase: Readonly<InvalidCase>) {
+  const io = memoryIo(toFiles(testCase))
+  const findings = await checkProject([rule], await buildContext(io, testCase.flags))
+  const fixed = await fixProject({ confirm: () => Promise.resolve(true), flags: testCase.flags, io, rules: [rule] })
+  return { errors: findings.map(finding => finding.messageId), outputs: fixed.applied.map(plan => plan.after), remaining: fixed.findings.length }
+}
+
+/**
+ * What `runInvalid` should give: the errors, the fixed package.json and nothing left once fixed, or no fix and every error left
+ * @param testCase the case
+ * @param testCase.errors the expected message ids
+ * @param testCase.output the expected package.json once fixed
+ * @returns the expected result
+ */
+function expectedInvalid({ errors, output }: Readonly<InvalidCase>) {
+  return { errors, outputs: output === undefined ? [] : [toJsonText(output)], remaining: output === undefined ? errors.length : 0 }
+}
+
+/**
+ * Run a rule on valid and invalid cases, ESLint RuleTester style. Call it at the top level of a test file, it creates one `describe` named after the rule id
+ * @param rule the rule to test
+ * @param cases the cases
+ * @param cases.valid cases that must report nothing
+ * @param cases.invalid cases that must report the given errors, and give the output once fixed
+ * @example
+ * testRule(scriptsNoNpmRun, {
+ *   invalid: [{ errors: ['found'], name: 'one script', output: { scripts: { check: 'pnpm lint' } }, pkg: { scripts: { check: 'npm run lint' } } }],
+ *   valid: [{ name: 'pnpm scripts', pkg: { scripts: { check: 'pnpm lint' } } }],
+ * })
+ */
+export function testRule(rule: Readonly<Rule>, { invalid, valid }: Readonly<{ invalid: readonly InvalidCase[]; valid: readonly ValidCase[] }>) {
+  describe(rule.meta.id, () => {
+    it.each(valid)('valid: $name', async testCase => {
+      expect.hasAssertions()
+      await expect(checkValid(rule, testCase)).resolves.toStrictEqual([])
+    })
+    it.each(invalid)('invalid: $name', async testCase => {
+      expect.hasAssertions()
+      await expect(runInvalid(rule, testCase)).resolves.toStrictEqual(expectedInvalid(testCase))
+    })
+  })
+}

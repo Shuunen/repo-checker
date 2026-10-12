@@ -115,6 +115,14 @@
     "vitest/prefer-lowercase-title": "off",
     "vitest/prefer-to-be-falsy": "off",
     "vitest/prefer-to-be-truthy": "off",
+    "vitest/require-hook": [
+      "warn",
+      {
+        "allowedFunctionCalls": [
+          "testRule"
+        ]
+      }
+    ],
     "vitest/require-test-timeout": "off"
   }
 }
