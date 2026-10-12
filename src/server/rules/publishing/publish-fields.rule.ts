@@ -12,6 +12,17 @@ function isPublished({ flags, pkg }: Readonly<Context>) {
   return flags.isPublishedPackage === true && pkg !== undefined
 }
 
+/**
+ * Tell if the project is a published library, not a CLI that only publishes a bin: the entry point rules apply then
+ * @param context the project context
+ * @returns true when the package exposes code to import
+ */
+function isPublishedLibrary(context: Readonly<Context>) {
+  const { pkg } = context
+  const isBinOnly = pkg?.bin !== undefined && pkg.main === undefined && pkg.exports === undefined
+  return isPublished(context) && !isBinOnly
+}
+
 export const publishTypeModule = defineRule({
   appliesTo: isPublished,
   check({ pkg, report }) {
@@ -21,7 +32,7 @@ export const publishTypeModule = defineRule({
 })
 
 export const publishTypesField = defineRule({
-  appliesTo: context => isPublished(context) && context.flags.isCli !== true && context.flags.isUsingTypescript === true,
+  appliesTo: context => isPublishedLibrary(context) && context.flags.isCli !== true && context.flags.isUsingTypescript === true,
   check({ pkg, report }) {
     const types = pkg?.types ?? pkg?.exports?.['.']?.types
     if (!types?.endsWith('.d.ts')) report({ messageId: 'missing' })
@@ -30,7 +41,7 @@ export const publishTypesField = defineRule({
 })
 
 export const publishMainField = defineRule({
-  appliesTo: isPublished,
+  appliesTo: isPublishedLibrary,
   check({ flags, pkg, report }) {
     const extension = flags.isModule === true ? '.js' : '.cjs'
     if (!pkg?.main?.endsWith(extension)) report({ data: { extension }, messageId: 'wrong' })
@@ -39,7 +50,7 @@ export const publishMainField = defineRule({
 })
 
 export const publishModuleField = defineRule({
-  appliesTo: context => isPublished(context) && context.flags.isModule === true,
+  appliesTo: context => isPublishedLibrary(context) && context.flags.isModule === true,
   check({ pkg, report }) {
     if (pkg?.module !== undefined) report({ messageId: 'found' })
   },
@@ -47,7 +58,7 @@ export const publishModuleField = defineRule({
 })
 
 export const publishCjsModuleField = defineRule({
-  appliesTo: context => isPublished(context) && context.flags.isModule !== true,
+  appliesTo: context => isPublishedLibrary(context) && context.flags.isModule !== true,
   check({ pkg, report }) {
     if (!pkg?.module?.endsWith('.mjs')) report({ messageId: 'missing' })
   },
@@ -55,7 +66,7 @@ export const publishCjsModuleField = defineRule({
 })
 
 export const publishExportsField = defineRule({
-  appliesTo: context => isPublished(context) && context.flags.isModule === true,
+  appliesTo: context => isPublishedLibrary(context) && context.flags.isModule === true,
   check({ pkg, report }) {
     const entry = pkg?.exports?.['.']
     if (!(entry?.import?.endsWith('.js') && entry.require?.endsWith('.cjs'))) report({ messageId: 'missing' })
@@ -64,7 +75,7 @@ export const publishExportsField = defineRule({
 })
 
 export const publishCjsExportsField = defineRule({
-  appliesTo: context => isPublished(context) && context.flags.isModule !== true,
+  appliesTo: context => isPublishedLibrary(context) && context.flags.isModule !== true,
   check({ pkg, report }) {
     const entry = pkg?.exports?.['.']
     if (!(entry?.import?.endsWith('.mjs') && entry.require?.endsWith('.cjs'))) report({ messageId: 'missing' })

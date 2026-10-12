@@ -52,3 +52,13 @@ testRule(publishCjsExportsField, {
   invalid: [{ errors: ['missing'], flags: cjs, name: 'cjs without exports', pkg: { main: './dist/index.cjs' } }],
   valid: [{ flags: cjs, name: 'cjs exports', pkg: { exports: { '.': { import: './dist/index.mjs', require: './dist/index.cjs' } } } }],
 })
+
+testRule(publishMainField, {
+  invalid: [],
+  valid: [{ flags: esm, name: 'a cli that only publishes a bin', pkg: { bin: { app: 'dist/bin.js' } } }],
+})
+
+testRule(publishExportsField, {
+  invalid: [{ errors: ['missing'], flags: esm, name: 'a cli that is also a library', pkg: { bin: 'dist/bin.js', main: './dist/index.js' } }],
+  valid: [{ flags: esm, name: 'a cli that only publishes a bin', pkg: { bin: 'dist/bin.js' } }],
+})

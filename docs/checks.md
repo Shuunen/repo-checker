@@ -125,7 +125,7 @@ The `scripts` section of `package.json`.
 
 ## Publishing
 
-For projects published as a package.
+For projects published as a package. The entry point checks (`types`, `main`, `module`, `exports`) skip a CLI that only publishes a `bin`.
 
 - ✅ 🟡 `publish-type-module`: a `"type": "module"` declaration (`package.file.ts`).
 - ✅ 🔴 `publish-types-field`: a `types` field, when the package is not a CLI and uses TypeScript (`package.file.ts`).

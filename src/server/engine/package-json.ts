@@ -25,6 +25,8 @@ export interface PackageJson {
   bugs?: string
   /** Runtime dependencies, by name, with their version range */
   dependencies?: Record<string, string>
+  /** The command line entry points, by command name, or a single path */
+  bin?: Record<string, string> | string
   /** A one line description of the package */
   description?: string
   /** Development dependencies, by name, with their version range */
