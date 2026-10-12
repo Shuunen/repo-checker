@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { diskIo, memoryIo } from './io.ts'
@@ -44,6 +44,28 @@ describe('disk io', () => {
     await expect(io.readText('new.txt')).resolves.toBe('hello')
     await expect(readFile(path.join(folder, 'new.txt'), 'utf8')).resolves.toBe('hello')
   })
+
+  it('searches the files by content, skipping node_modules', async () => {
+    expect.hasAssertions()
+    const folder = await makeFolder()
+    await mkdir(path.join(folder, 'src/deep'), { recursive: true })
+    await mkdir(path.join(folder, 'node_modules/lib'), { recursive: true })
+    await writeFile(path.join(folder, 'src/deep/a.ts'), 'ts-node src\n')
+    await writeFile(path.join(folder, 'src/b.ts'), 'nothing\n')
+    await writeFile(path.join(folder, 'node_modules/lib/c.ts'), 'ts-node src\n')
+    const io = diskIo(folder)
+    await expect(io.search(/ts-node/u)).resolves.toStrictEqual([path.join('src', 'deep', 'a.ts')])
+    await expect(io.search(/ts-node/u, 'node_modules')).resolves.toStrictEqual([])
+    await expect(io.search(/x{3000}/u, 'missing')).resolves.toStrictEqual([])
+  })
+
+  it('skips the files it cannot read when searching', async () => {
+    expect.hasAssertions()
+    const folder = await makeFolder()
+    await writeFile(path.join(folder, 'locked.txt'), 'needle', { mode: 0o000 })
+    await writeFile(path.join(folder, 'open.txt'), 'needle')
+    await expect(diskIo(folder).search(/needle/u)).resolves.toStrictEqual(['open.txt'])
+  })
 })
 
 describe('memory io', () => {
@@ -55,6 +77,13 @@ describe('memory io', () => {
     await expect(io.sizeKo('b.txt')).resolves.toBeUndefined()
     await io.writeText('b.txt', 'hello')
     expect(files['b.txt']).toBe('hello')
+  })
+
+  it('searches the files by content, under a folder, skipping node_modules', async () => {
+    expect.hasAssertions()
+    const io = memoryIo({ 'node_modules/x/a.js': 'needle', 'src/b.js': 'needle', 'src/c.js': 'hay', 'tests/d.js': 'needle' })
+    await expect(io.search(/needle/gu)).resolves.toStrictEqual(['src/b.js', 'tests/d.js'])
+    await expect(io.search(/needle/u, 'tests')).resolves.toStrictEqual(['tests/d.js'])
   })
 
   it('starts empty by default', async () => {

@@ -3,9 +3,10 @@
  * @module
  */
 import { invariant } from 'es-toolkit'
-import { buildContext, type Context, type ProjectFlags } from './context.ts'
+import { buildContext, type Context } from './context.ts'
 import { type Finding, formatMessage, type Report, type Rule } from './define-rule.ts'
 import { type Edit, fixer } from './fixer.ts'
+import type { ProjectFlags } from './flags.ts'
 import type { FileReader, Io } from './io.ts'
 
 /** The planned change of one file, what the confirm dialog shows as a diff */

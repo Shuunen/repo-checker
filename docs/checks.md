@@ -129,8 +129,10 @@ For projects published as a package.
 - 📋 🟡 `publish-type-module`: a `"type": "module"` declaration (`package.file.ts`).
 - 📋 🔴 `publish-types-field`: a `types` field, when the package is not a CLI and uses TypeScript (`package.file.ts`).
 - 📋 🔴 `publish-main-field`: a `main` field pointing to a `.js` file (ESM project) or a `.cjs` file (CommonJS project) (`package.file.ts`).
-- 📋 🔴 `publish-module-field`: ESM project, no `module` field. CommonJS project, a `module` field pointing to a `.mjs` file. Warning only for CommonJS projects (`package.file.ts`).
-- 📋 🔴 `publish-exports-field`: an `exports` field mapping `import` to the ESM build and `require` to the `.cjs` build. Warning only for CommonJS projects, where `import` maps to an `.mjs` build (`package.file.ts`).
+- 📋 🔴 `publish-module-field`: ESM project, no `module` field (`package.file.ts`).
+- 📋 🟡 `publish-cjs-module-field`: CommonJS project, a `module` field pointing to a `.mjs` file (`package.file.ts`).
+- 📋 🔴 `publish-exports-field`: ESM project, an `exports` field mapping `import` to a `.js` build and `require` to a `.cjs` build (`package.file.ts`).
+- 📋 🟡 `publish-cjs-exports-field`: CommonJS project, an `exports` field mapping `import` to an `.mjs` build and `require` to a `.cjs` build (`package.file.ts`).
 - 📋 🟡 `publish-max-size-declared`: the maximum size of the main file is set in the data file (for example `maxSizeKo: 100`) (`package.file.ts`).
 - 📋 🔴 `publish-main-file-exists`: the file named in `main` exists on disk, so build before checking (`package.file.ts`).
 - 📋 🔴 `publish-main-file-size`: the main file is no bigger than the declared maximum size (`package.file.ts`).

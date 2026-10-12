@@ -3,9 +3,11 @@
  * Cases run on in-memory files, never on the disk.
  * @module
  */
-import { buildContext, type PackageJson, type ProjectFlags } from './context.ts'
+import { buildContext } from './context.ts'
 import type { Rule } from './define-rule.ts'
+import type { ProjectFlags } from './flags.ts'
 import { memoryIo } from './io.ts'
+import type { PackageJson } from './package-json.ts'
 import { checkProject, fixProject } from './runner.ts'
 
 /** The json indent of the fake package.json, the most common one */
