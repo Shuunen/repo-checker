@@ -51,8 +51,8 @@ export interface RuleMeta<MessageId extends string> {
  * @template MessageId the keys of `meta.messages`, inferred by `defineRule`
  */
 export interface Rule<MessageId extends string = string> {
-  /** When it returns false the rule is skipped, not passed, so the report can tell both apart. Leave it out when the rule always applies */
-  appliesTo?: (context: Context) => boolean
+  /** When it returns false the rule is skipped, not passed, so the report can tell both apart. It may be async, to look at the disk. Leave it out when the rule always applies */
+  appliesTo?: (context: Context) => boolean | Promise<boolean>
   /** Look at the context and call `context.report` for each problem. Must not touch the disk, run commands or log */
   check: (context: RuleContext<MessageId>) => Promise<void> | void
   /** The id, severity and messages of the rule, and whether it can fix */

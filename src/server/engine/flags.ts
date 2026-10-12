@@ -8,6 +8,10 @@ import type { FileReader } from './io.ts'
 
 /** What the project declares in `.repo-checker.json` or what was detected about it, the successor of the old ProjectData */
 export interface ProjectFlags {
+  /** Renovate may merge dependency updates on its own, true unless `.repo-checker.json` says false */
+  canAutoMergeDeps?: boolean
+  /** The git config has a `main` branch */
+  hasMainBranch?: boolean
   /** A CLI, meant to be run in a terminal */
   isCli?: boolean
   /** An ESM package, `"type": "module"` */
@@ -74,13 +78,14 @@ function detectFromPackageJson(text: string): ProjectFlags {
 }
 
 /**
- * Detect the owner and the repository name from the `origin` url of a git config
+ * Detect the owner and the repository name from the `origin` url of a git config, and whether it has a `main` branch
  * @param text the `.git/config` text, empty when there is none
- * @returns the flags with `owner` and `repoId`, or no flag when no url was found
+ * @returns `hasMainBranch`, plus `owner` and `repoId` when an origin url was found
  */
 function detectFromGitConfig(text: string): ProjectFlags {
   const groups = /url = .*[/:](?<owner>[\w-]+)\/(?<repoId>[\w.-]+?)(?:\.git)?$/mu.exec(text)?.groups
-  return isNil(groups?.owner) || isNil(groups.repoId) ? {} : { owner: groups.owner, repoId: groups.repoId }
+  const origin = isNil(groups?.owner) || isNil(groups.repoId) ? {} : { owner: groups.owner, repoId: groups.repoId }
+  return { ...origin, hasMainBranch: text.includes('[branch "main"]') }
 }
 
 /**
@@ -91,5 +96,5 @@ function detectFromGitConfig(text: string): ProjectFlags {
  */
 export async function detectFlags(files: FileReader): Promise<ProjectFlags> {
   const [packageText = '', gitText = '', configText = '{}'] = await Promise.all([files.readText('package.json'), files.readText('.git/config'), files.readText(configFile)])
-  return { shouldAvoidSass: true, ...detectFromPackageJson(packageText), ...detectFromGitConfig(gitText), ...(parse(configText) as ProjectFlags) }
+  return { canAutoMergeDeps: true, shouldAvoidSass: true, ...detectFromPackageJson(packageText), ...detectFromGitConfig(gitText), ...(parse(configText) as ProjectFlags) }
 }

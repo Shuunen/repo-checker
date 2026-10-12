@@ -41,7 +41,7 @@ interface ProjectRuleContext<MessageId extends string> extends ProjectContext {
  */
 export interface ProjectRule<MessageId extends string = string> {
   /** When it returns false the rule is skipped, not passed. Leave it out when the rule always applies */
-  appliesTo?: (context: ProjectContext) => boolean
+  appliesTo?: (context: ProjectContext) => boolean | Promise<boolean>
   /** Look at the project and call `context.report` for each problem. Must not touch the disk, run commands or log */
   check: (context: ProjectRuleContext<MessageId>) => Promise<void> | void
   /** The id, severity and messages of the rule, `scope` tells it apart from a file rule */

@@ -29,7 +29,7 @@ export interface FilePlan {
  */
 interface Runnable<RuleContext, Reported> {
   /** When it returns false the rule is skipped */
-  appliesTo?: (context: RuleContext) => boolean
+  appliesTo?: (context: RuleContext) => boolean | Promise<boolean>
   /** Check and report */
   check: (context: RuleContext & { report: (report: Reported) => void }) => Promise<void> | void
 }
@@ -100,7 +100,7 @@ export interface CheckResult {
 async function runRules<RuleContext extends object, Reported, Item extends Runnable<RuleContext, Reported> & { meta: { id: string } }>(rules: readonly Item[], context: Readonly<RuleContext>, makeFinding: (rule: Item, report: Reported) => Finding): Promise<CheckResult> {
   const perRule = await Promise.all(
     rules.map(async rule => {
-      if (rule.appliesTo?.(context) === false) return { findings: [], outcome: { ruleId: rule.meta.id, status: 'skipped' as const } }
+      if ((await rule.appliesTo?.(context)) === false) return { findings: [], outcome: { ruleId: rule.meta.id, status: 'skipped' as const } }
       const findings: Finding[] = []
       await rule.check({ ...context, report: (report: Reported) => findings.push(makeFinding(rule, report)) })
       return { findings, outcome: { ruleId: rule.meta.id, status: findings.length > 0 ? ('failed' as const) : ('passed' as const) } }
