@@ -68,3 +68,18 @@ export async function listRepos(gh: GhRunner, owner: string, login: string) {
   const pages = (await ghApi(gh, ['--paginate', '--slurp', endpoint])) as ApiRepo[][]
   return pages.flat().map(repo => toRepo(repo))
 }
+
+/**
+ * Get one repo, for single project mode
+ * @param gh the gh runner
+ * @param slug `owner/name`
+ * @returns the repo, undefined when GitHub answers 404
+ * @throws {Error} when gh fails for another reason
+ * @example const repo = await getRepo(ghCli, 'shuunen/repo-checker')
+ */
+export async function getRepo(gh: GhRunner, slug: string) {
+  const { ok, stderr, stdout } = await gh(['api', `repos/${slug}`])
+  if (ok) return toRepo(JSON.parse(stdout) as ApiRepo)
+  if (stderr.includes('HTTP 404')) return undefined
+  throw new Error(`gh api repos/${slug} failed: ${stderr.trim()}`)
+}

@@ -1,4 +1,4 @@
-import { type GhRunner, getLogin, ghCli, listRepos } from './github.ts'
+import { type GhRunner, getLogin, getRepo, ghCli, listRepos } from './github.ts'
 
 /**
  * Build an API repo like the GitHub REST API returns it, with only the fields the scan reads
@@ -44,6 +44,19 @@ describe('github inventory', () => {
     expect.hasAssertions()
     const gh = fakeGh({ 'api --paginate --slurp users/someone/repos?per_page=100': [[apiRepo('lib', { owner: { login: 'someone' } })]] })
     await expect(listRepos(gh, 'someone', 'Shuunen')).resolves.toMatchObject([{ slug: 'someone/lib' }])
+  })
+
+  it('gets one repo, undefined when it does not exist', async () => {
+    expect.hasAssertions()
+    const gh = fakeGh({ 'api repos/shuunen/app': apiRepo('app') })
+    await expect(getRepo(gh, 'shuunen/app')).resolves.toMatchObject({ slug: 'shuunen/app' })
+    await expect(getRepo(gh, 'shuunen/gone')).resolves.toBeUndefined()
+  })
+
+  it('fails to get one repo for another reason than a 404', async () => {
+    expect.hasAssertions()
+    const gh = vi.fn<GhRunner>(() => Promise.resolve({ ok: false, stderr: 'gh: Bad credentials (HTTP 401)\n', stdout: '' }))
+    await expect(getRepo(gh, 'shuunen/app')).rejects.toThrow('gh api repos/shuunen/app failed: gh: Bad credentials (HTTP 401)')
   })
 
   it('fails with the gh error', async () => {

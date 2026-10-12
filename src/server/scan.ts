@@ -1,0 +1,53 @@
+import type { Project } from '../shared/project.ts'
+import { checkOne } from './check-project.ts'
+import type { AnyRule } from './engine/define-project-rule.ts'
+import type { Finding } from './engine/define-rule.ts'
+import { splitRules } from './engine/load-rules.ts'
+import type { GhRunner } from './inventory/github.ts'
+import { mapLimit } from './inventory/map-limit.ts'
+import { matchProjects } from './inventory/match.ts'
+import { readInventory } from './inventory/read-inventory.ts'
+
+/** How many projects are checked at the same time */
+const parallelProjects = 8
+
+/** What a scan needs */
+export interface ScanOptions {
+  /** Runs gh, the real CLI or a fake */
+  gh: GhRunner
+  /** The GitHub owner to compare with, detected when undefined */
+  owner: string | undefined
+  /** The rules of both flavors */
+  rules: readonly AnyRule[]
+  /** Run `git fetch --prune` in each clone first, so unpushed work is measured against the real remote */
+  shouldFetch: boolean
+  /** The folder to scan: a git repo (single project mode) or a folder of repos */
+  target: string
+}
+
+/** The findings of one project */
+export interface ProjectResult {
+  /** The findings, project rules first then file rules */
+  findings: Finding[]
+  /** The project */
+  project: Project
+}
+
+/**
+ * Scan a target: read the clones and the owner's repos, match them, then check each project
+ * @param options the options
+ * @param onProject called as soon as each project is checked, for live output
+ * @returns the owner compared with, whether the target is a single project, and one result per project sorted by name
+ * @throws {Error} when gh fails, for example when it is not logged in
+ * @example const { projects } = await scan({ gh: ghCli, owner: undefined, rules, shouldFetch: true, target: process.cwd() })
+ */
+export async function scan(options: Readonly<ScanOptions>, onProject: (result: ProjectResult) => void = () => undefined) {
+  const { clones, isSingle, owner, repos } = await readInventory(options.gh, options)
+  const rules = splitRules(options.rules)
+  const projects = await mapLimit(matchProjects(clones, repos, owner), parallelProjects, async project => {
+    const result = { findings: await checkOne(project, rules), project }
+    onProject(result)
+    return result
+  })
+  return { isSingle, owner, projects }
+}
