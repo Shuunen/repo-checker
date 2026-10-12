@@ -10,6 +10,7 @@
     "suspicious": "warn"
   },
   "env": {
+    "node": true,
     "vitest": true
   },
   "globals": {

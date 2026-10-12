@@ -4,7 +4,7 @@ The rewrite follows the same tooling and rules as the `snippets` repo, so the re
 
 ## Tooling
 
-- bun for development: it is the package manager and runs the TypeScript sources directly (`bun scan`, `bun check`).
+- bun for development: it is the package manager and runs the TypeScript sources directly (`bun scan`, `bun ui`, `bun check`).
 - Node 24 (`.nvmrc`) for users: the published package is plain JavaScript built by `tsdown`, so `npx repo-check` only needs Node, not bun.
 - oxlint to lint, oxfmt to format (`.oxfmtrc.json`, migrated from the old biome config: 300 columns, single quotes, no semicolons). Biome is gone. Long tables stay one item per line without any ignore comment.
 - vitest for tests, Testing Library for the web.

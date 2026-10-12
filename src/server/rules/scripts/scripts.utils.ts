@@ -1,5 +1,6 @@
 import type { Context } from '../../engine/context.ts'
-import { defineRule, type Severity } from '../../engine/define-rule.ts'
+import type { Severity } from '../../../shared/scan-event.ts'
+import { defineRule } from '../../engine/define-rule.ts'
 import { scriptsMatching } from '../../engine/package-json.ts'
 
 /** A condition on the project, the rule is skipped when it returns false */

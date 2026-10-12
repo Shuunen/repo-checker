@@ -2,7 +2,8 @@
  * A rule factory for the package.json properties a project must have, with an optional fixed value.
  * @module
  */
-import { defineRule, type Severity } from './define-rule.ts'
+import type { Severity } from '../../shared/scan-event.ts'
+import { defineRule } from './define-rule.ts'
 import type { PackageJson } from './package-json.ts'
 
 /** The options of `requireProperty` */

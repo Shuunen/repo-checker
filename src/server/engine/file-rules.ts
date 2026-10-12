@@ -6,7 +6,8 @@
 import { invariant, isEqual } from 'es-toolkit'
 import { type JSONPath, parse } from 'jsonc-parser'
 import type { Context } from './context.ts'
-import { defineRule, type Severity } from './define-rule.ts'
+import type { Severity } from '../../shared/scan-event.ts'
+import { defineRule } from './define-rule.ts'
 import type { FileReader } from './io.ts'
 
 /** The files a rule looks at, fixed or depending on the project, like `eslint.config.js` for an ESM project */

@@ -1,6 +1,6 @@
 # Architecture
 
-Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks and the report-only CLI exist, and the old code is removed. The HTTP server, the web app and the actions do not yet, so the routes below are still a sketch.
+Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI and the HTTP server with its streaming scan exist, and the old code is removed. The web app and the actions do not yet, so the other routes below are still a sketch.
 
 ## Shape
 
@@ -13,7 +13,7 @@ src/
   web/      React 19 + TypeScript + Tailwind 4 + HeroUI, built by Vite
 ```
 
-`web/` is built to static files that ship inside the npm package. `repo-check ui` starts the server, which serves those files and the API, then opens the browser.
+`web/` is built to static files that ship inside the npm package. `repo-check ui` starts the server, which serves those files and the API, then opens the browser. Today it serves the API only and prints its URL: serving the page and opening the browser come with the web app.
 
 ```
 repo-check ui
@@ -44,7 +44,9 @@ The inventory lives in `src/server/inventory`: `shell.ts` (the only place that r
 
 The CLI is `src/server/cli.ts` (`scan.ts` reads the inventory and checks each project, `report.ts` groups the findings by severity, then prints a summary line: checks run and skipped, counts per severity). `--verbose` also lists every passed and skipped check per project, and progress lines go to stderr so they never mix with the report. It runs as `repo-check` from the built package (`dist/server/bin.js`, built by `tsdown` with one file per rule) and as `bun scan` from the sources (`--target`, `--owner`, `--no-fetch`, `--verbose`, a leading `~` in the target is expanded).
 
-The server streams those events to the page (server-sent events through Hono's streaming helper). The page writes them into a TanStack Query cache, so rows appear one by one.
+`repo-check ui` (`bun ui` from the sources, `--port`, 4747 by default) starts the server: `serve.ts` listens on `127.0.0.1` with `@hono/node-server`, and `app.ts` is the Hono app. `GET /api/scan` streams the same `scan` as server-sent events (Hono's `streamSSE`), one per `ScanEvent` of `src/shared/scan-event.ts`, its `type` as the event name: `progress` (a line), `project` (one checked project), then `done` (owner, single project mode, duration) or `failed` (the error message). Writes are queued so events keep their order. A finding's edits are functions, so `toScanProject` sends the files they change (`fixFiles`) instead, and the edits stay on the server. Fields that are `undefined`, like `github` of a project without repo, are missing in the JSON. The target and the owner are fixed when the server starts; `?fetch=false` skips git fetch, and `--no-fetch` wins over the page. A middleware refuses any `Host` other than `127.0.0.1` and `localhost` (DNS rebinding). The page will write those events into a TanStack Query cache, so rows appear one by one.
+
+Measured on 2026-10-12 on the real data: the progress lines arrive at once, but the projects come in one burst after the fork comparison (8 to 13 seconds), because `readInventory` compares every fork before any project is checked. Getting the first rows in about a second means checking the projects that do not wait on a fork comparison first.
 
 ## Checks engine
 
@@ -85,8 +87,10 @@ src/shared/                   types and helpers for the server and the web app
   project.ts                  LocalClone, GithubRepo, ForkStatus, Project
   action.ts                   ActionKind
   text.ts                     plural
+  scan-event.ts               Severity, RuleOutcome, ScanProject, ScanEvent: what the server streams
 src/server/
-  bin.ts, cli.ts              the CLI entry point and its options
+  bin.ts, cli.ts              the CLI entry point, its options and the ui command
+  app.ts, serve.ts            the Hono app (GET /api/scan as server-sent events) and its server on 127.0.0.1
   scan.ts                     read the inventory, then check each project
   check-project.ts            project rules on every project, file rules on usable clones
   report.ts                   findings by severity, summary line, verbose lists
@@ -111,7 +115,7 @@ src/server/
 
 | Route | Purpose |
 |---|---|
-| `GET /api/scan` | Stream scan events for the whole target |
+| `GET /api/scan` | Stream scan events for the whole target (built, see Scan flow) |
 | `GET /api/projects/:name` | Full detail of one project |
 | `POST /api/projects/:name/clone` | Clone a missing repo |
 | `POST /api/projects/:name/unarchive-push` | Unarchive, push, re-archive an archived repo that has unpushed commits |

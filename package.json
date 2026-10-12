@@ -6,7 +6,9 @@
   },
   "bugs": "https://github.com/Shuunen/repo-checker/issues",
   "dependencies": {
+    "@hono/node-server": "~2.1.4",
     "es-toolkit": "~1.52.0",
+    "hono": "~4.13.13",
     "jsonc-parser": "~3.3.1"
   },
   "description": "Repo maintenance made easy",
@@ -52,7 +54,8 @@
     "scan": "bun src/server/bin.ts",
     "test": "vitest --coverage --run && echo test success",
     "test:update": "vitest --run --update && echo test update success",
-    "test:watch": "vitest --coverage"
+    "test:watch": "vitest --coverage",
+    "ui": "bun src/server/bin.ts ui"
   },
   "type": "module",
   "version": "1.46.0"

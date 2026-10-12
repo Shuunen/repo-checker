@@ -4,6 +4,7 @@ import path from 'node:path'
 import { type CliEnvironment, expandHome, runCli } from './cli.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { run } from './inventory/shell.ts'
+import type { StartServer } from './serve.ts'
 
 /**
  * A gh that answers like the account `owner` owning the given repos, every other call gets an empty list
@@ -33,7 +34,8 @@ function apiRepo(name: string, isFork: boolean) {
 async function cli(argv: readonly string[], environment: Partial<CliEnvironment> = {}) {
   const printed: string[] = []
   const progress: string[] = []
-  const code = await runCli(argv, { cwd: tmpdir(), gh: fakeAccount(), hasColors: false, print: text => printed.push(text), printProgress: line => progress.push(line), ...environment })
+  const startServer = vi.fn<StartServer>(() => Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:4747' }))
+  const code = await runCli(argv, { cwd: tmpdir(), gh: fakeAccount(), hasColors: false, print: text => printed.push(text), printProgress: line => progress.push(line), startServer, ...environment })
   return { code, output: printed.join('\n'), progress }
 }
 
@@ -52,7 +54,7 @@ describe('cli', () => {
     expect.hasAssertions()
     const { code, output } = await cli(['--help'])
     expect(code).toBe(0)
-    expect(output).toContain('Usage: repo-check [options]')
+    expect(output).toContain('Usage: repo-check [ui] [options]')
   })
 
   it('refuses an unknown option, with the usage', async () => {
@@ -131,6 +133,82 @@ describe('cli', () => {
     const { code, output } = await cli([], { cwd: await makeEmptyFolder(), gh })
     expect(code).toBe(1)
     expect(output).toContain('repo-check failed: spawn gh ENOENT')
+  })
+})
+
+/**
+ * A request handler that answers nothing, until the CLI hands over its app
+ * @returns an empty response
+ */
+function noPage() {
+  return new Response('')
+}
+
+/**
+ * Run `repo-check ui` in an empty folder with a fake server
+ * @param argv the arguments after `ui`
+ * @returns the exit code, the printed text, the fake server, and `scan` to request the scan stream and read its body
+ */
+async function ui(argv: readonly string[] = []) {
+  const folder = await makeEmptyFolder()
+  let fetchApp: Parameters<StartServer>[0] = noPage
+  const startServer = vi.fn<StartServer>(fetch => {
+    fetchApp = fetch
+    return Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:4747' })
+  })
+  const { code, output } = await cli(['ui', ...argv], { cwd: folder, startServer })
+  const scan = async (query = '') => {
+    const response = await fetchApp(new Request(`http://127.0.0.1:4747/api/scan${query}`))
+    return response.text()
+  }
+  return { code, folder, output, scan, startServer }
+}
+
+describe('cli ui', () => {
+  it('starts the server on the default port', async () => {
+    expect.hasAssertions()
+    const { code, folder, output, startServer } = await ui()
+    expect(code).toBe(0)
+    expect(output).toBe(`repo-check ui · ${folder}\nlistening on http://127.0.0.1:4747, the scan streams from http://127.0.0.1:4747/api/scan\npress Ctrl+C to stop`)
+    expect(startServer).toHaveBeenCalledWith(expect.any(Function), 4747)
+  })
+
+  it('streams the scan of the target, with git fetch', async () => {
+    expect.hasAssertions()
+    const { folder, scan } = await ui()
+    const body = await scan()
+    expect(body).toContain(`reading the local clones in ${folder}, with git fetch`)
+    expect(body).toContain('event: done')
+  })
+
+  it.each([
+    ['--no-fetch', ['--no-fetch'], ''],
+    ['the page asks for no fetch', [], '?fetch=false'],
+  ])('streams the scan without git fetch when %s', async (_name, argv, query) => {
+    expect.hasAssertions()
+    const { scan } = await ui(argv)
+    await expect(scan(query)).resolves.not.toContain('with git fetch')
+  })
+
+  it('takes the port from the options', async () => {
+    expect.hasAssertions()
+    const startServer = vi.fn<StartServer>(() => Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:8080' }))
+    await cli(['ui', '--port=8080'], { cwd: await makeEmptyFolder(), startServer })
+    expect(startServer).toHaveBeenCalledWith(expect.any(Function), 8080)
+  })
+
+  it.each(['abc', '-1', '70000', '1.5'])('refuses the port %s', async port => {
+    expect.hasAssertions()
+    const { code, output } = await cli(['ui', `--port=${port}`])
+    expect(code).toBe(1)
+    expect(output).toContain(`repo-check failed: the port ${port} is not a number between 0 and 65535`)
+  })
+
+  it('refuses an unknown command', async () => {
+    expect.hasAssertions()
+    const { code, output } = await cli(['serve'])
+    expect(code).toBe(1)
+    expect(output).toContain("repo-check failed: Unknown command 'serve'")
   })
 })
 

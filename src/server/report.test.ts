@@ -1,5 +1,5 @@
-import type { Finding, Severity } from './engine/define-rule.ts'
-import type { RuleOutcome } from './engine/runner.ts'
+import type { RuleOutcome, Severity } from '../shared/scan-event.ts'
+import type { Finding } from './engine/define-rule.ts'
 import { formatReport } from './report.ts'
 import type { ProjectResult } from './scan.ts'
 

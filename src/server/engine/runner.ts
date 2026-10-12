@@ -5,6 +5,7 @@
  */
 import { invariant } from 'es-toolkit'
 import type { Project } from '../../shared/project.ts'
+import type { RuleOutcome } from '../../shared/scan-event.ts'
 import { buildContext, type Context } from './context.ts'
 import type { ProjectReport, ProjectRule } from './define-project-rule.ts'
 import { type Finding, formatMessage, type Report, type Rule, type RuleMeta } from './define-rule.ts'
@@ -72,14 +73,6 @@ function toFinding(rule: Readonly<Rule>, report: Readonly<Report<string>>): Find
 function toProjectFinding(rule: Readonly<ProjectRule>, report: Readonly<ProjectReport<string>>): Finding {
   const { id, severity } = rule.meta
   return { actions: report.actions ?? [], edits: [], message: formatMessage(messageTemplate(rule.meta, report.messageId), report.data), messageId: report.messageId, ruleId: id, severity }
-}
-
-/** What happened to one rule on one project */
-export interface RuleOutcome {
-  /** The rule id */
-  ruleId: string
-  /** `failed` when it reported at least one finding, `passed` when it reported none, `skipped` when its `appliesTo` returned false */
-  status: 'failed' | 'passed' | 'skipped'
 }
 
 /** What running rules on one project gives */

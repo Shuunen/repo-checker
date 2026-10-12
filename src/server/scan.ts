@@ -33,7 +33,7 @@ export interface ProjectResult extends CheckResult {
 }
 
 /** Callbacks to follow a scan while it runs */
-interface ScanHooks {
+export interface ScanHooks {
   /** Called as soon as each project is checked, for live output */
   onProject?: (result: ProjectResult) => void
   /** Receives a short line about what the scan is doing */

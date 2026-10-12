@@ -2,21 +2,33 @@ import { stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import { parseArgs } from 'node:util'
+import { createApp } from './app.ts'
 import { loadRules } from './engine/load-rules.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { formatReport } from './report.ts'
 import { scan } from './scan.ts'
+import type { StartServer } from './serve.ts'
+
+/** The port of `repo-check ui` when --port is not given */
+const defaultPort = 4747
+
+/** The highest TCP port */
+const maxPort = 65_535
 
 /** The usage, shown by --help and after a wrong option */
-const usage = `Usage: repo-check [options]
+const usage = `Usage: repo-check [ui] [options]
 
 Checks the projects of a folder against GitHub, or a single project when run inside one. Report only, it changes nothing.
+
+Commands:
+  ui              start the local server on 127.0.0.1 instead, it streams the scan to the dashboard
 
 Options:
   --target=path   folder to scan, the current one by default
   --owner=name    GitHub account to compare with, the gh login by default (in a single project, the owner of its origin)
   --no-fetch      skip git fetch, faster but unpushed work is measured against stale remote refs
   --verbose       also list every passed and skipped check, per project
+  --port=number   port of the ui server, ${defaultPort} by default
   -h, --help      show this help`
 
 /** What the CLI needs from its environment, so tests can run it without a terminal */
@@ -31,17 +43,38 @@ export interface CliEnvironment {
   print: (text: string) => void
   /** Print a progress line, on stderr so it never mixes with the report */
   printProgress: (line: string) => void
+  /** Start the HTTP server of `repo-check ui` */
+  startServer: StartServer
 }
 
 /**
  * Parse the command line
  * @param argv the arguments, without node and the script
- * @returns the options
- * @throws {TypeError} on an unknown option or a missing value
+ * @returns the options, and the command: `ui` or undefined for the report
+ * @throws {TypeError} on an unknown option, a missing value or an unknown command
  */
 function parseOptions(argv: readonly string[]) {
-  const { values } = parseArgs({ allowNegative: true, args: [...argv], options: { fetch: { default: true, type: 'boolean' }, help: { short: 'h', type: 'boolean' }, owner: { type: 'string' }, target: { type: 'string' }, verbose: { type: 'boolean' } } })
-  return values
+  const { positionals, values } = parseArgs({
+    allowNegative: true,
+    allowPositionals: true,
+    args: [...argv],
+    options: { fetch: { default: true, type: 'boolean' }, help: { short: 'h', type: 'boolean' }, owner: { type: 'string' }, port: { type: 'string' }, target: { type: 'string' }, verbose: { type: 'boolean' } },
+  })
+  const command = positionals.join(' ')
+  if (command !== '' && command !== 'ui') throw new TypeError(`Unknown command '${command}'`)
+  return { ...values, isUi: command === 'ui' }
+}
+
+/**
+ * Read the port of the ui server
+ * @param value the port as typed, the default port when undefined
+ * @returns the port
+ * @throws {TypeError} when it is not a whole number between 0 and 65535
+ */
+function parsePort(value = String(defaultPort)) {
+  const port = Number(value)
+  if (!Number.isInteger(port) || port < 0 || port > maxPort) throw new TypeError(`the port ${value} is not a number between 0 and ${maxPort}`)
+  return port
 }
 
 /**
@@ -69,6 +102,29 @@ async function resolveTarget(cwd: string, value = '.') {
   return target
 }
 
+/** Where the rules are, next to this file in the sources and in the build */
+const rulesFolder = path.join(import.meta.dirname, 'rules')
+
+/**
+ * Start the ui server on the target, it keeps running until the process stops
+ * @param options the parsed options
+ * @param environment the environment
+ * @param environment.cwd the current folder
+ * @param environment.gh runs gh
+ * @param environment.print print a block of text
+ * @param environment.startServer start the HTTP server
+ * @returns 0, the server keeps the process alive
+ */
+async function startUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, print, startServer }: Readonly<CliEnvironment>) {
+  const port = parsePort(options.port)
+  const target = await resolveTarget(cwd, options.target)
+  const rules = await loadRules(rulesFolder)
+  const app = createApp((shouldFetch, hooks) => scan({ gh, owner: options.owner, rules, shouldFetch: options.fetch && shouldFetch, target }, hooks))
+  const { url } = await startServer(app.fetch, port)
+  print(`repo-check ui · ${target}\nlistening on ${url}, the scan streams from ${url}/api/scan\npress Ctrl+C to stop`)
+  return 0
+}
+
 /**
  * Scan the target and print the report
  * @param options the parsed options
@@ -83,7 +139,7 @@ async function resolveTarget(cwd: string, value = '.') {
 async function scanAndReport(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, hasColors, print, printProgress }: Readonly<CliEnvironment>) {
   const started = Date.now()
   const target = await resolveTarget(cwd, options.target)
-  const rules = await loadRules(path.join(import.meta.dirname, 'rules'))
+  const rules = await loadRules(rulesFolder)
   const { owner, projects } = await scan({ gh, owner: options.owner, rules, shouldFetch: options.fetch, target }, { onProgress: printProgress })
   const { hasErrors, text } = formatReport(projects, { durationMs: Date.now() - started, hasColors, isVerbose: options.verbose === true, owner, target })
   print(text)
@@ -91,17 +147,17 @@ async function scanAndReport(options: Readonly<ReturnType<typeof parseOptions>>,
 }
 
 /**
- * Run the CLI: scan, print the report grouped by severity, and give the exit code
+ * Run the CLI: scan, print the report grouped by severity, and give the exit code. With the `ui` command, start the server instead
  * @param argv the arguments, without node and the script
  * @param environment the environment
- * @returns the exit code: 0 when no finding is an error, 1 otherwise or when the scan failed
+ * @returns the exit code: 0 when no finding is an error or when the server started, 1 otherwise or when the scan failed
  * @example process.exitCode = await runCli(process.argv.slice(2), { cwd: process.cwd(), gh: ghCli, hasColors: true, print: console.log })
  */
 export async function runCli(argv: readonly string[], environment: Readonly<CliEnvironment>) {
   const { print } = environment
   try {
     const options = parseOptions(argv)
-    if (options.help !== true) return await scanAndReport(options, environment)
+    if (options.help !== true) return await (options.isUi ? startUi(options, environment) : scanAndReport(options, environment))
     print(usage)
     return 0
   } catch (error) {

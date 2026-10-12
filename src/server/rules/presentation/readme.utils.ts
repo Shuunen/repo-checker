@@ -1,6 +1,7 @@
 import { escapeRegExp, invariant } from 'es-toolkit'
 import type { Context } from '../../engine/context.ts'
-import { defineRule, type Severity } from '../../engine/define-rule.ts'
+import type { Severity } from '../../../shared/scan-event.ts'
+import { defineRule } from '../../engine/define-rule.ts'
 import { hasDependency } from '../../engine/package-json.ts'
 
 interface ReadmePatternOptions {

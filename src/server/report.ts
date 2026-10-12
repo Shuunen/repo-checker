@@ -1,7 +1,6 @@
 import { styleText } from 'node:util'
 import { plural } from '../shared/text.ts'
-import type { Severity } from './engine/define-rule.ts'
-import type { RuleOutcome } from './engine/runner.ts'
+import type { RuleOutcome, Severity } from '../shared/scan-event.ts'
 import type { ProjectResult } from './scan.ts'
 
 /** The severities, most important first, with their title and color */

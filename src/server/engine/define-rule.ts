@@ -3,11 +3,9 @@
  * @module
  */
 import type { ActionKind } from '../../shared/action.ts'
+import type { Severity } from '../../shared/scan-event.ts'
 import type { Context } from './context.ts'
 import type { Edit, Fixer } from './fixer.ts'
-
-/** How bad a finding is, one scale for every check: error means something is wrong or work could be lost, warning should be fixed, info is a suggestion */
-export type Severity = 'error' | 'info' | 'warning'
 
 /**
  * What a rule sends to `context.report` when it finds a problem
