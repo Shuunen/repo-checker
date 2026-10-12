@@ -32,8 +32,8 @@ interface ValidCase {
 interface InvalidCase extends ValidCase {
   /** The expected message ids, in report order */
   errors: string[]
-  /** The package.json expected after every fix is applied, leave it out when the rule cannot fix. When set, nothing must be reported after the fix */
-  output?: PackageJson
+  /** The file expected after every fix is applied: a package.json, or the raw text of another file. Leave it out when the rule cannot fix. When set, nothing must be reported after the fix */
+  output?: PackageJson | string
 }
 
 /**
@@ -85,11 +85,12 @@ async function runInvalid(rule: Readonly<Rule>, testCase: Readonly<InvalidCase>)
  * What `runInvalid` should give: the errors, the fixed package.json and nothing left once fixed, or no fix and every error left
  * @param testCase the case
  * @param testCase.errors the expected message ids
- * @param testCase.output the expected package.json once fixed
+ * @param testCase.output the expected package.json or file text once fixed
  * @returns the expected result
  */
 function expectedInvalid({ errors, output }: Readonly<InvalidCase>) {
-  return { errors, outputs: output === undefined ? [] : [toJsonText(output)], remaining: output === undefined ? errors.length : 0 }
+  const outputs = output === undefined ? [] : [typeof output === 'string' ? output : toJsonText(output)]
+  return { errors, outputs, remaining: output === undefined ? errors.length : 0 }
 }
 
 /**

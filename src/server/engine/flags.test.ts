@@ -4,7 +4,7 @@ import { memoryIo } from './io.ts'
 describe('flags detection', () => {
   it('only avoids sass in an empty project', async () => {
     expect.hasAssertions()
-    await expect(detectFlags(memoryIo())).resolves.toStrictEqual({ isCli: false, isModule: false, isPublishedPackage: false, isUsingBun: false, isUsingDependencyCruiser: false, isUsingEslint: false, isUsingShuutils: false, isUsingTypescript: false, shouldAvoidSass: true })
+    await expect(detectFlags(memoryIo())).resolves.toStrictEqual({ isCli: false, isModule: false, isPublishedPackage: false, isUsingBun: false, isUsingDependencyCruiser: false, isUsingEslint: false, isUsingShuutils: false, isUsingTypescript: false, isWebPublished: false, shouldAvoidSass: true })
   })
 
   it('detects the tools from package.json', async () => {
