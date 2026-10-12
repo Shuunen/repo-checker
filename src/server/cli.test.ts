@@ -28,12 +28,13 @@ function apiRepo(name: string, isFork: boolean) {
  * Run the CLI and capture what it prints
  * @param argv the arguments
  * @param environment what to change in the environment
- * @returns the exit code and the printed text
+ * @returns the exit code, the printed report and the progress lines
  */
 async function cli(argv: readonly string[], environment: Partial<CliEnvironment> = {}) {
   const printed: string[] = []
-  const code = await runCli(argv, { cwd: tmpdir(), gh: fakeAccount(), hasColors: false, print: text => printed.push(text), ...environment })
-  return { code, output: printed.join('\n') }
+  const progress: string[] = []
+  const code = await runCli(argv, { cwd: tmpdir(), gh: fakeAccount(), hasColors: false, print: text => printed.push(text), printProgress: line => progress.push(line), ...environment })
+  return { code, output: printed.join('\n'), progress }
 }
 
 /**
@@ -65,9 +66,10 @@ describe('cli', () => {
   it('says all is well for a folder without projects, and exits with 0', async () => {
     expect.hasAssertions()
     const folder = await makeEmptyFolder()
-    const { code, output } = await cli([], { cwd: folder })
+    const { code, output, progress } = await cli([], { cwd: folder })
     expect(code).toBe(0)
-    expect(output).toMatch(new RegExp(`^repo-check · ${folder} · owner · 0 projects in \\d+\\.\\ds\\n✔ all good$`, 'u'))
+    expect(output).toMatch(new RegExp(`^repo-check · ${folder} · owner · 0 projects in \\d+\\.\\ds\\n\\n0 checks run, 0 skipped · 0 errors · 0 warnings · 0 info\\n✔ all good$`, 'u'))
+    expect(progress).toStrictEqual([`reading the local clones in ${folder}, with git fetch`, 'listing the repos of owner on GitHub', 'checking 0 projects'])
   })
 
   it('takes the target and the owner from the options', async () => {
@@ -81,9 +83,10 @@ describe('cli', () => {
 
   it('checks the forks too, an info finding exits with 0', async () => {
     expect.hasAssertions()
-    const { code, output } = await cli([], { cwd: await makeEmptyFolder(), gh: fakeAccount([apiRepo('lib', true)]) })
+    const { code, output, progress } = await cli([], { cwd: await makeEmptyFolder(), gh: fakeAccount([apiRepo('lib', true)]) })
     expect(code).toBe(0)
     expect(output).toContain('pristine-fork')
+    expect(progress).toContain('comparing 1 fork with their parent')
   })
 
   it('exits with 1 when a finding is an error', async () => {
@@ -94,6 +97,17 @@ describe('cli', () => {
     const { code, output } = await cli(['--no-fetch'], { cwd: folder, gh: fakeAccount([apiRepo('app', false)]) })
     expect(code).toBe(1)
     expect(output).toContain('package-json-exists')
+    expect(output).not.toContain('passed (')
+  })
+
+  it('lists the passed and skipped checks with --verbose', async () => {
+    expect.hasAssertions()
+    const folder = await makeEmptyFolder()
+    await run('git', ['init', '--quiet', 'app'], folder)
+    await run('git', ['remote', 'add', 'origin', 'git@github.com:owner/app.git'], path.join(folder, 'app'))
+    const { output } = await cli(['--no-fetch', '--verbose'], { cwd: folder, gh: fakeAccount([apiRepo('app', false)]) })
+    expect(output).toMatch(/✔ passed \(\d+\)\n {2}app {2}\S/u)
+    expect(output).toMatch(/– skipped \(\d+\)\n {2}app {2}/u)
   })
 
   it('refuses a target that is not a folder', async () => {

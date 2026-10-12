@@ -16,6 +16,7 @@ Options:
   --target=path   folder to scan, the current one by default
   --owner=name    GitHub account to compare with, the gh login by default (in a single project, the owner of its origin)
   --no-fetch      skip git fetch, faster but unpushed work is measured against stale remote refs
+  --verbose       also list every passed and skipped check, per project
   -h, --help      show this help`
 
 /** What the CLI needs from its environment, so tests can run it without a terminal */
@@ -26,8 +27,10 @@ export interface CliEnvironment {
   gh: GhRunner
   /** Color the output */
   hasColors: boolean
-  /** Print a block of text */
+  /** Print a block of text, the report */
   print: (text: string) => void
+  /** Print a progress line, on stderr so it never mixes with the report */
+  printProgress: (line: string) => void
 }
 
 /**
@@ -37,7 +40,7 @@ export interface CliEnvironment {
  * @throws {TypeError} on an unknown option or a missing value
  */
 function parseOptions(argv: readonly string[]) {
-  const { values } = parseArgs({ allowNegative: true, args: [...argv], options: { fetch: { default: true, type: 'boolean' }, help: { short: 'h', type: 'boolean' }, owner: { type: 'string' }, target: { type: 'string' } } })
+  const { values } = parseArgs({ allowNegative: true, args: [...argv], options: { fetch: { default: true, type: 'boolean' }, help: { short: 'h', type: 'boolean' }, owner: { type: 'string' }, target: { type: 'string' }, verbose: { type: 'boolean' } } })
   return values
 }
 
@@ -74,13 +77,15 @@ async function resolveTarget(cwd: string, value = '.') {
  * @param environment.gh runs gh
  * @param environment.hasColors color the output
  * @param environment.print print a block of text
+ * @param environment.printProgress print a progress line
  * @returns the exit code: 1 when a finding is an error, 0 otherwise
  */
-async function scanAndReport(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, hasColors, print }: Readonly<CliEnvironment>) {
+async function scanAndReport(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, hasColors, print, printProgress }: Readonly<CliEnvironment>) {
   const started = Date.now()
   const target = await resolveTarget(cwd, options.target)
-  const { owner, projects } = await scan({ gh, owner: options.owner, rules: await loadRules(path.join(import.meta.dirname, 'rules')), shouldFetch: options.fetch, target })
-  const { hasErrors, text } = formatReport(projects, { durationMs: Date.now() - started, hasColors, owner, target })
+  const rules = await loadRules(path.join(import.meta.dirname, 'rules'))
+  const { owner, projects } = await scan({ gh, owner: options.owner, rules, shouldFetch: options.fetch, target }, { onProgress: printProgress })
+  const { hasErrors, text } = formatReport(projects, { durationMs: Date.now() - started, hasColors, isVerbose: options.verbose === true, owner, target })
   print(text)
   return hasErrors ? 1 : 0
 }

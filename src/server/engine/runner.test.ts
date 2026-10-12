@@ -55,7 +55,7 @@ describe('runner', () => {
   it('plans a fix that creates a missing file', async () => {
     expect.hasAssertions()
     const io = memoryIo()
-    const findings = await checkProject([renovateRule], await buildContext(io))
+    const { findings } = await checkProject([renovateRule], await buildContext(io))
     await expect(planFixes(findings, io)).resolves.toStrictEqual([{ after: '{\n  "extends": [\n    "config:semverAllMonthly"\n  ]\n}', before: '', file: 'renovate.json' }])
   })
 
@@ -69,7 +69,7 @@ describe('runner', () => {
   it('chains the fixes of several rules on the same file', async () => {
     expect.hasAssertions()
     const io = memoryIo({ 'package.json': toJsonText({ name: 'foo' }) })
-    const findings = await checkProject([schemaRule, versionRule], await buildContext(io))
+    const { findings } = await checkProject([schemaRule, versionRule], await buildContext(io))
     expect(findings.map(finding => finding.ruleId)).toStrictEqual(['needs-schema', 'needs-version'])
     const plans = await planFixes(findings, io)
     expect(plans.map(plan => plan.after)).toStrictEqual([toJsonText({ $schema: schema, name: 'foo', version: '0.0.0' })])

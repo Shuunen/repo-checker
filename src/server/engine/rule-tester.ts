@@ -64,7 +64,8 @@ function toFiles({ files = {}, pkg }: Readonly<ValidCase>) {
  */
 async function checkValid(rule: Readonly<Rule>, testCase: Readonly<ValidCase>) {
   const context = await buildContext(memoryIo(toFiles(testCase)), testCase.flags)
-  return await checkProject([rule], context)
+  const { findings } = await checkProject([rule], context)
+  return findings
 }
 
 /**
@@ -75,7 +76,7 @@ async function checkValid(rule: Readonly<Rule>, testCase: Readonly<ValidCase>) {
  */
 async function runInvalid(rule: Readonly<Rule>, testCase: Readonly<InvalidCase>) {
   const io = memoryIo(toFiles(testCase))
-  const findings = await checkProject([rule], await buildContext(io, testCase.flags))
+  const { findings } = await checkProject([rule], await buildContext(io, testCase.flags))
   const fixed = await fixProject({ confirm: () => Promise.resolve(true), flags: testCase.flags, io, rules: [rule] })
   return { errors: findings.map(finding => finding.messageId), outputs: fixed.applied.map(plan => plan.after), remaining: fixed.findings.length }
 }
@@ -154,7 +155,7 @@ function toProject(testCase: Readonly<ProjectCase>): Project {
  * @returns the reported message ids and actions
  */
 async function runProjectCase(rule: Readonly<ProjectRule>, testCase: Readonly<ProjectCase>) {
-  const findings = await checkProjectRules([rule], toProject(testCase))
+  const { findings } = await checkProjectRules([rule], toProject(testCase))
   return { actions: findings.map(finding => finding.actions), errors: findings.map(finding => finding.messageId) }
 }
 

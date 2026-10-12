@@ -3,7 +3,7 @@ import { buildContext } from './engine/context.ts'
 import type { ProjectRule } from './engine/define-project-rule.ts'
 import type { Rule } from './engine/define-rule.ts'
 import { diskIo } from './engine/io.ts'
-import { checkProject, checkProjectRules } from './engine/runner.ts'
+import { type CheckResult, checkProject, checkProjectRules } from './engine/runner.ts'
 
 /** The rules split by flavor */
 export interface SplitRules {
@@ -19,11 +19,12 @@ export interface SplitRules {
  * @param rules the rules split by flavor
  * @param rules.fileRules run on usable clones of the owner
  * @param rules.projectRules run on every project
- * @returns the findings, project rules first
+ * @returns the findings and the rule outcomes, project rules first. File rules that cannot run are not listed
  */
-export async function checkOne(project: Readonly<Project>, { fileRules, projectRules }: Readonly<SplitRules>) {
-  const findings = await checkProjectRules(projectRules, project)
+export async function checkOne(project: Readonly<Project>, { fileRules, projectRules }: Readonly<SplitRules>): Promise<CheckResult> {
+  const result = await checkProjectRules(projectRules, project)
   const { isOtherOwner, local } = project
-  if (local === undefined || local.problem !== undefined || isOtherOwner) return findings
-  return [...findings, ...(await checkProject(fileRules, await buildContext(diskIo(local.path))))]
+  if (local === undefined || local.problem !== undefined || isOtherOwner) return result
+  const files = await checkProject(fileRules, await buildContext(diskIo(local.path)))
+  return { findings: [...result.findings, ...files.findings], outcomes: [...result.outcomes, ...files.outcomes] }
 }

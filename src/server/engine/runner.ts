@@ -74,32 +74,48 @@ function toProjectFinding(rule: Readonly<ProjectRule>, report: Readonly<ProjectR
   return { actions: report.actions ?? [], edits: [], message: formatMessage(messageTemplate(rule.meta, report.messageId), report.data), messageId: report.messageId, ruleId: id, severity }
 }
 
+/** What happened to one rule on one project */
+export interface RuleOutcome {
+  /** The rule id */
+  ruleId: string
+  /** `failed` when it reported at least one finding, `passed` when it reported none, `skipped` when its `appliesTo` returned false */
+  status: 'failed' | 'passed' | 'skipped'
+}
+
+/** What running rules on one project gives */
+export interface CheckResult {
+  /** The findings, in rule order then report order */
+  findings: Finding[]
+  /** One outcome per rule, in rule order */
+  outcomes: RuleOutcome[]
+}
+
 /**
  * Run rules of one flavor in parallel, skipping those whose `appliesTo` returns false
  * @param rules the rules
  * @param context what each rule receives, `report` is added
  * @param makeFinding turn a report into a finding
- * @returns the findings, in rule order then report order
+ * @returns the findings and one outcome per rule
  */
-async function runRules<RuleContext extends object, Reported, Item extends Runnable<RuleContext, Reported>>(rules: readonly Item[], context: Readonly<RuleContext>, makeFinding: (rule: Item, report: Reported) => Finding) {
-  const findingsPerRule = await Promise.all(
+async function runRules<RuleContext extends object, Reported, Item extends Runnable<RuleContext, Reported> & { meta: { id: string } }>(rules: readonly Item[], context: Readonly<RuleContext>, makeFinding: (rule: Item, report: Reported) => Finding): Promise<CheckResult> {
+  const perRule = await Promise.all(
     rules.map(async rule => {
-      if (rule.appliesTo?.(context) === false) return []
+      if (rule.appliesTo?.(context) === false) return { findings: [], outcome: { ruleId: rule.meta.id, status: 'skipped' as const } }
       const findings: Finding[] = []
       await rule.check({ ...context, report: (report: Reported) => findings.push(makeFinding(rule, report)) })
-      return findings
+      return { findings, outcome: { ruleId: rule.meta.id, status: findings.length > 0 ? ('failed' as const) : ('passed' as const) } }
     }),
   )
-  return findingsPerRule.flat()
+  return { findings: perRule.flatMap(item => item.findings), outcomes: perRule.map(item => item.outcome) }
 }
 
 /**
  * Run the file rules on one project, nothing is written. Rules whose `appliesTo` returns false are skipped
  * @param rules the file rules to run
  * @param context the project context
- * @returns the findings, in rule order then report order
+ * @returns the findings, in rule order then report order, and one outcome per rule
  * @throws {Error} when a rule reports a fix without `meta.fixable`, or an unknown message id
- * @example const findings = await checkProject(rules, await buildContext(diskIo(folder)))
+ * @example const { findings } = await checkProject(rules, await buildContext(diskIo(folder)))
  */
 export function checkProject(rules: readonly Rule[], context: Readonly<Context>) {
   return runRules(rules, context, toFinding)
@@ -109,9 +125,9 @@ export function checkProject(rules: readonly Rule[], context: Readonly<Context>)
  * Run the project rules on one project, cloned or not. Nothing is changed, the findings carry the actions to offer
  * @param rules the project rules to run
  * @param project the project
- * @returns the findings, in rule order then report order
+ * @returns the findings, in rule order then report order, and one outcome per rule
  * @throws {Error} when a rule reports an unknown message id
- * @example const findings = await checkProjectRules(projectRules, project)
+ * @example const { findings } = await checkProjectRules(projectRules, project)
  */
 export function checkProjectRules(rules: readonly ProjectRule[], project: Readonly<Project>) {
   return runRules(rules, { project }, toProjectFinding)
@@ -182,9 +198,10 @@ interface FixOptions {
  * const { applied, findings } = await fixProject({ confirm: plans => askUser(plans), io: diskIo(folder), rules })
  */
 export async function fixProject({ confirm, flags = {}, io, rules }: Readonly<FixOptions>) {
-  const findings = await checkProject(rules, await buildContext(io, flags))
+  const { findings } = await checkProject(rules, await buildContext(io, flags))
   const plans = await planFixes(findings, io)
   if (plans.length === 0 || !(await confirm(plans))) return { applied: [], findings }
   await Promise.all(plans.map(plan => io.writeText(plan.file, plan.after)))
-  return { applied: plans, findings: await checkProject(rules, await buildContext(io, flags)) }
+  const recheck = await checkProject(rules, await buildContext(io, flags))
+  return { applied: plans, findings: recheck.findings }
 }

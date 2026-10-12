@@ -79,7 +79,9 @@ describe(scan, () => {
     expect.hasAssertions()
     const gh = fakeGh({ ...user, 'api --paginate --slurp user/repos?affiliation=owner&per_page=100': [[apiRepo('app', { archived: true }), apiRepo('finga')]] })
     const seen: string[] = []
-    const { isSingle, owner, projects } = await scan({ gh, owner: undefined, rules, shouldFetch: false, target: await makeWorkspace() }, result => seen.push(result.project.name))
+    const progress: string[] = []
+    const target = await makeWorkspace()
+    const { isSingle, owner, projects } = await scan({ gh, owner: undefined, rules, shouldFetch: false, target }, { onProgress: line => progress.push(line), onProject: result => seen.push(result.project.name) })
     expect({ isSingle, owner }).toStrictEqual({ isSingle: false, owner: 'owner' })
     expect(projects.map(({ findings, project }) => [project.name, findings.map(item => item.ruleId)])).toStrictEqual([
       ['app', ['archived-with-unsaved-work']],
@@ -89,6 +91,12 @@ describe(scan, () => {
       ['plain', ['broken-clone']],
     ])
     expect(seen.toSorted()).toStrictEqual(['app', 'finga', 'gone', 'lib', 'plain'])
+    expect(progress).toStrictEqual([`reading the local clones in ${target}`, 'listing the repos of owner on GitHub', 'checking 5 projects'])
+    expect(projects.find(result => result.project.name === 'finga')?.outcomes).toStrictEqual([
+      { ruleId: 'not-cloned', status: 'failed' },
+      { ruleId: 'broken-clone', status: 'skipped' },
+      { ruleId: 'archived-with-unsaved-work', status: 'skipped' },
+    ])
   })
 
   it('checks only the target in single project mode, against the owner of its origin', async () => {
