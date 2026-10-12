@@ -1,7 +1,7 @@
 import type { RuleOutcome, Severity } from '../shared/scan-event.ts'
 import type { Finding } from './engine/define-rule.ts'
 import { formatReport } from './report.ts'
-import type { ProjectResult } from './scan.ts'
+import type { ProjectResult } from './check-projects.ts'
 
 const options = { durationMs: 1234, hasColors: false, isVerbose: false, owner: 'owner', target: '/projects' }
 

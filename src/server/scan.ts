@@ -1,16 +1,9 @@
-import type { Project } from '../shared/project.ts'
-import { plural } from '../shared/text.ts'
-import { checkOne } from './check-project.ts'
+import { checkProjects, type ProjectResult } from './check-projects.ts'
 import type { AnyRule } from './engine/define-project-rule.ts'
 import { splitRules } from './engine/load-rules.ts'
-import type { CheckResult } from './engine/runner.ts'
 import type { GhRunner } from './inventory/github.ts'
-import { mapLimit } from './inventory/map-limit.ts'
 import { matchProjects } from './inventory/match.ts'
 import { type Progress, readInventory } from './inventory/read-inventory.ts'
-
-/** How many projects are checked at the same time */
-const parallelProjects = 8
 
 /** What a scan needs */
 export interface ScanOptions {
@@ -26,12 +19,6 @@ export interface ScanOptions {
   target: string
 }
 
-/** The findings and rule outcomes of one project, project rules first. File rules are left out when the project has no usable clone of the owner */
-export interface ProjectResult extends CheckResult {
-  /** The project */
-  project: Project
-}
-
 /** Callbacks to follow a scan while it runs */
 export interface ScanHooks {
   /** Called as soon as each project is checked, for live output */
@@ -41,7 +28,7 @@ export interface ScanHooks {
 }
 
 /**
- * Scan a target: read the clones and the owner's repos, match them, then check each project
+ * Scan a target: read the clones and the owner's repos, match them, then check each project, see `checkProjects`
  * @param options the options
  * @param hooks callbacks to follow the scan
  * @param hooks.onProject called as soon as each project is checked, for live output
@@ -52,13 +39,6 @@ export interface ScanHooks {
  */
 export async function scan(options: Readonly<ScanOptions>, { onProject = () => undefined, onProgress = () => undefined }: Readonly<ScanHooks> = {}) {
   const { clones, isSingle, owner, repos } = await readInventory(options.gh, { ...options, onProgress })
-  const rules = splitRules(options.rules)
-  const matched = matchProjects(clones, repos, owner)
-  onProgress(`checking ${plural(matched.length, 'project')}`)
-  const projects = await mapLimit(matched, parallelProjects, async project => {
-    const result = { ...(await checkOne(project, rules)), project }
-    onProject(result)
-    return result
-  })
+  const projects = await checkProjects(matchProjects(clones, repos, owner), { gh: options.gh, onProgress, onProject, rules: splitRules(options.rules) })
   return { isSingle, owner, projects }
 }

@@ -62,12 +62,20 @@ describe('fork status', () => {
     await expect(readForkStatus(fakeGh(details), fork)).resolves.toMatchObject({ failures: ['repos/me/lib/branches?per_page=100: gh: Not Found (HTTP 404)'], parent: 'them/lib' })
   })
 
-  it('reads the status of forks only', async () => {
+  it('adds the status to a fork project', async () => {
     expect.hasAssertions()
-    const gh = fakeGh({ ...details, ...branches() })
-    const source = { ...fork, isFork: false, name: 'own', slug: 'me/own' }
-    const [own, lib] = await addForkStatus(gh, [source, fork])
-    expect(own?.forkStatus).toBeUndefined()
-    expect(lib?.forkStatus).toStrictEqual({ branches: [], failures: [], openPullRequests: 0, parent: 'them/lib' })
+    const project = await addForkStatus(fakeGh({ ...details, ...branches() }), { github: fork, isOtherOwner: false, local: undefined, name: 'lib' })
+    expect(project.github?.forkStatus).toStrictEqual({ branches: [], failures: [], openPullRequests: 0, parent: 'them/lib' })
+  })
+
+  it.each([
+    ['a repo that is not a fork', { ...fork, isFork: false }],
+    ['a clone without repo', undefined],
+  ])('leaves %s as it is', async (_name, github) => {
+    expect.hasAssertions()
+    const gh = fakeGh({})
+    const project = { github, isOtherOwner: false, local: undefined, name: 'own' }
+    await expect(addForkStatus(gh, project)).resolves.toBe(project)
+    expect(gh).not.toHaveBeenCalled()
   })
 })

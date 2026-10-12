@@ -1,7 +1,8 @@
 import { Hono, type MiddlewareHandler } from 'hono'
 import { type SSEStreamingApi, streamSSE } from 'hono/streaming'
 import type { ScanEvent, ScanProject } from '../shared/scan-event.ts'
-import type { ProjectResult, ScanHooks } from './scan.ts'
+import type { ProjectResult } from './check-projects.ts'
+import type { ScanHooks } from './scan.ts'
 
 /** The host names the server answers to, any other is refused so a web page on another domain cannot reach it through DNS rebinding */
 const localHosts = new Set(['127.0.0.1', 'localhost'])

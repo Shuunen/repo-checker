@@ -1,6 +1,6 @@
 import type { ScanEvent } from '../shared/scan-event.ts'
 import { createApp, type ScanRunner, toScanProject } from './app.ts'
-import type { ProjectResult } from './scan.ts'
+import type { ProjectResult } from './check-projects.ts'
 
 const result: ProjectResult = {
   findings: [

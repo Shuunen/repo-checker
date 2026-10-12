@@ -1,7 +1,7 @@
 import { styleText } from 'node:util'
 import { plural } from '../shared/text.ts'
 import type { RuleOutcome, Severity } from '../shared/scan-event.ts'
-import type { ProjectResult } from './scan.ts'
+import type { ProjectResult } from './check-projects.ts'
 
 /** The severities, most important first, with their title and color */
 const groups = [

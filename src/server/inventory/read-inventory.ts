@@ -1,7 +1,5 @@
 import path from 'node:path'
-import type { GithubRepo, LocalClone } from '../../shared/project.ts'
-import { plural } from '../../shared/text.ts'
-import { addForkStatus } from './forks.ts'
+import type { LocalClone } from '../../shared/project.ts'
 import { readClones } from './git.ts'
 import { type GhRunner, getLogin, getRepo, listRepos } from './github.ts'
 
@@ -9,20 +7,7 @@ import { type GhRunner, getLogin, getRepo, listRepos } from './github.ts'
 export type Progress = (message: string) => void
 
 /**
- * Read the fork status of the forks among the repos, saying how many forks are compared
- * @param gh the gh runner
- * @param repos the repos
- * @param onProgress receives progress lines
- * @returns the repos, forks with their status
- */
-function withForks(gh: GhRunner, repos: readonly GithubRepo[], onProgress: Progress) {
-  const forks = repos.filter(repo => repo.isFork).length
-  if (forks > 0) onProgress(`comparing ${plural(forks, 'fork')} with their parent`)
-  return addForkStatus(gh, repos)
-}
-
-/**
- * Get the owner's repos: only the target's repo in single project mode, every repo in folder mode, forks with their status
+ * Get the owner's repos: only the target's repo in single project mode, every repo in folder mode. Forks are compared with their parent later, per project
  * @param gh the gh runner
  * @param scope what to list
  * @param scope.login the authenticated login
@@ -34,10 +19,10 @@ function withForks(gh: GhRunner, repos: readonly GithubRepo[], onProgress: Progr
 async function readRepos(gh: GhRunner, { login, onProgress, owner, single }: Readonly<{ login: string; onProgress: Progress; owner: string; single: LocalClone | undefined }>) {
   if (single === undefined) {
     onProgress(`listing the repos of ${owner} on GitHub`)
-    return withForks(gh, await listRepos(gh, owner, login), onProgress)
+    return listRepos(gh, owner, login)
   }
   const repo = single.slug === undefined ? undefined : await getRepo(gh, single.slug)
-  return withForks(gh, repo === undefined ? [] : [repo], onProgress)
+  return repo === undefined ? [] : [repo]
 }
 
 /**

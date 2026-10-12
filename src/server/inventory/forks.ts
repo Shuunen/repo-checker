@@ -1,10 +1,6 @@
 import { sum } from 'es-toolkit'
-import type { ForkStatus, GithubRepo } from '../../shared/project.ts'
+import type { ForkStatus, GithubRepo, Project } from '../../shared/project.ts'
 import type { GhRunner } from './github.ts'
-import { mapLimit } from './map-limit.ts'
-
-/** How many forks are compared at the same time, each one runs a few calls per branch */
-const parallelForks = 8
 
 /** The outcome of one `gh api` call that may fail without stopping the scan */
 type Attempt<Value> = { failure: string; value: undefined } | { failure: undefined; value: Value }
@@ -75,12 +71,14 @@ export async function readForkStatus(gh: GhRunner, repo: Readonly<GithubRepo>): 
 }
 
 /**
- * Read the fork status of every fork, a few forks at a time. Other repos are returned as they are
+ * Add the fork status to a project whose repo is a fork. Other projects are returned as they are
  * @param gh the gh runner
- * @param repos the repos
- * @returns the repos, forks with their `forkStatus`
- * @example const repos = await addForkStatus(ghCli, await listRepos(ghCli, owner, login))
+ * @param project the project
+ * @returns the project, its fork repo with its `forkStatus`
+ * @example const project = await addForkStatus(ghCli, fork)
  */
-export function addForkStatus(gh: GhRunner, repos: readonly GithubRepo[]) {
-  return mapLimit(repos, parallelForks, async repo => (repo.isFork ? { ...repo, forkStatus: await readForkStatus(gh, repo) } : repo))
+export async function addForkStatus(gh: GhRunner, project: Readonly<Project>): Promise<Project> {
+  const { github } = project
+  if (github?.isFork !== true) return project
+  return { ...project, github: { ...github, forkStatus: await readForkStatus(gh, github) } }
 }

@@ -74,6 +74,21 @@ function fakeGh(answers: Readonly<Record<string, unknown>>) {
 
 const user = { 'api user': { login: 'owner' } }
 
+/**
+ * A fake gh that holds one call until released, then answers like `fakeGh`
+ * @param answers the JSON to return, by joined arguments
+ * @param held the joined arguments of the call to hold
+ * @param released resolves when the held call may answer
+ * @returns the fake runner
+ */
+function holdingGh(answers: Readonly<Record<string, unknown>>, held: string, released: Promise<undefined>) {
+  const answer = fakeGh(answers)
+  return vi.fn<GhRunner>(async args => {
+    if (args.join(' ') === held) await released
+    return answer(args)
+  })
+}
+
 describe(scan, () => {
   it('checks every project of a folder against the owner repos', async () => {
     expect.hasAssertions()
@@ -97,6 +112,29 @@ describe(scan, () => {
       { ruleId: 'broken-clone', status: 'skipped' },
       { ruleId: 'archived-with-unsaved-work', status: 'skipped' },
     ])
+  })
+
+  it('checks the other projects while the forks are compared', async () => {
+    expect.hasAssertions()
+    const { promise: released, resolve: release } = Promise.withResolvers<undefined>()
+    const gh = holdingGh({ ...user, 'api --paginate --slurp user/repos?affiliation=owner&per_page=100': [[apiRepo('finga'), apiRepo('fork', { fork: true })]] }, 'api repos/owner/fork', released)
+    const target = await mkdtemp(path.join(tmpdir(), 'repo-check-scan-'))
+    onTestFinished(() => rm(target, { force: true, recursive: true }))
+    const seen: string[] = []
+    const progress: string[] = []
+    const { projects } = await scan(
+      { gh, owner: undefined, rules, shouldFetch: false, target },
+      {
+        onProgress: line => progress.push(line),
+        onProject: result => {
+          seen.push(result.project.name)
+          release(undefined)
+        },
+      },
+    )
+    expect(seen).toStrictEqual(['finga', 'fork'])
+    expect(progress.slice(-2)).toStrictEqual(['checking 2 projects', 'comparing 1 fork with their parent'])
+    expect(projects.map(result => result.project.github?.forkStatus?.failures.length)).toStrictEqual([undefined, 1])
   })
 
   it('checks only the target in single project mode, against the owner of its origin', async () => {
