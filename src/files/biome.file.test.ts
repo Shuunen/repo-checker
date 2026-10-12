@@ -84,6 +84,17 @@ describe('biome.file', () => {
     expect(instance.fileContent).toContain('"vcs"')
   })
 
+  it('biome F3 finds the test override among other overrides', async () => {
+    expect.hasAssertions()
+    const instance = new BiomeFile(repoCheckerPath, new ProjectData({ isQuiet: true }))
+    instance.data.isUsingBiome = true
+    instance.checkFileExists = promiseTrue
+    instance.inspectFile = promiseVoid
+    instance.fileContent = JSON.stringify({ $schema: './node_modules/@biomejs/biome/configuration_schema.json', overrides: [{ includes: ['*.config.*'] }, { includes: ['**/*.test.ts'] }] })
+    await instance.start()
+    expect(instance.passed).toContain('has-a-test-override')
+  })
+
   it('biome G full valid biome.json', async () => {
     expect.hasAssertions()
     const instance = new BiomeFile(repoCheckerPath, new ProjectData({ isQuiet: true }))

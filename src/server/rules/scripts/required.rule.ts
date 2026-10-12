@@ -1,7 +1,6 @@
 import { requireProperty } from '../../engine/require-property.ts'
 import { requireCommand, requireScript } from './scripts.utils.ts'
 
-// biome-ignore format: one rule per line
 export const requiredScriptRules = [
   requireProperty({ id: 'scripts-section', key: 'scripts', severity: 'error' }),
   requireScript({ id: 'scripts-check', message: 'no "check" script, like "check": "pnpm build && pnpm lint && pnpm test"', name: 'check', severity: 'warning' }),

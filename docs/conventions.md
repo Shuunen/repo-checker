@@ -6,7 +6,7 @@ The rewrite follows the same tooling and rules as the `snippets` repo, so the re
 
 - bun for development: it is the package manager and runs the TypeScript sources directly (`bun scan`, `bun check`).
 - Node 24 (`.nvmrc`) for users: the published package is plain JavaScript built by `tsdown`, so `npx repo-check` only needs Node, not bun.
-- oxlint and oxfmt. Biome is dropped (it stays until the scaffold step replaces the old tooling).
+- oxlint to lint, oxfmt to format (`.oxfmtrc.json`, migrated from the old biome config: 300 columns, single quotes, no semicolons). Biome is gone. Long tables stay one item per line without any ignore comment.
 - vitest for tests, Testing Library for the web.
 - Vite builds `src/web`.
 - Never disable a lint rule without asking. Try to fix the code first.

@@ -128,8 +128,7 @@ export async function augmentData(folderPath: string, dataSource: Readonly<Proje
     if (!result.ok) {
       /* v8 ignore start -- @preserve */
       // eslint-disable-next-line max-depth
-      if (result.error.includes('does not exists'))
-        log.debug('no custom data file found in', folderPath) // no custom data file, it's ok
+      if (result.error.includes('does not exists')) log.debug('no custom data file found in', folderPath) // no custom data file, it's ok
       else log.error('error while reading data file', result.error)
       /* v8 ignore stop -- @preserve */
       return data

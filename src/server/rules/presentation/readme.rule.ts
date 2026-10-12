@@ -9,7 +9,6 @@ export const readmeExists = defineRule({
   meta: { id: 'readme-exists', messages: { missing: 'no README.md or readme.md file' }, severity: 'error' },
 })
 
-// biome-ignore format: one rule per line
 export const readmeContentRules = [
   requireInReadme({ id: 'readme-title', message: 'the README does not start with a title, like "# My project"', pattern: /^#\s\w+/u, severity: 'error' }),
   requireInReadme({ id: 'readme-logo', message: 'the README has no logo, like ![logo](folder/any-file.ext)', pattern: /!\[logo\]\(.*\.\w{3,4}\)/u, severity: 'warning' }),

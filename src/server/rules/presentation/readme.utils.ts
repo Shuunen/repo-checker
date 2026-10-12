@@ -176,7 +176,6 @@ const mentions =
   ({ readme }: Readonly<Context>) =>
     readme?.text.includes(word) === true
 
-// biome-ignore format: one tool per line
 export const thanksList: readonly Thanks[] = [
   { description: 'for the nice badges on top of this readme', isUsed: mentions('shields'), label: 'Shields.io', link: 'https://shields.io' },
   { description: 'for providing free continuous deployments', isUsed: mentions('travis-ci'), label: 'Travis-ci.com', link: 'https://travis-ci.com' },

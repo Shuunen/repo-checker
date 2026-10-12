@@ -1,6 +1,5 @@
 import { forbidDependency } from './dependencies.utils.ts'
 
-// biome-ignore format: one rule per line
 export const forbiddenDependencyRules = [
   forbidDependency({ id: 'esbuild-plugin-run-alternative', names: ['esbuild-plugin-run'], reason: 'use typescript-run instead, like "dev": "ts-run src --watch"', severity: 'warning' }),
   forbidDependency({ id: 'no-cross-var-dependency', names: ['cross-var'], reason: 'it is old and deprecated', severity: 'error' }),

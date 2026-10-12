@@ -81,7 +81,6 @@ If file already exists, use `--force` to overwrite it.
 ## Thanks
 
 - [Arg](https://github.com/vercel/arg) : un-opinionated, no-frills CLI argument parser
-- [Biome](https://biomejs.dev) : super fast linter & formatter
 - [Boxy Svg](https://boxy-svg.com) : simple & effective svg editor
 - [Bun](https://bun.sh) : super fast runtime for JavaScript and TypeScript
 - [Dependency-cruiser](https://github.com/sverweij/dependency-cruiser) : handy tool to validate and visualize dependencies

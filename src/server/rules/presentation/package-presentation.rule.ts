@@ -2,7 +2,6 @@ import { defineRule } from '../../engine/define-rule.ts'
 import type { PackageJson } from '../../engine/package-json.ts'
 import { requireProperty } from '../../engine/require-property.ts'
 
-// biome-ignore format: one rule per line
 export const presentationPropertyRules = [
   requireProperty({ id: 'package-author', key: 'author', severity: 'error' }),
   requireProperty({ id: 'package-bugs', key: 'bugs', severity: 'warning' }),

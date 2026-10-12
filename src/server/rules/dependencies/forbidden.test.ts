@@ -26,7 +26,6 @@ testRule(byId('no-sass-dependency'), {
   valid: [{ files: { '.repo-checker.json': '{ "shouldAvoidSass": false }' }, name: 'sass allowed by .repo-checker.json', pkg: { devDependencies: { sass: '1.0.0' } } }],
 })
 
-// biome-ignore format: one case per line
 const tableCases = [
   ['esbuild-plugin-run-alternative', 'esbuild-plugin-run'],
   ['no-cross-var-dependency', 'cross-var'],
