@@ -1,6 +1,6 @@
 # Docs
 
-The `rewrite/projects-dashboard` branch rewrites repo-checker from scratch. These docs come first, code comes after they are approved.
+The `rewrite/projects-dashboard` branch rewrites repo-checker from scratch. The docs were written and approved first, the code follows them, and they are kept in sync with it: `src/server/rules.test.ts` checks `checks.md` against the rules.
 
 - [designs/projects-dashboard.md](designs/projects-dashboard.md) : the decision record. What we are building, why, what was ruled out, open questions, next steps.
 - [checks.md](checks.md) : every check, v1 and later, with the ids used in the code.

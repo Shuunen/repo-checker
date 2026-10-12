@@ -5,7 +5,8 @@ Every check `repo-checker` handles or is meant to handle. This file is the singl
 Format: an emoji for the status, an emoji for the severity, then `` `check-id` ``, then what it detects.
 
 - 🚀 v1: built in the first release.
-- 📋 todo: wanted, not in v1. This includes every rule of the previous version, to be ported. The file in parentheses is where the rule lives in the old code (`src/files/`), and its exact behavior is in the old snapshot tests in git history.
+- ✅ ported: built in the new engine, next to the Sync checks. Most come from the old tool, the file in parentheses says which.
+- 📋 todo: wanted, not built yet. This includes every rule of the previous version not ported yet. The file in parentheses is where the rule lives in the old code (`src/files/`), and its exact behavior is in the old snapshot tests in git history.
 
 Severity, one scale for every check:
 
@@ -56,17 +57,17 @@ What the project depends on, and how current and safe that is.
 - 📋 🔴 `security-advisory`: a known vulnerability, from `pnpm audit` and/or the GitHub Dependabot alerts.
 - 📋 🔵 `version-drift`: the same tool at different versions across projects, for example one lint tool in 4 projects at one version and in 9 at another.
 - 📋 🟡 `open-renovate-pr`: a Renovate pull request waiting to be merged.
-- 📋 🔴 `no-sass-dependency`: no `sass` dependency, it is fat and useless. Only when the project data says to avoid it (`package.file.ts`).
-- 📋 🔴 `no-cross-var-dependency`: no `cross-var` dependency, it is old and deprecated (`package.file.ts`).
-- 📋 🔴 `no-tslint-dependency`: no `tslint` dependency, it is deprecated (`package.file.ts`).
-- 📋 🔴 `no-eslint-plugin-promise-5`: no `eslint-plugin-promise` 5, it requires eslint 7 (`package.file.ts`).
-- 📋 🟡 `no-fat-color-dependency`: no `chalk`, `colorette` or `colors`, use shuutils or nanocolors (`package.file.ts`).
-- 📋 🟡 `no-fs-extra-dependency`: no `fs-extra`, use native fs (`package.file.ts`).
-- 📋 🟡 `no-shuunen-stack-dependency`: no `shuunen-stack` dependency (`package.file.ts`).
-- 📋 🟡 `no-jsdom-dependency`: no `jsdom`, use happy-dom instead (`package.file.ts`).
-- 📋 🟡 `no-npm-run-all-dependency`: no `npm-run-all`, chain tasks with `&&` or use `npm-parallel` (`package.file.ts`).
-- 📋 🟡 `esbuild-plugin-run-alternative`: when `esbuild-plugin-run` is used, suggest `typescript-run` (`ts-run src --watch`) (`package.file.ts`).
-- 📋 🟡 `latest-repo-check-version`: the `repo-check` dependency matches the latest major.minor. Skipped in repo-checker itself (`package.file.ts`).
+- ✅ 🔴 `no-sass-dependency`: no `sass` dependency, it is fat and useless. Only when the project data says to avoid it (`package.file.ts`).
+- ✅ 🔴 `no-cross-var-dependency`: no `cross-var` dependency, it is old and deprecated (`package.file.ts`).
+- ✅ 🔴 `no-tslint-dependency`: no `tslint` dependency, it is deprecated (`package.file.ts`).
+- ✅ 🔴 `no-eslint-plugin-promise-5`: no `eslint-plugin-promise` 5, it requires eslint 7 (`package.file.ts`).
+- ✅ 🟡 `no-fat-color-dependency`: no `chalk`, `colorette` or `colors`, use shuutils or nanocolors (`package.file.ts`).
+- ✅ 🟡 `no-fs-extra-dependency`: no `fs-extra`, use native fs (`package.file.ts`).
+- ✅ 🟡 `no-shuunen-stack-dependency`: no `shuunen-stack` dependency (`package.file.ts`).
+- ✅ 🟡 `no-jsdom-dependency`: no `jsdom`, use happy-dom instead (`package.file.ts`).
+- ✅ 🟡 `no-npm-run-all-dependency`: no `npm-run-all`, chain tasks with `&&` or use `npm-parallel` (`package.file.ts`).
+- ✅ 🟡 `esbuild-plugin-run-alternative`: when `esbuild-plugin-run` is used, suggest `typescript-run` (`ts-run src --watch`) (`package.file.ts`).
+- ✅ 🟡 `latest-repo-check-version`: the `repo-check` dependency matches the latest major.minor. Skipped in repo-checker itself (`package.file.ts`).
 - 📋 🟡 `renovate-config-exists`: a `renovate.json` file exists (`renovate.ts`).
 - 📋 🟡 `renovate-schema`: `renovate.json` declares the Renovate `$schema` (`renovate.ts`).
 - 📋 🔴 `renovate-extends`: `renovate.json` has an `extends` section (`renovate.ts`).
@@ -90,52 +91,52 @@ Which Node and which package manager the project uses, and how that is pinned.
 
 Content of `package.json`, apart from scripts and publishing.
 
-- 📋 🔴 `package-json-exists`: a `package.json` file exists (`package.file.ts`).
-- 📋 🟡 `package-schema`: `package.json` declares the schemastore `$schema` (`package.file.ts`).
-- 📋 🔴 `package-name`: a `name` property (`package.file.ts`).
-- 📋 🔴 `package-version`: a `version` property (`package.file.ts`).
-- 📋 🟡 `package-private`: a `private` property (`package.file.ts`).
-- 📋 🟡 `package-files`: a `files` property (`package.file.ts`).
-- 📋 🔵 `package-dependencies-sections`: the `dependencies` and `devDependencies` sections that the other dependency checks rely on. The old tool only used it to skip those checks and never reported it (`package.file.ts`).
+- ✅ 🔴 `package-json-exists`: a `package.json` file exists (`package.file.ts`).
+- ✅ 🟡 `package-schema`: `package.json` declares the schemastore `$schema` (`package.file.ts`).
+- ✅ 🔴 `package-name`: a `name` property (`package.file.ts`).
+- ✅ 🔴 `package-version`: a `version` property (`package.file.ts`).
+- ✅ 🟡 `package-private`: a `private` property (`package.file.ts`).
+- ✅ 🟡 `package-files`: a `files` property (`package.file.ts`).
+- ✅ 🔵 `package-dependencies-sections`: the `dependencies` and `devDependencies` sections that the other dependency checks rely on. The old tool only used it to skip those checks and never reported it (`package.file.ts`).
 
 ## Scripts
 
 The `scripts` section of `package.json`.
 
-- 📋 🔴 `scripts-section`: a `scripts` section exists (`package.file.ts`).
-- 📋 🟡 `scripts-check`: a `check` script, like `pnpm build && pnpm lint ...` (`package.file.ts`).
-- 📋 🟡 `scripts-no-ci`: no `ci` script, use `check` instead (`package.file.ts`).
-- 📋 🔴 `scripts-typescript-check`: a `tsc` build or check, when the project uses TypeScript (`package.file.ts`).
-- 📋 🟡 `scripts-preversion`: a `preversion` script for version automation, like `pnpm check` (`package.file.ts`).
-- 📋 🟡 `scripts-postversion`: a `postversion` script, like `git push && git push --tags`, plus `npm publish` for a published package (`package.file.ts`).
-- 📋 🔴 `scripts-no-prepublish`: `prepare` instead of the deprecated `prepublish` (`package.file.ts`).
-- 📋 🟡 `scripts-final-echo`: tasks `build`, `check`, `lint` and `test` end with `&& echo <task> success` (`package.file.ts`).
-- 📋 🟡 `scripts-no-npm-run`: use `pnpm` or `bun` instead of `npm run`, which is faster, and drop the `--` before flags with pnpm (`package.file.ts`).
-- 📋 🟡 `scripts-no-npm-test`: no `npm test`, use `pnpm test` or `bun test` (`package.file.ts`).
-- 📋 🟡 `scripts-watchlist-eager`: a `watchlist` task uses the `-eager --` parameter (`package.file.ts`).
-- 📋 🔴 `scripts-depcruise`: a `depcruise` usage, when the project uses dependency-cruiser (`package.file.ts`).
-- 📋 🟡 `scripts-unique-mark`: a `unique-mark` task when there is a `build` task and the project uses shuutils (`package.file.ts`).
-- 📋 🟡 `scripts-eslint-cache`: eslint runs with `--cache` (`package.file.ts`).
-- 📋 🟡 `scripts-no-eslint-ignore-path`: eslint runs without `--ignore-path`, so the CLI and VS Code use the same config (`package.file.ts`).
-- 📋 🟡 `scripts-ts-node-transpile-only`: any `ts-node` call in the project uses `--transpileOnly` (`package.file.ts`).
-- 📋 🔴 `scripts-bun-no-misleading-test`: with Bun, no `bun test` inside the `check` task, use `bun run test` (`package.file.ts`).
-- 📋 🔴 `scripts-bun-no-misleading-build`: with Bun, no `bun build` inside the `check` or `postversion` tasks, use `bun run build` (`package.file.ts`).
-- 📋 🔴 `scripts-bun-install`: with Bun, no `bun i`, use `bun install` (`package.file.ts`).
+- ✅ 🔴 `scripts-section`: a `scripts` section exists (`package.file.ts`).
+- ✅ 🟡 `scripts-check`: a `check` script, like `pnpm build && pnpm lint ...` (`package.file.ts`).
+- ✅ 🟡 `scripts-no-ci`: no `ci` script, use `check` instead (`package.file.ts`).
+- ✅ 🔴 `scripts-typescript-check`: a `tsc` build or check, when the project uses TypeScript (`package.file.ts`).
+- ✅ 🟡 `scripts-preversion`: a `preversion` script for version automation, like `pnpm check` (`package.file.ts`).
+- ✅ 🟡 `scripts-postversion`: a `postversion` script, like `git push && git push --tags`, plus `npm publish` for a published package (`package.file.ts`).
+- ✅ 🔴 `scripts-no-prepublish`: `prepare` instead of the deprecated `prepublish` (`package.file.ts`).
+- ✅ 🟡 `scripts-final-echo`: tasks `build`, `check`, `lint` and `test` end with `&& echo <task> success` (`package.file.ts`).
+- ✅ 🟡 `scripts-no-npm-run`: use `pnpm` or `bun` instead of `npm run`, which is faster, and drop the `--` before flags with pnpm (`package.file.ts`).
+- ✅ 🟡 `scripts-no-npm-test`: no `npm test`, use `pnpm test` or `bun test` (`package.file.ts`).
+- ✅ 🟡 `scripts-watchlist-eager`: a `watchlist` task uses the `-eager --` parameter (`package.file.ts`).
+- ✅ 🔴 `scripts-depcruise`: a `depcruise` usage, when the project uses dependency-cruiser (`package.file.ts`).
+- ✅ 🟡 `scripts-unique-mark`: a `unique-mark` task when there is a `build` task and the project uses shuutils (`package.file.ts`).
+- ✅ 🟡 `scripts-eslint-cache`: eslint runs with `--cache` (`package.file.ts`).
+- ✅ 🟡 `scripts-no-eslint-ignore-path`: eslint runs without `--ignore-path`, so the CLI and VS Code use the same config (`package.file.ts`).
+- ✅ 🟡 `scripts-ts-node-transpile-only`: any `ts-node` call in the project uses `--transpileOnly` (`package.file.ts`).
+- ✅ 🔴 `scripts-bun-no-misleading-test`: with Bun, no `bun test` inside the `check` task, use `bun run test` (`package.file.ts`).
+- ✅ 🔴 `scripts-bun-no-misleading-build`: with Bun, no `bun build` inside the `check` or `postversion` tasks, use `bun run build` (`package.file.ts`).
+- ✅ 🔴 `scripts-bun-install`: with Bun, no `bun i`, use `bun install` (`package.file.ts`).
 
 ## Publishing
 
 For projects published as a package.
 
-- 📋 🟡 `publish-type-module`: a `"type": "module"` declaration (`package.file.ts`).
-- 📋 🔴 `publish-types-field`: a `types` field, when the package is not a CLI and uses TypeScript (`package.file.ts`).
-- 📋 🔴 `publish-main-field`: a `main` field pointing to a `.js` file (ESM project) or a `.cjs` file (CommonJS project) (`package.file.ts`).
-- 📋 🔴 `publish-module-field`: ESM project, no `module` field (`package.file.ts`).
-- 📋 🟡 `publish-cjs-module-field`: CommonJS project, a `module` field pointing to a `.mjs` file (`package.file.ts`).
-- 📋 🔴 `publish-exports-field`: ESM project, an `exports` field mapping `import` to a `.js` build and `require` to a `.cjs` build (`package.file.ts`).
-- 📋 🟡 `publish-cjs-exports-field`: CommonJS project, an `exports` field mapping `import` to an `.mjs` build and `require` to a `.cjs` build (`package.file.ts`).
-- 📋 🟡 `publish-max-size-declared`: the maximum size of the main file is set in the data file (for example `maxSizeKo: 100`) (`package.file.ts`).
-- 📋 🔴 `publish-main-file-exists`: the file named in `main` exists on disk, so build before checking (`package.file.ts`).
-- 📋 🔴 `publish-main-file-size`: the main file is no bigger than the declared maximum size (`package.file.ts`).
+- ✅ 🟡 `publish-type-module`: a `"type": "module"` declaration (`package.file.ts`).
+- ✅ 🔴 `publish-types-field`: a `types` field, when the package is not a CLI and uses TypeScript (`package.file.ts`).
+- ✅ 🔴 `publish-main-field`: a `main` field pointing to a `.js` file (ESM project) or a `.cjs` file (CommonJS project) (`package.file.ts`).
+- ✅ 🔴 `publish-module-field`: ESM project, no `module` field (`package.file.ts`).
+- ✅ 🟡 `publish-cjs-module-field`: CommonJS project, a `module` field pointing to a `.mjs` file (`package.file.ts`).
+- ✅ 🔴 `publish-exports-field`: ESM project, an `exports` field mapping `import` to a `.js` build and `require` to a `.cjs` build (`package.file.ts`).
+- ✅ 🟡 `publish-cjs-exports-field`: CommonJS project, an `exports` field mapping `import` to an `.mjs` build and `require` to a `.cjs` build (`package.file.ts`).
+- ✅ 🟡 `publish-max-size-declared`: the maximum size of the main file is set in the data file (for example `maxSizeKo: 100`) (`package.file.ts`).
+- ✅ 🔴 `publish-main-file-exists`: the file named in `main` exists on disk, so build before checking (`package.file.ts`).
+- ✅ 🔴 `publish-main-file-size`: the main file is no bigger than the declared maximum size (`package.file.ts`).
 
 ## Code tooling
 
@@ -152,7 +153,7 @@ Linting, formatting, typing and architecture config files.
 - 📋 🔴 `eslint-config-exists`: `eslint.config.js` (ESM project) or `eslint.config.cjs` (CommonJS project) exists, when the project uses ESLint (`eslint.file.ts`).
 - 📋 🟡 `eslint-no-deprecated-config`: no `.eslintrc.json` or `.eslintrc.js`, use the flat config (`eslint.file.ts`).
 - 📋 🔴 `eslint-no-xo-config`: no `xo.config.js` (`eslint.file.ts`).
-- 📋 🔴 `eslint-dependency`: an `eslint` dependency, and not version 8 (`package.file.ts`).
+- ✅ 🔴 `eslint-dependency`: an `eslint` dependency, and not version 8 (`package.file.ts`).
 - 📋 🔴 `eslint-browser-config`: the ESLint config references a browser environment when the project uses Tailwind (`eslint.file.ts`).
 - 📋 🔴 `biome-config-exists`: a `biome.json` file exists, when the project uses Biome (`biome.file.ts`).
 - 📋 🟡 `biome-schema`: `$schema` points to `./node_modules/@biomejs/biome/configuration_schema.json` (`biome.file.ts`).
@@ -178,12 +179,12 @@ Linting, formatting, typing and architecture config files.
 
 ## Testing
 
-- 📋 🟡 `unit-testing-dependency`: one unit testing tool among vitest, mocha, uvu, or `bun test` (`package.file.ts`).
-- 📋 🟡 `coverage-dependency`: one coverage tool among nyc, c8, `@vitest/coverage-v8`, `@vitest/coverage-c8`, or `bun test --coverage` (`package.file.ts`).
+- ✅ 🟡 `unit-testing-dependency`: one unit testing tool among vitest, mocha, uvu, or `bun test` (`package.file.ts`).
+- ✅ 🟡 `coverage-dependency`: one coverage tool among nyc, c8, `@vitest/coverage-v8`, `@vitest/coverage-c8`, or `bun test --coverage` (`package.file.ts`).
 - 📋 🟡 `vitest-pool-threads`: the vitest config (`.mts`, `.js`, `.ts` or `.mjs`) sets `pool: 'threads'`, when the project uses vitest (`vitest.ts`).
 - 📋 🔴 `nycrc-exists`: a `.nycrc` or `.nycrc.json` file exists, when the project uses nyc (`nycrc.ts`).
 - 📋 🟡 `nycrc-schema`: the nyc config declares the schemastore `$schema` (`nycrc.ts`).
-- 📋 🔴 `uvu-assert`: with uvu, tests import `equal` from `uvu/assert` and not from `assert` (`package.file.ts`).
+- ✅ 🔴 `uvu-assert`: with uvu, tests import `equal` from `uvu/assert` and not from `assert` (`package.file.ts`).
 
 ## CI
 
@@ -223,27 +224,27 @@ How the project introduces itself, on GitHub and in the repo.
 - 📋 🔵 `missing-homepage`: the repo has no homepage.
 - 📋 🔴 `license-file-exists`: a `LICENSE` file exists (`license.ts`).
 - 📋 🔴 `license-file-content`: the `LICENSE` file matches the declared license: GPL-3.0 has the "GNU GENERAL PUBLIC LICENSE" title and the "Version 3, 29 June 2007" subtitle, MIT has the "MIT License" title (`license.ts`).
-- 📋 🔴 `package-license`: a `license` property, with the expected license value (`package.file.ts`).
-- 📋 🔴 `package-author`: an `author` property (`package.file.ts`).
-- 📋 🟡 `package-description`: a `description` property (`package.file.ts`).
-- 📋 🟡 `package-homepage`: a `homepage` property (`package.file.ts`).
-- 📋 🟡 `package-bugs`: a `bugs` property (`package.file.ts`).
-- 📋 🟡 `package-keywords`: a `keywords` property (`package.file.ts`).
-- 📋 🟡 `package-repository`: a `repository` property, whose url starts with `git+https` (`package.file.ts`).
-- 📋 🔴 `readme-exists`: a `README.md` or `readme.md` file exists (`readme.ts`).
-- 📋 🔴 `readme-title`: the README starts with a title (`readme.ts`).
-- 📋 🟡 `readme-logo`: a `![logo](...)` image (`readme.ts`).
-- 📋 🟡 `readme-demo`: a `![demo](...)` image or gif (`readme.ts`).
-- 📋 🔴 `readme-no-netlify-com`: no link to the deprecated `*.netlify.com` (`readme.ts`).
-- 📋 🔴 `readme-links-https`: no link without an `https` scheme (`readme.ts`).
-- 📋 🔴 `readme-no-crlf`: no Windows CRLF line endings, use Unix LF (`readme.ts`).
-- 📋 🟡 `readme-dash-lists`: no star-flavored lists, use dashes (`readme.ts`).
-- 📋 🔵 `readme-todos`: unchecked `- [ ]` items are printed as TODO lines in the output. Informational (`readme.ts`).
-- 📋 🟡 `readme-badges`: the recommended badges are present: project license, "Website up" when the project is published as a website, and npm monthly downloads, npm version, publish size and install size when it is a published package (`readme.ts`).
-- 📋 🔴 `readme-no-deprecated-badges`: no badge from `bettercodehub.com`, `david-dm.org`, `lgtm.com`, `scrutinizer-ci.com` or `libraries.io` (`readme.ts`).
-- 📋 🟡 `readme-thanks-section`: a `## Thanks` section (`readme.ts`).
-- 📋 🟡 `readme-thanks-entries`: a thanks line for every tool the project uses, and no thanks line for a tool it no longer uses. Always: Shields.io, Github. When mentioned in the README: Travis-ci.com, Netlify, AppWrite, Boxy Svg and Svg Omg (when the README uses svg). From `package.json` or project data: Arg, Ava, Biome, Bun, C8, Chokidar, Cypress.io, Dependency-cruiser, Esbuild, Eslint, Knip, Mocha, Npm-parallel, Npm-run-all, Nuxt, Nyc, Oxc, Preact, React, Reef, Repo-checker, Rollup, Servor, Showdown, Shuutils, TailwindCss, Tsup, UvU, V8, Vite, Vitest, Vue, Watchlist, Xo, Zod (`readme.ts`).
-- 📋 🟡 `readme-views-counter`: a page views counter badge (`readme.ts`).
+- ✅ 🔴 `package-license`: a `license` property, with the expected license value (`package.file.ts`).
+- ✅ 🔴 `package-author`: an `author` property (`package.file.ts`).
+- ✅ 🟡 `package-description`: a `description` property (`package.file.ts`).
+- ✅ 🟡 `package-homepage`: a `homepage` property (`package.file.ts`).
+- ✅ 🟡 `package-bugs`: a `bugs` property (`package.file.ts`).
+- ✅ 🟡 `package-keywords`: a `keywords` property (`package.file.ts`).
+- ✅ 🟡 `package-repository`: a `repository` property, whose url starts with `git+https` (`package.file.ts`).
+- ✅ 🔴 `readme-exists`: a `README.md` or `readme.md` file exists (`readme.ts`).
+- ✅ 🔴 `readme-title`: the README starts with a title (`readme.ts`).
+- ✅ 🟡 `readme-logo`: a `![logo](...)` image (`readme.ts`).
+- ✅ 🟡 `readme-demo`: a `![demo](...)` image or gif (`readme.ts`).
+- ✅ 🔴 `readme-no-netlify-com`: no link to the deprecated `*.netlify.com` (`readme.ts`).
+- ✅ 🔴 `readme-links-https`: no link without an `https` scheme (`readme.ts`).
+- ✅ 🔴 `readme-no-crlf`: no Windows CRLF line endings, use Unix LF (`readme.ts`).
+- ✅ 🟡 `readme-dash-lists`: no star-flavored lists, use dashes (`readme.ts`).
+- ✅ 🔵 `readme-todos`: unchecked `- [ ]` items are printed as TODO lines in the output. Informational (`readme.ts`).
+- ✅ 🟡 `readme-badges`: the recommended badges are present: project license, "Website up" when the project is published as a website, and npm monthly downloads, npm version, publish size and install size when it is a published package (`readme.ts`).
+- ✅ 🔴 `readme-no-deprecated-badges`: no badge from `bettercodehub.com`, `david-dm.org`, `lgtm.com`, `scrutinizer-ci.com` or `libraries.io` (`readme.ts`).
+- ✅ 🟡 `readme-thanks-section`: a `## Thanks` section (`readme.ts`).
+- ✅ 🟡 `readme-thanks-entries`: a thanks line for every tool the project uses, and no thanks line for a tool it no longer uses. Always: Shields.io, Github. When mentioned in the README: Travis-ci.com, Netlify, AppWrite, Boxy Svg and Svg Omg (when the README uses svg). From `package.json` or project data: Arg, Ava, Biome, Bun, C8, Chokidar, Cypress.io, Dependency-cruiser, Esbuild, Eslint, Knip, Mocha, Npm-parallel, Npm-run-all, Nuxt, Nyc, Oxc, Preact, React, Reef, Repo-checker, Rollup, Servor, Showdown, Shuutils, TailwindCss, Tsup, UvU, V8, Vite, Vitest, Vue, Watchlist, Xo, Zod (`readme.ts`).
+- ✅ 🟡 `readme-views-counter`: a page views counter badge (`readme.ts`).
 
 ## GitHub health
 

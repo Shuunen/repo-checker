@@ -4,8 +4,7 @@ v1 is the Sync checks only (see `docs/features.md`). Every check, built or wante
 
 ## Porting the old tool
 
-- Port the old file checks (the 📋 entries with a source file in `docs/checks.md`) into the new codebase. The old snapshot tests, in git history, are the spec.
-- Make results structured so the UI can show them.
+- Port the remaining old file checks (the 📋 entries with a source file in `docs/checks.md`) into the new codebase. The `package.json` and README checks are done (✅). The old snapshot tests, in git history, are the spec.
 - Let the UI trigger the old `--fix` behavior.
 - A json schema for `.repo-checker.json`, from the old README todo list.
 - Ship the rewrite as a new major version only once this is done.
@@ -22,7 +21,7 @@ v1 is the Sync checks only (see `docs/features.md`). Every check, built or wante
 
 - A health score per repo.
 - `--json` output for scripts and for Claude.
-- A cache, an offline mode and a fast mode that skips network checks.
+- A cache, and an offline mode that skips GitHub too (`--no-fetch` already skips `git fetch`).
 - Charts in the UI (commit activity, stale-branch histogram). Needs a small chart library, HeroUI has none.
 
 ## Ideas

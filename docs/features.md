@@ -4,7 +4,7 @@ v1 covers one group of checks: **Sync** (local vs GitHub), the 🚀 entries in [
 
 ## Modes
 
-One rule for both the CLI and the UI, based on the folder you run it in. In v1 the CLI (`repo-check`) prints the findings grouped by severity, prints one green line when all is well, and ends with a hint to run `repo-check ui` to fix things. It never prompts.
+One rule for both the CLI and the UI, based on the folder you run it in. In v1 the CLI (`repo-check`) prints the findings grouped by severity, then a summary line (checks run and skipped, counts per severity), then one green line when all is well or a hint to run `repo-check ui` to fix things. It exits with an error code when a finding is 🔴, and never prompts.
 
 - **Single project** (the folder is a git repo): check that project. The UI opens on its detail view.
 - **Folder of projects** (the folder contains git repos): check them all. The UI opens on the project list, a click opens the same detail view.
@@ -13,15 +13,19 @@ Options:
 
 - `--target=path` folder to scan, defaults to the current folder.
 - `--owner=name` GitHub account to compare with, defaults to the `gh` login. In single-project mode the owner comes from the repo's `origin` remote.
+- `--no-fetch` skips `git fetch`: faster and changes nothing on disk, but unpushed work is measured against remote refs that may be stale.
+- `--verbose` also lists every passed and skipped check, per project.
 
-Comparisons between a whole account and a whole folder only exist in folder mode. In single-project mode only the checks about that one repo apply (`archived-with-unsaved-work`, `archived-clone`, `pristine-fork`).
+Progress lines ("reading the local clones…", "comparing 30 forks…") go to stderr.
+
+Comparisons between a whole account and a whole folder only exist in folder mode. In single-project mode only the checks about that one repo apply (`broken-clone`, `archived-with-unsaved-work`, `archived-clone`, `pristine-fork`), and GitHub is asked about that repo only.
 
 ## Inventory
 
 The scan builds two lists, then matches them by `origin` remote.
 
 - **Local**: every git repo under the target. Each one is fetched first (`git fetch --prune`, in parallel, bounded) so the comparison with the remote is current. A failed fetch marks the project "cannot verify" and no delete or discard is offered for it. For each: `origin`, current branch, ahead and behind counts for every local branch that has an upstream (an unpushed commit on any branch counts, not only on the checked-out one), uncommitted and untracked files, stash count, branches that exist only locally. This git state is only used in v1 to decide whether a delete is safe (`archived-with-unsaved-work`, `archived-clone`).
-- **GitHub**: every repo of the owner, from `gh api`: archived, fork, private, last push, parent.
+- **GitHub**: every repo of the owner, from `gh api`: archived, fork, private, last push. For each fork, also its parent, every branch compared with the parent's default branch, and the open pull requests from it (see `pristine-fork`).
 - Repos whose `origin` belongs to another owner are shown as "other owner" and are left out of every check.
 
 ## Sync checks
@@ -68,7 +72,6 @@ These are requirements, each one gets a test.
 6. Deleting a fork needs the `delete_repo` scope. When it is missing the UI shows `gh auth refresh -s delete_repo` instead of failing silently.
 7. Before any destructive action the tool fetches that repo again and re-checks the condition that justified it. A scan result is never trusted as current. If the fetch fails, the action refuses.
 
-## Out of scope for v1
+## Everything else
 
-- The old file checks (README, biome, workflows, tsconfig, license...). They stay on the old published version until they are ported (see "Porting the old tool" in `../TODOS.md`). The old snapshot tests in git history are their spec.
-- Every 📋 check in [checks.md](checks.md): git hygiene, dependencies, security, CI status, archive candidates. Bulk actions and other non-check work are in `../TODOS.md`.
+Every check of [checks.md](checks.md) is ported or built into the same engine, the old file checks included (README, biome, workflows, tsconfig, license...): they run in the same scan and the same report as the Sync checks. The 🚀 v1 marker only tells the Sync checks apart, it is not a release gate. The old snapshot tests in git history are the spec of the old checks. Bulk actions and other non-check work are in `../TODOS.md`.

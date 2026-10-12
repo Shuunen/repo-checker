@@ -1,6 +1,6 @@
 # Architecture
 
-Status: proposed. Names and routes below are a starting point, change them when the code says otherwise.
+Status: partly built. The inventory, the checks engine, the five Sync checks, 72 ported file checks and the report-only CLI exist. The HTTP server, the web app and the actions do not yet, so the routes below are still a sketch.
 
 ## Shape
 
@@ -9,7 +9,7 @@ One package, one `package.json`, three folders.
 ```
 src/
   server/   Node 24 + TypeScript: scanning, git and gh calls, Hono HTTP server, CLI entry
-  shared/   Types and pure helpers used by both sides (Project, Issue, ScanEvent...)
+  shared/   Types and pure helpers used by both sides (Project, ActionKind, plural...)
   web/      React 19 + TypeScript + Tailwind 4 + HeroUI, built by Vite
 ```
 
@@ -38,11 +38,11 @@ Hono server (127.0.0.1)  <----  React app (static files)
 1. Resolve the target: a git repo means single-project mode, a folder of repos means folder mode.
 2. Resolve the owner: `--owner` first. Otherwise, in single-project mode the owner of the project's `origin`, in folder mode the `gh` login (`gh api user`).
 3. Build the local inventory (`git fetch --prune` then git state commands, run in parallel, bounded) and the GitHub inventory (`gh api`, paginated).
-4. Match by `origin`, run the Sync checks, emit one event per project as soon as its checks finish.
+4. Match by `origin`, run the project rules on every project and the file rules on usable clones of the owner, and hand each project's result to `onProject` as soon as its checks finish. `onProgress` receives a short line at each step.
 
 The inventory lives in `src/server/inventory`: `shell.ts` (the only place that runs `git` and `gh`), `git.ts` (one `LocalClone` per folder: origin, branches with ahead, behind and gone upstreams, changed files, stash, unpushed commit subjects, local-only branches), `github.ts` (`gh api --paginate --slurp`, private repos included when the owner is the `gh` login) and `match.ts` (one `Project` per clone and per repo without clone, other owners flagged). `forks.ts` reads each fork's `ForkStatus` during the scan: the parent, every branch compared with the parent's default branch, the open pull requests from each branch, and every failed call. A single failure makes the fork "cannot verify". On 2026-10-12 the 30 forks (120 branches, 2 calls per branch) took about 7 seconds with 8 forks at a time in a pool (13 seconds with 4, 7.8 with 8 in fixed batches), the slowest part of the scan, which is why results stream per project. The types are in `src/shared/project.ts`. A clone whose origin points to the owner but matches no repo keeps `github` undefined: that is the "origin 404" case of `broken-clone`.
 
-The CLI is `src/server/cli.ts` (`scan.ts` reads the inventory and checks each project, `report.ts` groups the findings by severity). Until the old code is removed it runs with `bun scan` (`--target`, `--owner`, `--no-fetch`), the published `repo-check` bin still points to the old tool.
+The CLI is `src/server/cli.ts` (`scan.ts` reads the inventory and checks each project, `report.ts` groups the findings by severity, then prints a summary line: checks run and skipped, counts per severity). `--verbose` also lists every passed and skipped check per project, and progress lines go to stderr so they never mix with the report. Until the old code is removed it runs with `bun scan` (`--target`, `--owner`, `--no-fetch`, `--verbose`, a leading `~` in the target is expanded), the published `repo-check` bin still points to the old tool.
 
 The server streams those events to the page (server-sent events through Hono's streaming helper). The page writes them into a TanStack Query cache, so rows appear one by one.
 
@@ -60,17 +60,17 @@ export const scriptsNoNpmRun = defineRule({
 })
 ```
 
-- `meta.id` is the check id from [checks.md](checks.md). A test fails when an id in the code is missing from the docs. Once the Sync rules exist, the same test also checks that every 🚀 id in the docs has a rule.
+- `meta.id` is the check id from [checks.md](checks.md). `src/server/rules.test.ts` fails when a rule is not marked 🚀 or ✅ there, or when a check marked 🚀 or ✅ has no rule, so the doc always says what is built.
 - `meta.severity` is the only severity, no "just warn" flag at the call site.
 - `meta.fixable` must be true for a rule to report a fix, and a `messageId` must exist in `meta.messages`. The runner throws otherwise.
-- `context` is built once per project: parsed files (`pkg`...), project flags, cached file readers (`files.readText`, `files.sizeKo`, `files.search` to find text across the project, skipping `node_modules`, `.git`, `dist` and `coverage`), later git state and GitHub data. Flags (`engine/flags.ts`) are detected from `package.json` and the `origin` of the git config, then overridden by the project's `.repo-checker.json`. Rules never touch the disk, run commands or log.
+- `context` is built once per project: parsed files (`pkg`, `readme`), project flags, cached file readers (`files.readText`, `files.sizeKo`, `files.search` to find text across the project, skipping `node_modules`, `.git`, `dist` and `coverage`). Git state and GitHub data are not in it: project rules receive the whole `Project` instead. Flags (`engine/flags.ts`) are detected from `package.json` and the `origin` of the git config (owner, repo), then overridden by the project's `.repo-checker.json` (`license`, `maxSizeKo`, `webUrl`...). Rules never touch the disk, run commands or log.
 - A rule that applies only sometimes says so with `appliesTo(context)`, so the runner can tell "skipped" from "passed".
 - `src/server/rules` has no file at its root, only group folders (one per group of [checks.md](checks.md)). Inside them, a file is `*.rule.ts` (exports rules), `*.utils.ts` (helpers for the rules of that folder, such as factories) or `*.test.ts`. Anything generic goes to `src/server/engine`. There is no list of rules to maintain: `loadRules(folder)` imports every `*.rule.ts` (sorted by path) and keeps every exported rule, alone or in an array. The server build must therefore emit each rule file as its own module (for example a tsdown entry per `*.rule.ts`), since a bundle would hide them from the loader. `src/server/rules.test.ts` enforces this layout, and fails when a `*.utils.ts` file exports a rule the loader would skip.
 - Rules with the same pattern (forbid a dependency, require a property...) come from small factories in the `*.utils.ts` of their folder and are listed as tables, one rule per line. Unusual rules are written out by hand.
 - Rules come in two flavors. File rules (`defineRule`) see `files`, `pkg` and `flags` and only run on usable clones. Project rules (`defineProjectRule`, `meta.scope: 'project'`, the `sync/` folder) see the whole `Project`, cloned or not, and report actions (`clone`, `delete-clone`, `delete-fork`, `discard`, `unarchive-push-rearchive`, see `src/shared/action.ts`) instead of edits. An action is only a name in the finding: the server runs it after confirmation, with its own fetch and safety re-check. `splitRules` separates the two flavors, `checkProjectRules` runs project rules, `testProjectRule` tests them from partial clone and repo fixtures.
 - A fixer never writes. It returns edits (`fixer.json(file).set/update/remove`, `fixer.text(file, transform)`), each applied on the latest text of its file so edits chain. JSON edits go through `jsonc-parser`, so indentation, line endings, key order and comments are kept.
-- The runner works in phases: `checkProject` (findings, nothing written), `planFixes` (one before/after per file, for the confirm dialog), then `fixProject` asks `confirm(plans)`, writes, and checks again to prove the fixes worked.
-- Tests are ESLint style: `testRule(rule, { valid, invalid })` with plain objects and in-memory files. An invalid case lists its message ids and, when the rule can fix it, the expected `package.json` after the fix.
+- The runner works in phases: `checkProject` (findings and one outcome per rule, passed, failed or skipped, nothing written), `planFixes` (one before/after per file, for the confirm dialog), then `fixProject` asks `confirm(plans)`, writes, and checks again to prove the fixes worked.
+- Tests are ESLint style: `testRule(rule, { valid, invalid })` with plain objects and in-memory files. An invalid case lists its message ids and, when the rule can fix it, the expected file after the fix: a `package.json` object, or the raw text of another file such as the README. Project rules use `testProjectRule` the same way.
 - The boundary is enforced: the dependency-cruiser rule `engine-knows-no-rule` fails `check` when a file in `src/server/engine` imports from `src/server/rules`. The new toolchain must keep an equivalent guard (dependency-cruiser, or oxlint `import/no-restricted-paths`).
 
 ```ts
@@ -81,25 +81,30 @@ testRule(scriptsNoNpmRun, {
 ```
 
 ```text
-src/server/engine/   runs rules, knows no rule
-  define-rule.ts     defineRule, Report, Rule, Finding
-  fixer.ts           json and text edits
-  io.ts              disk and in-memory file access
-  context.ts         build the context of one project
-  runner.ts          checkProject, planFixes, fixProject
-  rule-tester.ts     testRule
-  load-rules.ts      loadRules, finds every *.rule.ts
-src/server/rules/    the rules only, they import from engine, never the reverse (enforced)
-  sync/                       v1 rules
-  dependencies/
-    dependencies.utils.ts     forbidDependency
-    forbidden.rule.ts         table of forbidDependency rules
-    forbidden.test.ts
-  scripts/
-    scripts.utils.ts          toPnpm
-    scripts-no-npm-run.rule.ts
-    ...
-src/server/rules.test.ts      ids unique and in checks.md, folder layout
+src/shared/                   types and helpers for the server and the web app
+  project.ts                  LocalClone, GithubRepo, ForkStatus, Project
+  action.ts                   ActionKind
+  text.ts                     plural
+src/server/
+  bin.ts, cli.ts              the CLI entry point and its options
+  scan.ts                     read the inventory, then check each project
+  check-project.ts            project rules on every project, file rules on usable clones
+  report.ts                   findings by severity, summary line, verbose lists
+  rules.test.ts               rule ids against checks.md, rules folder layout
+  inventory/                  shell, git, github, forks, match, map-limit, read-inventory
+  engine/                     runs rules, knows no rule (enforced)
+    define-rule.ts            defineRule, Report, Rule, Finding
+    define-project-rule.ts    defineProjectRule, ProjectRule
+    context.ts, flags.ts      the context of one project and its flags
+    package-json.ts           PackageJson, dependency and script helpers
+    require-property.ts       the requireProperty factory
+    fixer.ts, io.ts           edits, disk and in-memory files
+    runner.ts                 checkProject, checkProjectRules, planFixes, fixProject
+    load-rules.ts             loadRules, splitRules
+    rule-tester.ts            testRule, testProjectRule
+  rules/                      the rules only, one folder per group of checks.md
+    sync/                     the five v1 project rules
+    package/  scripts/  dependencies/  publishing/  presentation/  testing/  code-tooling/
 ```
 
 ## API sketch
@@ -125,7 +130,7 @@ Every `POST` re-validates the safety rule on the server and refuses if it no lon
 
 ## Build
 
-Vite builds `src/web`. `tsdown` builds `src/server` to plain JavaScript, because Node does not strip types inside `node_modules`. Both outputs ship in the npm package.
+During development bun runs the TypeScript sources directly. For the npm package, Vite builds `src/web` and `tsdown` builds `src/server` to plain JavaScript, because Node does not strip types inside `node_modules`: users only need Node 24, not bun. Both outputs ship in the npm package.
 
 ## Distribution
 

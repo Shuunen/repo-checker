@@ -24,11 +24,11 @@ Today `repo-check` inspects the files inside one repo (README, biome, workflows)
 - Single package, one `package.json`. Code lives in `src/server`, `src/shared`, `src/web`.
 - GitHub access goes through the `gh` CLI. The tool never reads or stores a token.
 - The server listens on `127.0.0.1` only, because it can delete things.
-- Node 24, TypeScript, pnpm, oxlint + oxfmt, vitest (same as the `snippets` repo).
+- TypeScript, oxlint + oxfmt, vitest (same as the `snippets` repo). bun in development, Node 24 for users.
 
 ## Premises
 
-1. The useful v1 is the Sync checks (local vs GitHub) and nothing else. Git hygiene, dependencies, security and archiving candidates are real needs but come later (see `docs/checks.md`).
+1. The useful v1 is the Sync checks (local vs GitHub). Every other check of `docs/checks.md` is ported into the same engine as well, the old file checks included: the v1 line only says what came first, not what ships (updated 2026-10-12).
 2. A browser dashboard fits better than a terminal UI for this data.
 3. Reusing the repo name `repo-checker` is right, even though the new tool shares almost no code with the old one.
 4. One explicit confirmation is enough safety if the tool refuses to offer a delete unless it has proved it is safe, and re-checks that proof right before acting.
@@ -52,7 +52,8 @@ Today `repo-check` inspects the files inside one repo (README, biome, workflows)
 - **Server build**: `tsdown`. Web build: Vite.
 - **UI library**: HeroUI v3 (installed package, Tailwind 4, React 19). Considered and ruled out: Mantine (second styling system next to Tailwind), shadcn/ui with Tremor (you own and maintain copied code), premade admin templates and admin frameworks such as refine and react-admin (heavy fit for streaming scans and git actions), a terminal UI (replaced by the web UI).
 - **Look**: calm and modern, light and dark themes following the OS setting. See `docs/ui.md`.
-- **Tooling**: same as `snippets`: pnpm, oxlint + oxfmt, vitest, Vite for the web build, and its code conventions. See `docs/conventions.md`.
+- **Tooling**: same as `snippets` for oxlint + oxfmt, vitest, Vite for the web build, and its code conventions. See `docs/conventions.md`.
+- **Runtime**: bun in development, Node for users (decided 2026-10-12). bun is the package manager and runs the TypeScript sources directly. The published package stays plain JavaScript built by `tsdown`, so `npx repo-check` only needs Node. Ruled out: pnpm with Node everywhere (the user prefers bun to run TypeScript), and publishing for bun only (every user would need bun installed).
 
 ## Approaches Considered
 
@@ -108,10 +109,10 @@ None blocking. Anything new that comes up while scaffolding is added here.
 ## Next Steps
 
 1. Approve these docs, then remove the old code in one separate commit.
-2. Scaffold: pnpm, oxlint + oxfmt, vitest, folders `src/server`, `src/shared`, `src/web`.
-3. Scan engine in `src/server`: local inventory (git state), GitHub inventory (`gh api`), matching by `origin`, the five Sync checks, all unit-tested with fixture repos.
-4. CLI report (`repo-check`), report-only.
+2. Scaffold: bun, oxlint + oxfmt, vitest, `tsdown` for the server build, folders `src/server`, `src/shared`, `src/web`.
+3. Scan engine in `src/server`: local inventory (git state), GitHub inventory (`gh api`), matching by `origin`, the five Sync checks, all unit-tested with fixture repos. Done, built on the old toolchain since steps 1 and 2 are not done yet.
+4. CLI report (`repo-check`), report-only. Done, runs as `bun scan` until the old code is removed.
 5. Hono server with the streaming scan endpoint.
 6. UI: project list, then project view.
 7. Confirmed actions: clone, unarchive + push + re-archive, discard, delete local clone, delete fork.
-8. Before trusting any delete, run the strict fork rule and the clean-clone rule against the real data in read-only mode and compare with the lists above.
+8. Before trusting any delete, run the strict fork rule and the clean-clone rule against the real data in read-only mode and compare with the lists above. Done for the fork rule on 2026-10-12: the 4 forks above are pristine, `tina-blog`, `remark` and `js-equality-game` cannot be verified, the 23 others are kept.
