@@ -51,7 +51,7 @@ export async function getLogin(gh: GhRunner) {
  * @returns the repo
  */
 function toRepo(repo: Readonly<ApiRepo>): GithubRepo {
-  return { isArchived: repo.archived, isFork: repo.fork, isPrivate: repo.private, name: repo.name, owner: repo.owner.login, pushedAt: repo.pushed_at, slug: `${repo.owner.login}/${repo.name}`.toLowerCase() }
+  return { forkStatus: undefined, isArchived: repo.archived, isFork: repo.fork, isPrivate: repo.private, name: repo.name, owner: repo.owner.login, pushedAt: repo.pushed_at, slug: `${repo.owner.login}/${repo.name}`.toLowerCase() }
 }
 
 /**

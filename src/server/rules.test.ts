@@ -8,6 +8,7 @@ const folder = path.join(import.meta.dirname, 'rules')
 const checksDoc = readFileSync(path.join(import.meta.dirname, '../../docs/checks.md'), 'utf8')
 const rules = await loadRules(folder)
 const ids = rules.map(rule => rule.meta.id)
+const v1Ids = [...checksDoc.matchAll(/^- 🚀 \S+ `(?<id>[a-z0-9-]+)`:/gmu)].map(match => match.groups?.id)
 const entries = await Array.fromAsync(glob('**/*', { cwd: folder, withFileTypes: true }))
 const files = entries.filter(entry => entry.isFile()).map(entry => path.relative(folder, path.join(entry.parentPath, entry.name)))
 
@@ -41,7 +42,12 @@ describe('rules folder', () => {
   it('has project rules in sync and file rules everywhere else', () => {
     expect.hasAssertions()
     const { projectRules } = splitRules(rules)
-    expect(projectRules.map(rule => rule.meta.id).toSorted()).toStrictEqual(['archived-clone', 'archived-with-unsaved-work', 'broken-clone', 'not-cloned'])
+    expect(projectRules.map(rule => rule.meta.id).toSorted()).toStrictEqual(['archived-clone', 'archived-with-unsaved-work', 'broken-clone', 'not-cloned', 'pristine-fork'])
+  })
+
+  it.each(v1Ids)('%s, a v1 check of docs/checks.md, has a rule', id => {
+    expect.hasAssertions()
+    expect(ids).toContain(id)
   })
 
   it('has unique ids', () => {

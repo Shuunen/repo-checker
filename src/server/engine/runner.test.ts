@@ -43,7 +43,12 @@ const renovateRule = defineRule({
  * @returns the mock
  */
 function mockConfirm(answer: boolean) {
-  return vi.fn<(plans: readonly FilePlan[]) => Promise<boolean>>(() => Promise.resolve(answer))
+  const calls: (readonly FilePlan[])[] = []
+  const confirm = (plans: readonly FilePlan[]) => {
+    calls.push(plans)
+    return Promise.resolve(answer)
+  }
+  return { calls, confirm }
 }
 
 describe('runner', () => {
@@ -73,24 +78,24 @@ describe('runner', () => {
   it('writes nothing when the user does not confirm', async () => {
     expect.hasAssertions()
     const files = { 'package.json': toJsonText({ name: 'foo' }) }
-    const confirm = mockConfirm(false)
+    const { calls, confirm } = mockConfirm(false)
     const result = await fixProject({ confirm, io: memoryIo(files), rules: [schemaRule] })
-    expect(confirm).toHaveBeenCalledTimes(1)
+    expect(calls).toHaveLength(1)
     expect(result.applied).toStrictEqual([])
     expect(files['package.json']).toBe(toJsonText({ name: 'foo' }))
   })
 
   it('does not ask when there is nothing to fix', async () => {
     expect.hasAssertions()
-    const confirm = mockConfirm(true)
+    const { calls, confirm } = mockConfirm(true)
     const result = await fixProject({ confirm, io: memoryIo({ 'package.json': '{}' }), rules: [nameRule] })
-    expect(confirm).toHaveBeenCalledTimes(0)
+    expect(calls).toStrictEqual([])
     expect(result.findings.map(finding => finding.ruleId)).toStrictEqual(['needs-name'])
   })
 
   it('re-checks after applying, only unfixable findings are left', async () => {
     expect.hasAssertions()
-    const result = await fixProject({ confirm: mockConfirm(true), io: memoryIo({ 'package.json': '{}' }), rules: [nameRule, schemaRule, versionRule] })
+    const result = await fixProject({ confirm: mockConfirm(true).confirm, io: memoryIo({ 'package.json': '{}' }), rules: [nameRule, schemaRule, versionRule] })
     expect(result.applied).toHaveLength(1)
     expect(result.findings.map(finding => finding.ruleId)).toStrictEqual(['needs-name'])
   })

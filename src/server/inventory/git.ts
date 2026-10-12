@@ -1,6 +1,7 @@
 import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import type { BranchState, LocalClone } from '../../shared/project.ts'
+import { mapLimit } from './map-limit.ts'
 import { run } from './shell.ts'
 
 /** How many clones are read at the same time, fetches are network bound */
@@ -93,19 +94,6 @@ export async function readClone(folder: string, { shouldFetch }: Readonly<{ shou
   const fetched = shouldFetch ? await run('git', ['fetch', '--prune', '--quiet', 'origin'], folder) : { ok: true }
   const origin = remote.stdout.trim()
   return { ...base, ...(await readState(folder)), fetchFailed: !fetched.ok, origin, problem: undefined, slug: githubSlug(origin) }
-}
-
-/**
- * Map items with a bounded number of promises at the same time, keeping the order
- * @param items the items
- * @param limit the maximum number of running promises
- * @param map the async mapping
- * @returns the results, in the items order
- */
-async function mapLimit<Item, Result>(items: readonly Item[], limit: number, map: (item: Item) => Promise<Result>): Promise<Result[]> {
-  if (items.length === 0) return []
-  const head = await Promise.all(items.slice(0, limit).map(item => map(item)))
-  return [...head, ...(await mapLimit(items.slice(limit), limit, map))]
 }
 
 /**

@@ -56,8 +56,30 @@ export interface LocalClone {
   unpushed: UnpushedCommits[]
 }
 
+/** One branch of a fork, compared with the default branch of the parent */
+interface ForkBranch {
+  /** Commits on the branch that are not in the parent's default branch */
+  aheadBy: number
+  /** The branch name */
+  name: string
+}
+
+/** What a scan knows about a fork compared with its parent, the proof needed before ever offering to delete it */
+export interface ForkStatus {
+  /** The branches whose comparison succeeded */
+  branches: ForkBranch[]
+  /** Every GitHub call that failed, a fork with a failure cannot be verified and is never offered for deletion */
+  failures: string[]
+  /** Open pull requests from the fork to its parent */
+  openPullRequests: number
+  /** `owner/name` of the parent, empty when it could not be read */
+  parent: string
+}
+
 /** What a scan knows about one GitHub repo */
 export interface GithubRepo {
+  /** The comparison with the parent, only for forks, undefined until it is read */
+  forkStatus: ForkStatus | undefined
   /** True when the repo is archived, read-only */
   isArchived: boolean
   /** True when the repo is a fork */

@@ -143,7 +143,7 @@ interface InvalidProjectCase extends ProjectCase {
  */
 function toProject(testCase: Readonly<ProjectCase>): Project {
   const local: LocalClone = { branches: [], changedFiles: [], currentBranch: 'master', fetchFailed: false, folderName: 'app', localOnlyBranches: [], origin: 'git@github.com:owner/app.git', path: '/projects/app', problem: undefined, slug: 'owner/app', stashes: [], unpushed: [], ...testCase.local }
-  const github: GithubRepo = { isArchived: false, isFork: false, isPrivate: false, name: 'app', owner: 'owner', pushedAt: '2026-01-01T00:00:00Z', slug: 'owner/app', ...testCase.github }
+  const github: GithubRepo = { forkStatus: undefined, isArchived: false, isFork: false, isPrivate: false, name: 'app', owner: 'owner', pushedAt: '2026-01-01T00:00:00Z', slug: 'owner/app', ...testCase.github }
   return { github: testCase.github === undefined ? undefined : github, isOtherOwner: testCase.isOtherOwner ?? false, local: testCase.local === undefined ? undefined : local, name: 'app' }
 }
 
