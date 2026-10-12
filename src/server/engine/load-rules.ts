@@ -7,6 +7,7 @@ import { glob } from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { isNil } from 'es-toolkit'
+import { type AnyRule, isProjectRule, type ProjectRule } from './define-project-rule.ts'
 import type { Rule } from './define-rule.ts'
 
 /** The rule file patterns: sources when running from src, built files when running from dist */
@@ -15,9 +16,9 @@ const ruleFiles = ['**/*.rule.ts', '**/*.rule.js']
 /**
  * Tell a rule from the other exports of a file, like helpers or constants
  * @param value an exported value
- * @returns true if it is a rule, an object with `meta` and `check`
+ * @returns true if it is a rule of either flavor, an object with `meta` and `check`
  */
-export function isRule(value: unknown): value is Rule {
+export function isRule(value: unknown): value is AnyRule {
   return typeof value === 'object' && !isNil(value) && 'meta' in value && 'check' in value
 }
 
@@ -35,4 +36,19 @@ export async function loadRules(folder: string) {
       .flat()
       .filter(value => isRule(value)),
   )
+}
+
+/**
+ * Split rules by flavor: file rules run on usable clones, project rules on every project
+ * @param rules the rules of both flavors
+ * @returns the file rules and the project rules, each in their original order
+ * @example const { fileRules, projectRules } = splitRules(await loadRules(folder))
+ */
+export function splitRules(rules: readonly AnyRule[]) {
+  const projectRules: ProjectRule[] = []
+  const fileRules: Rule[] = []
+  for (const rule of rules)
+    if (isProjectRule(rule)) projectRules.push(rule)
+    else fileRules.push(rule)
+  return { fileRules, projectRules }
 }

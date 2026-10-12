@@ -53,6 +53,12 @@ describe('project matching', () => {
     expect(matchProjects([clone('lib', 'someone/lib')], [], 'Shuunen')).toMatchObject([{ github: undefined, isOtherOwner: true, name: 'lib' }])
   })
 
+  it('treats an origin that is not on GitHub as another owner', () => {
+    expect.hasAssertions()
+    const gitlab = { ...clone('lab', 'x/lab'), origin: 'https://gitlab.com/x/lab.git', slug: undefined }
+    expect(matchProjects([gitlab], [], 'Shuunen')).toMatchObject([{ github: undefined, isOtherOwner: true, name: 'lab' }])
+  })
+
   it('keeps a folder that is not a usable clone, under its folder name', () => {
     expect.hasAssertions()
     expect(matchProjects([clone('migrate-to-base', undefined)], [], 'Shuunen')).toMatchObject([{ github: undefined, isOtherOwner: false, name: 'migrate-to-base' }])

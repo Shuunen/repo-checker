@@ -3,12 +3,15 @@
  * Cases run on in-memory files, never on the disk.
  * @module
  */
+import type { ActionKind } from '../../shared/action.ts'
+import type { GithubRepo, LocalClone, Project } from '../../shared/project.ts'
 import { buildContext } from './context.ts'
+import type { ProjectRule } from './define-project-rule.ts'
 import type { Rule } from './define-rule.ts'
 import type { ProjectFlags } from './flags.ts'
 import { memoryIo } from './io.ts'
 import type { PackageJson } from './package-json.ts'
-import { checkProject, fixProject } from './runner.ts'
+import { checkProject, checkProjectRules, fixProject } from './runner.ts'
 
 /** The json indent of the fake package.json, the most common one */
 const indent = 2
@@ -109,6 +112,84 @@ export function testRule(rule: Readonly<Rule>, { invalid, valid }: Readonly<{ in
     it.each(invalid)('invalid: $name', async testCase => {
       expect.hasAssertions()
       await expect(runInvalid(rule, testCase)).resolves.toStrictEqual(expectedInvalid(testCase))
+    })
+  })
+}
+
+/** A fake project for a project rule: only what differs from a clean clone and a plain public repo */
+interface ProjectCase {
+  /** The GitHub repo fields to change, leave it out for a project that is not on GitHub */
+  github?: Partial<GithubRepo>
+  /** True when the clone belongs to another owner */
+  isOtherOwner?: boolean
+  /** The local clone fields to change, leave it out for a project that is not cloned */
+  local?: Partial<LocalClone>
+  /** The test name */
+  name: string
+}
+
+/** A fake project on which the project rule must report the given errors */
+interface InvalidProjectCase extends ProjectCase {
+  /** The actions expected on each finding, in order, no action at all when left out */
+  actions?: ActionKind[][]
+  /** The expected message ids, in report order */
+  errors: string[]
+}
+
+/**
+ * Build the project of a case, from a clean clone of `owner/app` and its plain public repo
+ * @param testCase the case
+ * @returns the project
+ */
+function toProject(testCase: Readonly<ProjectCase>): Project {
+  const local: LocalClone = { branches: [], changedFiles: [], currentBranch: 'master', fetchFailed: false, folderName: 'app', localOnlyBranches: [], origin: 'git@github.com:owner/app.git', path: '/projects/app', problem: undefined, slug: 'owner/app', stashes: [], unpushed: [], ...testCase.local }
+  const github: GithubRepo = { isArchived: false, isFork: false, isPrivate: false, name: 'app', owner: 'owner', pushedAt: '2026-01-01T00:00:00Z', slug: 'owner/app', ...testCase.github }
+  return { github: testCase.github === undefined ? undefined : github, isOtherOwner: testCase.isOtherOwner ?? false, local: testCase.local === undefined ? undefined : local, name: 'app' }
+}
+
+/**
+ * Check a project case
+ * @param rule the project rule
+ * @param testCase the case
+ * @returns the reported message ids and actions
+ */
+async function runProjectCase(rule: Readonly<ProjectRule>, testCase: Readonly<ProjectCase>) {
+  const findings = await checkProjectRules([rule], toProject(testCase))
+  return { actions: findings.map(finding => finding.actions), errors: findings.map(finding => finding.messageId) }
+}
+
+/**
+ * What `runProjectCase` should give for an invalid case: its errors, and its actions or none
+ * @param testCase the case
+ * @param testCase.actions the expected actions per finding
+ * @param testCase.errors the expected message ids
+ * @returns the expected result
+ */
+function expectedProjectCase({ actions, errors }: Readonly<InvalidProjectCase>) {
+  return { actions: actions ?? errors.map(() => []), errors }
+}
+
+/**
+ * Run a project rule on valid and invalid projects, ESLint RuleTester style. Call it at the top level of a test file
+ * @param rule the project rule to test
+ * @param cases the cases
+ * @param cases.valid projects on which the rule must report nothing
+ * @param cases.invalid projects on which the rule must report the given errors and actions
+ * @example
+ * testProjectRule(notCloned, {
+ *   invalid: [{ actions: [['clone']], errors: ['missing'], github: {}, name: 'on GitHub only' }],
+ *   valid: [{ github: {}, local: {}, name: 'cloned' }],
+ * })
+ */
+export function testProjectRule(rule: Readonly<ProjectRule>, { invalid, valid }: Readonly<{ invalid: readonly InvalidProjectCase[]; valid: readonly ProjectCase[] }>) {
+  describe(rule.meta.id, () => {
+    it.each(valid)('valid: $name', async testCase => {
+      expect.hasAssertions()
+      await expect(runProjectCase(rule, testCase)).resolves.toStrictEqual({ actions: [], errors: [] })
+    })
+    it.each(invalid)('invalid: $name', async testCase => {
+      expect.hasAssertions()
+      await expect(runProjectCase(rule, testCase)).resolves.toStrictEqual(expectedProjectCase(testCase))
     })
   })
 }

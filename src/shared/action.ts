@@ -1,0 +1,17 @@
+/**
+ * The actions a Sync finding can offer. They are only names here: the server runs them, each behind a confirmation and a fresh safety re-check.
+ * @module
+ */
+
+/** An action that changes something outside the project files, on disk or on GitHub */
+export type ActionKind =
+  /** Clone a repo that has no local clone */
+  | 'clone'
+  /** Delete a local clone, only offered when it is provably clean */
+  | 'delete-clone'
+  /** Delete a pristine fork on GitHub, and its clean local clone if any */
+  | 'delete-fork'
+  /** Reset an archived repo's clone to the remote state, dropping every unsaved item */
+  | 'discard'
+  /** Unarchive the repo, push the unsaved commits and branches, archive it again */
+  | 'unarchive-push-rearchive'

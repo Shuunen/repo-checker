@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { glob } from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { isRule, loadRules } from './engine/load-rules.ts'
+import { isRule, loadRules, splitRules } from './engine/load-rules.ts'
 
 const folder = path.join(import.meta.dirname, 'rules')
 const checksDoc = readFileSync(path.join(import.meta.dirname, '../../docs/checks.md'), 'utf8')
@@ -36,6 +36,12 @@ describe('rules folder', () => {
   it('finds the rules', () => {
     expect.hasAssertions()
     expect(ids).toContain('scripts-no-npm-run')
+  })
+
+  it('has project rules in sync and file rules everywhere else', () => {
+    expect.hasAssertions()
+    const { projectRules } = splitRules(rules)
+    expect(projectRules.map(rule => rule.meta.id).toSorted()).toStrictEqual(['archived-clone', 'archived-with-unsaved-work', 'broken-clone', 'not-cloned'])
   })
 
   it('has unique ids', () => {

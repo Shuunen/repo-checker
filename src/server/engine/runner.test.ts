@@ -75,7 +75,7 @@ describe('runner', () => {
     const files = { 'package.json': toJsonText({ name: 'foo' }) }
     const confirm = mockConfirm(false)
     const result = await fixProject({ confirm, io: memoryIo(files), rules: [schemaRule] })
-    expect(confirm).toHaveBeenCalledOnce()
+    expect(confirm).toHaveBeenCalledTimes(1)
     expect(result.applied).toStrictEqual([])
     expect(files['package.json']).toBe(toJsonText({ name: 'foo' }))
   })

@@ -1,7 +1,7 @@
 import type { GithubRepo, LocalClone, Project } from '../../shared/project.ts'
 
 /**
- * Turn one local clone into a project, with its GitHub repo when its origin points to one of the owner's repos
+ * Turn one local clone into a project, with its GitHub repo when its origin points to one of the owner's repos. An origin that is not on GitHub counts as another owner
  * @param clone the local clone
  * @param repos the owner's repos, by slug
  * @param owner the owner login, lowercase
@@ -9,7 +9,7 @@ import type { GithubRepo, LocalClone, Project } from '../../shared/project.ts'
  */
 function cloneToProject(clone: Readonly<LocalClone>, repos: ReadonlyMap<string, GithubRepo>, owner: string): Project {
   const github = clone.slug === undefined ? undefined : repos.get(clone.slug)
-  const isOtherOwner = clone.slug !== undefined && !clone.slug.startsWith(`${owner}/`)
+  const isOtherOwner = clone.problem === undefined && (clone.slug === undefined || !clone.slug.startsWith(`${owner}/`))
   return { github, isOtherOwner, local: clone, name: github?.name ?? clone.folderName }
 }
 

@@ -2,6 +2,7 @@
  * The shape of a rule, ESLint style: `defineRule({ meta, appliesTo, check })`, and what the runner turns its reports into.
  * @module
  */
+import type { ActionKind } from '../../shared/action.ts'
 import type { Context } from './context.ts'
 import type { Edit, Fixer } from './fixer.ts'
 
@@ -34,7 +35,7 @@ interface RuleContext<MessageId extends string> extends Context {
  * The static description of a rule
  * @template MessageId the keys of `messages`
  */
-interface RuleMeta<MessageId extends string> {
+export interface RuleMeta<MessageId extends string> {
   /** Must be true for the rule to report a fix, the runner throws otherwise */
   fixable?: boolean
   /** The check id from docs/checks.md, kebab-case, unique */
@@ -58,9 +59,11 @@ export interface Rule<MessageId extends string = string> {
   meta: RuleMeta<MessageId>
 }
 
-/** One problem found by a rule, ready to be shown, with the edits that would fix it */
+/** One problem found by a rule, ready to be shown, with the edits or the actions that would fix it */
 export interface Finding {
-  /** The edits of the fix, empty when the rule gave no fix */
+  /** The actions offered by a project rule, empty for a file rule */
+  actions: ActionKind[]
+  /** The edits of the fix, empty when the rule gave no fix or is a project rule */
   edits: Edit[]
   /** The final message, placeholders filled */
   message: string

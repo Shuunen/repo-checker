@@ -1,10 +1,13 @@
 /**
  * Run rules on one project, in phases: check (nothing written), plan the fixes (one before/after per file), then apply after confirmation and check again.
+ * Project rules only check: their actions are run by the server, not here.
  * @module
  */
 import { invariant } from 'es-toolkit'
+import type { Project } from '../../shared/project.ts'
 import { buildContext, type Context } from './context.ts'
-import { type Finding, formatMessage, type Report, type Rule } from './define-rule.ts'
+import type { ProjectReport, ProjectRule } from './define-project-rule.ts'
+import { type Finding, formatMessage, type Report, type Rule, type RuleMeta } from './define-rule.ts'
 import { type Edit, fixer } from './fixer.ts'
 import type { ProjectFlags } from './flags.ts'
 import type { FileReader, Io } from './io.ts'
@@ -20,7 +23,32 @@ export interface FilePlan {
 }
 
 /**
- * Turn a report into a finding, building the edits of its fix
+ * The parts of a rule the runner needs, common to both flavors
+ * @template RuleContext what the rule receives, without `report`
+ * @template Reported what the rule reports
+ */
+interface Runnable<RuleContext, Reported> {
+  /** When it returns false the rule is skipped */
+  appliesTo?: (context: RuleContext) => boolean
+  /** Check and report */
+  check: (context: RuleContext & { report: (report: Reported) => void }) => Promise<void> | void
+}
+
+/**
+ * Get the message template of a report
+ * @param meta the rule meta
+ * @param messageId the reported message id
+ * @returns the template
+ * @throws {Error} when the message id is not in `meta.messages`
+ */
+function messageTemplate(meta: Readonly<Pick<RuleMeta<string>, 'id' | 'messages'>>, messageId: string) {
+  const template = meta.messages[messageId]
+  invariant(template !== undefined, `rule ${meta.id} reported an unknown message id ${messageId}`)
+  return template
+}
+
+/**
+ * Turn a file rule report into a finding, building the edits of its fix
  * @param rule the rule that reported
  * @param report the report
  * @returns the finding
@@ -28,32 +56,65 @@ export interface FilePlan {
  * @throws {Error} when the message id is not in `meta.messages`
  */
 function toFinding(rule: Readonly<Rule>, report: Readonly<Report<string>>): Finding {
-  const { fixable = false, id, messages, severity } = rule.meta
+  const { fixable = false, id, severity } = rule.meta
   if (report.fix !== undefined && !fixable) throw new Error(`rule ${id} reported a fix but its meta.fixable is not true`)
-  const template = messages[report.messageId]
-  invariant(template !== undefined, `rule ${id} reported an unknown message id ${report.messageId}`)
   const edits = report.fix === undefined ? [] : [report.fix(fixer)].flat()
-  return { edits, message: formatMessage(template, report.data), messageId: report.messageId, ruleId: id, severity }
+  return { actions: [], edits, message: formatMessage(messageTemplate(rule.meta, report.messageId), report.data), messageId: report.messageId, ruleId: id, severity }
 }
 
 /**
- * Run the rules on one project, in parallel, nothing is written. Rules whose `appliesTo` returns false are skipped
- * @param rules the rules to run
+ * Turn a project rule report into a finding, with its actions
+ * @param rule the rule that reported
+ * @param report the report
+ * @returns the finding
+ * @throws {Error} when the message id is not in `meta.messages`
+ */
+function toProjectFinding(rule: Readonly<ProjectRule>, report: Readonly<ProjectReport<string>>): Finding {
+  const { id, severity } = rule.meta
+  return { actions: report.actions ?? [], edits: [], message: formatMessage(messageTemplate(rule.meta, report.messageId), report.data), messageId: report.messageId, ruleId: id, severity }
+}
+
+/**
+ * Run rules of one flavor in parallel, skipping those whose `appliesTo` returns false
+ * @param rules the rules
+ * @param context what each rule receives, `report` is added
+ * @param makeFinding turn a report into a finding
+ * @returns the findings, in rule order then report order
+ */
+async function runRules<RuleContext extends object, Reported, Item extends Runnable<RuleContext, Reported>>(rules: readonly Item[], context: Readonly<RuleContext>, makeFinding: (rule: Item, report: Reported) => Finding) {
+  const findingsPerRule = await Promise.all(
+    rules.map(async rule => {
+      if (rule.appliesTo?.(context) === false) return []
+      const findings: Finding[] = []
+      await rule.check({ ...context, report: (report: Reported) => findings.push(makeFinding(rule, report)) })
+      return findings
+    }),
+  )
+  return findingsPerRule.flat()
+}
+
+/**
+ * Run the file rules on one project, nothing is written. Rules whose `appliesTo` returns false are skipped
+ * @param rules the file rules to run
  * @param context the project context
  * @returns the findings, in rule order then report order
  * @throws {Error} when a rule reports a fix without `meta.fixable`, or an unknown message id
  * @example const findings = await checkProject(rules, await buildContext(diskIo(folder)))
  */
-export async function checkProject(rules: readonly Rule[], context: Readonly<Context>) {
-  const findingsPerRule = await Promise.all(
-    rules.map(async rule => {
-      if (rule.appliesTo?.(context) === false) return []
-      const findings: Finding[] = []
-      await rule.check({ ...context, report: report => findings.push(toFinding(rule, report)) })
-      return findings
-    }),
-  )
-  return findingsPerRule.flat()
+export function checkProject(rules: readonly Rule[], context: Readonly<Context>) {
+  return runRules(rules, context, toFinding)
+}
+
+/**
+ * Run the project rules on one project, cloned or not. Nothing is changed, the findings carry the actions to offer
+ * @param rules the project rules to run
+ * @param project the project
+ * @returns the findings, in rule order then report order
+ * @throws {Error} when a rule reports an unknown message id
+ * @example const findings = await checkProjectRules(projectRules, project)
+ */
+export function checkProjectRules(rules: readonly ProjectRule[], project: Readonly<Project>) {
+  return runRules(rules, { project }, toProjectFinding)
 }
 
 /**

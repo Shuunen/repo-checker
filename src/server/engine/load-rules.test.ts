@@ -1,8 +1,10 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { loadRules } from './load-rules.ts'
+import { loadRules, splitRules } from './load-rules.ts'
 
+const fileRule = (id: string) => ({ check: () => undefined, meta: { id, messages: {}, severity: 'info' as const } })
+const projectRule = (id: string) => ({ check: () => undefined, meta: { id, messages: {}, scope: 'project' as const, severity: 'info' as const } })
 const ruleSource = (id: string) => `{ check() {}, meta: { id: '${id}', messages: {}, severity: 'info' } }`
 
 /**
@@ -25,5 +27,12 @@ describe('rules loader', () => {
     expect.hasAssertions()
     const rules = await loadRules(await makeRulesFolder())
     expect(rules.map(rule => rule.meta.id)).toStrictEqual(['a1', 'a2', 'b'])
+  })
+
+  it('splits file rules from project rules, keeping their order', () => {
+    expect.hasAssertions()
+    const { fileRules, projectRules } = splitRules([fileRule('a'), projectRule('b'), fileRule('c'), projectRule('d')])
+    expect(fileRules.map(item => item.meta.id)).toStrictEqual(['a', 'c'])
+    expect(projectRules.map(item => item.meta.id)).toStrictEqual(['b', 'd'])
   })
 })

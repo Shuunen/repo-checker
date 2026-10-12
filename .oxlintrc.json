@@ -119,7 +119,8 @@
       "warn",
       {
         "allowedFunctionCalls": [
-          "testRule"
+          "testRule",
+          "testProjectRule"
         ]
       }
     ],
