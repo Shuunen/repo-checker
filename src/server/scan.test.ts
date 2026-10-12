@@ -74,7 +74,7 @@ function fakeGh(answers: Readonly<Record<string, unknown>>) {
 
 const user = { 'api user': { login: 'owner' } }
 
-describe('scanning a target', () => {
+describe(scan, () => {
   it('checks every project of a folder against the owner repos', async () => {
     expect.hasAssertions()
     const gh = fakeGh({ ...user, 'api --paginate --slurp user/repos?affiliation=owner&per_page=100': [[apiRepo('app', { archived: true }), apiRepo('finga')]] })

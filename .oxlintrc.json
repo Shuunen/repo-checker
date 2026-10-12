@@ -125,6 +125,7 @@
         ]
       }
     ],
-    "vitest/require-test-timeout": "off"
+    "vitest/require-test-timeout": "off",
+    "vitest/valid-title": "off"
   }
 }
