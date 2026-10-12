@@ -4,7 +4,7 @@ import type { GhRunner } from './github.ts'
 import { mapLimit } from './map-limit.ts'
 
 /** How many forks are compared at the same time, each one runs a few calls per branch */
-const parallelForks = 4
+const parallelForks = 8
 
 /** The outcome of one `gh api` call that may fail without stopping the scan */
 type Attempt<Value> = { failure: string; value: undefined } | { failure: undefined; value: Value }
