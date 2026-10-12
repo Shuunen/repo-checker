@@ -1,7 +1,7 @@
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { type CliEnvironment, runCli } from './cli.ts'
+import { type CliEnvironment, expandHome, runCli } from './cli.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { run } from './inventory/shell.ts'
 
@@ -96,6 +96,13 @@ describe('cli', () => {
     expect(output).toContain('package-json-exists')
   })
 
+  it('refuses a target that is not a folder', async () => {
+    expect.hasAssertions()
+    const { code, output } = await cli(['--target=/missing/projects'])
+    expect(code).toBe(1)
+    expect(output).toContain('repo-check failed: the target /missing/projects is not a folder')
+  })
+
   it('reports a gh failure', async () => {
     expect.hasAssertions()
     const gh = vi.fn<GhRunner>(() => Promise.resolve({ ok: false, stderr: 'gh: To get started with GitHub CLI, please run: gh auth login', stdout: '' }))
@@ -110,5 +117,18 @@ describe('cli', () => {
     const { code, output } = await cli([], { cwd: await makeEmptyFolder(), gh })
     expect(code).toBe(1)
     expect(output).toContain('repo-check failed: spawn gh ENOENT')
+  })
+})
+
+describe('home expansion', () => {
+  it.each([
+    ['~', '/home/me'],
+    ['~/Projects/github', '/home/me/Projects/github'],
+    ['~other/x', '~other/x'],
+    ['./~/x', './~/x'],
+    ['/tmp', '/tmp'],
+  ])('%s gives %s', (value, expected) => {
+    expect.hasAssertions()
+    expect(expandHome(value, '/home/me')).toBe(expected)
   })
 })

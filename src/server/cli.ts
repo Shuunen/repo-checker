@@ -1,3 +1,5 @@
+import { stat } from 'node:fs/promises'
+import { homedir } from 'node:os'
 import path from 'node:path'
 import { parseArgs } from 'node:util'
 import { loadRules } from './engine/load-rules.ts'
@@ -40,6 +42,31 @@ function parseOptions(argv: readonly string[]) {
 }
 
 /**
+ * Expand a leading `~` to the home folder, the shell does not do it after `--target=`
+ * @param value the target as typed
+ * @param home the home folder
+ * @returns the target with `~` expanded
+ * @example expandHome('~/Projects', '/home/me') // '/home/me/Projects'
+ */
+export function expandHome(value: string, home: string) {
+  return value === '~' || value.startsWith('~/') ? path.join(home, value.slice(1)) : value
+}
+
+/**
+ * Resolve the target folder
+ * @param cwd the current folder
+ * @param value the target as typed, the current folder when undefined
+ * @returns the absolute target path
+ * @throws {Error} when the target is not an existing folder
+ */
+async function resolveTarget(cwd: string, value = '.') {
+  const target = path.resolve(cwd, expandHome(value, homedir()))
+  const stats = await stat(target).catch(() => undefined)
+  if (stats?.isDirectory() !== true) throw new Error(`the target ${target} is not a folder`)
+  return target
+}
+
+/**
  * Scan the target and print the report
  * @param options the parsed options
  * @param environment the environment
@@ -51,7 +78,7 @@ function parseOptions(argv: readonly string[]) {
  */
 async function scanAndReport(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, hasColors, print }: Readonly<CliEnvironment>) {
   const started = Date.now()
-  const target = path.resolve(cwd, options.target ?? '.')
+  const target = await resolveTarget(cwd, options.target)
   const { owner, projects } = await scan({ gh, owner: options.owner, rules: await loadRules(path.join(import.meta.dirname, 'rules')), shouldFetch: options.fetch, target })
   const { hasErrors, text } = formatReport(projects, { durationMs: Date.now() - started, hasColors, owner, target })
   print(text)
