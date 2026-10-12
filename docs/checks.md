@@ -155,24 +155,24 @@ Linting, formatting, typing and architecture config files.
 - ✅ 🔴 `eslint-no-xo-config`: no `xo.config.js` (`eslint.file.ts`).
 - ✅ 🔴 `eslint-dependency`: an `eslint` dependency, and not version 8 (`package.file.ts`).
 - ✅ 🔴 `eslint-browser-config`: the ESLint config references a browser environment when the project uses Tailwind (`eslint.file.ts`).
-- 📋 🔴 `biome-config-exists`: a `biome.json` file exists, when the project uses Biome (`biome.file.ts`).
-- 📋 🟡 `biome-schema`: `$schema` points to `./node_modules/@biomejs/biome/configuration_schema.json` (`biome.file.ts`).
-- 📋 🟡 `biome-sections`: the sections `formatter`, `javascript`, `json`, `linter`, `assist`, `vcs` and `overrides` exist (`biome.file.ts`).
-- 📋 🟡 `biome-formatter`: `indentStyle` is `space`, `indentWidth` is 2, `lineEnding` is `lf`, `lineWidth` is above 80 (`biome.file.ts`).
-- 📋 🟡 `biome-javascript-formatter`: `arrowParentheses` is `asNeeded`, `bracketSpacing` is true, `quoteStyle` is `single`, `semicolons` is `asNeeded` (`biome.file.ts`).
-- 📋 🟡 `biome-json-parser`: `allowComments` and `allowTrailingCommas` are false (`biome.file.ts`).
-- 📋 🟡 `biome-linter`: `enabled` and `rules.recommended` are true, `rules.style.useBlockStatements` is `off`, domains `project` and `test` are `all`, and domain `react` is `all` when the project uses React (`biome.file.ts`).
-- 📋 🟡 `biome-assist`: `assist.actions.source.organizeImports` is `on` (`biome.file.ts`).
-- 📋 🟡 `biome-vcs`: `vcs.enabled` is true, `clientKind` is `git`, `useIgnoreFile` is true (`biome.file.ts`).
-- 📋 🟡 `biome-test-override`: an override for `**/*.test.ts` that turns `noUnusedTemplateLiteral` off (`biome.file.ts`).
-- 📋 🟡 `tsconfig-schema`: `tsconfig.json` declares the schemastore `$schema`, when the project uses TypeScript (`ts-config.ts`).
-- 📋 🟡 `tsconfig-include`: an `include` section (`ts-config.ts`).
-- 📋 🟡 `tsconfig-compiler-options`: the recommended options are set: `allowUnreachableCode` false, `allowUnusedLabels` false, `checkJs`, `esModuleInterop`, `exactOptionalPropertyTypes`, `forceConsistentCasingInFileNames`, `noFallthroughCasesInSwitch`, `noImplicitAny`, `noImplicitOverride`, `noImplicitReturns`, `noPropertyAccessFromIndexSignature` false, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`, `skipLibCheck`, `strict`, `verbatimModuleSyntax`. When the config extends `tsconfig/strictest`, only `verbatimModuleSyntax`. Skipped when the config uses `references` (`ts-config.ts`).
-- 📋 🟡 `tsconfig-out-dir`: an `outDir` compiler option (`ts-config.ts`).
-- 📋 🟡 `tsconfig-module-resolution`: a `moduleResolution` compiler option (`ts-config.ts`).
-- 📋 🟡 `tsconfig-lib`: a non-empty `lib` compiler option (`ts-config.ts`).
-- 📋 🔴 `tsconfig-no-wildcard-files`: no wildcard in the `files` section (`ts-config.ts`).
-- 📋 🟡 `tsconfig-no-useless-glob`: no `my-folder/**/*` in `include`, `my-folder` is enough (`ts-config.ts`).
+- ✅ 🔴 `biome-config-exists`: a `biome.json` file exists, when the project uses Biome (`biome.file.ts`).
+- ✅ 🟡 `biome-schema`: `$schema` points to `./node_modules/@biomejs/biome/configuration_schema.json` (`biome.file.ts`).
+- ✅ 🟡 `biome-sections`: the sections `formatter`, `javascript`, `json`, `linter`, `assist`, `vcs` and `overrides` exist (`biome.file.ts`).
+- ✅ 🟡 `biome-formatter`: `indentStyle` is `space`, `indentWidth` is 2, `lineEnding` is `lf`, `lineWidth` is above 80 (`biome.file.ts`).
+- ✅ 🟡 `biome-javascript-formatter`: `arrowParentheses` is `asNeeded`, `bracketSpacing` is true, `quoteStyle` is `single`, `semicolons` is `asNeeded` (`biome.file.ts`).
+- ✅ 🟡 `biome-json-parser`: `allowComments` and `allowTrailingCommas` are false (`biome.file.ts`).
+- ✅ 🟡 `biome-linter`: `enabled` and `rules.recommended` are true, `rules.style.useBlockStatements` is `off`, domains `project` and `test` are `all`, and domain `react` is `all` when the project uses React (`biome.file.ts`).
+- ✅ 🟡 `biome-assist`: `assist.actions.source.organizeImports` is `on` (`biome.file.ts`).
+- ✅ 🟡 `biome-vcs`: `vcs.enabled` is true, `clientKind` is `git`, `useIgnoreFile` is true (`biome.file.ts`).
+- ✅ 🟡 `biome-test-override`: an override for `**/*.test.ts` that turns `noUnusedTemplateLiteral` off (`biome.file.ts`).
+- ✅ 🟡 `tsconfig-schema`: `tsconfig.json` declares the schemastore `$schema`, when the project uses TypeScript (`ts-config.ts`).
+- ✅ 🟡 `tsconfig-include`: an `include` section (`ts-config.ts`).
+- ✅ 🟡 `tsconfig-compiler-options`: the recommended options are set: `allowUnreachableCode` false, `allowUnusedLabels` false, `checkJs`, `esModuleInterop`, `exactOptionalPropertyTypes`, `forceConsistentCasingInFileNames`, `noFallthroughCasesInSwitch`, `noImplicitAny`, `noImplicitOverride`, `noImplicitReturns`, `noPropertyAccessFromIndexSignature` false, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`, `skipLibCheck`, `strict`, `verbatimModuleSyntax`. When the config extends `tsconfig/strictest`, only `verbatimModuleSyntax`. Skipped when the config uses `references` (`ts-config.ts`).
+- ✅ 🟡 `tsconfig-out-dir`: an `outDir` compiler option (`ts-config.ts`).
+- ✅ 🟡 `tsconfig-module-resolution`: a `moduleResolution` compiler option (`ts-config.ts`).
+- ✅ 🟡 `tsconfig-lib`: a non-empty `lib` compiler option (`ts-config.ts`).
+- ✅ 🔴 `tsconfig-no-wildcard-files`: no wildcard in the `files` section (`ts-config.ts`).
+- ✅ 🟡 `tsconfig-no-useless-glob`: no `my-folder/**/*` in `include`, `my-folder` is enough (`ts-config.ts`).
 - ✅ 🟡 `dependency-tool-choice`: use knip or dependency-cruiser. Skipped when the project uses knip (`dependency-cruiser.ts`).
 - ✅ 🔴 `dependency-cruiser-config`: a `.dependency-cruiser.js` or `.dependency-cruiser.cjs` file exists, when the project uses dependency-cruiser (`dependency-cruiser.ts`).
 - ✅ 🔴 `tailwind-content`: the Tailwind config (`.js`, `.ts`, `.mjs` or `.cjs`) has a `content` option, like `content: ['./src/**/*.{vue,js,ts,jsx,tsx}']`, when the project uses Tailwind (`tailwind.ts`).
@@ -189,16 +189,16 @@ Linting, formatting, typing and architecture config files.
 ## CI
 
 - 📋 🔴 `ci-failing`: the CI on the default branch is red.
-- 📋 🔴 `ci-checkout-step`: `.github/workflows/ci.yml` has a checkout step (`gh-workflow.ts`).
-- 📋 🔴 `ci-checkout-version`: the checkout action is a recent version, v5 to v7 (`gh-workflow.ts`).
-- 📋 🔴 `ci-node-step`: a `setup-node` step (`gh-workflow.ts`).
-- 📋 🟡 `ci-node-version`: a recent Node version, currently 24 (`gh-workflow.ts`).
-- 📋 🟡 `ci-no-main-branch`: no `- main` branch reference (`gh-workflow.ts`).
-- 📋 🟡 `ci-pnpm-step`: a `pnpm/action-setup` step, when the project uses pnpm (`gh-workflow.ts`).
-- 📋 🟡 `ci-pnpm-version`: the pnpm action pins version 12 (`gh-workflow.ts`).
-- 📋 🔴 `ci-no-frozen-lockfile-flag`: no `--no-frozen-lockfile` flag (`gh-workflow.ts`).
-- 📋 🟡 `ci-bun-step`: when the project uses Bun, no pnpm left in the workflow and a `oven-sh/setup-bun` step (`gh-workflow.ts`).
-- 📋 🟡 `ci-bun-version`: the setup-bun action is v2 to v9 (`gh-workflow.ts`).
+- ✅ 🔴 `ci-checkout-step`: `.github/workflows/ci.yml` has a checkout step (`gh-workflow.ts`).
+- ✅ 🔴 `ci-checkout-version`: the checkout action is a recent version, v5 to v7 (`gh-workflow.ts`).
+- ✅ 🔴 `ci-node-step`: a `setup-node` step (`gh-workflow.ts`).
+- ✅ 🟡 `ci-node-version`: a recent Node version, currently 24 (`gh-workflow.ts`).
+- ✅ 🟡 `ci-no-main-branch`: no `- main` branch reference (`gh-workflow.ts`).
+- ✅ 🟡 `ci-pnpm-step`: a `pnpm/action-setup` step, when the project uses pnpm (`gh-workflow.ts`).
+- ✅ 🟡 `ci-pnpm-version`: the pnpm action pins version 12 (`gh-workflow.ts`).
+- ✅ 🔴 `ci-no-frozen-lockfile-flag`: no `--no-frozen-lockfile` flag (`gh-workflow.ts`).
+- ✅ 🟡 `ci-bun-step`: when the project uses Bun, no pnpm left in the workflow and a `oven-sh/setup-bun` step (`gh-workflow.ts`).
+- ✅ 🟡 `ci-bun-version`: the setup-bun action is v2 to v9 (`gh-workflow.ts`).
 - ✅ 🔴 `travis-language`: `.travis.yml`, when present, declares `language: node_js` (`travis.ts`).
 - ✅ 🔴 `travis-install-task`: `.travis.yml`, when present, runs `npm ci` (`travis.ts`).
 - ✅ 🔴 `travis-ci-task`: `.travis.yml`, when present, runs `npm run ci` (`travis.ts`).
