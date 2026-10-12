@@ -45,6 +45,8 @@ export interface PackageJson {
   module?: string
   /** The package name */
   name?: string
+  /** The package manager and its version, like `pnpm@12.8.1` or `bun@1.4.2` */
+  packageManager?: string
   /** True when the package must never be published */
   private?: boolean
   /** Where the source code lives */

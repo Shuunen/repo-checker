@@ -3,8 +3,8 @@
  * A rule about a file's content is skipped when the file is absent, the rule that requires the file reports that.
  * @module
  */
-import { invariant } from 'es-toolkit'
-import { parse } from 'jsonc-parser'
+import { invariant, isEqual } from 'es-toolkit'
+import { type JSONPath, parse } from 'jsonc-parser'
 import type { Context } from './context.ts'
 import { defineRule, type Severity } from './define-rule.ts'
 import type { FileReader } from './io.ts'
@@ -24,6 +24,14 @@ interface FileRuleOptions {
   severity: Severity
   /** Only check when it returns true, the rule always applies when left out */
   when?: (context: Readonly<Context>) => boolean
+}
+
+/** The options of the rules on a file's content */
+interface ContentRuleOptions extends FileRuleOptions {
+  /** Only check a file that matches this pattern, like a workflow that has a pnpm step */
+  onlyIf?: RegExp
+  /** The pattern to look for, without the `g` flag */
+  pattern: RegExp
 }
 
 /** A file and its text */
@@ -57,15 +65,18 @@ async function firstExisting(reader: Readonly<FileReader>, candidates: readonly 
 }
 
 /**
- * Tell if a content rule applies: its condition holds and one of its files exists
+ * Tell if a content rule applies: its condition holds, one of its files exists, and that file matches `onlyIf` when given
  * @param context the project context
  * @param options the rule options
  * @param options.files the candidate files
+ * @param options.onlyIf the pattern the file must match for the rule to apply
  * @param options.when the rule condition
  * @returns true when the rule applies
  */
-async function contentApplies(context: Readonly<Context>, { files, when = () => true }: Readonly<FileRuleOptions>) {
-  return when(context) && (await firstExisting(context.files, candidatesOf(files, context))) !== undefined
+async function contentApplies(context: Readonly<Context>, { files, onlyIf, when = () => true }: Readonly<FileRuleOptions & { onlyIf?: RegExp }>) {
+  if (!when(context)) return false
+  const found = await firstExisting(context.files, candidatesOf(files, context))
+  return found !== undefined && (onlyIf === undefined || onlyIf.test(found.text))
 }
 
 /**
@@ -132,13 +143,14 @@ export function forbidFile({ files, id, message, severity, when = () => true }: 
  * @param options.files the candidates, the first one that exists is checked
  * @param options.id the check id
  * @param options.message the message when it does not match, `{{file}}` is the checked file
+ * @param options.onlyIf only check a file that matches this pattern
  * @param options.pattern the pattern, without the `g` flag
  * @param options.severity the severity
  * @param options.when only check when it returns true
  * @returns the rule
  * @example requireInFile({ files: ['.gitignore'], id: 'gitignore-node-modules', message: '{{file}} does not list node_modules', pattern: /node_modules/u, severity: 'warning' })
  */
-export function requireInFile(options: Readonly<FileRuleOptions & { fix?: (text: string) => string; pattern: RegExp }>) {
+export function requireInFile(options: Readonly<ContentRuleOptions & { fix?: (text: string) => string }>) {
   const { fix, files, id, message, pattern, severity } = options
   return defineRule({
     appliesTo: context => contentApplies(context, options),
@@ -152,26 +164,29 @@ export function requireInFile(options: Readonly<FileRuleOptions & { fix?: (text:
 }
 
 /**
- * A rule that forbids a pattern in the first existing file. Skipped when no file exists
+ * A rule that forbids a pattern in the first existing file, fixable when a transform is given. Skipped when no file exists
  * @param options the options
+ * @param options.fix turn the file text into a fixed one
  * @param options.files the candidates, the first one that exists is checked
  * @param options.id the check id
  * @param options.message the message when it matches, `{{file}}` is the checked file
+ * @param options.onlyIf only check a file that matches this pattern
  * @param options.pattern the pattern, without the `g` flag
  * @param options.severity the severity
  * @param options.when only check when it returns true
  * @returns the rule
  * @example forbidInFile({ files: ['.gitignore'], id: 'gitignore-keeps-pnpm-lock', message: '{{file}} excludes pnpm-lock.yaml', pattern: /pnpm-lock\.yaml/u, severity: 'warning' })
  */
-export function forbidInFile(options: Readonly<FileRuleOptions & { pattern: RegExp }>) {
-  const { files, id, message, pattern, severity } = options
+export function forbidInFile(options: Readonly<ContentRuleOptions & { fix?: (text: string) => string }>) {
+  const { files, fix, id, message, pattern, severity } = options
   return defineRule({
     appliesTo: context => contentApplies(context, options),
     async check(context) {
       const { file, text } = await readChecked(context, files)
-      if (pattern.test(text)) context.report({ data: { file }, messageId: 'found' })
+      if (!pattern.test(text)) return
+      context.report(fix === undefined ? { data: { file }, messageId: 'found' } : { data: { file }, fix: fixer => fixer.text(file, fix), messageId: 'found' })
     },
-    meta: { id, messages: { found: message }, severity },
+    meta: { fixable: fix !== undefined, id, messages: { found: message }, severity },
   })
 }
 
@@ -196,5 +211,84 @@ export function requireJsonSchema(options: Readonly<Omit<FileRuleOptions, 'messa
       if (declared !== schema) context.report({ data: { file, schema }, fix: fixer => fixer.json(file).set(['$schema'], schema, { isFirst: true }), messageId: 'missing' })
     },
     meta: { fixable: true, id, messages: { missing: '{{file}} does not declare the "$schema": "{{schema}}"' }, severity },
+  })
+}
+
+/** One value a JSON file must have */
+export interface JsonValue {
+  /** The value to set when fixing, and the one to compare with when `isValid` is left out */
+  expected: unknown
+  /** Tell if the current value is fine, for rules like "above 80" */
+  isValid?: (current: unknown) => boolean
+  /** The path of the value, like `['formatter', 'indentWidth']` */
+  path: JSONPath
+  /** Only check this value when it returns true */
+  when?: (context: Readonly<Context>) => boolean
+}
+
+/**
+ * Read a value at a path of a parsed JSON
+ * @param data the parsed JSON
+ * @param path the path
+ * @returns the value, undefined when a key on the way is missing
+ */
+function valueAt(data: unknown, path: JSONPath) {
+  let current = data
+  for (const key of path) current = typeof current === 'object' && current !== null ? (current as Record<string | number, unknown>)[key] : undefined
+  return current
+}
+
+/** The options of `requireJsonValues` */
+interface JsonValuesOptions extends Omit<FileRuleOptions, 'message'> {
+  /** Only check when this root key exists, the rule that requires the section reports it */
+  section?: string
+  /** The values to check */
+  values: readonly JsonValue[]
+}
+
+/**
+ * Tell if a JSON values rule applies: its file exists, and its section too when it has one
+ * @param context the project context
+ * @param options the rule options
+ * @returns true when the rule applies
+ */
+async function jsonValuesApply(context: Readonly<Context>, options: Readonly<JsonValuesOptions>) {
+  if (!(await contentApplies(context, { ...options, message: '' }))) return false
+  const { text } = await readChecked(context, options.files)
+  return options.section === undefined || valueAt(parse(text), [options.section]) !== undefined
+}
+
+/**
+ * Keep the values that apply to the project and are not what they should be
+ * @param context the project context
+ * @param data the parsed JSON
+ * @param values the values to check
+ * @returns the wrong values
+ */
+function wrongValues(context: Readonly<Context>, data: unknown, values: readonly JsonValue[]) {
+  return values.filter(value => (value.when?.(context) ?? true) && !(value.isValid ?? (current => isEqual(current, value.expected)))(valueAt(data, value.path)))
+}
+
+/**
+ * A rule that requires a JSON file to set values at given paths, each wrong value is reported and fixable. Skipped when no file exists, or when the given section is absent
+ * @param options the options
+ * @param options.files the candidates, the first one that exists is checked
+ * @param options.id the check id
+ * @param options.section only check when this root key exists, the rule that requires the section reports it
+ * @param options.severity the severity
+ * @param options.values the values to check
+ * @param options.when only check when it returns true
+ * @returns the rule
+ * @example requireJsonValues({ files: ['biome.json'], id: 'biome-vcs', section: 'vcs', severity: 'warning', values: [{ expected: true, path: ['vcs', 'enabled'] }] })
+ */
+export function requireJsonValues(options: Readonly<JsonValuesOptions>) {
+  const { files, id, severity, values } = options
+  return defineRule({
+    appliesTo: context => jsonValuesApply(context, options),
+    async check(context) {
+      const { file, text } = await readChecked(context, files)
+      for (const { expected, path } of wrongValues(context, parse(text), values)) context.report({ data: { expected: JSON.stringify(expected), file, path: path.join('.') }, fix: fixer => fixer.json(file).set(path, expected), messageId: 'wrong' })
+    },
+    meta: { fixable: true, id, messages: { wrong: '{{file}} should set "{{path}}" to {{expected}}' }, severity },
   })
 }
