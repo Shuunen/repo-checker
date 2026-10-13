@@ -11,7 +11,7 @@ Status: the project list and the project view are built. Every action works behi
 
 ## Mockups
 
-These sketches show the intended feel with real data. They are drawings, not HeroUI output. They also show "behind" and "uncommitted" statuses, which are the `behind-remote` and `uncommitted-files` checks and are not in v1.
+These sketches show the intended feel with real data. They are drawings, not HeroUI output. The "behind" and "uncommitted" statuses are the `behind-remote` and `uncommitted-files` checks, built since (they show as pills in the list).
 
 The built tiles are At risk (Sync errors), With file errors, Not cloned and Pristine forks. "Behind remote" comes with its check.
 

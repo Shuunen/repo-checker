@@ -39,10 +39,22 @@ describe('rules folder', () => {
     expect(ids).toContain('scripts-no-npm-run')
   })
 
-  it('has project rules in sync and file rules everywhere else', () => {
+  it('has project rules in sync and in the clone state of git-hygiene, and file rules everywhere else', () => {
     expect.hasAssertions()
     const { projectRules } = splitRules(rules)
-    expect(projectRules.map(rule => rule.meta.id).toSorted()).toStrictEqual(['archived-clone', 'archived-with-unsaved-work', 'broken-clone', 'not-cloned', 'pristine-fork'])
+    expect(projectRules.map(rule => rule.meta.id).toSorted()).toStrictEqual([
+      'archived-clone',
+      'archived-with-unsaved-work',
+      'behind-remote',
+      'branch-without-upstream',
+      'broken-clone',
+      'forgotten-stash',
+      'not-cloned',
+      'not-on-default-branch',
+      'pristine-fork',
+      'uncommitted-files',
+      'unpushed-commits',
+    ])
   })
 
   it.each(builtIds)('%s, marked built in docs/checks.md, has a rule', id => {

@@ -7,7 +7,7 @@ import { type GhRunner, getLogin, getRepo, ghCli, listRepos } from './github.ts'
  * @returns the API repo
  */
 function apiRepo(name: string, fields: Readonly<Record<string, unknown>> = {}) {
-  return { archived: false, fork: false, name, owner: { login: 'Shuunen' }, private: false, pushed_at: '2026-01-01T00:00:00Z', ...fields }
+  return { archived: false, default_branch: 'master', fork: false, name, owner: { login: 'Shuunen' }, private: false, pushed_at: '2026-01-01T00:00:00Z', ...fields }
 }
 
 /**
@@ -37,7 +37,7 @@ describe('github inventory', () => {
       ['shuunen/secret', false, true, false],
       ['shuunen/fork', false, false, true],
     ])
-    expect(repos[0]).toMatchObject({ name: 'Jozzo', owner: 'Shuunen', pushedAt: '2026-01-01T00:00:00Z' })
+    expect(repos[0]).toMatchObject({ defaultBranch: 'master', name: 'Jozzo', owner: 'Shuunen', pushedAt: '2026-01-01T00:00:00Z' })
   })
 
   it('lists the public repos of another owner', async () => {

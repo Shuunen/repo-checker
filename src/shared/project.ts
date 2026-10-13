@@ -78,6 +78,8 @@ export interface ForkStatus {
 
 /** What a scan knows about one GitHub repo */
 export interface GithubRepo {
+  /** The default branch of the repo, like `master` */
+  defaultBranch: string
   /** The comparison with the parent, only for forks, undefined until it is read */
   forkStatus: ForkStatus | undefined
   /** True when the repo is archived, read-only */
