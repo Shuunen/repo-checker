@@ -1,6 +1,6 @@
 # Architecture
 
-Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI, the HTTP server with its streaming scan, the project list and project view of the web app and the first action, Clone, exist, and the old code is removed. The other actions do not yet, so the other routes below are still a sketch.
+Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI, the HTTP server with its streaming scan, the project list and project view of the web app and the first two actions, Clone and Delete clone, exist, and the old code is removed. The other actions do not yet, so the other routes below are still a sketch.
 
 ## Shape
 
@@ -136,7 +136,8 @@ src/server/
 | `POST /api/projects/:name/clone` | Clone a missing repo (built, see Actions) |
 | `POST /api/projects/:name/unarchive-push` | Unarchive, push, re-archive an archived repo that has unpushed commits |
 | `POST /api/projects/:name/discard` | Discard unsaved local work, after listing it |
-| `POST /api/projects/:name/delete-clone` | Delete a local clone, after re-checking it is safe |
+| `GET /api/projects/:name/delete-clone` | Say what deleting a local clone would remove, after proving it is still safe (built, see Actions) |
+| `POST /api/projects/:name/delete-clone` | Delete a local clone, after re-checking it is safe (built, see Actions) |
 | `POST /api/forks/:name/delete` | Delete a pristine fork, after re-checking the strict rule on every branch |
 
 Every `POST` re-validates the safety rule on the server and refuses if it no longer holds, whatever the page sent.
@@ -147,7 +148,8 @@ An action is a function in `src/server/actions` that takes the repo name and pro
 
 - **Request guard**: every request that is not a GET must carry the header `x-repo-check: 1`, otherwise it is a 403. A web page of another site can post to `127.0.0.1` (the host is allowed), but it cannot add a custom header without a preflight request, which the server never answers. The `Host` check against DNS rebinding applies to every request too. The page's `post-clone.ts` adds the header.
 - **Clone** (`actions/clone.ts`): refuses a name that is not a plain repo name (letters, digits, `.`, `-`, `_`, never a path, `.` or `..`), a target that is itself a git repo (single project mode), a folder of that name that already exists, a repo that is gone from GitHub, was renamed, is archived or is a fork (the `not-cloned` rule only offers non-archived non-forks). Then it runs `gh repo clone owner/name target/name`, so the protocol is the one of the gh config (SSH on this machine) and the tool never sees a token. A failed clone gives the gh error as the reason.
-- **Page**: the project view's Clone button opens a confirmation (HeroUI AlertDialog) that says what will be cloned and where, and nothing is sent before Clone is pressed. On success TanStack Query invalidates the scan, which scans again, and the dialog closes. A refusal stays in the dialog, with its reason. The row's action in the list is a link to the project view, where the confirmation lives. The other actions' buttons are disabled until they are built.
+- **Delete clone** (`actions/delete-clone.ts`, the proof in `delete-proof.ts`): `proveDelete` trusts nothing the page said. It refuses a name that is not a repo name, a single-project target, a repo that is gone, renamed, not archived or a fork, no clone or several clones of the repo in the folder, then reads the one clone again with a fresh `git fetch` and runs the Sync rules `archived-with-unsaved-work` and `archived-clone` on it: the delete goes ahead only if `archived-clone` still offers `delete-clone`. Otherwise the reason is the message of the rule that fired (for example "1 unpushed commit"), so there is one source of truth for "safe". `previewDeleteClone` (a GET, a few seconds because of the fetch) adds the files git ignores that the delete would lose: `git ls-files --others --ignored --directory`, leaving out the folders a build recreates (`node_modules`, `dist`, `coverage`, `.cache`, `.turbo`), and a folder git collapsed is only listed when it holds a real file. `deleteClone` (a POST) runs the proof again, checks the clone is a direct child of the folder of projects, and removes the folder with `fs.rm`. It never touches GitHub. The folder is removed for good, not moved to a trash: what is lost is only what the dialog listed.
+- **Page**: the project view's Clone button opens a confirmation (HeroUI AlertDialog) that says what will be cloned and where, and nothing is sent before Clone is pressed. On success TanStack Query invalidates the scan, which scans again, and the dialog closes. A refusal stays in the dialog, with its reason. The Delete clone button opens a dialog that first asks the server for the preview ("Checking again, with a fresh git fetch…"), then shows the folder and the ignored files that would be lost (the first 20, and how many in all), or the reason the delete is refused. Delete is disabled until the proof holds, and the delete proves everything again when it is confirmed. The row's action in the list is a link to the project view, where the confirmation lives. The other actions' buttons are disabled until they are built.
 
 ## Testing
 

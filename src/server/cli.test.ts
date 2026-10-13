@@ -162,11 +162,12 @@ async function ui(argv: readonly string[] = [], gh = fakeAccount()) {
     const response = await fetchApp(new Request(`http://127.0.0.1:4747/api/scan${query}`))
     return response.text()
   }
-  const clone = async (name: string) => {
-    const response = await fetchApp(new Request(`http://127.0.0.1:4747/api/projects/${name}/clone`, { headers: { 'x-repo-check': '1' }, method: 'POST' }))
+  const call = async (route: string, method: 'GET' | 'POST') => {
+    const response = await fetchApp(new Request(`http://127.0.0.1:4747/api/projects/${route}`, { headers: { 'x-repo-check': '1' }, method }))
     return response.json()
   }
-  return { clone, code, folder, output, scan, startServer }
+  const clone = (name: string) => call(`${name}/clone`, 'POST')
+  return { call, clone, code, folder, output, scan, startServer }
 }
 
 /**
@@ -217,6 +218,12 @@ describe('cli ui', () => {
     const { clone, folder } = await ui(argv, gh)
     await expect(clone('finga')).resolves.toStrictEqual({ message: `cloned ${slug} into ${path.join(folder, 'finga')}`, ok: true })
     expect(gh).toHaveBeenLastCalledWith(['repo', 'clone', slug, path.join(folder, 'finga')])
+  })
+
+  it.each(['GET', 'POST'] as const)('wires the delete of a clone with %s, and refuses a repo that is not archived', async method => {
+    expect.hasAssertions()
+    const { call } = await ui([], fakeCloneGh('owner/finga'))
+    await expect(call('finga/delete-clone', method)).resolves.toStrictEqual({ ok: false, reason: 'owner/finga is not archived, only the clone of an archived repo can be deleted' })
   })
 
   it('takes the port from the options', async () => {

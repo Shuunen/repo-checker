@@ -1,7 +1,7 @@
-import { stat } from 'node:fs/promises'
 import path from 'node:path'
 import type { ActionResult } from '../../shared/action.ts'
 import { type GhRunner, getRepo } from '../inventory/github.ts'
+import { checkFolderOfProjects, exists, isRepoName } from './guards.ts'
 
 /** What a clone needs */
 interface CloneOptions {
@@ -15,18 +15,6 @@ interface CloneOptions {
   target: string
 }
 
-/** A repo name: letters, digits, dots, dashes and underscores, never a path */
-const repoName = /^[\w.-]+$/u
-
-/**
- * Tell if a path exists
- * @param file the path
- * @returns true when it exists
- */
-async function exists(file: string) {
-  return (await stat(file).catch(() => undefined)) !== undefined
-}
-
 /**
  * Prove nothing is in the way: a folder of projects, no folder of that name yet
  * @param target the folder of projects
@@ -34,7 +22,8 @@ async function exists(file: string) {
  * @returns the reason to refuse, undefined when the way is free
  */
 async function checkFolders(target: string, folder: string) {
-  if (await exists(path.join(target, '.git'))) return 'the target is a single project, clones go in a folder of projects'
+  const reason = await checkFolderOfProjects(target)
+  if (reason !== undefined) return reason
   if (await exists(folder)) return `a folder named ${path.basename(folder)} already exists in ${target}`
   return undefined
 }
@@ -65,7 +54,7 @@ async function checkRepo(gh: GhRunner, slug: string) {
  * @throws {Error} when gh fails for a reason other than a 404
  */
 async function refusal({ gh, name, owner, target }: Readonly<CloneOptions>) {
-  if (!repoName.test(name) || name === '.' || name === '..') return `${name} is not a repo name`
+  if (!isRepoName(name)) return `${name} is not a repo name`
   return (await checkFolders(target, path.join(target, name))) ?? (await checkRepo(gh, `${owner}/${name}`))
 }
 

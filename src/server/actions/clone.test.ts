@@ -51,7 +51,7 @@ describe(cloneRepo, () => {
     const target = await makeTarget()
     await mkdir(path.join(target, '.git'))
     const gh = fakeGh(apiRepo())
-    await expect(cloneRepo({ gh, name: 'finga', owner: 'Owner', target })).resolves.toStrictEqual({ ok: false, reason: 'the target is a single project, clones go in a folder of projects' })
+    await expect(cloneRepo({ gh, name: 'finga', owner: 'Owner', target })).resolves.toStrictEqual({ ok: false, reason: 'the target is a single project, actions work on a folder of projects' })
     expect(gh).not.toHaveBeenCalled()
   })
 

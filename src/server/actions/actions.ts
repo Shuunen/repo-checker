@@ -1,11 +1,16 @@
-import type { ActionResult } from '../../shared/action.ts'
+import type { ActionResult, DeletePreview } from '../../shared/action.ts'
 import { type GhRunner, getLogin } from '../inventory/github.ts'
 import { cloneRepo } from './clone.ts'
+import { deleteClone, previewDeleteClone } from './delete-clone.ts'
 
 /** The actions the page can ask for, each one proves again that it is still safe before it acts */
 export interface Actions {
   /** Clone a repo of the owner into the folder of projects */
   clone: (name: string) => Promise<ActionResult>
+  /** Delete the local clone of an archived repo, after proving again that it holds nothing that is not on GitHub */
+  deleteClone: (name: string) => Promise<ActionResult>
+  /** Say what deleting that clone would remove, the files git ignores, or why it is refused */
+  previewDeleteClone: (name: string) => Promise<DeletePreview>
 }
 
 /**
@@ -17,5 +22,10 @@ export interface Actions {
  * @example const actions = createActions(ghCli, undefined, '/home/me/projects')
  */
 export function createActions(gh: GhRunner, owner: string | undefined, target: string): Actions {
-  return { clone: async name => cloneRepo({ gh, name, owner: owner ?? (await getLogin(gh)), target }) }
+  const options = async (name: string) => ({ gh, name, owner: owner ?? (await getLogin(gh)), target })
+  return {
+    clone: async name => cloneRepo(await options(name)),
+    deleteClone: async name => deleteClone(await options(name)),
+    previewDeleteClone: async name => previewDeleteClone(await options(name)),
+  }
 }

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { postClone } from '../actions/post-clone.ts'
+import { postAction } from '../actions/post-action.ts'
 import { scanQueryKey } from '../scan/scan-query.ts'
 
 /**
@@ -12,7 +12,7 @@ import { scanQueryKey } from '../scan/scan-query.ts'
 export function useCloneDialog(name: string) {
   const [isOpen, setIsOpen] = useState(false)
   const client = useQueryClient()
-  const clone = useMutation({ mutationFn: () => postClone(name), onSuccess: () => client.invalidateQueries({ queryKey: scanQueryKey }) })
+  const clone = useMutation({ mutationFn: () => postAction(name, 'clone'), onSuccess: () => client.invalidateQueries({ queryKey: scanQueryKey }) })
   const handleOpen = () => {
     clone.reset()
     setIsOpen(true)

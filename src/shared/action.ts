@@ -18,3 +18,6 @@ export type ActionKind =
 
 /** What running an action gives: it worked, or it was refused or failed with the reason to show */
 export type ActionResult = { message: string; ok: true } | { ok: false; reason: string }
+
+/** What a delete of a local clone would remove, shown before it is confirmed: the files git ignores are lost for good, everything else is on GitHub */
+export type DeletePreview = { ignoredFiles: string[]; ok: true; path: string } | { ok: false; reason: string }
