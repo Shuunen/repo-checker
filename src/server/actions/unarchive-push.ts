@@ -1,7 +1,7 @@
 import type { ActionResult } from '../../shared/action.ts'
 import type { LocalClone } from '../../shared/project.ts'
 import { plural } from '../../shared/text.ts'
-import type { GhRunner } from '../inventory/github.ts'
+import { type GhRunner, getRepo } from '../inventory/github.ts'
 import { run } from '../inventory/shell.ts'
 import type { ActionOptions } from './action-options.ts'
 import { proveArchived } from './archived-proof.ts'
@@ -42,6 +42,17 @@ function setArchived(gh: GhRunner, slug: string, isArchived: boolean) {
 }
 
 /**
+ * Read the repo back from GitHub and tell if it is archived, so a call that said ok but did nothing cannot pass. A repo that cannot be read counts as not archived: better to ask for a hand check than to hide a writable repo
+ * @param gh runs gh
+ * @param slug `owner/name`
+ * @returns true when GitHub says the repo is archived
+ */
+async function isArchivedOnGitHub(gh: GhRunner, slug: string) {
+  const repo = await getRepo(gh, slug).catch(() => undefined)
+  return repo?.isArchived === true
+}
+
+/**
  * Push the branches to origin in one command, never forced, so what GitHub has is never rewritten
  * @param folder the clone
  * @param branches the branches
@@ -52,7 +63,7 @@ function pushBranches(folder: string, branches: readonly string[]) {
 }
 
 /**
- * Unarchive, push, then archive again, always archive again: if the push fails the repo is still archived at the end, and the failure is reported. If archiving again fails, the hand command is given
+ * Unarchive, push, then archive again, always archive again: if the push fails the repo is still archived at the end, and the failure is reported. The repo is read back from GitHub to be sure. If archiving again fails or did nothing, the hand command is given
  * @param gh runs gh
  * @param clone the clone
  * @param slug `owner/name`
@@ -64,8 +75,9 @@ async function pushThroughUnarchive(gh: GhRunner, clone: Readonly<LocalClone>, s
   if (!unarchived.ok) return { ok: false, reason: `could not unarchive ${slug}, nothing was pushed: ${unarchived.stderr.trim()}` }
   const pushed = await pushBranches(clone.path, branches)
   const archived = await setArchived(gh, slug, true)
+  const isClosed = archived.ok && (await isArchivedOnGitHub(gh, slug))
   const outcome = pushed.ok ? `pushed ${plural(branches.length, 'branch')} (${branches.join(', ')})` : `git push failed: ${pushed.stderr.trim()}`
-  if (!archived.ok) return { ok: false, reason: `${outcome}, but ${slug} could not be archived again (${archived.stderr.trim()}), archive it by hand: gh api --method PATCH repos/${slug} -F archived=true` }
+  if (!isClosed) return { ok: false, reason: `${outcome}, but ${slug} could not be archived again (${archived.ok ? 'GitHub still shows it as not archived' : archived.stderr.trim()}), archive it by hand: gh api --method PATCH repos/${slug} -F archived=true` }
   return pushed.ok ? { message: `${outcome} to ${slug}, which is archived again`, ok: true } : { ok: false, reason: `${outcome}. ${slug} is archived again, nothing was pushed` }
 }
 

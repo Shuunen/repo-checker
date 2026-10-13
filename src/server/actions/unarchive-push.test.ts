@@ -74,16 +74,34 @@ async function makeWorkspace(fresh: Readonly<Partial<LocalClone>> = {}): Promise
   return { bare, folder, readers, target }
 }
 
+/** What goes wrong with the fake GitHub after the PATCH calls */
+interface Behavior {
+  /** True when the repo cannot be read back after the proof read it */
+  cannotReadBack: boolean
+  /** True when the PATCH that archives again says ok but changes nothing */
+  isStuck: boolean
+}
+
+/** Nothing goes wrong */
+const nothingWrong: Behavior = { cannotReadBack: false, isStuck: false }
+
 /**
- * A fake gh that answers the repo and the two PATCH calls, recording what was called
+ * A fake gh that answers the repo, which a PATCH really archives or unarchives, recording what was called
  * @param patch whether each PATCH works, in order: unarchive then archive again
  * @param repo the API repo
+ * @param behavior what goes wrong after the PATCH calls, nothing by default
  * @returns the fake runner
  */
-function fakeGh(patch: readonly [boolean, boolean] = [true, true], repo: Readonly<Record<string, unknown>> = apiRepo) {
+function fakeGh(patch: readonly [boolean, boolean] = [true, true], repo: Readonly<Record<string, unknown>> = apiRepo, behavior: Readonly<Behavior> = nothingWrong) {
+  let isArchived = repo.archived
+  let reads = 0
   return vi.fn<GhRunner>(args => {
-    if (!args.includes('PATCH')) return Promise.resolve({ ok: true, stderr: '', stdout: JSON.stringify(repo) })
+    if (!args.includes('PATCH')) {
+      reads += 1
+      return Promise.resolve(behavior.cannotReadBack && reads > 1 ? { ok: false, stderr: 'gh: Bad gateway (HTTP 502)', stdout: '' } : { ok: true, stderr: '', stdout: JSON.stringify({ ...repo, archived: isArchived }) })
+    }
     const ok = patch[args.includes('archived=false') ? 0 : 1]
+    if (ok && !(behavior.isStuck && args.includes('archived=true'))) isArchived = args.includes('archived=true')
     return Promise.resolve({ ok, stderr: ok ? '' : 'HTTP 403: Must have admin rights', stdout: '{}' })
   })
 }
@@ -139,6 +157,16 @@ describe(unarchivePush, () => {
     const { readers, target } = await makeWorkspace()
     const result = await unarchivePush({ gh: fakeGh([true, false]), git: readers, name: 'old', owner: 'Owner', target })
     expect(result).toStrictEqual({ ok: false, reason: 'pushed 2 branches (master, wip), but Owner/old could not be archived again (HTTP 403: Must have admin rights), archive it by hand: gh api --method PATCH repos/Owner/old -F archived=true' })
+  })
+
+  it.each([
+    ['says ok but changes nothing', { cannotReadBack: false, isStuck: true }],
+    ['cannot be read back', { cannotReadBack: true, isStuck: false }],
+  ])('gives the hand command when archiving again %s', async (_name, behavior) => {
+    expect.hasAssertions()
+    const { readers, target } = await makeWorkspace()
+    const result = await unarchivePush({ gh: fakeGh([true, true], apiRepo, behavior), git: readers, name: 'old', owner: 'Owner', target })
+    expect(result).toStrictEqual({ ok: false, reason: 'pushed 2 branches (master, wip), but Owner/old could not be archived again (GitHub still shows it as not archived), archive it by hand: gh api --method PATCH repos/Owner/old -F archived=true' })
   })
 
   it('gives the hand command and the push failure when both fail', async () => {
