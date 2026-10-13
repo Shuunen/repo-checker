@@ -23,7 +23,6 @@ v1 is the Sync checks only (see `docs/features.md`). Every check, built or wante
 - A health score per repo.
 - `--json` output for scripts and for Claude.
 - A cache, and an offline mode that skips GitHub too (`--no-fetch` already skips `git fetch`).
-- Fetch each clone right before its own check instead of every clone before the first check, like the forks are compared. With fetch on, the first row of `repo-check ui` comes at 5.3 s, and about 1.4 s is possible (measured on 2026-10-12, see `docs/architecture.md`). The repos without clone need no fetch and would show at once.
 - Charts in the UI (commit activity, stale-branch histogram). Needs a small chart library, HeroUI has none.
 
 ## Ideas

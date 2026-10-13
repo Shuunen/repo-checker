@@ -137,6 +137,21 @@ describe(scan, () => {
     expect(projects.map(result => result.project.github?.forkStatus?.failures.length)).toStrictEqual([undefined, 1])
   })
 
+  it('fetches each usable clone right before its check, and marks the one whose fetch fails', async () => {
+    expect.hasAssertions()
+    vi.stubEnv('GIT_SSH_COMMAND', 'false')
+    onTestFinished(() => {
+      vi.unstubAllEnvs()
+    })
+    const gh = fakeGh({ ...user, 'api --paginate --slurp user/repos?affiliation=owner&per_page=100': [[apiRepo('app')]] })
+    const progress: string[] = []
+    const { projects } = await scan({ gh, owner: undefined, rules, shouldFetch: true, target: await makeWorkspace() }, { onProgress: line => progress.push(line) })
+    const byName = new Map(projects.map(result => [result.project.name, result.project.local?.fetchFailed]))
+    expect(byName.get('app')).toBe(true)
+    expect(byName.get('plain')).toBe(false)
+    expect(progress.at(-1)).toBe('checking 4 projects, each clone is fetched just before its check')
+  })
+
   it('checks only the target in single project mode, against the owner of its origin', async () => {
     expect.hasAssertions()
     const gh = fakeGh({ ...user, 'api repos/owner/app': apiRepo('app', { archived: true }) })

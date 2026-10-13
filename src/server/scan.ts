@@ -1,7 +1,9 @@
+import type { LocalClone } from '../shared/project.ts'
 import { checkProjects, type ProjectResult } from './check-projects.ts'
 import type { AnyRule } from './engine/define-project-rule.ts'
 import { splitRules } from './engine/load-rules.ts'
 import type { GhRunner } from './inventory/github.ts'
+import { readClone } from './inventory/git.ts'
 import { matchProjects } from './inventory/match.ts'
 import { type Progress, readInventory } from './inventory/read-inventory.ts'
 
@@ -13,7 +15,7 @@ export interface ScanOptions {
   owner: string | undefined
   /** The rules of both flavors */
   rules: readonly AnyRule[]
-  /** Run `git fetch --prune` in each clone first, so unpushed work is measured against the real remote */
+  /** Run `git fetch --prune` in each clone right before its own check, so unpushed work is measured against the real remote and no project waits for another's fetch */
   shouldFetch: boolean
   /** The folder to scan: a git repo (single project mode) or a folder of repos */
   target: string
@@ -39,6 +41,7 @@ export interface ScanHooks {
  */
 export async function scan(options: Readonly<ScanOptions>, { onProject = () => undefined, onProgress = () => undefined }: Readonly<ScanHooks> = {}) {
   const { clones, isSingle, owner, repos } = await readInventory(options.gh, { ...options, onProgress })
-  const projects = await checkProjects(matchProjects(clones, repos, owner), { gh: options.gh, onProgress, onProject, rules: splitRules(options.rules) })
+  const refresh = options.shouldFetch ? (local: LocalClone) => readClone(local.path, { shouldFetch: true }) : undefined
+  const projects = await checkProjects(matchProjects(clones, repos, owner), { gh: options.gh, onProgress, onProject, refresh, rules: splitRules(options.rules) })
   return { isSingle, owner, projects }
 }

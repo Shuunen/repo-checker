@@ -1,5 +1,5 @@
 import { partition } from 'es-toolkit'
-import type { Project } from '../shared/project.ts'
+import type { LocalClone, Project } from '../shared/project.ts'
 import { plural } from '../shared/text.ts'
 import { checkOne, type SplitRules } from './check-project.ts'
 import type { CheckResult } from './engine/runner.ts'
@@ -28,6 +28,8 @@ interface CheckProjectsOptions {
   onProject: (result: ProjectResult) => void
   /** Receives a short line about what is done */
   onProgress: Progress
+  /** Read a usable clone again with a fresh `git fetch`, so unpushed work is measured against the real remote. Undefined for `--no-fetch`. It runs right before the clone's own check, so no project waits for the fetch of another */
+  refresh: ((local: LocalClone) => Promise<LocalClone>) | undefined
   /** The rules split by flavor */
   rules: SplitRules
 }
@@ -45,6 +47,18 @@ function failedResult(project: Readonly<Project>, error: unknown): ProjectResult
 
 /** Gets a project ready to be checked, a fork gets its comparison with the parent */
 type Prepare = (project: Readonly<Project>) => Promise<Project>
+
+/**
+ * Give a project its clone read again with a fresh fetch, when it has a usable one and fetching is on
+ * @param project the project
+ * @param refresh reads a clone again with a fetch, undefined when fetching is off
+ * @returns the project, with its fresh clone
+ */
+async function withFreshClone(project: Readonly<Project>, refresh: CheckProjectsOptions['refresh']): Promise<Project> {
+  const { local } = project
+  if (refresh === undefined || local === undefined || local.problem !== undefined) return project
+  return { ...project, local: await refresh(local) }
+}
 
 /**
  * Prepare and check one project, a failure of either becomes a result instead of an exception
@@ -69,19 +83,20 @@ async function checkSafely(project: Readonly<Project>, prepare: Prepare, rules: 
  * @param options.gh runs gh
  * @param options.onProject called as soon as each project is checked
  * @param options.onProgress receives a short line about what is done
+ * @param options.refresh reads a clone again with a fetch right before its check, undefined without fetch
  * @param options.rules the rules split by flavor
  * @returns one result per project, sorted by name. A project whose checks throw (a malformed file, a gh failure on one fork) gets a `checks-failed` error finding, it never fails the scan
  * @example const results = await checkProjects(matchProjects(clones, repos, owner), { gh: ghCli, onProject: console.log, onProgress: console.log, rules })
  */
-export async function checkProjects(projects: readonly Project[], { gh, onProject, onProgress, rules }: Readonly<CheckProjectsOptions>) {
+export async function checkProjects(projects: readonly Project[], { gh, onProject, onProgress, refresh, rules }: Readonly<CheckProjectsOptions>) {
   const [forks, others] = partition(projects, project => project.github?.isFork === true)
-  onProgress(`checking ${plural(projects.length, 'project')}`)
+  onProgress(`checking ${plural(projects.length, 'project')}${refresh === undefined ? '' : ', each clone is fetched just before its check'}`)
   if (forks.length > 0) onProgress(`comparing ${plural(forks.length, 'fork')} with their parent`)
   const check = async (project: Readonly<Project>, prepare: Prepare) => {
     const result = await checkSafely(project, prepare, rules)
     onProject(result)
     return result
   }
-  const checked = await Promise.all([mapLimit(others, parallelProjects, project => check(project, ready => Promise.resolve(ready))), mapLimit(forks, parallelForks, fork => check(fork, ready => addForkStatus(gh, ready)))])
+  const checked = await Promise.all([mapLimit(others, parallelProjects, project => check(project, ready => withFreshClone(ready, refresh))), mapLimit(forks, parallelForks, fork => check(fork, async ready => withFreshClone(await addForkStatus(gh, ready), refresh)))])
   return checked.flat().toSorted((first, second) => first.project.name.localeCompare(second.project.name))
 }

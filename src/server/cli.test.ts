@@ -72,7 +72,7 @@ describe('cli', () => {
     const { code, output, progress } = await cli([], { cwd: folder })
     expect(code).toBe(0)
     expect(output).toMatch(new RegExp(`^repo-check · ${folder} · owner · 0 projects in \\d+\\.\\ds\\n\\n0 checks run, 0 skipped · 0 errors · 0 warnings · 0 info\\n✔ all good$`, 'u'))
-    expect(progress).toStrictEqual([`reading the local clones in ${folder}, with git fetch`, 'listing the repos of owner on GitHub', 'checking 0 projects'])
+    expect(progress).toStrictEqual([`reading the local clones in ${folder}`, 'listing the repos of owner on GitHub', 'checking 0 projects, each clone is fetched just before its check'])
   })
 
   it('takes the target and the owner from the options', async () => {
@@ -196,9 +196,9 @@ describe('cli ui', () => {
 
   it('streams the scan of the target, with git fetch', async () => {
     expect.hasAssertions()
-    const { folder, scan } = await ui()
+    const { scan } = await ui()
     const body = await scan()
-    expect(body).toContain(`reading the local clones in ${folder}, with git fetch`)
+    expect(body).toContain('each clone is fetched just before its check')
     expect(body).toContain('event: done')
   })
 
@@ -208,7 +208,7 @@ describe('cli ui', () => {
   ])('streams the scan without git fetch when %s', async (_name, argv, query) => {
     expect.hasAssertions()
     const { scan } = await ui(argv)
-    await expect(scan(query)).resolves.not.toContain('with git fetch')
+    await expect(scan(query)).resolves.not.toContain('each clone is fetched just before its check')
   })
 
   it.each([

@@ -31,16 +31,15 @@ async function readRepos(gh: GhRunner, { login, onProgress, owner, single }: Rea
  * @param options what to read
  * @param options.onProgress receives progress lines
  * @param options.owner the GitHub owner, detected when undefined
- * @param options.shouldFetch run `git fetch --prune` in each clone first
  * @param options.target the folder to read
  * @returns the clones, the repos, the owner, and whether the target is a single project
  * @throws {Error} when gh fails
  */
-export async function readInventory(gh: GhRunner, options: Readonly<{ onProgress: Progress; owner: string | undefined; shouldFetch: boolean; target: string }>) {
-  const { onProgress, shouldFetch } = options
+export async function readInventory(gh: GhRunner, options: Readonly<{ onProgress: Progress; owner: string | undefined; target: string }>) {
+  const { onProgress } = options
   const target = path.resolve(options.target)
-  onProgress(`reading the local clones in ${target}${shouldFetch ? ', with git fetch' : ''}`)
-  const [login, clones] = await Promise.all([getLogin(gh), readClones(target, { shouldFetch })])
+  onProgress(`reading the local clones in ${target}`)
+  const [login, clones] = await Promise.all([getLogin(gh), readClones(target, { shouldFetch: false })])
   const single = clones.length === 1 && clones[0]?.path === target ? clones[0] : undefined
   const owner = options.owner ?? single?.slug?.split('/')[0] ?? login
   const repos = await readRepos(gh, { login, onProgress, owner, single })

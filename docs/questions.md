@@ -28,3 +28,4 @@ None so far.
 13. **The scope check trusts `X-OAuth-Scopes`** and tries the delete when the header is absent (fine-grained tokens), where a 403 gives the same command.
 14. **A project whose checks throw gets a `checks-failed` error finding** instead of failing the whole scan, so one odd repo never blanks the dashboard.
 15. **`repo-check ui` opens the browser by default**, as the design says, with `--no-open` to disable it. It is the only place the tool starts a program other than git and gh.
+16. **Each clone is fetched right before its own check**, not all at the start. The first row comes at 1.5 s with fetch instead of 5.3 s. The inventory reads every clone twice (once without fetch to match it with its repo, once with the fetch), which is cheap.

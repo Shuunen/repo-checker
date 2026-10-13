@@ -38,7 +38,7 @@ export async function rescanProject({ gh, git, name, owner, rules, target }: Rea
     const clone = found?.problem === undefined && found !== undefined ? await git.readClone(found.path, { shouldFetch: true }) : found
     const [project] = matchProjects(clone === undefined ? [] : [clone], repo === undefined ? [] : [repo], owner)
     if (project === undefined) return { ok: true, project: undefined }
-    const [result] = await checkProjects([project], { gh, onProgress: () => undefined, onProject: () => undefined, rules })
+    const [result] = await checkProjects([project], { gh, onProgress: () => undefined, onProject: () => undefined, refresh: undefined, rules })
     invariant(result !== undefined, 'one project gives one result')
     return { ok: true, project: toScanProject(result) }
   } catch (error) {
