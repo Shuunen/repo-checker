@@ -18,6 +18,7 @@ interface ApiRepo {
   description?: string | null
   homepage?: string | null
   license?: object | null
+  open_issues_count: number
   topics?: string[]
   fork: boolean
   name: string
@@ -66,7 +67,9 @@ function toRepo(repo: Readonly<ApiRepo>): GithubRepo {
     isFork: repo.fork,
     isPrivate: repo.private,
     name: repo.name,
+    openItems: repo.open_issues_count,
     owner: repo.owner.login,
+    pullRequests: undefined,
     pushedAt: repo.pushed_at,
     slug: `${repo.owner.login}/${repo.name}`.toLowerCase(),
     topics: repo.topics ?? [],
@@ -101,4 +104,36 @@ export async function getRepo(gh: GhRunner, slug: string) {
   if (ok) return toRepo(JSON.parse(stdout) as ApiRepo)
   if (stderr.includes('HTTP 404')) return undefined
   throw new Error(`gh api repos/${slug} failed: ${stderr.trim()}`)
+}
+
+/** The fields of a result of the search API that the pull request counts read */
+interface ApiSearchItem {
+  repository_url: string
+  user: { login: string }
+}
+
+/**
+ * Tell if a pull request was opened by Renovate
+ * @param item the search result
+ * @returns true for `renovate[bot]`, or a self-hosted Renovate account
+ */
+function isRenovate(item: Readonly<ApiSearchItem>) {
+  return item.user.login.startsWith('renovate')
+}
+
+/**
+ * Count the open pull requests of an owner per repo, with one search call for the whole account, Renovate's apart from the others
+ * @param gh the gh runner
+ * @param owner the owner login
+ * @returns the counts by `owner/name` in lowercase, a repo without open pull request is not in it
+ * @throws {Error} when gh fails, for example on the rate limit of the search
+ * @example const counts = await listPullRequests(ghCli, 'Shuunen')
+ */
+export async function listPullRequests(gh: GhRunner, owner: string) {
+  const pages = (await ghApi(gh, ['--paginate', '--slurp', `search/issues?q=user:${owner}+is:pr+is:open&per_page=100`])) as { items: ApiSearchItem[] }[]
+  const perRepo = Map.groupBy(
+    pages.flatMap(page => page.items),
+    item => item.repository_url.replace('https://api.github.com/repos/', '').toLowerCase(),
+  )
+  return new Map([...perRepo].map(([slug, items]) => [slug, { other: items.filter(item => !isRenovate(item)).length, renovate: items.filter(item => isRenovate(item)).length }]))
 }

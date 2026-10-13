@@ -1,4 +1,14 @@
-import { type GhRunner, getLogin, getRepo, ghCli, listRepos } from './github.ts'
+import { type GhRunner, getLogin, getRepo, ghCli, listPullRequests, listRepos } from './github.ts'
+
+/**
+ * A result of the search of open pull requests
+ * @param repo the repo name
+ * @param login the author of the pull request
+ * @returns the result
+ */
+function item(repo: string, login: string) {
+  return { repository_url: `https://api.github.com/repos/Shuunen/${repo}`, user: { login } }
+}
 
 /**
  * Build an API repo like the GitHub REST API returns it, with only the fields the scan reads
@@ -7,7 +17,7 @@ import { type GhRunner, getLogin, getRepo, ghCli, listRepos } from './github.ts'
  * @returns the API repo
  */
 function apiRepo(name: string, fields: Readonly<Record<string, unknown>> = {}) {
-  return { archived: false, default_branch: 'master', description: 'a repo', fork: false, homepage: 'https://example.com', license: { key: 'gpl-3.0' }, name, owner: { login: 'Shuunen' }, private: false, pushed_at: '2026-01-01T00:00:00Z', topics: ['tool'], ...fields }
+  return { archived: false, default_branch: 'master', description: 'a repo', fork: false, homepage: 'https://example.com', license: { key: 'gpl-3.0' }, name, open_issues_count: 4, owner: { login: 'Shuunen' }, private: false, pushed_at: '2026-01-01T00:00:00Z', topics: ['tool'], ...fields }
 }
 
 /**
@@ -37,13 +47,24 @@ describe('github inventory', () => {
       ['shuunen/secret', false, true, false],
       ['shuunen/fork', false, false, true],
     ])
-    expect(repos[0]).toMatchObject({ defaultBranch: 'master', description: 'a repo', hasLicense: true, homepage: 'https://example.com', name: 'Jozzo', owner: 'Shuunen', pushedAt: '2026-01-01T00:00:00Z', topics: ['tool'] })
+    expect(repos[0]).toMatchObject({ defaultBranch: 'master', description: 'a repo', hasLicense: true, homepage: 'https://example.com', name: 'Jozzo', openItems: 4, owner: 'Shuunen', pushedAt: '2026-01-01T00:00:00Z', topics: ['tool'] })
   })
 
   it('reads a repo without license, description, homepage or topics, as GitHub sends it', async () => {
     expect.hasAssertions()
     const gh = fakeGh({ 'api repos/shuunen/bare': apiRepo('bare', { description: undefined, homepage: '', license: undefined, topics: undefined }) })
     await expect(getRepo(gh, 'shuunen/bare')).resolves.toMatchObject({ description: undefined, hasLicense: false, homepage: undefined, topics: [] })
+  })
+
+  it('counts the open pull requests per repo from one search, Renovate apart from the others', async () => {
+    expect.hasAssertions()
+    const gh = fakeGh({ 'api --paginate --slurp search/issues?q=user:Shuunen+is:pr+is:open&per_page=100': [{ items: [item('App', 'renovate[bot]'), item('App', 'renovate[bot]'), item('App', 'Shuunen')] }, { items: [item('lib', 'imgbot[bot]'), item('lib', 'renovate-bot')] }] })
+    await expect(listPullRequests(gh, 'Shuunen')).resolves.toStrictEqual(
+      new Map([
+        ['shuunen/app', { other: 1, renovate: 2 }],
+        ['shuunen/lib', { other: 1, renovate: 1 }],
+      ]),
+    )
   })
 
   it('lists the public repos of another owner', async () => {

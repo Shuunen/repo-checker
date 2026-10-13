@@ -76,6 +76,14 @@ export interface ForkStatus {
   parent: string
 }
 
+/** The open pull requests of a repo, split by who opened them */
+export interface PullRequestCounts {
+  /** Open pull requests that Renovate opened, each one is a dependency update waiting to be merged */
+  renovate: number
+  /** Open pull requests of anyone else, a person or another bot */
+  other: number
+}
+
 /** What a scan knows about one GitHub repo */
 export interface GithubRepo {
   /** The default branch of the repo, like `master` */
@@ -96,8 +104,12 @@ export interface GithubRepo {
   isPrivate: boolean
   /** The repo name */
   name: string
+  /** How many issues and pull requests are open, GitHub counts both together */
+  openItems: number
   /** The owner login */
   owner: string
+  /** The open pull requests, undefined when they were not read (single project mode, or the search failed) */
+  pullRequests: PullRequestCounts | undefined
   /** When the last push happened, ISO 8601 */
   pushedAt: string
   /** `owner/name`, lowercase, the key used to match clones */

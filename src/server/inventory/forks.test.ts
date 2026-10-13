@@ -2,7 +2,23 @@ import type { GithubRepo } from '../../shared/project.ts'
 import { addForkStatus, readForkStatus } from './forks.ts'
 import type { GhRunner } from './github.ts'
 
-const fork: GithubRepo = { defaultBranch: 'main', description: 'a repo', forkStatus: undefined, hasLicense: true, homepage: 'https://example.com', isArchived: false, isFork: true, isPrivate: false, name: 'lib', owner: 'me', pushedAt: '2026-01-01T00:00:00Z', slug: 'me/lib', topics: ['tool'] }
+const fork: GithubRepo = {
+  defaultBranch: 'main',
+  description: 'a repo',
+  forkStatus: undefined,
+  hasLicense: true,
+  homepage: 'https://example.com',
+  isArchived: false,
+  isFork: true,
+  isPrivate: false,
+  name: 'lib',
+  openItems: 0,
+  owner: 'me',
+  pullRequests: undefined,
+  pushedAt: '2026-01-01T00:00:00Z',
+  slug: 'me/lib',
+  topics: ['tool'],
+}
 const details = { 'api repos/me/lib': { parent: { default_branch: 'main', full_name: 'them/lib' } } }
 const compare = (branch: string) => `api repos/them/lib/compare/main...me:${encodeURIComponent(branch)}`
 const pulls = (branch: string) => `api repos/them/lib/pulls?state=open&per_page=100&head=${encodeURIComponent(`me:${branch}`)}`

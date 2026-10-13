@@ -10,7 +10,9 @@ const repos = [
   { name: 'mobile-app', description: 'A mobile app', homepage: 'https://app.example.com', license: null, topics: ['mobile'] },
   { fork: true, name: 'qbt-theme', description: 'A theme', homepage: null, topics: [] },
   { fork: true, name: 'fork-with-work', description: 'A fork I changed', homepage: null, topics: [] },
-].map((repo, index) => ({ archived: false, default_branch: 'master', fork: false, license: { key: 'mit' }, owner: { login: 'demo' }, private: false, pushed_at: `2026-0${(index % 9) + 1}-12T10:00:00Z`, ...repo }))
+].map((repo, index) => ({ archived: false, open_issues_count: ({ 'acme-api': 7, blog: 2, 'cli-tool': 1 })[repo.name] ?? 0, default_branch: 'master', fork: false, license: { key: 'mit' }, owner: { login: 'demo' }, private: false, pushed_at: `2026-0${(index % 9) + 1}-12T10:00:00Z`, ...repo }))
+const pull = (name, login) => ({ repository_url: `https://api.github.com/repos/demo/${name}`, user: { login } })
+const pulls = [pull('acme-api', 'renovate[bot]'), pull('acme-api', 'renovate[bot]'), pull('acme-api', 'renovate[bot]'), pull('acme-api', 'a-contributor'), pull('blog', 'demo')]
 const withParent = repo => ({ ...repo, parent: { default_branch: 'master', full_name: `upstream/${repo.name}` } })
 const args = process.argv.slice(2)
 const say = value => process.stdout.write(typeof value === 'string' ? value : JSON.stringify(value))
@@ -27,6 +29,7 @@ const compareMatch = /^repos\/upstream\/([\w-]+)\/compare\//u.exec(joined)
 if (joined === 'user') say({ login: 'demo' })
 else if (joined === '-i user') say('HTTP/2.0 200 OK\nX-Oauth-Scopes: repo, delete_repo\n\n{"login":"demo"}')
 else if (joined.startsWith('--paginate --slurp user/repos')) say([repos])
+else if (joined.startsWith('--paginate --slurp search/issues')) say([{ items: pulls }])
 else if (repoMatch) {
   const repo = repos.find(item => item.name === repoMatch[1])
   if (repo === undefined) fail()

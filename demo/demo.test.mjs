@@ -14,7 +14,7 @@ describe('demo', () => {
     const env = { ...process.env, HOME: root, PATH: `${import.meta.dirname}${path.delimiter}${process.env.PATH}` }
     const { stdout, stderr } = spawnSync(process.execPath, [bin, `--target=${projects}`, '--no-fetch'], { encoding: 'utf8', env })
     expect(stderr).toContain('checking 11 projects')
-    for (const id of ['archived-with-unsaved-work', 'archived-clone', 'behind-remote', 'uncommitted-files', 'forgotten-stash', 'not-on-default-branch', 'not-cloned', 'broken-clone', 'pristine-fork']) expect(stdout).toContain(id)
+    for (const id of ['archived-with-unsaved-work', 'archived-clone', 'behind-remote', 'uncommitted-files', 'forgotten-stash', 'not-on-default-branch', 'not-cloned', 'broken-clone', 'pristine-fork', 'open-renovate-pr', 'open-pull-requests', 'open-issues']) expect(stdout).toContain(id)
     expect(stdout).toMatch(/fork-with-work\s+pristine-fork\s+a fork of upstream\/fork-with-work with work to keep/u)
   }, 60_000)
 })

@@ -1,10 +1,22 @@
 import path from 'node:path'
-import type { LocalClone } from '../../shared/project.ts'
+import type { GithubRepo, LocalClone } from '../../shared/project.ts'
 import { readClones } from './git.ts'
-import { type GhRunner, getLogin, getRepo, listRepos } from './github.ts'
+import { type GhRunner, getLogin, getRepo, listPullRequests, listRepos } from './github.ts'
 
 /** Receives a short line about what the scan is doing, for long scans */
 export type Progress = (message: string) => void
+
+/**
+ * Add the open pull requests to the repos, from one search call. When the search fails (the rate limit of the search is low) the scan goes on without them: the checks that need them do not apply
+ * @param gh the gh runner
+ * @param repos the repos
+ * @param owner the owner login
+ * @returns the repos, each with its pull request counts, or untouched when the search failed
+ */
+async function withPullRequests(gh: GhRunner, repos: readonly GithubRepo[], owner: string) {
+  const counts = await listPullRequests(gh, owner).catch(() => undefined)
+  return counts === undefined ? [...repos] : repos.map(repo => ({ ...repo, pullRequests: counts.get(repo.slug) ?? { other: 0, renovate: 0 } }))
+}
 
 /**
  * Get the owner's repos: only the target's repo in single project mode, every repo in folder mode. Forks are compared with their parent later, per project
@@ -19,7 +31,7 @@ export type Progress = (message: string) => void
 async function readRepos(gh: GhRunner, { login, onProgress, owner, single }: Readonly<{ login: string; onProgress: Progress; owner: string; single: LocalClone | undefined }>) {
   if (single === undefined) {
     onProgress(`listing the repos of ${owner} on GitHub`)
-    return listRepos(gh, owner, login)
+    return withPullRequests(gh, await listRepos(gh, owner, login), owner)
   }
   const repo = single.slug === undefined ? undefined : await getRepo(gh, single.slug)
   return repo === undefined ? [] : [repo]

@@ -39,7 +39,7 @@ describe('rules folder', () => {
     expect(ids).toContain('scripts-no-npm-run')
   })
 
-  it('has project rules in sync, in the clone state of git-hygiene and in the GitHub metadata of presentation, and file rules everywhere else', () => {
+  it('has project rules in sync, in the clone state of git-hygiene in the GitHub metadata of presentation and in github-health, and file rules everywhere else', () => {
     expect.hasAssertions()
     const { projectRules } = splitRules(rules)
     expect(projectRules.map(rule => rule.meta.id).toSorted()).toStrictEqual([
@@ -55,6 +55,9 @@ describe('rules folder', () => {
       'missing-topics',
       'not-cloned',
       'not-on-default-branch',
+      'open-issues',
+      'open-pull-requests',
+      'open-renovate-pr',
       'pristine-fork',
       'uncommitted-files',
       'unpushed-commits',

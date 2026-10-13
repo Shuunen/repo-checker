@@ -152,6 +152,24 @@ describe(scan, () => {
     expect(progress.at(-1)).toBe('checking 4 projects, each clone is fetched just before its check')
   })
 
+  it('reads the open pull requests of the whole account with one search, a repo without any gets zeros', async () => {
+    expect.hasAssertions()
+    const search = 'api --paginate --slurp search/issues?q=user:owner+is:pr+is:open&per_page=100'
+    const item = { repository_url: 'https://api.github.com/repos/owner/app', user: { login: 'renovate[bot]' } }
+    const gh = fakeGh({ ...user, 'api --paginate --slurp user/repos?affiliation=owner&per_page=100': [[apiRepo('app'), apiRepo('finga')]], [search]: [{ items: [item] }] })
+    const { projects } = await scan({ gh, owner: undefined, rules, shouldFetch: false, target: await makeWorkspace() })
+    const counts = new Map(projects.map(result => [result.project.name, result.project.github?.pullRequests]))
+    expect(counts.get('app')).toStrictEqual({ other: 0, renovate: 1 })
+    expect(counts.get('finga')).toStrictEqual({ other: 0, renovate: 0 })
+  })
+
+  it('goes on without the pull requests when the search fails', async () => {
+    expect.hasAssertions()
+    const gh = fakeGh({ ...user, 'api --paginate --slurp user/repos?affiliation=owner&per_page=100': [[apiRepo('app')]] })
+    const { projects } = await scan({ gh, owner: undefined, rules, shouldFetch: false, target: await makeWorkspace() })
+    expect(projects.find(result => result.project.name === 'app')?.project.github?.pullRequests).toBeUndefined()
+  })
+
   it('checks only the target in single project mode, against the owner of its origin', async () => {
     expect.hasAssertions()
     const gh = fakeGh({ ...user, 'api repos/owner/app': apiRepo('app', { archived: true }) })

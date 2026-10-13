@@ -56,7 +56,7 @@ What the project depends on, and how current and safe that is.
 - 📋 🟡 `deprecated-dependency`: a package marked deprecated on the npm registry.
 - 📋 🔴 `security-advisory`: a known vulnerability, from `pnpm audit` and/or the GitHub Dependabot alerts.
 - 📋 🔵 `version-drift`: the same tool at different versions across projects, for example one lint tool in 4 projects at one version and in 9 at another.
-- 📋 🟡 `open-renovate-pr`: a Renovate pull request waiting to be merged.
+- 🚀 🟡 `open-renovate-pr`: a Renovate pull request waiting to be merged.
 - ✅ 🔴 `no-sass-dependency`: no `sass` dependency, it is fat and useless. Only when the project data says to avoid it (`package.file.ts`).
 - ✅ 🔴 `no-cross-var-dependency`: no `cross-var` dependency, it is old and deprecated (`package.file.ts`).
 - ✅ 🔴 `no-tslint-dependency`: no `tslint` dependency, it is deprecated (`package.file.ts`).
@@ -250,8 +250,8 @@ How the project introduces itself, on GitHub and in the repo.
 
 Activity on GitHub and the life cycle of the repo.
 
-- 📋 🔵 `open-pull-requests`: pull requests waiting for review.
-- 📋 🔵 `open-issues`: open issues.
+- 🚀 🔵 `open-pull-requests`: pull requests waiting for review.
+- 🚀 🔵 `open-issues`: open issues.
 - 📋 🔵 `archive-candidate`: no commit from you (bots excluded) for N months, no stars, nothing deployed. Fix: archive the repo.
 - 📋 🔵 `renovate-only-zombie`: a repo that is only kept alive by Renovate pull requests. Archiving it also stops the bot noise.
 - 📋 🔵 `stale-uncloned-repo`: an old repo that shows up as `not-cloned`. Offer to archive it instead of cloning it.
