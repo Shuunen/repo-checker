@@ -72,7 +72,7 @@
     "eslint/capitalized-comments": "off",
     "eslint/logical-assignment-operators": "off",
     "eslint/max-depth": ["error", 2],
-    "eslint/max-lines-per-function": ["error", 12],
+    "eslint/max-lines-per-function": ["error", 30],
     "eslint/max-statements": "off",
     "eslint/no-inline-comments": "off",
     "eslint/no-undefined": "off",
