@@ -4,6 +4,7 @@ import path from 'node:path'
 import { type CliEnvironment, expandHome, runCli } from './cli.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { run } from './inventory/shell.ts'
+import type { OpenBrowser } from './open-browser.ts'
 import type { StartServer } from './serve.ts'
 
 /**
@@ -35,7 +36,7 @@ async function cli(argv: readonly string[], environment: Partial<CliEnvironment>
   const printed: string[] = []
   const progress: string[] = []
   const startServer = vi.fn<StartServer>(() => Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:4747' }))
-  const code = await runCli(argv, { cwd: tmpdir(), gh: fakeAccount(), hasColors: false, print: text => printed.push(text), printProgress: line => progress.push(line), startServer, ...environment })
+  const code = await runCli(argv, { cwd: tmpdir(), gh: fakeAccount(), hasColors: false, openBrowser: vi.fn<OpenBrowser>(), print: text => printed.push(text), printProgress: line => progress.push(line), startServer, ...environment })
   return { code, output: printed.join('\n'), progress }
 }
 
@@ -157,7 +158,8 @@ async function ui(argv: readonly string[] = [], gh = fakeAccount()) {
     fetchApp = fetch
     return Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:4747' })
   })
-  const { code, output } = await cli(['ui', ...argv], { cwd: folder, gh, startServer })
+  const openBrowser = vi.fn<OpenBrowser>()
+  const { code, output } = await cli(['ui', ...argv], { cwd: folder, gh, openBrowser, startServer })
   const scan = async (query = '') => {
     const response = await fetchApp(new Request(`http://127.0.0.1:4747/api/scan${query}`))
     return response.text()
@@ -167,7 +169,7 @@ async function ui(argv: readonly string[] = [], gh = fakeAccount()) {
     return response.json()
   }
   const clone = (name: string) => call(`${name}/clone`, 'POST')
-  return { call, clone, code, folder, output, scan, startServer }
+  return { call, clone, code, folder, openBrowser, output, scan, startServer }
 }
 
 /**
@@ -244,6 +246,14 @@ describe('cli ui', () => {
     expect.hasAssertions()
     const { call } = await ui([], fakeCloneGh('owner/finga'))
     await expect(call('finga/delete-fork', method)).resolves.toStrictEqual({ ok: false, reason: 'owner/finga is not a fork, this only applies to a fork' })
+  })
+
+  it('opens the dashboard in the browser, unless --no-open', async () => {
+    expect.hasAssertions()
+    const opened = await ui()
+    const kept = await ui(['--no-open'])
+    expect(opened.openBrowser).toHaveBeenCalledWith('http://127.0.0.1:4747')
+    expect(kept.openBrowser).not.toHaveBeenCalled()
   })
 
   it('takes the port from the options', async () => {

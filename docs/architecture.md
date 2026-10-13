@@ -13,7 +13,7 @@ src/
   web/      React 19 + TypeScript + Tailwind 4 + HeroUI, built by Vite
 ```
 
-`web/` is built to static files that ship inside the npm package. `repo-check ui` starts the server, which serves those files and the API, then opens the browser. The server serves `dist/web` and prints its URL, it does not open the browser yet. It also answers `/project/*` with the page, so a reload on a project address works (any other unknown path is a 404).
+`web/` is built to static files that ship inside the npm package. `repo-check ui` starts the server, which serves those files and the API, then opens the browser. The server serves `dist/web`, prints its URL and opens it in the default browser (`bin.ts` spawns `xdg-open`, `open` or `cmd /c start`, see `open-browser.ts`, without a shell and without waiting, and an error to start it is ignored since the URL is printed), `--no-open` keeps the browser closed. It also answers `/project/*` with the page, so a reload on a project address works (any other unknown path is a 404).
 
 ```
 repo-check ui

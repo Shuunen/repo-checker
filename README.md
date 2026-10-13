@@ -45,6 +45,7 @@ The report groups the findings by severity (errors, warnings, info) and ends wit
 - `--no-fetch` skip `git fetch`, faster but unpushed work is measured against stale remote refs
 - `--verbose` also list every passed and skipped check, per project
 - `--port=number` port of the `ui` server, 4747 by default
+- `--no-open` do not open the browser (`ui` only)
 
 ## Configuration
 

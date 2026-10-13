@@ -82,6 +82,6 @@ export async function checkProjects(projects: readonly Project[], { gh, onProjec
     onProject(result)
     return result
   }
-  const checked = await Promise.all([mapLimit(others, parallelProjects, project => check(project, ready => ready)), mapLimit(forks, parallelForks, fork => check(fork, ready => addForkStatus(gh, ready)))])
+  const checked = await Promise.all([mapLimit(others, parallelProjects, project => check(project, ready => Promise.resolve(ready))), mapLimit(forks, parallelForks, fork => check(fork, ready => addForkStatus(gh, ready)))])
   return checked.flat().toSorted((first, second) => first.project.name.localeCompare(second.project.name))
 }

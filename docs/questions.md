@@ -27,3 +27,4 @@ None so far.
 12. **Every confirmation is one `ConfirmDialog`** and the three "show first" actions share one hook, to avoid five copies of the same dialog.
 13. **The scope check trusts `X-OAuth-Scopes`** and tries the delete when the header is absent (fine-grained tokens), where a 403 gives the same command.
 14. **A project whose checks throw gets a `checks-failed` error finding** instead of failing the whole scan, so one odd repo never blanks the dashboard.
+15. **`repo-check ui` opens the browser by default**, as the design says, with `--no-open` to disable it. It is the only place the tool starts a program other than git and gh.

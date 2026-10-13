@@ -3,11 +3,9 @@ import { homedir } from 'node:os'
 import path from 'node:path'
 import { parseArgs } from 'node:util'
 import { loadRules } from './engine/load-rules.ts'
-import type { GhRunner } from './inventory/github.ts'
 import { formatReport } from './report.ts'
 import { scan } from './scan.ts'
-import type { StartServer } from './serve.ts'
-import { defaultPort, startUi } from './ui.ts'
+import { defaultPort, startUi, type UiEnvironment } from './ui.ts'
 
 /** The usage, shown by --help and after a wrong option */
 const usage = `Usage: repo-check [ui] [options]
@@ -23,22 +21,17 @@ Options:
   --no-fetch      skip git fetch, faster but unpushed work is measured against stale remote refs
   --verbose       also list every passed and skipped check, per project
   --port=number   port of the ui server, ${defaultPort} by default
+  --no-open       do not open the browser (ui only)
   -h, --help      show this help`
 
-/** What the CLI needs from its environment, so tests can run it without a terminal */
-export interface CliEnvironment {
+/** What the CLI needs from its environment, so tests can run it without a terminal: what `repo-check ui` needs (gh, the browser, the output, the server), and the report's own */
+export interface CliEnvironment extends UiEnvironment {
   /** The current folder, the default target */
   cwd: string
-  /** Runs gh */
-  gh: GhRunner
   /** Color the output */
   hasColors: boolean
-  /** Print a block of text, the report */
-  print: (text: string) => void
   /** Print a progress line, on stderr so it never mixes with the report */
   printProgress: (line: string) => void
-  /** Start the HTTP server of `repo-check ui` */
-  startServer: StartServer
 }
 
 /**
@@ -52,7 +45,7 @@ function parseOptions(argv: readonly string[]) {
     allowNegative: true,
     allowPositionals: true,
     args: [...argv],
-    options: { fetch: { default: true, type: 'boolean' }, help: { short: 'h', type: 'boolean' }, owner: { type: 'string' }, port: { type: 'string' }, target: { type: 'string' }, verbose: { type: 'boolean' } },
+    options: { fetch: { default: true, type: 'boolean' }, help: { short: 'h', type: 'boolean' }, open: { default: true, type: 'boolean' }, owner: { type: 'string' }, port: { type: 'string' }, target: { type: 'string' }, verbose: { type: 'boolean' } },
   })
   const command = positionals.join(' ')
   if (command !== '' && command !== 'ui') throw new TypeError(`Unknown command '${command}'`)
@@ -93,13 +86,14 @@ const rulesFolder = path.join(import.meta.dirname, 'rules')
  * @param environment the environment
  * @param environment.cwd the current folder
  * @param environment.gh runs gh
+ * @param environment.openBrowser open the dashboard in the browser
  * @param environment.print print a block of text
  * @param environment.startServer start the HTTP server
  * @returns 0, the server keeps the process alive
  */
-async function runUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, print, startServer }: Readonly<CliEnvironment>) {
+async function runUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, openBrowser, print, startServer }: Readonly<CliEnvironment>) {
   const target = await resolveTarget(cwd, options.target)
-  return startUi({ fetch: options.fetch, owner: options.owner, port: options.port, rules: await loadRules(rulesFolder), target }, { gh, print, startServer })
+  return startUi({ fetch: options.fetch, owner: options.owner, port: options.port, rules: await loadRules(rulesFolder), shouldOpen: options.open, target }, { gh, openBrowser, print, startServer })
 }
 
 /**

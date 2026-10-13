@@ -4,6 +4,7 @@ import { createApp } from './app.ts'
 import type { AnyRule } from './engine/define-project-rule.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { scan } from './scan.ts'
+import type { OpenBrowser } from './open-browser.ts'
 import type { StartServer } from './serve.ts'
 
 /** The port of `repo-check ui` when --port is not given */
@@ -25,14 +26,18 @@ interface UiOptions {
   port: string | undefined
   /** The rules of both flavors */
   rules: readonly AnyRule[]
+  /** False with `--no-open`, the browser is not opened */
+  shouldOpen: boolean | undefined
   /** The folder to scan, already resolved */
   target: string
 }
 
 /** What the ui server needs from its environment */
-interface UiEnvironment {
+export interface UiEnvironment {
   /** Runs gh */
   gh: GhRunner
+  /** Open the dashboard in the default browser */
+  openBrowser: OpenBrowser
   /** Print a block of text */
   print: (text: string) => void
   /** Start the HTTP server */
@@ -58,19 +63,22 @@ function parsePort(value = String(defaultPort)) {
  * @param options.owner the owner given with `--owner`
  * @param options.port the port as typed
  * @param options.rules the rules
+ * @param options.shouldOpen false with `--no-open`
  * @param options.target the folder to scan
  * @param environment what the server needs from its environment
  * @param environment.gh runs gh
+ * @param environment.openBrowser open the dashboard in the browser
  * @param environment.print print a block of text
  * @param environment.startServer start the HTTP server
  * @returns 0, the server keeps the process alive
  * @throws {TypeError} when the port is wrong
- * @example await startUi({ fetch: true, owner: undefined, port: undefined, rules, target }, { gh: ghCli, print: console.log, startServer })
+ * @example await startUi({ fetch: true, owner: undefined, port: undefined, rules, shouldOpen: true, target }, { gh: ghCli, openBrowser, print: console.log, startServer })
  */
-export async function startUi({ fetch, owner, port, rules, target }: Readonly<UiOptions>, { gh, print, startServer }: Readonly<UiEnvironment>) {
+export async function startUi({ fetch, owner, port, rules, shouldOpen, target }: Readonly<UiOptions>, { gh, openBrowser, print, startServer }: Readonly<UiEnvironment>) {
   const listenOn = parsePort(port)
   const app = createApp((shouldFetch, hooks) => scan({ gh, owner, rules, shouldFetch: fetch !== false && shouldFetch, target }, hooks), { actions: createActions(gh, owner, target), target, webFolder })
   const { url } = await startServer(app.fetch, listenOn)
   print(`repo-check ui · ${target}\nopen ${url} in your browser\npress Ctrl+C to stop`)
+  if (shouldOpen !== false) openBrowser(url)
   return 0
 }
