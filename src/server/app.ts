@@ -1,3 +1,4 @@
+import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono, type MiddlewareHandler } from 'hono'
 import { type SSEStreamingApi, streamSSE } from 'hono/streaming'
 import type { ScanEvent, ScanProject } from '../shared/scan-event.ts'
@@ -12,6 +13,14 @@ const forbidden = 403
 
 /** Run a scan of the target the server was started on */
 export type ScanRunner = (shouldFetch: boolean, hooks: Readonly<Required<ScanHooks>>) => Promise<{ isSingle: boolean; owner: string }>
+
+/** Where the server runs */
+interface AppOptions {
+  /** The folder scanned, sent first so the page can show it while the scan runs */
+  target: string
+  /** The built web app, served on every path that is not an API route */
+  webFolder: string
+}
 
 /** Send one scan event, after the ones sent before it */
 type SendEvent = (event: Readonly<ScanEvent>) => Promise<void>
@@ -56,11 +65,14 @@ function eventSender(stream: Readonly<SSEStreamingApi>): SendEvent {
 /**
  * Run a scan and send its events: progress lines and projects as they come, then done, or failed when the scan throws
  * @param runScan runs the scan
- * @param shouldFetch run git fetch first
- * @param send sends one event
+ * @param stream where the scan goes
+ * @param stream.send sends one event
+ * @param stream.shouldFetch run git fetch first
+ * @param stream.target the folder scanned
  */
-async function streamScan(runScan: ScanRunner, shouldFetch: boolean, send: SendEvent) {
+async function streamScan(runScan: ScanRunner, { send, shouldFetch, target }: Readonly<{ send: SendEvent; shouldFetch: boolean; target: string }>) {
   const started = Date.now()
+  await send({ target, type: 'started' })
   try {
     const { isSingle, owner } = await runScan(shouldFetch, { onProgress: line => send({ line, type: 'progress' }), onProject: result => send({ result: toScanProject(result), type: 'project' }) })
     await send({ durationMs: Date.now() - started, isSingle, owner, type: 'done' })
@@ -70,11 +82,17 @@ async function streamScan(runScan: ScanRunner, shouldFetch: boolean, send: SendE
 }
 
 /**
- * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`. `?fetch=false` skips git fetch
+ * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch. Every other path serves the built web app
  * @param runScan runs a scan of the target
+ * @param options where the server runs
+ * @param options.target the folder scanned
+ * @param options.webFolder the built web app
  * @returns the Hono app
- * @example serve({ fetch: createApp(runScan).fetch, hostname: '127.0.0.1' })
+ * @example serve({ fetch: createApp(runScan, { target, webFolder }).fetch, hostname: '127.0.0.1' })
  */
-export function createApp(runScan: ScanRunner) {
-  return new Hono().use(refuseOtherHosts).get('/api/scan', context => streamSSE(context, stream => streamScan(runScan, context.req.query('fetch') !== 'false', eventSender(stream))))
+export function createApp(runScan: ScanRunner, { target, webFolder }: Readonly<AppOptions>) {
+  return new Hono()
+    .use(refuseOtherHosts)
+    .get('/api/scan', context => streamSSE(context, stream => streamScan(runScan, { send: eventSender(stream), shouldFetch: context.req.query('fetch') !== 'false', target })))
+    .use(serveStatic({ root: webFolder }))
 }

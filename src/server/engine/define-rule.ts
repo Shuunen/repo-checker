@@ -3,7 +3,7 @@
  * @module
  */
 import type { ActionKind } from '../../shared/action.ts'
-import type { Severity } from '../../shared/scan-event.ts'
+import type { FindingScope, Severity } from '../../shared/scan-event.ts'
 import type { Context } from './context.ts'
 import type { Edit, Fixer } from './fixer.ts'
 
@@ -69,6 +69,8 @@ export interface Finding {
   messageId: string
   /** The id of the rule that reported it */
   ruleId: string
+  /** Whether a file rule or a project rule reported it */
+  scope: FindingScope
   /** The severity of the rule that reported it */
   severity: Severity
 }

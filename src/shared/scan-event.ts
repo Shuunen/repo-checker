@@ -8,6 +8,9 @@ import type { Project } from './project.ts'
 /** How bad a finding is, one scale for every check: error means something is wrong or work could be lost, warning should be fixed, info is a suggestion */
 export type Severity = 'error' | 'info' | 'warning'
 
+/** Where a finding comes from: a file rule reads the project files, a project rule compares the clone with GitHub (the Sync checks) */
+export type FindingScope = 'file' | 'project'
+
 /** What happened to one rule on one project */
 export interface RuleOutcome {
   /** The rule id */
@@ -17,7 +20,7 @@ export interface RuleOutcome {
 }
 
 /** A finding as the page receives it: the edits of its fix stay on the server, only the files they change are sent */
-interface ScanFinding {
+export interface ScanFinding {
   /** The actions offered by a project rule, empty for a file rule */
   actions: ActionKind[]
   /** The files the fix would change, empty when the finding has no fix */
@@ -28,6 +31,8 @@ interface ScanFinding {
   messageId: string
   /** The id of the rule that reported it */
   ruleId: string
+  /** Whether a file rule or a project rule reported it */
+  scope: FindingScope
   /** The severity of the rule that reported it */
   severity: Severity
 }
@@ -52,3 +57,5 @@ export type ScanEvent =
   | { line: string; type: 'progress' }
   /** One project is checked */
   | { result: ScanProject; type: 'project' }
+  /** The scan begins, always the first event */
+  | { target: string; type: 'started' }

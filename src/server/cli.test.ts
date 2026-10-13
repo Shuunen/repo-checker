@@ -169,7 +169,7 @@ describe('cli ui', () => {
     expect.hasAssertions()
     const { code, folder, output, startServer } = await ui()
     expect(code).toBe(0)
-    expect(output).toBe(`repo-check ui · ${folder}\nlistening on http://127.0.0.1:4747, the scan streams from http://127.0.0.1:4747/api/scan\npress Ctrl+C to stop`)
+    expect(output).toBe(`repo-check ui · ${folder}\nopen http://127.0.0.1:4747 in your browser\npress Ctrl+C to stop`)
     expect(startServer).toHaveBeenCalledWith(expect.any(Function), 4747)
   })
 

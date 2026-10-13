@@ -105,6 +105,9 @@ async function resolveTarget(cwd: string, value = '.') {
 /** Where the rules are, next to this file in the sources and in the build */
 const rulesFolder = path.join(import.meta.dirname, 'rules')
 
+/** The web app built by Vite, `dist/web` seen from `src/server` and from `dist/server` alike */
+const webFolder = path.resolve(import.meta.dirname, '..', '..', 'dist', 'web')
+
 /**
  * Start the ui server on the target, it keeps running until the process stops
  * @param options the parsed options
@@ -119,9 +122,9 @@ async function startUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd
   const port = parsePort(options.port)
   const target = await resolveTarget(cwd, options.target)
   const rules = await loadRules(rulesFolder)
-  const app = createApp((shouldFetch, hooks) => scan({ gh, owner: options.owner, rules, shouldFetch: options.fetch && shouldFetch, target }, hooks))
+  const app = createApp((shouldFetch, hooks) => scan({ gh, owner: options.owner, rules, shouldFetch: options.fetch && shouldFetch, target }, hooks), { target, webFolder })
   const { url } = await startServer(app.fetch, port)
-  print(`repo-check ui · ${target}\nlistening on ${url}, the scan streams from ${url}/api/scan\npress Ctrl+C to stop`)
+  print(`repo-check ui · ${target}\nopen ${url} in your browser\npress Ctrl+C to stop`)
   return 0
 }
 

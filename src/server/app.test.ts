@@ -1,10 +1,13 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import type { ScanEvent } from '../shared/scan-event.ts'
 import { createApp, type ScanRunner, toScanProject } from './app.ts'
 import type { ProjectResult } from './check-projects.ts'
 
 const result: ProjectResult = {
   findings: [
-    { actions: [], edits: [], message: 'no license', messageId: 'missing', ruleId: 'license-exists', severity: 'error' },
+    { actions: [], edits: [], message: 'no license', messageId: 'missing', ruleId: 'license-exists', scope: 'file', severity: 'error' },
     {
       actions: [],
       edits: [
@@ -15,6 +18,7 @@ const result: ProjectResult = {
       message: 'no name',
       messageId: 'missing',
       ruleId: 'package-name',
+      scope: 'file',
       severity: 'warning',
     },
   ],
@@ -36,35 +40,64 @@ async function readEvents(response: Readonly<Response>) {
   })
 }
 
+/**
+ * Create the app on the /projects target, serving the given web folder
+ * @param runScan runs the scan
+ * @param webFolder the built web app, this folder by default
+ * @returns the app
+ */
+function app(runScan: ScanRunner, webFolder = import.meta.dirname) {
+  return createApp(runScan, { target: '/projects', webFolder })
+}
+
 describe(createApp, () => {
-  it('streams the progress, each project, then done', async () => {
+  it('streams started, the progress, each project, then done', async () => {
     expect.hasAssertions()
     const runScan = vi.fn<ScanRunner>((_shouldFetch, { onProgress, onProject }) => {
       onProgress('checking 1 project')
       onProject(result)
       return Promise.resolve({ isSingle: false, owner: 'owner' })
     })
-    const events = await readEvents(await createApp(runScan).request('http://127.0.0.1/api/scan'))
-    expect(events.map(({ event }) => event)).toStrictEqual(['progress', 'project', 'done'])
-    expect(events[0]?.data).toStrictEqual({ line: 'checking 1 project', type: 'progress' })
+    const events = await readEvents(await app(runScan).request('http://127.0.0.1/api/scan'))
+    expect(events.map(({ event }) => event)).toStrictEqual(['started', 'progress', 'project', 'done'])
+    expect(events.slice(0, 2).map(({ data }) => data)).toStrictEqual([
+      { target: '/projects', type: 'started' },
+      { line: 'checking 1 project', type: 'progress' },
+    ])
     // JSON drops the undefined fields, like `github` of a project without repo, so the page reads them as missing
-    expect(events[1]?.data).toStrictEqual({ result: { ...toScanProject(result), project: { isOtherOwner: false, name: 'app' } }, type: 'project' })
-    expect(events[2]?.data).toMatchObject({ isSingle: false, owner: 'owner', type: 'done' })
-    expect(runScan).toHaveBeenCalledWith(true, expect.any(Object))
+    expect(events[2]?.data).toStrictEqual({ result: { ...toScanProject(result), project: { isOtherOwner: false, name: 'app' } }, type: 'project' })
+    expect(events[3]?.data).toMatchObject({ isSingle: false, owner: 'owner', type: 'done' })
   })
 
   it('answers with an event stream', async () => {
     expect.hasAssertions()
-    const response = await createApp(() => Promise.resolve({ isSingle: true, owner: 'owner' })).request('http://localhost/api/scan')
+    const response = await app(() => Promise.resolve({ isSingle: true, owner: 'owner' })).request('http://localhost/api/scan')
     expect(response.headers.get('content-type')).toBe('text/event-stream')
   })
 
   it('skips the fetch when asked', async () => {
     expect.hasAssertions()
     const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
-    const response = await createApp(runScan).request('http://localhost/api/scan?fetch=false')
+    const response = await app(runScan).request('http://localhost/api/scan?fetch=false')
     await response.text()
     expect(runScan).toHaveBeenCalledWith(false, expect.any(Object))
+  })
+
+  it('fetches by default', async () => {
+    expect.hasAssertions()
+    const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
+    const response = await app(runScan).request('http://localhost/api/scan')
+    await response.text()
+    expect(runScan).toHaveBeenCalledWith(true, expect.any(Object))
+  })
+
+  it('serves the web app', async () => {
+    expect.hasAssertions()
+    const webFolder = await mkdtemp(path.join(tmpdir(), 'repo-check-web-'))
+    onTestFinished(() => rm(webFolder, { force: true, recursive: true }))
+    await writeFile(path.join(webFolder, 'index.html'), '<title>repo-check</title>')
+    const response = await app(vi.fn<ScanRunner>(), webFolder).request('http://127.0.0.1/')
+    await expect(response.text()).resolves.toBe('<title>repo-check</title>')
   })
 
   it.each([
@@ -73,14 +106,17 @@ describe(createApp, () => {
   ])('streams failed when the scan throws %s', async (_name, error) => {
     expect.hasAssertions()
     const runScan = vi.fn<ScanRunner>(() => Promise.reject(error))
-    const events = await readEvents(await createApp(runScan).request('http://127.0.0.1/api/scan'))
-    expect(events.map(({ data }) => data)).toStrictEqual([{ message: 'gh api user failed', type: 'failed' }])
+    const events = await readEvents(await app(runScan).request('http://127.0.0.1/api/scan'))
+    expect(events.map(({ data }) => data)).toStrictEqual([
+      { target: '/projects', type: 'started' },
+      { message: 'gh api user failed', type: 'failed' },
+    ])
   })
 
   it('refuses a request for another host, against DNS rebinding', async () => {
     expect.hasAssertions()
     const runScan = vi.fn<ScanRunner>()
-    const response = await createApp(runScan).request('http://evil.example/api/scan')
+    const response = await app(runScan).request('http://evil.example/api/scan')
     expect(response.status).toBe(403)
     expect(runScan).not.toHaveBeenCalled()
   })
