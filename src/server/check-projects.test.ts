@@ -3,7 +3,21 @@ import { checkProjects } from './check-projects.ts'
 import { defineProjectRule } from './engine/define-project-rule.ts'
 import type { GhRunner } from './inventory/github.ts'
 
-const repo = (name: string, isFork: boolean) => ({ defaultBranch: 'main', forkStatus: undefined, isArchived: false, isFork, isPrivate: false, name, owner: 'owner', pushedAt: '2026-01-01T00:00:00Z', slug: `owner/${name}` })
+const repo = (name: string, isFork: boolean) => ({
+  defaultBranch: 'main',
+  description: 'a repo',
+  forkStatus: undefined,
+  hasLicense: true,
+  homepage: 'https://example.com',
+  isArchived: false,
+  isFork,
+  isPrivate: false,
+  name,
+  owner: 'owner',
+  pushedAt: '2026-01-01T00:00:00Z',
+  slug: `owner/${name}`,
+  topics: ['tool'],
+})
 const project = (name: string, isFork = false): Project => ({ github: repo(name, isFork), isOtherOwner: false, local: undefined, name })
 
 /**

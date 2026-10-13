@@ -18,7 +18,7 @@ export function aFinding(fields: Readonly<Partial<ScanFinding>> = {}): ScanFindi
  * @returns the result
  */
 export function aProject(name: string, findings: readonly ScanFinding[] = [], project: Readonly<Partial<ScanProject['project']>> = {}): ScanProject {
-  const github = { defaultBranch: 'master', forkStatus: undefined, isArchived: false, isFork: false, isPrivate: false, name, owner: 'owner', pushedAt: '2026-10-01T10:00:00Z', slug: `owner/${name}` }
+  const github = { defaultBranch: 'master', description: 'a repo', forkStatus: undefined, hasLicense: true, homepage: 'https://example.com', isArchived: false, isFork: false, isPrivate: false, name, owner: 'owner', pushedAt: '2026-10-01T10:00:00Z', slug: `owner/${name}`, topics: ['tool'] }
   const local = { branches: [], changedFiles: [], currentBranch: 'master', fetchFailed: false, folderName: name, localOnlyBranches: [], origin: `git@github.com:owner/${name}.git`, path: `/projects/${name}`, problem: undefined, slug: `owner/${name}`, stashes: [], unpushed: [] }
   return { findings: [...findings], outcomes: [], project: { github, isOtherOwner: false, local, name, ...project } }
 }

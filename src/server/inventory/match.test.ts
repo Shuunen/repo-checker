@@ -30,7 +30,7 @@ function clone(folderName: string, slug: string | undefined): LocalClone {
  * @returns the repo
  */
 function repo(name: string): GithubRepo {
-  return { defaultBranch: 'master', forkStatus: undefined, isArchived: false, isFork: false, isPrivate: false, name, owner: 'Shuunen', pushedAt: '2026-01-01T00:00:00Z', slug: `shuunen/${name.toLowerCase()}` }
+  return { defaultBranch: 'master', description: 'a repo', forkStatus: undefined, hasLicense: true, homepage: 'https://example.com', isArchived: false, isFork: false, isPrivate: false, name, owner: 'Shuunen', pushedAt: '2026-01-01T00:00:00Z', slug: `shuunen/${name.toLowerCase()}`, topics: ['tool'] }
 }
 
 describe('project matching', () => {

@@ -7,7 +7,7 @@ import { type GhRunner, getLogin, getRepo, ghCli, listRepos } from './github.ts'
  * @returns the API repo
  */
 function apiRepo(name: string, fields: Readonly<Record<string, unknown>> = {}) {
-  return { archived: false, default_branch: 'master', fork: false, name, owner: { login: 'Shuunen' }, private: false, pushed_at: '2026-01-01T00:00:00Z', ...fields }
+  return { archived: false, default_branch: 'master', description: 'a repo', fork: false, homepage: 'https://example.com', license: { key: 'gpl-3.0' }, name, owner: { login: 'Shuunen' }, private: false, pushed_at: '2026-01-01T00:00:00Z', topics: ['tool'], ...fields }
 }
 
 /**
@@ -37,7 +37,13 @@ describe('github inventory', () => {
       ['shuunen/secret', false, true, false],
       ['shuunen/fork', false, false, true],
     ])
-    expect(repos[0]).toMatchObject({ defaultBranch: 'master', name: 'Jozzo', owner: 'Shuunen', pushedAt: '2026-01-01T00:00:00Z' })
+    expect(repos[0]).toMatchObject({ defaultBranch: 'master', description: 'a repo', hasLicense: true, homepage: 'https://example.com', name: 'Jozzo', owner: 'Shuunen', pushedAt: '2026-01-01T00:00:00Z', topics: ['tool'] })
+  })
+
+  it('reads a repo without license, description, homepage or topics, as GitHub sends it', async () => {
+    expect.hasAssertions()
+    const gh = fakeGh({ 'api repos/shuunen/bare': apiRepo('bare', { description: undefined, homepage: '', license: undefined, topics: undefined }) })
+    await expect(getRepo(gh, 'shuunen/bare')).resolves.toMatchObject({ description: undefined, hasLicense: false, homepage: undefined, topics: [] })
   })
 
   it('lists the public repos of another owner', async () => {

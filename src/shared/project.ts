@@ -80,6 +80,12 @@ export interface ForkStatus {
 export interface GithubRepo {
   /** The default branch of the repo, like `master` */
   defaultBranch: string
+  /** The description shown on GitHub, undefined when there is none */
+  description: string | undefined
+  /** True when GitHub detects a license for the repo */
+  hasLicense: boolean
+  /** The homepage shown on GitHub, undefined when there is none */
+  homepage: string | undefined
   /** The comparison with the parent, only for forks, undefined until it is read */
   forkStatus: ForkStatus | undefined
   /** True when the repo is archived, read-only */
@@ -96,6 +102,8 @@ export interface GithubRepo {
   pushedAt: string
   /** `owner/name`, lowercase, the key used to match clones */
   slug: string
+  /** The topics of the repo on GitHub */
+  topics: string[]
 }
 
 /** One project: a local clone, a GitHub repo, or both when the clone's origin points to the repo */

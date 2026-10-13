@@ -15,6 +15,10 @@ export const ghCli: GhRunner = args => run('gh', args)
 interface ApiRepo {
   archived: boolean
   default_branch: string
+  description?: string | null
+  homepage?: string | null
+  license?: object | null
+  topics?: string[]
   fork: boolean
   name: string
   owner: { login: string }
@@ -52,7 +56,21 @@ export async function getLogin(gh: GhRunner) {
  * @returns the repo
  */
 function toRepo(repo: Readonly<ApiRepo>): GithubRepo {
-  return { defaultBranch: repo.default_branch, forkStatus: undefined, isArchived: repo.archived, isFork: repo.fork, isPrivate: repo.private, name: repo.name, owner: repo.owner.login, pushedAt: repo.pushed_at, slug: `${repo.owner.login}/${repo.name}`.toLowerCase() }
+  return {
+    defaultBranch: repo.default_branch,
+    description: repo.description || undefined,
+    forkStatus: undefined,
+    hasLicense: Boolean(repo.license),
+    homepage: repo.homepage || undefined,
+    isArchived: repo.archived,
+    isFork: repo.fork,
+    isPrivate: repo.private,
+    name: repo.name,
+    owner: repo.owner.login,
+    pushedAt: repo.pushed_at,
+    slug: `${repo.owner.login}/${repo.name}`.toLowerCase(),
+    topics: repo.topics ?? [],
+  }
 }
 
 /**
