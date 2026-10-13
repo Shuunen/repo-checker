@@ -1,23 +1,22 @@
 # TODOS
 
-v1 is the Sync checks only (see `docs/features.md`). Every check, built or wanted, lives in `docs/checks.md`. This file holds the rest of the backlog: work that is not a check.
+Every check, built or wanted, lives in `docs/checks.md`. This file holds the rest of the backlog: work that is not a check.
 
 ## Release
 
 - Every old check is ported (✅ in `docs/checks.md`) and the old code is removed. Ship the rewrite as a new major version.
-- Let the UI apply the fixes the rules already plan (`planFixes`, `fixProject`), the successor of the old `--fix`.
+- Let the UI apply the file fixes the rules already plan (`planFixes`, `fixProject`: a before and after per file, confirmed, written, checked again), the successor of the old `--fix`. A finding already says which files its fix would change, and the Sync actions are built, so this is the main thing left.
 - A json schema for `.repo-checker.json`, from the old README todo list.
 
 ## Actions
 
 - Bulk actions: `pull --ff-only`, prune merged branches, clone all missing repos, archive on GitHub.
 - A command that opens Claude in a repo and runs `/update-project`.
-- CLI fixes with a single-key `y/N` prompt, sharing the UI's safety checks. v1's CLI is report-only.
+- CLI fixes with a single-key `y/N` prompt, sharing the UI's safety checks. The CLI is report-only.
 - `archived-with-unsaved-work` extras: export unsaved commits as a patch file, per-category discard with checkboxes.
 - Offer "git init and create GitHub repo" for local folders that have no git.
 
 ## Output and UX
-
 
 - A health score per repo.
 - `--json` output for scripts and for Claude.

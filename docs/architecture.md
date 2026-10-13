@@ -1,6 +1,6 @@
 # Architecture
 
-Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI, the HTTP server with its streaming scan, the project list and project view of the web app and the five actions, Clone, Delete clone, Unarchive and push, Discard and Delete fork, exist, and the old code is removed. The other actions do not yet, so the other routes below are still a sketch.
+Status: built, except two things: applying from the page the file fixes that the rules already plan (`planFixes` and `fixProject` exist in the engine, a finding only says which files its fix would change), and the checks of [checks.md](checks.md) still marked 📋. The scan, the checks (the ported file checks, the Sync checks, the git state of each clone, the GitHub presentation), the CLI report, the HTTP server, the web app (list and project view) and the five actions (Clone, Delete clone, Unarchive and push, Discard, Delete fork) exist, and the old code is removed.
 
 ## Shape
 
@@ -105,14 +105,17 @@ src/web/                      the page: main.tsx, app.tsx, scan/ (stream), proje
 src/server/
   bin.ts, cli.ts              the CLI entry point, its options and the ui command
   app.ts, serve.ts            the Hono app (GET /api/scan as server-sent events, the actions, then the web app) and its server on 127.0.0.1
-  ui.ts                       the ui command: the port, the app, the server
+  ui.ts                       the ui command: the port, the app, the server, the browser
+  open-browser.ts, home-path.ts  the command that opens the browser per platform, the home folder shown as ~
+  to-scan-project.ts          a project result in its JSON-safe shape (the edits of a fix stay on the server)
   app-actions.ts              the routes of the actions
-  actions/                    actions.ts (the actions of a server), clone, delete-clone, unarchive-push, discard, and archived-proof.ts (the proof they share), each proves again before it acts
+  actions/                    actions.ts and actions-contract.ts (the actions of a server), clone, delete-clone, unarchive-push, discard, delete-fork, rescan, the proofs they share (archived-proof.ts, fork-proof.ts), guards, ignored-files, delete-scope, action-options; each proves again before it acts
   scan.ts                     read the inventory, then check each project
   check-projects.ts           check every project, forks after their comparison, others meanwhile
   check-project.ts            project rules on every project, file rules on usable clones
   report.ts                   findings by severity, summary line, verbose lists
   rules.test.ts               rule ids against checks.md, rules folder layout
+  app-fixtures.ts, cli-fixtures.ts, actions/discard-fixtures.ts, web/fixtures.ts, web/render-app.tsx  test helpers (outside the coverage)
   inventory/                  shell, git, github, forks, match, map-limit, read-inventory
   engine/                     runs rules, knows no rule (enforced)
     define-rule.ts            defineRule, Report, Rule, Finding
@@ -120,16 +123,19 @@ src/server/
     context.ts, flags.ts      the context of one project and its flags
     package-json.ts           PackageJson, dependency and script helpers
     require-property.ts       the requireProperty factory
+    file-rules.ts             the factories of file rules: requireFile, forbidFile, requireInFile, forbidInFile, requireJsonSchema, requireJsonValues
     fixer.ts, io.ts           edits, disk and in-memory files
     runner.ts                 checkProject, checkProjectRules, planFixes, fixProject
     load-rules.ts             loadRules, splitRules
     rule-tester.ts            testRule, testProjectRule
   rules/                      the rules only, one folder per group of checks.md
-    sync/                     the five v1 project rules
-    package/  scripts/  dependencies/  publishing/  presentation/  testing/  code-tooling/
+    sync/                     the five Sync project rules
+    git-hygiene/              the git state of a clone (project rules in clone-state.rule.ts) and the git file rules
+    presentation/             the README and license file rules, and the GitHub presentation (project rules in github-metadata.rule.ts)
+    package/  scripts/  dependencies/  publishing/  testing/  code-tooling/  ci/  runtime/
 ```
 
-## API sketch
+## API
 
 | Route | Purpose |
 |---|---|

@@ -24,15 +24,15 @@ Light: ![light](ui/mockup-light.png)
 ### Project list (folder mode)
 
 - Header: target folder, owner, time of the last scan, a Rescan button.
-- Summary tiles: at risk, not cloned, cleanup (archived clones and pristine forks).
+- Summary tiles (built): at risk (Sync errors), with file errors, not cloned, pristine forks.
 - Table, one row per project: name, status pills, branch, last push, one primary action.
-- Rows arrive live while the scan runs. A row for a project still being checked shows a loading state.
+- Rows arrive live while the scan runs, and the table says "Scanning…" until the first one. After an action only the project it changed is scanned again and replaced in place.
 - Sidebar filters with counts: overview, needs attention, not cloned, forks, archived.
-- Clicking a row opens the project view.
+- Clicking a project name opens the project view, and the action button of a row opens its confirmation right there.
 
 ### Project view (single-project mode opens here directly)
 
-Built: identity, findings grouped by origin with the files a fix would change, the local and fork fact cards, and the disabled action buttons. The dialogs and the per-action reasons below come with the actions.
+Built: identity, findings grouped by origin with the files a fix would change, the local and fork fact cards, and a button per offered action, each opening its confirmation dialog (the list has the first action of each project in its row). What is not built is applying a file fix (a finding only says which files it would change).
 
 - Identity: name, GitHub link, owner, archived and fork badges, last push.
 - Group A findings for this project, each with its explanation in plain words.

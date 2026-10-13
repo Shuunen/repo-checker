@@ -1,10 +1,10 @@
 # Features
 
-v1 covers one group of checks: **Sync** (local vs GitHub), the 🚀 entries in [checks.md](checks.md). This file holds their exact behavior and the safety rules. Checks for later are in [checks.md](checks.md), other future work is in [../TODOS.md](../TODOS.md).
+This file holds the exact behavior of the **Sync** checks (local vs GitHub), the 🚀 entries of the Sync group in [checks.md](checks.md), the actions that fix them, and the safety rules. The other checks, the ported file checks and the new ones, are described in [checks.md](checks.md). Checks for later are in [checks.md](checks.md), other future work is in [../TODOS.md](../TODOS.md).
 
 ## Modes
 
-One rule for both the CLI and the UI, based on the folder you run it in. In v1 the CLI (`repo-check`) prints the findings grouped by severity, then a summary line (checks run and skipped, counts per severity), then one green line when all is well or a hint to run `repo-check ui` to fix things. It exits with an error code when a finding is 🔴, and never prompts.
+One rule for both the CLI and the UI, based on the folder you run it in. The CLI (`repo-check`) prints the findings grouped by severity, then a summary line (checks run and skipped, counts per severity), then one green line when all is well or a hint to run `repo-check ui` to fix things. It exits with an error code when a finding is 🔴, never prompts and changes nothing. The fixes live in the UI (`repo-check ui`).
 
 - **Single project** (the folder is a git repo): check that project. The UI opens on its detail view.
 - **Folder of projects** (the folder contains git repos): check them all. The UI opens on the project list, a click opens the same detail view.
@@ -15,6 +15,7 @@ Options:
 - `--owner=name` GitHub account to compare with, defaults to the `gh` login. In single-project mode the owner comes from the repo's `origin` remote.
 - `--no-fetch` skips `git fetch`: faster and changes nothing on disk, but unpushed work is measured against remote refs that may be stale.
 - `--verbose` also lists every passed and skipped check, per project.
+- `ui` (a command, not an option) starts the dashboard on `127.0.0.1` instead of printing the report. `--port=number` sets its port (4747 by default), `--no-open` keeps the browser closed.
 
 Progress lines ("reading the local clones…", "comparing 30 forks…") go to stderr.
 
@@ -64,14 +65,14 @@ Every non-archived, non-fork GitHub repo is expected locally, however old. On 20
 
 These are requirements, each one gets a test.
 
-1. Nothing changes without an explicit confirmation, a confirm dialog in the UI with a clearly labeled action button. The CLI is report-only in v1 and never changes anything.
+1. Nothing changes without an explicit confirmation, a confirm dialog in the UI with a clearly labeled action button. The CLI is report-only and never changes anything.
 2. A local clone delete is offered only when the clone is clean (and the server proves it again, with a fresh fetch, before it shows the dialog and again before it deletes): no uncommitted or untracked files, nothing unpushed, no stash, no local-only branch. Otherwise the tool says why it will not offer the delete. Gitignored files (`.env`, local databases...) do not block the delete, but the confirm dialog lists every one that will be lost, ignoring rebuildable folders such as `node_modules` and `dist`.
 3. A fork delete is offered only when the strict `pristine-fork` rule is proved, including the clean-clone rule for its local clone when one exists. A failed comparison is never read as "nothing to lose".
 4. The server binds to `127.0.0.1` only, and refuses any request whose `Host` is not `127.0.0.1` or `localhost`, so a web page on another domain cannot reach it through DNS rebinding. Any request that changes something must also carry the `x-repo-check: 1` header, which a web page of another site cannot add, so it cannot post an action.
-5. The tool never reads or stores a GitHub token. All GitHub calls go through `gh api`.
+5. The tool never reads or stores a GitHub token. All GitHub API calls go through `gh`, and a clone goes through `git` over SSH, with your own SSH key.
 6. Deleting a fork needs the `delete_repo` scope. When it is missing the dialog shows `gh auth refresh -s delete_repo` instead of failing silently: the server reads the scopes of the token before it offers the delete, and a 403 from GitHub gives the same command.
 7. Before any destructive action the tool fetches that repo again and re-checks the condition that justified it. A scan result is never trusted as current. If the fetch fails, the action refuses.
 
 ## Everything else
 
-Every check of [checks.md](checks.md) is ported or built into the same engine, the old file checks included (README, biome, workflows, tsconfig, license...): they run in the same scan and the same report as the Sync checks. The 🚀 v1 marker only tells the Sync checks apart, it is not a release gate. The old snapshot tests in git history are the spec of the old checks. Bulk actions and other non-check work are in `../TODOS.md`.
+Every check of [checks.md](checks.md) is ported or built into the same engine, the old file checks included (README, biome, workflows, tsconfig, license...): they run in the same scan and the same report as the Sync checks. The 🚀 marker tells the checks written for the rewrite apart from the ported ones (✅), it is not a release gate. The old snapshot tests in git history are the spec of the old checks. Bulk actions and other non-check work are in `../TODOS.md`.

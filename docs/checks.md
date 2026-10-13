@@ -4,7 +4,7 @@ Every check `repo-checker` handles or is meant to handle. This file is the singl
 
 Format: an emoji for the status, an emoji for the severity, then `` `check-id` ``, then what it detects.
 
-- 🚀 v1: built in the first release.
+- 🚀 built: a check written for the rewrite (the Sync checks, the git state of a clone, the GitHub presentation).
 - ✅ ported: built in the new engine, next to the Sync checks. Most come from the old tool, the file in parentheses says which.
 - 📋 todo: wanted, not built yet. The file in parentheses of a ✅ check is where it lived in the old code (`src/files/`, removed, see git history).
 
