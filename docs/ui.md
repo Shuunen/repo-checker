@@ -1,6 +1,6 @@
 # UI
 
-Status: proposed.
+Status: the project list is built (read only, its action buttons are disabled), the project view and the dialogs are proposed.
 
 ## Library and theme
 
@@ -12,6 +12,8 @@ Status: proposed.
 ## Mockups
 
 These sketches show the intended feel with real data. They are drawings, not HeroUI output. They also show "behind" and "uncommitted" statuses, which are the `behind-remote` and `uncommitted-files` checks and are not in v1.
+
+The built tiles are At risk (Sync errors), With file errors, Not cloned and Pristine forks. "Behind remote" comes with its check.
 
 Dark: ![dark](ui/mockup-dark.png)
 

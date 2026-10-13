@@ -34,7 +34,7 @@ npx repo-check
 
 From a clone of this repository: `bun install` then `bun scan --target=~/Projects`.
 
-`npx repo-check ui` (or `bun ui` from a clone) starts a local server on `127.0.0.1:4747` instead. For now it only streams the scan at `/api/scan`: the dashboard that will show it and run the fixes is not built yet.
+`npx repo-check ui` (or `bun ui` from a clone) starts a local server on `127.0.0.1:4747` instead. Open the printed URL: the project list fills in as the scan streams, with filters, summary tiles and a Rescan button. It is read only for now: the fixes (clone, delete…) are not built yet.
 
 The report groups the findings by severity (errors, warnings, info) and ends with a summary line. It exits with an error code when a finding is an error. Every check is listed in [docs/checks.md](docs/checks.md).
 

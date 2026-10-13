@@ -1,0 +1,86 @@
+import { QueryClient } from '@tanstack/react-query'
+import { fireEvent, render, screen } from '@testing-library/react'
+import type { ScanEvent } from '../shared/scan-event.ts'
+import { App } from './app.tsx'
+import { aFinding, aProject, sseResponse } from './fixtures.ts'
+import type { FetchScan } from './scan/scan-query.ts'
+
+const jozzo = aProject('jozzo', [aFinding({ actions: ['unarchive-push-rearchive'], messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })])
+const finga = aProject('finga', [aFinding({ actions: ['clone'], messageId: 'missing', ruleId: 'not-cloned', scope: 'project', severity: 'info' })], { local: undefined })
+const scanEvents: ScanEvent[] = [
+  { target: '/projects', type: 'started' },
+  { line: 'checking 2 projects', type: 'progress' },
+  { result: finga, type: 'project' },
+  { result: jozzo, type: 'project' },
+  { durationMs: 1500, isSingle: false, owner: 'owner', type: 'done' },
+]
+
+/**
+ * Render the app with a fake scan request
+ * @param request answers the scan request
+ * @returns the request mock
+ */
+function renderApp(request = vi.fn<FetchScan>(() => Promise.resolve(sseResponse(scanEvents)))) {
+  render(<App client={new QueryClient()} request={request} />)
+  return request
+}
+
+describe(App, () => {
+  it('fills the table and the tiles from the scan stream', async () => {
+    expect.hasAssertions()
+    renderApp()
+    const row = await screen.findByTestId('row-jozzo')
+    expect(row.textContent).toContain('archived · unsaved work')
+    expect(screen.getByTestId('scan-line').textContent).toBe('/projects · owner · scanned in 1.5s')
+    expect(screen.getByTestId('tile-at-risk').textContent).toBe('At risk1')
+    expect(screen.getByTestId('filter-not-cloned').textContent).toBe('Not cloned1')
+  })
+
+  it('shows the projects of the selected filter', async () => {
+    expect.hasAssertions()
+    renderApp()
+    await screen.findByTestId('row-jozzo')
+    fireEvent.click(screen.getByTestId('filter-not-cloned'))
+    expect(screen.queryByTestId('row-jozzo')).toBeNull()
+    expect(screen.getByTestId('row-finga').textContent).toContain('Clone →')
+  })
+
+  it('says when a filter holds no project', async () => {
+    expect.hasAssertions()
+    renderApp()
+    await screen.findByTestId('row-jozzo')
+    fireEvent.click(screen.getByTestId('filter-forks'))
+    expect(screen.getByText('No project here').textContent).toBe('No project here')
+  })
+
+  it('scans again on rescan', async () => {
+    expect.hasAssertions()
+    const request = renderApp()
+    await screen.findByTestId('row-jozzo')
+    fireEvent.click(screen.getByTestId('rescan'))
+    await screen.findByTestId('row-jozzo')
+    expect(request).toHaveBeenCalledTimes(2)
+  })
+
+  it('shows why the scan failed', async () => {
+    expect.hasAssertions()
+    renderApp(vi.fn<FetchScan>(() => Promise.resolve(sseResponse([{ message: 'gh api user failed', type: 'failed' }]))))
+    const failure = await screen.findByTestId('scan-failure')
+    expect(failure.textContent).toContain('gh api user failed')
+  })
+
+  it('shows when the server does not start the scan', async () => {
+    expect.hasAssertions()
+    renderApp(vi.fn<FetchScan>(() => Promise.resolve(new Response('nope', { status: 403 }))))
+    const failure = await screen.findByTestId('scan-failure')
+    expect(failure.textContent).toContain('the server did not start the scan (HTTP 403)')
+  })
+
+  it('says it is scanning before the first project', async () => {
+    expect.hasAssertions()
+    const { promise } = Promise.withResolvers<Response>()
+    renderApp(vi.fn<FetchScan>(() => promise))
+    const empty = await screen.findByText('Scanning…')
+    expect(empty.textContent).toBe('Scanning…')
+  })
+})

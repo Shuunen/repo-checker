@@ -1,6 +1,6 @@
 # Architecture
 
-Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI and the HTTP server with its streaming scan exist, and the old code is removed. The web app and the actions do not yet, so the other routes below are still a sketch.
+Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI, the HTTP server with its streaming scan and the project list of the web app exist, and the old code is removed. The project view and the actions do not yet, so the other routes below are still a sketch.
 
 ## Shape
 
@@ -13,7 +13,7 @@ src/
   web/      React 19 + TypeScript + Tailwind 4 + HeroUI, built by Vite
 ```
 
-`web/` is built to static files that ship inside the npm package. `repo-check ui` starts the server, which serves those files and the API, then opens the browser. Today it serves the API only and prints its URL: serving the page and opening the browser come with the web app.
+`web/` is built to static files that ship inside the npm package. `repo-check ui` starts the server, which serves those files and the API, then opens the browser. The server serves `dist/web` and prints its URL, it does not open the browser yet.
 
 ```
 repo-check ui
@@ -28,7 +28,7 @@ Hono server (127.0.0.1)  <----  React app (static files)
 
 ## Rules
 
-- `shared/` imports nothing from `server/` or `web/`. `web/` never imports from `server/` except types through the Hono client.
+- `shared/` imports nothing from `server/` or `web/`. `web/` never imports from `server/`: it reads the events through the types of `shared/scan-event.ts`.
 - The server is the only place that runs `git` and `gh`. The browser never talks to GitHub.
 - All shell calls go through one small wrapper (fixed binary, argument array, never a shell string), so user data can never become shell syntax.
 - The scan engine has no HTTP in it. The CLI and the server are two thin callers of the same functions.
@@ -44,9 +44,19 @@ The inventory lives in `src/server/inventory`: `shell.ts` (the only place that r
 
 The CLI is `src/server/cli.ts` (`scan.ts` reads the inventory and `check-projects.ts` checks each project, `report.ts` groups the findings by severity, then prints a summary line: checks run and skipped, counts per severity). `--verbose` also lists every passed and skipped check per project, and progress lines go to stderr so they never mix with the report. It runs as `repo-check` from the built package (`dist/server/bin.js`, built by `tsdown` with one file per rule) and as `bun scan` from the sources (`--target`, `--owner`, `--no-fetch`, `--verbose`, a leading `~` in the target is expanded).
 
-`repo-check ui` (`bun ui` from the sources, `--port`, 4747 by default) starts the server: `serve.ts` listens on `127.0.0.1` with `@hono/node-server`, and `app.ts` is the Hono app. `GET /api/scan` streams the same `scan` as server-sent events (Hono's `streamSSE`), one per `ScanEvent` of `src/shared/scan-event.ts`, its `type` as the event name: `progress` (a line), `project` (one checked project), then `done` (owner, single project mode, duration) or `failed` (the error message). Writes are queued so events keep their order. A finding's edits are functions, so `toScanProject` sends the files they change (`fixFiles`) instead, and the edits stay on the server. Fields that are `undefined`, like `github` of a project without repo, are missing in the JSON. The target and the owner are fixed when the server starts; `?fetch=false` skips git fetch, and `--no-fetch` wins over the page. A middleware refuses any `Host` other than `127.0.0.1` and `localhost` (DNS rebinding). The page will write those events into a TanStack Query cache, so rows appear one by one.
+`repo-check ui` (`bun ui` from the sources, `--port`, 4747 by default) starts the server: `serve.ts` listens on `127.0.0.1` with `@hono/node-server`, and `app.ts` is the Hono app. `GET /api/scan` streams the same `scan` as server-sent events (Hono's `streamSSE`), one per `ScanEvent` of `src/shared/scan-event.ts`, its `type` as the event name: `progress` (a line), `project` (one checked project), then `done` (owner, single project mode, duration) or `failed` (the error message). Writes are queued so events keep their order. A finding's edits are functions, so `toScanProject` sends the files they change (`fixFiles`) instead, and the edits stay on the server. Fields that are `undefined`, like `github` of a project without repo, are missing in the JSON. The target and the owner are fixed when the server starts; `?fetch=false` skips git fetch, and `--no-fetch` wins over the page. A middleware refuses any `Host` other than `127.0.0.1` and `localhost` (DNS rebinding). The page writes those events into a TanStack Query cache, so rows appear one by one, see Web app.
 
 `check-projects.ts` checks the matched projects in two pools that run together: the projects that are not forks, 8 at a time, and the forks, 8 at a time, each compared with its parent (`addForkStatus`) right before its check. The fork comparison is the slowest part of a scan, so the other projects no longer wait for it. Measured on 2026-10-12 on the real data (107 projects, 30 forks), without fetch: first project at 1.4 s, 75 projects by 1.6 s, the last fork at 8.3 s (before, every project came in one burst after 8 to 13 s). With fetch, the first project comes at 5.3 s, because every clone is fetched before anything is checked.
+
+## Web app
+
+`src/web` is a React 19 page built by Vite (`vite build`, root `src/web`, output `dist/web`, which `repo-check ui` serves). `bun dev` runs the Vite dev server with `/api` proxied to `bun ui` on port 4747. Its packages are devDependencies on purpose: Vite bundles them, users never install them (the dependency-cruiser rule `not-to-dev-dep` skips `src/web` for that reason).
+
+- `scan/`: `read-events.ts` reads the server-sent events of the response body as they arrive (an event split across chunks is read once complete), `scan-state.ts` folds the events into a `ScanState` (target, last progress line, projects in arrival order, done or failure), and `scan-query.ts` is one TanStack Query `streamedQuery` that opens `/api/scan` and applies that reducer. A refetch (the Rescan button) starts from an empty state. TanStack Query holds the stream now, and will hold the actions of the next steps too.
+- `projects/`: pure logic, no React. `rows.ts` turns a project result into a table row (pills, branch, last push, primary action) and sorts the worst first, then by name. `filters.ts` has the sidebar entries (overview, needs attention, not cloned, forks, archived) and the four summary tiles. A Sync finding gets a short pill label from `ruleId.messageId`, with the full message on hover, and an unknown one falls back on its rule id.
+- `layout/`: one small component per file (HeroUI v3: Table, Chip, Card, Button, Alert, Spinner): `dashboard` (query and selected filter), `sidebar`, `page`, `scan-header`, `scan-body`, `summary-tiles`, `project-table` and its parts. The row action button is disabled until the actions are built.
+- `theme.ts` follows the OS theme by toggling the `dark` class that HeroUI reads.
+- Tests: `fixtures.ts` builds findings, projects and a server-sent events response, and `app.test.tsx` renders the whole app against a fake scan request. The web tests run in happy-dom, the server tests in node (two vitest projects in `vitest.config.mts`). `main.tsx` only starts the page and is excluded from coverage.
 
 ## Checks engine
 
@@ -88,9 +98,10 @@ src/shared/                   types and helpers for the server and the web app
   action.ts                   ActionKind
   text.ts                     plural
   scan-event.ts               Severity, RuleOutcome, ScanProject, ScanEvent: what the server streams
+src/web/                      the page: main.tsx, app.tsx, scan/ (stream), projects/ (rows, filters), layout/ (components)
 src/server/
   bin.ts, cli.ts              the CLI entry point, its options and the ui command
-  app.ts, serve.ts            the Hono app (GET /api/scan as server-sent events) and its server on 127.0.0.1
+  app.ts, serve.ts            the Hono app (GET /api/scan as server-sent events, then the web app) and its server on 127.0.0.1
   scan.ts                     read the inventory, then check each project
   check-projects.ts           check every project, forks after their comparison, others meanwhile
   check-project.ts            project rules on every project, file rules on usable clones
@@ -130,7 +141,7 @@ Every `POST` re-validates the safety rule on the server and refuses if it no lon
 
 - Scan engine: unit tests against throwaway git repos created in a temp folder (clean, dirty, ahead, stash, local-only branch). `gh` is replaced by a fake that returns recorded JSON.
 - Safety rules: one test per rule in `docs/features.md`, including the refusal paths.
-- Web: vitest with Testing Library, `getByTestId` only.
+- Web: vitest in happy-dom with Testing Library, `getByTestId` only, against a fake scan response (a real stream of server-sent events, cut in small chunks too).
 - A real-`gh` smoke test is manual and read-only.
 
 ## Build
