@@ -3,7 +3,7 @@ import type { ScanFinding, ScanProject, Severity } from '../../shared/scan-event
 import { plural } from '../../shared/text.ts'
 
 /** A HeroUI chip color */
-type PillColor = 'accent' | 'danger' | 'default' | 'success' | 'warning'
+export type PillColor = 'accent' | 'danger' | 'default' | 'success' | 'warning'
 
 /** One status pill of a row */
 interface Pill {
@@ -19,6 +19,8 @@ interface Pill {
 export interface ProjectRow {
   /** The action a click would start, undefined when there is none */
   action: string | undefined
+  /** The address of the project view */
+  href: string
   /** The row key, the project name */
   id: string
   /** The checked out branch, a dash when not cloned, without git or on a detached HEAD */
@@ -34,13 +36,13 @@ export interface ProjectRow {
 }
 
 /** The pill color of each severity */
-const severityColor: Readonly<Record<Severity, PillColor>> = { error: 'danger', info: 'accent', warning: 'warning' }
+export const severityColor: Readonly<Record<Severity, PillColor>> = { error: 'danger', info: 'accent', warning: 'warning' }
 
 /** The rank of each severity, the worst first */
-const severityRank: Readonly<Record<Severity, number>> = { error: 0, info: 2, warning: 1 }
+export const severityRank: Readonly<Record<Severity, number>> = { error: 0, info: 2, warning: 1 }
 
 /** The button label of each action */
-const actionLabels: Readonly<Record<ActionKind, string>> = { clone: 'Clone', 'delete-clone': 'Delete clone', 'delete-fork': 'Delete fork', discard: 'Discard', 'unarchive-push-rearchive': 'Unarchive & push' }
+export const actionLabels: Readonly<Record<ActionKind, string>> = { clone: 'Clone', 'delete-clone': 'Delete clone', 'delete-fork': 'Delete fork', discard: 'Discard', 'unarchive-push-rearchive': 'Unarchive & push' }
 
 /** The short label of each Sync finding, by `ruleId.messageId`, a finding missing here shows its rule id */
 const syncLabels: Readonly<Record<string, string>> = {
@@ -88,6 +90,16 @@ function toPills({ findings, project }: Readonly<ScanProject>): Pill[] {
 }
 
 /**
+ * The address of the project view
+ * @param name the project name
+ * @returns the path, like `/project/jozzo`
+ * @example projectHref('jozzo') // '/project/jozzo'
+ */
+export function projectHref(name: string) {
+  return `/project/${encodeURIComponent(name)}`
+}
+
+/**
  * Turn a project result into a table row
  * @param result the project result
  * @returns the row
@@ -97,7 +109,7 @@ function toRow(result: Readonly<ScanProject>): ProjectRow {
   const action = findings.find(finding => finding.actions.length > 0)?.actions[0]
   const rank = Math.min(quietRank, ...findings.map(finding => severityRank[finding.severity]))
   const branch = project.local?.currentBranch ?? ''
-  return { action: action && actionLabels[action], branch: branch === '' ? '—' : branch, id: project.name, lastPush: project.github?.pushedAt.slice(0, 'yyyy-mm'.length) ?? '—', name: project.name, pills: toPills(result), rank }
+  return { action: action && actionLabels[action], branch: branch === '' ? '—' : branch, href: projectHref(project.name), id: project.name, lastPush: project.github?.pushedAt.slice(0, 'yyyy-mm'.length) ?? '—', name: project.name, pills: toPills(result), rank }
 }
 
 /**

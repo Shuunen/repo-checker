@@ -1,8 +1,8 @@
-import { QueryClient } from '@tanstack/react-query'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import type { ScanEvent } from '../shared/scan-event.ts'
 import { App } from './app.tsx'
-import { aFinding, aProject, sseResponse } from './fixtures.ts'
+import { aFinding, aProject, scanRequest, sseResponse } from './fixtures.ts'
+import { renderApp } from './render-app.tsx'
 import type { FetchScan } from './scan/scan-query.ts'
 
 const jozzo = aProject('jozzo', [aFinding({ actions: ['unarchive-push-rearchive'], messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })])
@@ -15,20 +15,10 @@ const scanEvents: ScanEvent[] = [
   { durationMs: 1500, isSingle: false, owner: 'owner', type: 'done' },
 ]
 
-/**
- * Render the app with a fake scan request
- * @param request answers the scan request
- * @returns the request mock
- */
-function renderApp(request = vi.fn<FetchScan>(() => Promise.resolve(sseResponse(scanEvents)))) {
-  render(<App client={new QueryClient()} request={request} />)
-  return request
-}
-
 describe(App, () => {
   it('fills the table and the tiles from the scan stream', async () => {
     expect.hasAssertions()
-    renderApp()
+    renderApp(scanRequest(scanEvents))
     const row = await screen.findByTestId('row-jozzo')
     expect(row.textContent).toContain('archived · unsaved work')
     expect(screen.getByTestId('scan-line').textContent).toBe('/projects · owner · scanned in 1.5s')
@@ -38,7 +28,7 @@ describe(App, () => {
 
   it('shows the projects of the selected filter', async () => {
     expect.hasAssertions()
-    renderApp()
+    renderApp(scanRequest(scanEvents))
     await screen.findByTestId('row-jozzo')
     fireEvent.click(screen.getByTestId('filter-not-cloned'))
     expect(screen.queryByTestId('row-jozzo')).toBeNull()
@@ -47,7 +37,7 @@ describe(App, () => {
 
   it('says when a filter holds no project', async () => {
     expect.hasAssertions()
-    renderApp()
+    renderApp(scanRequest(scanEvents))
     await screen.findByTestId('row-jozzo')
     fireEvent.click(screen.getByTestId('filter-forks'))
     expect(screen.getByText('No project here').textContent).toBe('No project here')
@@ -55,7 +45,7 @@ describe(App, () => {
 
   it('scans again on rescan', async () => {
     expect.hasAssertions()
-    const request = renderApp()
+    const request = renderApp(scanRequest(scanEvents))
     await screen.findByTestId('row-jozzo')
     fireEvent.click(screen.getByTestId('rescan'))
     await screen.findByTestId('row-jozzo')

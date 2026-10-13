@@ -10,6 +10,7 @@ describe(toRows, () => {
     expect(row).toStrictEqual({
       action: 'Unarchive & push',
       branch: 'master',
+      href: '/project/jozzo',
       id: 'jozzo',
       lastPush: '2026-10',
       name: 'jozzo',

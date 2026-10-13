@@ -1,4 +1,5 @@
 import type { ScanEvent, ScanFinding, ScanProject } from '../shared/scan-event.ts'
+import type { FetchScan } from './scan/scan-query.ts'
 
 /**
  * A finding, a file warning unless told otherwise
@@ -50,4 +51,13 @@ export function sseResponse(events: readonly ScanEvent[], chunkSize = Number.POS
       },
     }),
   )
+}
+
+/**
+ * A scan request that answers with the given events, a mock to count the scans
+ * @param events the events
+ * @returns the request
+ */
+export function scanRequest(events: readonly ScanEvent[]) {
+  return vi.fn<FetchScan>(() => Promise.resolve(sseResponse(events)))
 }

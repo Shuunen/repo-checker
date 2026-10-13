@@ -1,6 +1,6 @@
 # UI
 
-Status: the project list is built (read only, its action buttons are disabled), the project view and the dialogs are proposed.
+Status: the project list and the project view are built (read only, the action buttons are disabled), the confirm dialogs are proposed.
 
 ## Library and theme
 
@@ -31,6 +31,8 @@ Light: ![light](ui/mockup-light.png)
 - Clicking a row opens the project view.
 
 ### Project view (single-project mode opens here directly)
+
+Built: identity, findings grouped by origin with the files a fix would change, the local and fork fact cards, and the disabled action buttons. The dialogs and the per-action reasons below come with the actions.
 
 - Identity: name, GitHub link, owner, archived and fork badges, last push.
 - Group A findings for this project, each with its explanation in plain words.

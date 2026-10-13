@@ -1,6 +1,6 @@
 # Architecture
 
-Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI, the HTTP server with its streaming scan and the project list of the web app exist, and the old code is removed. The project view and the actions do not yet, so the other routes below are still a sketch.
+Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI, the HTTP server with its streaming scan and the project list and project view of the web app exist, and the old code is removed. The actions do not yet, so the other routes below are still a sketch.
 
 ## Shape
 
@@ -13,7 +13,7 @@ src/
   web/      React 19 + TypeScript + Tailwind 4 + HeroUI, built by Vite
 ```
 
-`web/` is built to static files that ship inside the npm package. `repo-check ui` starts the server, which serves those files and the API, then opens the browser. The server serves `dist/web` and prints its URL, it does not open the browser yet.
+`web/` is built to static files that ship inside the npm package. `repo-check ui` starts the server, which serves those files and the API, then opens the browser. The server serves `dist/web` and prints its URL, it does not open the browser yet. It also answers `/project/*` with the page, so a reload on a project address works (any other unknown path is a 404).
 
 ```
 repo-check ui
@@ -54,6 +54,8 @@ The CLI is `src/server/cli.ts` (`scan.ts` reads the inventory and `check-project
 
 - `scan/`: `read-events.ts` reads the server-sent events of the response body as they arrive (an event split across chunks is read once complete), `scan-state.ts` folds the events into a `ScanState` (target, last progress line, projects in arrival order, done or failure), and `scan-query.ts` is one TanStack Query `streamedQuery` that opens `/api/scan` and applies that reducer. A refetch (the Rescan button) starts from an empty state. TanStack Query holds the stream now, and will hold the actions of the next steps too.
 - `projects/`: pure logic, no React. `rows.ts` turns a project result into a table row (pills, branch, last push, primary action) and sorts the worst first, then by name. `filters.ts` has the sidebar entries (overview, needs attention, not cloned, forks, archived) and the four summary tiles. A Sync finding gets a short pill label from `ruleId.messageId`, with the full message on hover, and an unknown one falls back on its rule id.
+- `projects/detail.ts` is the logic of the project view, no React: the identity badges and GitHub link, the fact cards (`localFacts`: path, branch, upstream, unpushed commits, uncommitted files, stashes, local-only branches, or why the folder cannot be compared; `forkFacts`: parent, branches ahead, open pull requests, every failure), the findings grouped by origin (Sync with GitHub, then project files, the worst first) and the distinct actions offered.
+- Routing is wouter with path addresses: `/` is the list, `/project/:name` the project view (`routes.tsx`). The name cell of a row links to it, and picking a sidebar filter goes back to the list (`use-filter.ts`). When the scan is of a single project, `use-open-single-project.ts` opens its view once, so the back link still works. A project the scan does not have yet says it is looking for it, then that it is not in the scan.
 - `layout/`: one small component per file (HeroUI v3: Table, Chip, Card, Button, Alert, Spinner): `dashboard` (query and selected filter), `sidebar`, `page`, `scan-header`, `scan-body`, `summary-tiles`, `project-table` and its parts. The row action button is disabled until the actions are built.
 - `theme.ts` follows the OS theme by toggling the `dark` class that HeroUI reads.
 - Tests: `fixtures.ts` builds findings, projects and a server-sent events response, and `app.test.tsx` renders the whole app against a fake scan request. The web tests run in happy-dom, the server tests in node (two vitest projects in `vitest.config.mts`). `main.tsx` only starts the page and is excluded from coverage.

@@ -9,7 +9,7 @@ The rewrite follows the same tooling and rules as the `snippets` repo, so the re
 - oxlint to lint, oxfmt to format (`.oxfmtrc.json`, migrated from the old biome config: 300 columns, single quotes, no semicolons). Biome is gone. Long tables stay one item per line without any ignore comment.
 - vitest for tests, Testing Library for the web.
 - Vite builds `src/web`, `bun dev` serves it with `/api` proxied to `bun ui`. Its packages are devDependencies, since Vite bundles them.
-- The `react` lint plugin is on for the page. Decided rule by rule: `react/jsx-max-depth` is 5 (a HeroUI table is 5 deep), `react/jsx-no-literals` and `react/forbid-component-props` are off (plain text in the markup, `className` on HeroUI components). `react/react-in-jsx-scope` is off and `.tsx` is the JSX extension, as the new JSX transform needs. The `vitest` plugin only runs on test files, and `rule-tester.ts` only gets the vitest globals.
+- The `react` lint plugin is on for the page. Decided rule by rule: `react/jsx-max-depth` is 5 (a HeroUI table is 5 deep), `react/jsx-no-literals` and `react/forbid-component-props` are off (plain text in the markup, `className` on HeroUI components). `react/react-in-jsx-scope` is off and `.tsx` is the JSX extension, as the new JSX transform needs. The `vitest` plugin only runs on test files, and the test helpers (`rule-tester.ts`, `fixtures.ts`, `render-app.tsx`) only get the vitest globals. `react/jsx-props-no-spreading` stays on, so components take explicit props.
 - Never disable a lint rule without asking. Try to fix the code first.
 
 ## Code
