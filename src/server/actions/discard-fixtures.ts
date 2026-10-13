@@ -105,7 +105,10 @@ export async function okPreview(readers: GitReaders, target: string) {
  * @param isForgotten true to forget it
  */
 export async function forgetDefaultBranch(folder: string, isForgotten: boolean) {
-  if (isForgotten) await git(folder, 'remote', 'set-head', 'origin', '--delete')
+  if (!isForgotten) return
+  await git(folder, 'remote', 'set-head', 'origin', '--delete')
+  // git 2.48+ creates origin/HEAD again on the next fetch unless told not to
+  await git(folder, 'config', 'remote.origin.followRemoteHEAD', 'never')
 }
 
 /** How many times a discard reads the clone before the check that it is clean: the preview, the proof, the fresh proof */
