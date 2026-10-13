@@ -100,6 +100,21 @@ describe(createApp, () => {
     await expect(response.text()).resolves.toBe('<title>repo-check</title>')
   })
 
+  it.each(['/project/jozzo', '/project/ghuser.io.settings'])('serves the page on the project address %s, so a reload works', async address => {
+    expect.hasAssertions()
+    const webFolder = await mkdtemp(path.join(tmpdir(), 'repo-check-web-'))
+    onTestFinished(() => rm(webFolder, { force: true, recursive: true }))
+    await writeFile(path.join(webFolder, 'index.html'), '<title>repo-check</title>')
+    const response = await app(vi.fn<ScanRunner>(), webFolder).request(`http://127.0.0.1${address}`)
+    await expect(response.text()).resolves.toBe('<title>repo-check</title>')
+  })
+
+  it('answers 404 for an unknown file', async () => {
+    expect.hasAssertions()
+    const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/assets/missing.js')
+    expect(response.status).toBe(404)
+  })
+
   it.each([
     ['an Error', new Error('gh api user failed')],
     ['a string', 'gh api user failed'],

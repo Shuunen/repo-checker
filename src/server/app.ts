@@ -82,7 +82,7 @@ async function streamScan(runScan: ScanRunner, { send, shouldFetch, target }: Re
 }
 
 /**
- * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch. Every other path serves the built web app
+ * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch. Every other path serves the built web app, and `/project/*` serves its page too, so a reload on a project address works
  * @param runScan runs a scan of the target
  * @param options where the server runs
  * @param options.target the folder scanned
@@ -95,4 +95,5 @@ export function createApp(runScan: ScanRunner, { target, webFolder }: Readonly<A
     .use(refuseOtherHosts)
     .get('/api/scan', context => streamSSE(context, stream => streamScan(runScan, { send: eventSender(stream), shouldFetch: context.req.query('fetch') !== 'false', target })))
     .use(serveStatic({ root: webFolder }))
+    .get('/project/*', serveStatic({ path: 'index.html', root: webFolder }))
 }
