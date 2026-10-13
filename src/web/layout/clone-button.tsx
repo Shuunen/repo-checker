@@ -2,7 +2,7 @@ import { Button } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
 import { slugOf } from '../projects/detail.ts'
 import { CloneDialog } from './clone-dialog.tsx'
-import { useCloneDialog } from './use-clone-dialog.ts'
+import { useActionDialog } from './use-action-dialog.ts'
 
 /**
  * The Clone action: the button opens a confirmation, the clone only runs when it is confirmed. The scan runs again after it worked
@@ -12,7 +12,7 @@ import { useCloneDialog } from './use-clone-dialog.ts'
  * @returns the button and its dialog
  */
 export function CloneButton({ project, target }: Readonly<{ project: Project; target: string }>) {
-  const dialog = useCloneDialog(project.name)
+  const dialog = useActionDialog(project.name, 'clone')
   return (
     <>
       <Button data-testid="action-clone" onPress={dialog.handleOpen} size="sm" variant="outline">

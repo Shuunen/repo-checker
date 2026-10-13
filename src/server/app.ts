@@ -106,7 +106,7 @@ async function streamScan(runScan: ScanRunner, { send, shouldFetch, target }: Re
 }
 
 /**
- * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch. `POST /api/projects/:name/clone` clones a repo, `GET /api/projects/:name/delete-clone` says what deleting its clone would remove and `POST` deletes it. A POST needs the `x-repo-check: 1` header, and every action answers its result as JSON, with status 409 when refused. Every other path serves the built web app, and `/project/*` serves its page too, so a reload on a project address works
+ * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch. `POST /api/projects/:name/clone` clones a repo, `GET /api/projects/:name/delete-clone` says what deleting its clone would remove and `POST` deletes it, `POST /api/projects/:name/unarchive-push` pushes the unsaved branches of an archived repo through an unarchive. A POST needs the `x-repo-check: 1` header, and every action answers its result as JSON, with status 409 when refused. Every other path serves the built web app, and `/project/*` serves its page too, so a reload on a project address works
  * @param runScan runs a scan of the target
  * @param options where the server runs
  * @param options.actions the actions the page can ask for
@@ -121,6 +121,10 @@ export function createApp(runScan: ScanRunner, { actions, target, webFolder }: R
     .use(requireActionHeader)
     .post('/api/projects/:name/clone', async context => {
       const result = await actions.clone(context.req.param('name'))
+      return context.json(result, result.ok ? succeeded : conflict)
+    })
+    .post('/api/projects/:name/unarchive-push', async context => {
+      const result = await actions.unarchivePush(context.req.param('name'))
       return context.json(result, result.ok ? succeeded : conflict)
     })
     .get('/api/projects/:name/delete-clone', async context => {

@@ -1,3 +1,4 @@
+import type { ActionKind } from '../../shared/action.ts'
 import type { GithubRepo, LocalClone } from '../../shared/project.ts'
 import { checkProjectRules } from '../engine/runner.ts'
 import { readClone, readClones } from '../inventory/git.ts'
@@ -13,8 +14,8 @@ export interface GitReaders {
   readClones: typeof readClones
 }
 
-/** What a delete needs */
-export interface DeleteOptions {
+/** What an action on the clone of an archived repo needs */
+export interface ArchivedOptions {
   /** Runs gh */
   gh: GhRunner
   /** How the clones are read, the real git by default */
@@ -27,7 +28,7 @@ export interface DeleteOptions {
   target: string
 }
 
-/** The proof of a delete: the clone to remove, or the reason to refuse */
+/** The proof of an action: the clone to act on, or the reason to refuse */
 export type Proof = { clone: LocalClone; ok: true } | { ok: false; reason: string }
 
 /** The real git */
@@ -65,30 +66,32 @@ async function findClone(target: string, repo: Readonly<GithubRepo>, git: GitRea
 }
 
 /**
- * Ask the Sync rules, the ones that offered the delete, if the clone is still safe to delete: `archived-clone` must still offer it
+ * Ask the Sync rules, the ones that offered the action, if it is still offered on the freshly fetched clone
  * @param repo the repo
  * @param clone the freshly fetched clone
- * @returns the reason to refuse, undefined when the delete is still offered
+ * @param action the action asked for
+ * @returns the reason to refuse, undefined when a rule still offers the action
  */
-async function refusalOf(repo: Readonly<GithubRepo>, clone: Readonly<LocalClone>) {
+async function refusalOf(repo: Readonly<GithubRepo>, clone: Readonly<LocalClone>, action: ActionKind) {
   const { findings } = await checkProjectRules([archivedWithUnsavedWork, archivedClone], { github: repo, isOtherOwner: false, local: clone, name: repo.name })
-  if (findings.some(finding => finding.actions.includes('delete-clone'))) return undefined
-  return `${repo.slug}: ${findings[0]?.message ?? 'the clone cannot be proved safe to delete'}`
+  if (findings.some(finding => finding.actions.includes(action))) return undefined
+  return `${repo.slug}: ${findings[0]?.message ?? `the clone does not qualify for ${action}`}`
 }
 
 /**
- * Prove the delete is still safe, from scratch: a folder of projects, a repo still archived on GitHub, one clone, fetched again, that holds nothing the remote does not have. Nothing the page said is trusted
- * @param options what to delete
+ * Prove the action is still right, from scratch: a folder of projects, a repo still archived on GitHub, one clone, fetched again, on which a Sync rule still offers the action. Nothing the page said is trusted
+ * @param options what to act on
  * @param options.gh runs gh
  * @param options.git how the clones are read
  * @param options.name the repo name
  * @param options.owner the GitHub owner
  * @param options.target the folder of projects
- * @returns the clone to remove, or the reason to refuse
+ * @param action the action asked for, a Sync rule must still offer it
+ * @returns the clone to act on, or the reason to refuse
  * @throws {Error} when gh fails for a reason other than a 404
- * @example const proof = await proveDelete({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target })
+ * @example const proof = await proveArchived({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target }, 'delete-clone')
  */
-export async function proveDelete({ gh, git = realGit, name, owner, target }: Readonly<DeleteOptions>): Promise<Proof> {
+export async function proveArchived({ gh, git = realGit, name, owner, target }: Readonly<ArchivedOptions>, action: ActionKind): Promise<Proof> {
   if (!isRepoName(name)) return { ok: false, reason: `${name} is not a repo name` }
   const single = await checkFolderOfProjects(target)
   if (single !== undefined) return { ok: false, reason: single }
@@ -96,6 +99,6 @@ export async function proveDelete({ gh, git = realGit, name, owner, target }: Re
   if ('reason' in found) return { ok: false, reason: found.reason }
   const located = await findClone(target, found.repo, git)
   if ('reason' in located) return { ok: false, reason: located.reason }
-  const reason = await refusalOf(found.repo, located.clone)
+  const reason = await refusalOf(found.repo, located.clone, action)
   return reason === undefined ? { clone: located.clone, ok: true } : { ok: false, reason }
 }

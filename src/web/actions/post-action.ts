@@ -1,7 +1,7 @@
 import type { ActionResult } from '../../shared/action.ts'
 
 /** The actions that change something, a route of the server each */
-type PostedAction = 'clone' | 'delete-clone'
+type PostedAction = 'clone' | 'delete-clone' | 'unarchive-push'
 
 /**
  * Ask the server to run an action on a project. The `x-repo-check` header is required by the server for any request that changes something

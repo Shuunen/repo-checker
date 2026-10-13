@@ -2,7 +2,7 @@ import { rm } from 'node:fs/promises'
 import path from 'node:path'
 import { invariant } from 'es-toolkit'
 import type { ActionResult, DeletePreview } from '../../shared/action.ts'
-import { type DeleteOptions, proveDelete } from './delete-proof.ts'
+import { type ArchivedOptions, proveArchived } from './archived-proof.ts'
 import { listIgnoredFiles } from './ignored-files.ts'
 
 /**
@@ -11,9 +11,9 @@ import { listIgnoredFiles } from './ignored-files.ts'
  * @returns the path and the ignored files, or the reason the delete is refused
  * @example const preview = await previewDeleteClone({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target })
  */
-export async function previewDeleteClone(options: Readonly<DeleteOptions>): Promise<DeletePreview> {
+export async function previewDeleteClone(options: Readonly<ArchivedOptions>): Promise<DeletePreview> {
   try {
-    const proof = await proveDelete(options)
+    const proof = await proveArchived(options, 'delete-clone')
     return proof.ok ? { ignoredFiles: await listIgnoredFiles(proof.clone.path), ok: true, path: proof.clone.path } : proof
   } catch (error) {
     return { ok: false, reason: error instanceof Error ? error.message : String(error) }
@@ -26,9 +26,9 @@ export async function previewDeleteClone(options: Readonly<DeleteOptions>): Prom
  * @returns the result, refused with the reason when the proof fails
  * @example const result = await deleteClone({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target })
  */
-export async function deleteClone(options: Readonly<DeleteOptions>): Promise<ActionResult> {
+export async function deleteClone(options: Readonly<ArchivedOptions>): Promise<ActionResult> {
   try {
-    const proof = await proveDelete(options)
+    const proof = await proveArchived(options, 'delete-clone')
     if (!proof.ok) return proof
     invariant(path.dirname(proof.clone.path) === options.target, 'a clone is a direct child of the folder of projects')
     await rm(proof.clone.path, { force: true, recursive: true })

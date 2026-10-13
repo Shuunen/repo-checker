@@ -187,3 +187,38 @@ export function offeredActions(findings: readonly ScanFinding[]): ActionKind[] {
 export function fixText({ fixFiles }: Readonly<ScanFinding>) {
   return fixFiles.length === 0 ? undefined : `fix available in ${plural(fixFiles.length, 'file')}: ${fixFiles.join(', ')}`
 }
+
+/** The unsaved items of one kind */
+interface UnsavedGroup {
+  /** The items: commit messages, file names, stash entries, branch names */
+  items: string[]
+  /** What they are */
+  title: string
+}
+
+/**
+ * List what a clone holds that exists nowhere else, item by item: the commit messages, the changed file names, the stash entries and the local-only branch names
+ * @param local the clone
+ * @returns the groups that have an item, in that order
+ * @example unsavedGroups(clone) // [{ title: 'Unpushed commits', items: ['master: fix a'] }]
+ */
+export function unsavedGroups(local: Readonly<LocalClone>): UnsavedGroup[] {
+  const groups = [
+    { items: local.unpushed.flatMap(branch => branch.subjects.map(subject => `${branch.branch}: ${subject}`)), title: 'Unpushed commits' },
+    { items: local.localOnlyBranches, title: 'Local-only branches' },
+    { items: local.changedFiles, title: 'Uncommitted files' },
+    { items: local.stashes, title: 'Stashes' },
+  ]
+  return groups.filter(group => group.items.length > 0)
+}
+
+/**
+ * Say why unarchive and push cannot run: it only pushes and never creates a commit, so it needs a clone without uncommitted files and without a stash
+ * @param local the clone
+ * @returns the reason, undefined when the clone holds only commits and branches
+ */
+export function unarchiveBlocker(local: Readonly<LocalClone>) {
+  if (local.changedFiles.length > 0) return `The clone has ${plural(local.changedFiles.length, 'uncommitted file')}. This action only pushes and never creates a commit: commit or discard them by hand first.`
+  if (local.stashes.length > 0) return `The clone has ${plural(local.stashes.length, 'stash')}. This action only pushes: apply or drop them by hand first.`
+  return undefined
+}

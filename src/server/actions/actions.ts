@@ -2,6 +2,7 @@ import type { ActionResult, DeletePreview } from '../../shared/action.ts'
 import { type GhRunner, getLogin } from '../inventory/github.ts'
 import { cloneRepo } from './clone.ts'
 import { deleteClone, previewDeleteClone } from './delete-clone.ts'
+import { unarchivePush } from './unarchive-push.ts'
 
 /** The actions the page can ask for, each one proves again that it is still safe before it acts */
 export interface Actions {
@@ -11,6 +12,8 @@ export interface Actions {
   deleteClone: (name: string) => Promise<ActionResult>
   /** Say what deleting that clone would remove, the files git ignores, or why it is refused */
   previewDeleteClone: (name: string) => Promise<DeletePreview>
+  /** Unarchive an archived repo, push the unsaved branches of its clone, archive it again */
+  unarchivePush: (name: string) => Promise<ActionResult>
 }
 
 /**
@@ -27,5 +30,6 @@ export function createActions(gh: GhRunner, owner: string | undefined, target: s
     clone: async name => cloneRepo(await options(name)),
     deleteClone: async name => deleteClone(await options(name)),
     previewDeleteClone: async name => previewDeleteClone(await options(name)),
+    unarchivePush: async name => unarchivePush(await options(name)),
   }
 }

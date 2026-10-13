@@ -46,6 +46,7 @@ const worksFine: Actions = {
   clone: () => Promise.resolve({ message: 'cloned', ok: true }),
   deleteClone: () => Promise.resolve({ message: 'deleted', ok: true }),
   previewDeleteClone: () => Promise.resolve({ ignoredFiles: ['.env'], ok: true, path: '/projects/old' }),
+  unarchivePush: () => Promise.resolve({ message: 'pushed', ok: true }),
 }
 
 /**
@@ -223,6 +224,34 @@ describe('delete actions', () => {
     const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, deleteClone }).request('http://127.0.0.1/api/projects/old/delete-clone', { method: 'POST' })
     expect(response.status).toBe(403)
     expect(deleteClone).not.toHaveBeenCalled()
+  })
+})
+
+describe('unarchive and push', () => {
+  const post = { headers: { 'x-repo-check': '1' }, method: 'POST' }
+
+  it('runs the action and answers its result', async () => {
+    expect.hasAssertions()
+    const unarchivePush = vi.fn<Actions['unarchivePush']>(() => Promise.resolve({ message: 'pushed 1 branch (master) to owner/old, which is archived again', ok: true }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, unarchivePush }).request('http://127.0.0.1/api/projects/old/unarchive-push', post)
+    expect(response.status).toBe(200)
+    expect(unarchivePush).toHaveBeenCalledWith('old')
+  })
+
+  it('answers 409 with the reason when the action is refused', async () => {
+    expect.hasAssertions()
+    const refused: ActionResult = { ok: false, reason: 'the clone has 1 uncommitted file' }
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, unarchivePush: () => Promise.resolve(refused) }).request('http://127.0.0.1/api/projects/old/unarchive-push', post)
+    expect(response.status).toBe(409)
+    await expect(response.json()).resolves.toStrictEqual(refused)
+  })
+
+  it('refuses a request without the action header, and does not run it', async () => {
+    expect.hasAssertions()
+    const unarchivePush = vi.fn<Actions['unarchivePush']>()
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, unarchivePush }).request('http://127.0.0.1/api/projects/old/unarchive-push', { method: 'POST' })
+    expect(response.status).toBe(403)
+    expect(unarchivePush).not.toHaveBeenCalled()
   })
 })
 

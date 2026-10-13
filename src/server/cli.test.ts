@@ -226,6 +226,12 @@ describe('cli ui', () => {
     await expect(call('finga/delete-clone', method)).resolves.toStrictEqual({ ok: false, reason: 'owner/finga is not archived, only the clone of an archived repo can be deleted' })
   })
 
+  it('wires the unarchive and push, and refuses a repo that is not archived', async () => {
+    expect.hasAssertions()
+    const { call } = await ui([], fakeCloneGh('owner/finga'))
+    await expect(call('finga/unarchive-push', 'POST')).resolves.toStrictEqual({ ok: false, reason: 'owner/finga is not archived, only the clone of an archived repo can be deleted' })
+  })
+
   it('takes the port from the options', async () => {
     expect.hasAssertions()
     const startServer = vi.fn<StartServer>(() => Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:8080' }))

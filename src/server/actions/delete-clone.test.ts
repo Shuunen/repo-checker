@@ -5,7 +5,7 @@ import type { LocalClone } from '../../shared/project.ts'
 import type { GhRunner } from '../inventory/github.ts'
 import { run } from '../inventory/shell.ts'
 import { deleteClone, previewDeleteClone } from './delete-clone.ts'
-import type { GitReaders } from './delete-proof.ts'
+import type { GitReaders } from './archived-proof.ts'
 import { exists } from './guards.ts'
 
 const apiRepo = (fields: Readonly<Record<string, unknown>> = {}) => ({ archived: true, fork: false, name: 'old', owner: { login: 'Owner' }, private: false, pushed_at: '2025-01-01T00:00:00Z', ...fields })
@@ -65,7 +65,7 @@ describe(deleteClone, () => {
 
   it.each([
     ['the fetch failed', { fetchFailed: true }, 'owner/old: archived on GitHub, but the fetch failed so the clone cannot be proved safe to delete'],
-    ['the folder is not a usable clone', { problem: 'no-origin' as const }, 'owner/old: the clone cannot be proved safe to delete'],
+    ['the folder is not a usable clone', { problem: 'no-origin' as const }, 'owner/old: the clone does not qualify for delete-clone'],
   ])('refuses when %s', async (_name, fresh, reason) => {
     expect.hasAssertions()
     const { folder, git, target } = await makeWorkspace(fresh)
