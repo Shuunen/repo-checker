@@ -25,7 +25,7 @@ None so far.
 8. ✅ **The row action in the list opens its confirmation directly**, for every action (decided in the review, it replaced the link to the project page). The row shows the first action the project offers.
 9. ✅ **`plural` now adds `es` after `ch`, `sh`, `s`, `x` and `z`** (it said "branchs" and "stashs").
 10. ✅ **`max-lines-per-function` is 30** (your change), and I regrouped the web components to fit it.
-11. **Delete fork deletes on GitHub first, then the clean clone**, so a refused delete leaves your clone alone. A fork with a dirty clone is refused, as the strict rule says.
+11. ✅ **Delete fork deletes on GitHub first, then the clean clone**, so a refused delete leaves your clone alone. A fork with a dirty clone is refused, as the strict rule says.
 12. ✅ **Every confirmation is one `ConfirmDialog`** and the three "show first" actions share one hook, to avoid five copies of the same dialog.
 13. ✅ **The scope check trusts `X-OAuth-Scopes`** and tries the delete when the header is absent (fine-grained tokens), where a 403 gives the same command.
 14. ✅ **A project whose checks throw gets a `checks-failed` error finding** instead of failing the whole scan, so one odd repo never blanks the dashboard.
