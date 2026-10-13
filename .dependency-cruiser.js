@@ -149,7 +149,8 @@ export default {
         'from.pathNot re of the not-to-dev-dep rule in the dependency-cruiser configuration',
       from: {
         path: '^(src|tests)',
-        pathNot: String.raw`\.(spec|test)\.(js|mjs|cjs|ts|ls|coffee|litcoffee|coffee\.md)$`,
+        // src/web is bundled by Vite into dist/web, so its packages are devDependencies on purpose: users never install them
+        pathNot: String.raw`(^src/web/|\.(spec|test)\.(js|mjs|cjs|ts|ls|coffee|litcoffee|coffee\.md)$)`,
       },
       name: 'not-to-dev-dep',
       severity: 'error',
