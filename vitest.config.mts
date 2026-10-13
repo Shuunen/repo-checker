@@ -14,7 +14,7 @@ export default defineConfig({
     globals: true,
     pool: 'threads',
     projects: [
-      { extends: true, test: { environment: 'node', include: ['src/server/**/*.test.ts', 'src/shared/**/*.test.ts'], name: 'server' } },
+      { extends: true, test: { environment: 'node', include: ['src/server/**/*.test.ts', 'src/shared/**/*.test.ts', 'demo/**/*.test.mjs'], name: 'server' } },
       { extends: true, test: { environment: 'happy-dom', include: ['src/web/**/*.test.{ts,tsx}'], name: 'web' } },
     ],
   },

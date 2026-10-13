@@ -36,7 +36,7 @@ Run it in a folder of projects to check them all against your GitHub account, or
 npx repo-check
 ```
 
-From a clone of this repository: `bun install` then `bun scan --target=~/Projects`.
+From a clone of this repository: `bun install` then `bun scan --target=~/Projects`. To look at the dashboard without your own repos, `bun run build` then `bun demo` starts it on a fake account (see [demo/README.md](demo/README.md)).
 
 `npx repo-check ui` (or `bun ui` from a clone) starts a local server on `127.0.0.1:4747` instead. Open the printed URL: the project list fills in as the scan streams, with filters, summary tiles and a Rescan button, and a click on a project opens its findings and git state. Run inside one project, it opens straight on that project. It can clone a repo you do not have yet, and delete the local clone of an archived repo that holds nothing that is not on GitHub, each after a confirmation. It can fix the files the checks complain about (a diff per file to confirm, never over a file you have changed). It can also save the unpushed work of an archived repo (unarchive, push, archive again), always after a confirmation that lists what is pushed. It can discard the unsaved work of an archived clone, after a dialog that lists every item, and delete a fork that is provably pristine (it needs the `delete_repo` scope: `gh auth refresh -s delete_repo`).
 

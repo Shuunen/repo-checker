@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+const repos = [
+  { name: 'acme-api', description: 'The API of Acme', homepage: 'https://acme.example.com', topics: ['api', 'node'] },
+  { name: 'blog', description: 'My blog', homepage: null, topics: ['blog'] },
+  { name: 'dotfiles', description: null, homepage: null, license: null, topics: [] },
+  { name: 'cli-tool', description: 'A small CLI', homepage: null, topics: ['cli'] },
+  { name: 'old-experiment', archived: true, description: 'An idea that went nowhere', homepage: null, topics: [] },
+  { name: 'old-site', archived: true, description: 'The old website', homepage: 'https://old.example.com', topics: ['website'] },
+  { name: 'new-lib', description: 'A new library', homepage: null, topics: ['library'] },
+  { name: 'mobile-app', description: 'A mobile app', homepage: 'https://app.example.com', license: null, topics: ['mobile'] },
+  { fork: true, name: 'qbt-theme', description: 'A theme', homepage: null, topics: [] },
+  { fork: true, name: 'fork-with-work', description: 'A fork I changed', homepage: null, topics: [] },
+].map((repo, index) => ({ archived: false, default_branch: 'master', fork: false, license: { key: 'mit' }, owner: { login: 'demo' }, private: false, pushed_at: `2026-0${(index % 9) + 1}-12T10:00:00Z`, ...repo }))
+const withParent = repo => ({ ...repo, parent: { default_branch: 'master', full_name: `upstream/${repo.name}` } })
+const args = process.argv.slice(2)
+const say = value => process.stdout.write(typeof value === 'string' ? value : JSON.stringify(value))
+const fail = () => {
+  process.stderr.write('gh: Not Found (HTTP 404)\n')
+  process.exit(1)
+}
+const [command, ...rest] = args
+if (command !== 'api') fail()
+const joined = rest.join(' ')
+const repoMatch = /^repos\/demo\/([\w-]+)$/u.exec(joined)
+const branchesMatch = /^--paginate --slurp repos\/demo\/([\w-]+)\/branches/u.exec(joined)
+const compareMatch = /^repos\/upstream\/([\w-]+)\/compare\//u.exec(joined)
+if (joined === 'user') say({ login: 'demo' })
+else if (joined === '-i user') say('HTTP/2.0 200 OK\nX-Oauth-Scopes: repo, delete_repo\n\n{"login":"demo"}')
+else if (joined.startsWith('--paginate --slurp user/repos')) say([repos])
+else if (repoMatch) {
+  const repo = repos.find(item => item.name === repoMatch[1])
+  if (repo === undefined) fail()
+  else say(repo.fork ? withParent(repo) : repo)
+} else if (branchesMatch) say([[{ name: 'master' }]])
+else if (compareMatch) say({ ahead_by: compareMatch[1] === 'fork-with-work' ? 2 : 0 })
+else if (/\/pulls\?/u.test(joined)) say([])
+else fail()

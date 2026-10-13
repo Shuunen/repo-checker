@@ -39,5 +39,5 @@ None so far.
 ## Not started, waiting for you
 
 - **The release**: a new major version of `repo-check` on npm (version bump, changelog, `npm publish`, tag). Publishing is yours to trigger. `bun check` passes, and `npm pack` holds `dist/`, the README and the LICENSE.
-- ✅ **The screenshots** of the README are done, from a demo account with fake repos and a fake `gh` (no real repo name appears). The generator is not in the repo: tell me if you want it kept, to redo the captures when the UI changes.
+- ✅ **The screenshots** of the README are done, from the demo account of `demo/` (fake repos and a fake `gh`, no real repo name appears), and the generator is kept: `bun run build && bun demo`, with a smoke test in `bun check`. To redo the captures, run it and take them in the browser.
 - **Checks that need data the scan does not read yet** (`checks.md`, 📋): open pull requests, stale branches and tags, outdated or deprecated dependencies and advisories (the npm registry), CI status, lockfile checks, the deployed site. Each one is a decision on cost (API calls) and noise.
