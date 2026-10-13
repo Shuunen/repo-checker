@@ -15,3 +15,6 @@ export type ActionKind =
   | 'discard'
   /** Unarchive the repo, push the unsaved commits and branches, archive it again */
   | 'unarchive-push-rearchive'
+
+/** What running an action gives: it worked, or it was refused or failed with the reason to show */
+export type ActionResult = { message: string; ok: true } | { ok: false; reason: string }

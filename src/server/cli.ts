@@ -2,18 +2,12 @@ import { stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import { parseArgs } from 'node:util'
-import { createApp } from './app.ts'
 import { loadRules } from './engine/load-rules.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { formatReport } from './report.ts'
 import { scan } from './scan.ts'
 import type { StartServer } from './serve.ts'
-
-/** The port of `repo-check ui` when --port is not given */
-const defaultPort = 4747
-
-/** The highest TCP port */
-const maxPort = 65_535
+import { defaultPort, startUi } from './ui.ts'
 
 /** The usage, shown by --help and after a wrong option */
 const usage = `Usage: repo-check [ui] [options]
@@ -66,18 +60,6 @@ function parseOptions(argv: readonly string[]) {
 }
 
 /**
- * Read the port of the ui server
- * @param value the port as typed, the default port when undefined
- * @returns the port
- * @throws {TypeError} when it is not a whole number between 0 and 65535
- */
-function parsePort(value = String(defaultPort)) {
-  const port = Number(value)
-  if (!Number.isInteger(port) || port < 0 || port > maxPort) throw new TypeError(`the port ${value} is not a number between 0 and ${maxPort}`)
-  return port
-}
-
-/**
  * Expand a leading `~` to the home folder, the shell does not do it after `--target=`
  * @param value the target as typed
  * @param home the home folder
@@ -105,11 +87,8 @@ async function resolveTarget(cwd: string, value = '.') {
 /** Where the rules are, next to this file in the sources and in the build */
 const rulesFolder = path.join(import.meta.dirname, 'rules')
 
-/** The web app built by Vite, `dist/web` seen from `src/server` and from `dist/server` alike */
-const webFolder = path.resolve(import.meta.dirname, '..', '..', 'dist', 'web')
-
 /**
- * Start the ui server on the target, it keeps running until the process stops
+ * Resolve the target and the rules, then start the ui server on it
  * @param options the parsed options
  * @param environment the environment
  * @param environment.cwd the current folder
@@ -118,14 +97,9 @@ const webFolder = path.resolve(import.meta.dirname, '..', '..', 'dist', 'web')
  * @param environment.startServer start the HTTP server
  * @returns 0, the server keeps the process alive
  */
-async function startUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, print, startServer }: Readonly<CliEnvironment>) {
-  const port = parsePort(options.port)
+async function runUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, print, startServer }: Readonly<CliEnvironment>) {
   const target = await resolveTarget(cwd, options.target)
-  const rules = await loadRules(rulesFolder)
-  const app = createApp((shouldFetch, hooks) => scan({ gh, owner: options.owner, rules, shouldFetch: options.fetch && shouldFetch, target }, hooks), { target, webFolder })
-  const { url } = await startServer(app.fetch, port)
-  print(`repo-check ui · ${target}\nopen ${url} in your browser\npress Ctrl+C to stop`)
-  return 0
+  return startUi({ fetch: options.fetch, owner: options.owner, port: options.port, rules: await loadRules(rulesFolder), target }, { gh, print, startServer })
 }
 
 /**
@@ -160,7 +134,7 @@ export async function runCli(argv: readonly string[], environment: Readonly<CliE
   const { print } = environment
   try {
     const options = parseOptions(argv)
-    if (options.help !== true) return await (options.isUi ? startUi(options, environment) : scanAndReport(options, environment))
+    if (options.help !== true) return await (options.isUi ? runUi(options, environment) : scanAndReport(options, environment))
     print(usage)
     return 0
   } catch (error) {

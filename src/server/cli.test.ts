@@ -147,21 +147,39 @@ function noPage() {
 /**
  * Run `repo-check ui` in an empty folder with a fake server
  * @param argv the arguments after `ui`
+ * @param gh the fake gh
  * @returns the exit code, the printed text, the fake server, and `scan` to request the scan stream and read its body
  */
-async function ui(argv: readonly string[] = []) {
+async function ui(argv: readonly string[] = [], gh = fakeAccount()) {
   const folder = await makeEmptyFolder()
   let fetchApp: Parameters<StartServer>[0] = noPage
   const startServer = vi.fn<StartServer>(fetch => {
     fetchApp = fetch
     return Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:4747' })
   })
-  const { code, output } = await cli(['ui', ...argv], { cwd: folder, startServer })
+  const { code, output } = await cli(['ui', ...argv], { cwd: folder, gh, startServer })
   const scan = async (query = '') => {
     const response = await fetchApp(new Request(`http://127.0.0.1:4747/api/scan${query}`))
     return response.text()
   }
-  return { code, folder, output, scan, startServer }
+  const clone = async (name: string) => {
+    const response = await fetchApp(new Request(`http://127.0.0.1:4747/api/projects/${name}/clone`, { headers: { 'x-repo-check': '1' }, method: 'POST' }))
+    return response.json()
+  }
+  return { clone, code, folder, output, scan, startServer }
+}
+
+/**
+ * A gh whose login is `owner` and that has the repo `finga` under the owner of the given slug
+ * @param slug the `owner/finga` slug
+ * @returns the fake runner
+ */
+function fakeCloneGh(slug: string) {
+  const [login = ''] = slug.split('/')
+  return vi.fn<GhRunner>(args => {
+    const stdout = args.includes('user') ? { login: 'owner' } : { archived: false, fork: false, name: 'finga', owner: { login }, private: false, pushed_at: '' }
+    return Promise.resolve({ ok: true, stderr: '', stdout: JSON.stringify(stdout) })
+  })
 }
 
 describe('cli ui', () => {
@@ -188,6 +206,17 @@ describe('cli ui', () => {
     expect.hasAssertions()
     const { scan } = await ui(argv)
     await expect(scan(query)).resolves.not.toContain('with git fetch')
+  })
+
+  it.each([
+    ['the gh login', [], 'owner/finga'],
+    ['the --owner option', ['--owner=someone'], 'someone/finga'],
+  ])('clones a repo of %s', async (_name, argv, slug) => {
+    expect.hasAssertions()
+    const gh = fakeCloneGh(slug)
+    const { clone, folder } = await ui(argv, gh)
+    await expect(clone('finga')).resolves.toStrictEqual({ message: `cloned ${slug} into ${path.join(folder, 'finga')}`, ok: true })
+    expect(gh).toHaveBeenLastCalledWith(['repo', 'clone', slug, path.join(folder, 'finga')])
   })
 
   it('takes the port from the options', async () => {

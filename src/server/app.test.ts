@@ -1,7 +1,9 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import type { ActionResult } from '../shared/action.ts'
 import type { ScanEvent } from '../shared/scan-event.ts'
+import type { Actions } from './actions/actions.ts'
 import { createApp, type ScanRunner, toScanProject } from './app.ts'
 import type { ProjectResult } from './check-projects.ts'
 
@@ -40,14 +42,17 @@ async function readEvents(response: Readonly<Response>) {
   })
 }
 
+const cloneWorks: Actions = { clone: () => Promise.resolve({ message: 'cloned', ok: true }) }
+
 /**
  * Create the app on the /projects target, serving the given web folder
  * @param runScan runs the scan
  * @param webFolder the built web app, this folder by default
+ * @param actions the actions, a clone that works by default
  * @returns the app
  */
-function app(runScan: ScanRunner, webFolder = import.meta.dirname) {
-  return createApp(runScan, { target: '/projects', webFolder })
+function app(runScan: ScanRunner, webFolder = import.meta.dirname, actions = cloneWorks) {
+  return createApp(runScan, { actions, target: '/projects', webFolder })
 }
 
 describe(createApp, () => {
@@ -134,6 +139,43 @@ describe(createApp, () => {
     const response = await app(runScan).request('http://evil.example/api/scan')
     expect(response.status).toBe(403)
     expect(runScan).not.toHaveBeenCalled()
+  })
+})
+
+describe('actions', () => {
+  const post = { headers: { 'x-repo-check': '1' }, method: 'POST' }
+
+  it('runs the clone and answers its result', async () => {
+    expect.hasAssertions()
+    const clone = vi.fn<Actions['clone']>(() => Promise.resolve({ message: 'cloned owner/finga', ok: true }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { clone }).request('http://127.0.0.1/api/projects/finga/clone', post)
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toStrictEqual({ message: 'cloned owner/finga', ok: true })
+    expect(clone).toHaveBeenCalledWith('finga')
+  })
+
+  it('answers 409 with the reason when the action is refused', async () => {
+    expect.hasAssertions()
+    const refused: ActionResult = { ok: false, reason: 'a folder named finga already exists' }
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { clone: () => Promise.resolve(refused) }).request('http://127.0.0.1/api/projects/finga/clone', post)
+    expect(response.status).toBe(409)
+    await expect(response.json()).resolves.toStrictEqual(refused)
+  })
+
+  it('refuses a request without the action header, as a web page of another site would send it', async () => {
+    expect.hasAssertions()
+    const clone = vi.fn<Actions['clone']>()
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { clone }).request('http://127.0.0.1/api/projects/finga/clone', { method: 'POST' })
+    expect(response.status).toBe(403)
+    expect(clone).not.toHaveBeenCalled()
+  })
+
+  it('refuses an action on another host, against DNS rebinding', async () => {
+    expect.hasAssertions()
+    const clone = vi.fn<Actions['clone']>()
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { clone }).request('http://evil.example/api/projects/finga/clone', post)
+    expect(response.status).toBe(403)
+    expect(clone).not.toHaveBeenCalled()
   })
 })
 
