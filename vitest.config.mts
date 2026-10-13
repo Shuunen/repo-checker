@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     coverage: {
-      exclude: ['src/server/bin.ts', 'src/web/main.tsx'],
+      exclude: ['src/server/bin.ts', 'src/web/main.tsx', 'src/**/*fixtures.ts', 'src/web/render-app.tsx'],
       include: ['src/**/*.{ts,tsx}'],
       reporter: ['text', 'lcov', 'html'],
       thresholds: {

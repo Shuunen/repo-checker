@@ -76,7 +76,7 @@ describe(deleteClone, () => {
   it.each([
     ['is gone from GitHub', 'gh: Not Found (HTTP 404)', 'Owner/old does not exist on GitHub any more'],
     ['was renamed', apiRepo({ name: 'old-2' }), 'Owner/old was renamed or moved to owner/old-2, scan again'],
-    ['is not archived', apiRepo({ archived: false }), 'Owner/old is not archived, only the clone of an archived repo can be deleted'],
+    ['is not archived', apiRepo({ archived: false }), 'Owner/old is not archived, this only applies to the clone of an archived repo'],
     ['is a fork', apiRepo({ fork: true }), 'Owner/old is a fork, its delete is the fork delete'],
   ])('refuses a repo that %s, and reads no clone', async (_name, repo, reason) => {
     expect.hasAssertions()

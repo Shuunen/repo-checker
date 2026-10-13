@@ -3,6 +3,7 @@ import { Hono, type MiddlewareHandler } from 'hono'
 import { type SSEStreamingApi, streamSSE } from 'hono/streaming'
 import type { ScanEvent, ScanProject } from '../shared/scan-event.ts'
 import type { Actions } from './actions/actions.ts'
+import { actionRoutes } from './app-actions.ts'
 import type { ProjectResult } from './check-projects.ts'
 import type { ScanHooks } from './scan.ts'
 
@@ -11,12 +12,6 @@ const localHosts = new Set(['127.0.0.1', 'localhost'])
 
 /** The HTTP status of a refused host or request */
 const forbidden = 403
-
-/** The HTTP status of an action that worked */
-const succeeded = 200
-
-/** The HTTP status of an action that was refused or failed */
-const conflict = 409
 
 /** The header every request that changes something must carry, a web page on another site cannot add it without the server's consent */
 const actionHeader = 'x-repo-check'
@@ -106,7 +101,7 @@ async function streamScan(runScan: ScanRunner, { send, shouldFetch, target }: Re
 }
 
 /**
- * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch. `POST /api/projects/:name/clone` clones a repo, `GET /api/projects/:name/delete-clone` says what deleting its clone would remove and `POST` deletes it, `POST /api/projects/:name/unarchive-push` pushes the unsaved branches of an archived repo through an unarchive. A POST needs the `x-repo-check: 1` header, and every action answers its result as JSON, with status 409 when refused. Every other path serves the built web app, and `/project/*` serves its page too, so a reload on a project address works
+ * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch. `POST /api/projects/:name/clone` clones a repo, `GET /api/projects/:name/delete-clone` says what deleting its clone would remove and `POST` deletes it, `POST /api/projects/:name/unarchive-push` pushes the unsaved branches of an archived repo through an unarchive, `GET /api/projects/:name/discard` lists what a discard would throw away with a fingerprint of that list, and `POST` discards it only when `?fingerprint=` still matches. A POST needs the `x-repo-check: 1` header, and every action answers its result as JSON, with status 409 when refused. Every other path serves the built web app, and `/project/*` serves its page too, so a reload on a project address works
  * @param runScan runs a scan of the target
  * @param options where the server runs
  * @param options.actions the actions the page can ask for
@@ -119,22 +114,7 @@ export function createApp(runScan: ScanRunner, { actions, target, webFolder }: R
   return new Hono()
     .use(refuseOtherHosts)
     .use(requireActionHeader)
-    .post('/api/projects/:name/clone', async context => {
-      const result = await actions.clone(context.req.param('name'))
-      return context.json(result, result.ok ? succeeded : conflict)
-    })
-    .post('/api/projects/:name/unarchive-push', async context => {
-      const result = await actions.unarchivePush(context.req.param('name'))
-      return context.json(result, result.ok ? succeeded : conflict)
-    })
-    .get('/api/projects/:name/delete-clone', async context => {
-      const result = await actions.previewDeleteClone(context.req.param('name'))
-      return context.json(result, result.ok ? succeeded : conflict)
-    })
-    .post('/api/projects/:name/delete-clone', async context => {
-      const result = await actions.deleteClone(context.req.param('name'))
-      return context.json(result, result.ok ? succeeded : conflict)
-    })
+    .route('/', actionRoutes(actions))
     .get('/api/scan', context => streamSSE(context, stream => streamScan(runScan, { send: eventSender(stream), shouldFetch: context.req.query('fetch') !== 'false', target })))
     .use(serveStatic({ root: webFolder }))
     .get('/project/*', serveStatic({ path: 'index.html', root: webFolder }))

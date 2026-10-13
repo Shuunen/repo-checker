@@ -85,6 +85,14 @@ describe('project view', () => {
     expect(textOf('project-missing')).toBe('No project named nope in this scan')
   })
 
+  it('shows the action of a fork as a disabled button, it is not built yet', async () => {
+    expect.hasAssertions()
+    const pristine = aFinding({ actions: ['delete-fork'], ruleId: 'pristine-fork', scope: 'project', severity: 'info' })
+    renderApp(scanRequest([...listEvents, { result: aProject('qbt', [pristine]), type: 'project' }]), '/project/qbt')
+    const button = await screen.findByTestId('action-delete-fork')
+    expect((button as HTMLButtonElement).disabled).toBe(true)
+  })
+
   it('goes back to the list with the back link', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(listEvents), '/project/jozzo')

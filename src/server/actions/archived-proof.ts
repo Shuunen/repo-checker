@@ -18,8 +18,8 @@ export interface GitReaders {
 export interface ArchivedOptions {
   /** Runs gh */
   gh: GhRunner
-  /** How the clones are read, the real git by default */
-  git?: GitReaders
+  /** How the clones are read, the real git in the server, a fake in tests */
+  git: GitReaders
   /** The repo name, as asked by the page */
   name: string
   /** The GitHub owner the scan compares with */
@@ -31,8 +31,8 @@ export interface ArchivedOptions {
 /** The proof of an action: the clone to act on, or the reason to refuse */
 export type Proof = { clone: LocalClone; ok: true } | { ok: false; reason: string }
 
-/** The real git */
-const realGit: GitReaders = { readClone, readClones }
+/** The real git, the default of every action */
+export const realGit: GitReaders = { readClone, readClones }
 
 /**
  * Prove the repo is still archived on GitHub and not a fork, the only case `archived-clone` offers a delete for
@@ -45,7 +45,7 @@ async function findRepo(gh: GhRunner, slug: string): Promise<{ repo: GithubRepo 
   const repo = await getRepo(gh, slug)
   if (repo === undefined) return { reason: `${slug} does not exist on GitHub any more` }
   if (repo.slug !== slug.toLowerCase()) return { reason: `${slug} was renamed or moved to ${repo.slug}, scan again` }
-  if (!repo.isArchived) return { reason: `${slug} is not archived, only the clone of an archived repo can be deleted` }
+  if (!repo.isArchived) return { reason: `${slug} is not archived, this only applies to the clone of an archived repo` }
   return repo.isFork ? { reason: `${slug} is a fork, its delete is the fork delete` } : { repo }
 }
 
@@ -91,7 +91,7 @@ async function refusalOf(repo: Readonly<GithubRepo>, clone: Readonly<LocalClone>
  * @throws {Error} when gh fails for a reason other than a 404
  * @example const proof = await proveArchived({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target }, 'delete-clone')
  */
-export async function proveArchived({ gh, git = realGit, name, owner, target }: Readonly<ArchivedOptions>, action: ActionKind): Promise<Proof> {
+export async function proveArchived({ gh, git, name, owner, target }: Readonly<ArchivedOptions>, action: ActionKind): Promise<Proof> {
   if (!isRepoName(name)) return { ok: false, reason: `${name} is not a repo name` }
   const single = await checkFolderOfProjects(target)
   if (single !== undefined) return { ok: false, reason: single }

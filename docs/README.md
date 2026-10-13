@@ -8,6 +8,7 @@ The `rewrite/projects-dashboard` branch rewrites repo-checker from scratch. The 
 - [architecture.md](architecture.md) : folders, scan flow, API sketch, tests.
 - [ui.md](ui.md) : look, screens, states, mockups.
 - [conventions.md](conventions.md) : tooling and code rules.
+- [questions.md](questions.md) : decisions taken without asking and questions that blocked a task, to review together.
 - [../TODOS.md](../TODOS.md) : future work that is not a check (actions, output, ideas).
 
 `banner.svg` is the project logo. `demo-1.42.jpg` shows the old tool's output, replace it with a capture of the new report.

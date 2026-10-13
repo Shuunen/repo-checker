@@ -27,7 +27,9 @@
       "env": {
         "vitest": true
       },
-      "files": ["src/server/engine/rule-tester.ts", "src/web/fixtures.ts", "src/web/render-app.tsx"]
+      "files": ["src/server/engine/rule-tester.ts", "src/server/actions/discard-fixtures.ts",
+        "src/server/app-fixtures.ts",
+        "src/web/fixtures.ts", "src/web/render-app.tsx"]
     },
     {
       "files": ["*.test.ts", "*.test.tsx"],

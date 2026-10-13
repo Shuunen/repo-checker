@@ -1,6 +1,6 @@
 # UI
 
-Status: the project list and the project view are built. Clone, Delete clone and Unarchive & push work behind a confirmation dialog, the other action buttons are disabled until their dialogs are built.
+Status: the project list and the project view are built. Clone, Delete clone, Unarchive & push and Discard work behind a confirmation dialog, the Delete fork button is disabled until it is built.
 
 ## Library and theme
 

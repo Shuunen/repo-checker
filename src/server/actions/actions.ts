@@ -1,7 +1,9 @@
-import type { ActionResult, DeletePreview } from '../../shared/action.ts'
+import type { ActionResult, DeletePreview, DiscardPreview } from '../../shared/action.ts'
 import { type GhRunner, getLogin } from '../inventory/github.ts'
 import { cloneRepo } from './clone.ts'
+import { realGit } from './archived-proof.ts'
 import { deleteClone, previewDeleteClone } from './delete-clone.ts'
+import { discardClone, previewDiscard } from './discard.ts'
 import { unarchivePush } from './unarchive-push.ts'
 
 /** The actions the page can ask for, each one proves again that it is still safe before it acts */
@@ -12,6 +14,10 @@ export interface Actions {
   deleteClone: (name: string) => Promise<ActionResult>
   /** Say what deleting that clone would remove, the files git ignores, or why it is refused */
   previewDeleteClone: (name: string) => Promise<DeletePreview>
+  /** Throw away the unsaved work of an archived repo's clone, refused unless it is exactly the work the fingerprint stands for */
+  discard: (name: string, fingerprint: string) => Promise<ActionResult>
+  /** Say what discarding would throw away, with the fingerprint of that list */
+  previewDiscard: (name: string) => Promise<DiscardPreview>
   /** Unarchive an archived repo, push the unsaved branches of its clone, archive it again */
   unarchivePush: (name: string) => Promise<ActionResult>
 }
@@ -25,11 +31,13 @@ export interface Actions {
  * @example const actions = createActions(ghCli, undefined, '/home/me/projects')
  */
 export function createActions(gh: GhRunner, owner: string | undefined, target: string): Actions {
-  const options = async (name: string) => ({ gh, name, owner: owner ?? (await getLogin(gh)), target })
+  const options = async (name: string) => ({ gh, git: realGit, name, owner: owner ?? (await getLogin(gh)), target })
   return {
     clone: async name => cloneRepo(await options(name)),
     deleteClone: async name => deleteClone(await options(name)),
+    discard: async (name, fingerprint) => discardClone({ ...(await options(name)), fingerprint }),
     previewDeleteClone: async name => previewDeleteClone(await options(name)),
+    previewDiscard: async name => previewDiscard(await options(name)),
     unarchivePush: async name => unarchivePush(await options(name)),
   }
 }

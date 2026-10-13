@@ -43,7 +43,7 @@ The scan builds two lists, then matches them by `origin` remote.
 The dialog first lists every unsaved item: commit messages, changed file names, stash entries, local-only branch names.
 
 - **Unarchive, push, re-archive**: one confirmed action. GitHub rejects pushes to an archived repo, so the tool unarchives it, pushes every branch with unpushed commits and every local-only branch, then archives it again. If the push fails, the tool still re-archives and reports the failure. It never creates commits: while the clone has uncommitted or untracked files or a stash, the action is disabled and says why. Clean those up by hand, or use Discard.
-- **Discard**: resets to the remote state, removes uncommitted and untracked files, drops the stash and deletes local-only branches, all in one action. The clone is then clean and `archived-clone` applies.
+- **Discard**: resets to the remote state, removes uncommitted and untracked files, drops the stash and deletes local-only branches, all in one action. The clone is then clean and `archived-clone` applies. Files git ignores (a `.env`, a local database) are left alone: they are listed by the delete of the clone, which comes after. The dialog lists the exact items read fresh when it opens, and the discard is refused if the clone holds anything else when it runs.
 
 ### `pristine-fork`: what "pristine" means
 

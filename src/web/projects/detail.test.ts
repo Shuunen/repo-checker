@@ -1,6 +1,6 @@
 import type { ForkStatus, LocalClone } from '../../shared/project.ts'
 import { aFinding, aProject } from '../fixtures.ts'
-import { factGroups, findingGroups, fixText, forkFacts, githubUrl, identityBadges, localFacts, offeredActions, slugOf, unarchiveBlocker, unsavedGroups } from './detail.ts'
+import { factGroups, findingGroups, fixText, forkFacts, githubUrl, identityBadges, localFacts, offeredActions, slugOf, unarchiveBlocker } from './detail.ts'
 
 const clone = aProject('app').project.local as LocalClone
 const dirty: LocalClone = {
@@ -159,23 +159,6 @@ describe(fixText, () => {
   ])('describes the fix of %j', (fixFiles, text) => {
     expect.hasAssertions()
     expect(fixText(aFinding({ fixFiles }))).toBe(text)
-  })
-})
-
-describe(unsavedGroups, () => {
-  it('lists the unsaved work item by item, in a fixed order', () => {
-    expect.hasAssertions()
-    expect(unsavedGroups(dirty)).toStrictEqual([
-      { items: ['master: fix a', 'master: fix b'], title: 'Unpushed commits' },
-      { items: ['wip'], title: 'Local-only branches' },
-      { items: ['?? notes.txt', ' M a.ts'], title: 'Uncommitted files' },
-      { items: ['stash@{0}: WIP'], title: 'Stashes' },
-    ])
-  })
-
-  it('has no group for a clean clone', () => {
-    expect.hasAssertions()
-    expect(unsavedGroups(clone)).toStrictEqual([])
   })
 })
 

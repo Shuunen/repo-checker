@@ -223,13 +223,21 @@ describe('cli ui', () => {
   it.each(['GET', 'POST'] as const)('wires the delete of a clone with %s, and refuses a repo that is not archived', async method => {
     expect.hasAssertions()
     const { call } = await ui([], fakeCloneGh('owner/finga'))
-    await expect(call('finga/delete-clone', method)).resolves.toStrictEqual({ ok: false, reason: 'owner/finga is not archived, only the clone of an archived repo can be deleted' })
+    await expect(call('finga/delete-clone', method)).resolves.toStrictEqual({ ok: false, reason: 'owner/finga is not archived, this only applies to the clone of an archived repo' })
   })
 
   it('wires the unarchive and push, and refuses a repo that is not archived', async () => {
     expect.hasAssertions()
     const { call } = await ui([], fakeCloneGh('owner/finga'))
-    await expect(call('finga/unarchive-push', 'POST')).resolves.toStrictEqual({ ok: false, reason: 'owner/finga is not archived, only the clone of an archived repo can be deleted' })
+    await expect(call('finga/unarchive-push', 'POST')).resolves.toStrictEqual({ ok: false, reason: 'owner/finga is not archived, this only applies to the clone of an archived repo' })
+  })
+
+  it('wires the discard, its preview and its fingerprint, and refuses a repo that is not archived', async () => {
+    expect.hasAssertions()
+    const { call } = await ui([], fakeCloneGh('owner/finga'))
+    const reason = 'owner/finga is not archived, this only applies to the clone of an archived repo'
+    await expect(call('finga/discard', 'GET')).resolves.toStrictEqual({ ok: false, reason })
+    await expect(call('finga/discard?fingerprint=abc', 'POST')).resolves.toStrictEqual({ ok: false, reason })
   })
 
   it('takes the port from the options', async () => {

@@ -1,5 +1,6 @@
 import { AlertDialog, Button } from '@heroui/react'
 import type { LocalClone } from '../../shared/project.ts'
+import { unsavedGroups } from '../../shared/unsaved.ts'
 import { UnsavedList } from './unsaved-list.tsx'
 
 /** What the dialog shows and does */
@@ -49,7 +50,7 @@ export function UnarchivePushDialog({ blocker, error, isOpen, isPending, local, 
             </AlertDialog.Header>
             <AlertDialog.Body data-testid="unarchive-dialog-body">
               <p>{`GitHub rejects a push to an archived repo, so ${slug} is unarchived, these branches are pushed without creating any commit, then it is archived again, even if the push fails. It is writable for a few seconds.`}</p>
-              <UnsavedList local={local} />
+              <UnsavedList groups={unsavedGroups(local)} />
               {blocker !== undefined && <p data-testid="unarchive-blocker">{blocker}</p>}
               {error !== undefined && <p data-testid="unarchive-error">{error}</p>}
             </AlertDialog.Body>
