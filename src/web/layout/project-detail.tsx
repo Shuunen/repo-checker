@@ -19,8 +19,8 @@ export function ProjectDetail({ result: { findings, project }, target }: Readonl
   return (
     <>
       <ProjectIdentity project={project} />
-      <FindingsCard findings={findings} />
       <FixFilesCard findings={findings} project={project} />
+      <FindingsCard findings={findings} />
       {factGroups(project).map(group => (
         <FactsCard facts={group.facts} key={group.title} title={group.title} />
       ))}

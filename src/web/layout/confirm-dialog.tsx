@@ -50,8 +50,8 @@ export function ConfirmDialog({ canConfirm, children, confirmLabel, heading, isD
   return (
     <AlertDialog isOpen={isOpen} onOpenChange={onOpenChange}>
       <AlertDialog.Backdrop>
-        <AlertDialog.Container size={isWide ? 'lg' : 'md'}>
-          <AlertDialog.Dialog>
+        <AlertDialog.Container>
+          <AlertDialog.Dialog className={isWide ? 'max-w-4xl' : undefined}>
             <AlertDialog.Header>
               <AlertDialog.Heading>{heading}</AlertDialog.Heading>
             </AlertDialog.Header>
