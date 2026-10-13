@@ -8,6 +8,17 @@ Every check, built or wanted, lives in `docs/checks.md`. This file holds the res
 - Apply the file fixes finding by finding, today the whole project is fixed at once.
 - A json schema for `.repo-checker.json`, from the old README todo list.
 
+## Next checks
+
+The checks still marked 📋 in `docs/checks.md`, sorted by what they cost (2026-10-13). The cheapest first.
+
+- **Cheap, local, no network**: `multiple-lockfiles` (🔴) and `old-lockfile-format` (🟡, like `bun.lockb`). They only look at the files of a clone, like the other file checks.
+- **One GitHub call per live repo** (about 30 for the own live repos): `ci-failing` (🔴), the CI status of the default branch.
+- **The npm registry, the most valuable and the most expensive** (a call per dependency of every project, so a cache first): `outdated-dependency`, `deprecated-dependency`, `security-advisory`, `outdated-package-manager`, and `version-drift` (the same tool at different versions across projects).
+- **Waiting on an "archive" action** (archive on GitHub, with its confirmation and its proof, like the other actions): `archive-candidate`, `renovate-only-zombie` and `stale-uncloned-repo`, which suggest archiving a repo.
+- **More data from git or GitHub**: `stale-local-branch`, `stale-remote-branch`, `stale-last-tag`, and `deploy-down` (a call per deployed site).
+- **From the old README todo list**, they read the project files and need a notion of "this is a website": `website-static-files`, `external-link-rel`, `media-dimensions`, `build-size`, `lighthouse-budget`.
+
 ## Actions
 
 - Bulk actions: `pull --ff-only`, prune merged branches, clone all missing repos, archive on GitHub.
