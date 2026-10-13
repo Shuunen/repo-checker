@@ -1,8 +1,8 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { homedir, tmpdir } from 'node:os'
 import path from 'node:path'
 import type { ScanEvent } from '../shared/scan-event.ts'
-import { app } from './app-fixtures.ts'
+import { app, worksFine } from './app-fixtures.ts'
 import { createApp, type ScanRunner } from './app.ts'
 import { toScanProject } from './to-scan-project.ts'
 import type { ProjectResult } from './check-projects.ts'
@@ -59,6 +59,14 @@ describe(createApp, () => {
     // JSON drops the undefined fields, like `github` of a project without repo, so the page reads them as missing
     expect(events[2]?.data).toStrictEqual({ result: { ...toScanProject(result), project: { isOtherOwner: false, name: 'app' } }, type: 'project' })
     expect(events[3]?.data).toMatchObject({ isSingle: false, owner: 'owner', type: 'done' })
+  })
+
+  it('shows the home folder as ~ in the target it sends first', async () => {
+    expect.hasAssertions()
+    const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
+    const response = await createApp(runScan, { actions: worksFine, target: path.join(homedir(), 'Projects', 'github'), webFolder: import.meta.dirname }).request('http://127.0.0.1/api/scan')
+    const [started] = await readEvents(response)
+    expect(started?.data).toStrictEqual({ target: '~/Projects/github', type: 'started' })
   })
 
   it('answers with an event stream', async () => {

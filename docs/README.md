@@ -11,4 +11,4 @@ The `rewrite/projects-dashboard` branch rewrites repo-checker from scratch. The 
 - [questions.md](questions.md) : decisions taken without asking and questions that blocked a task, to review together.
 - [../TODOS.md](../TODOS.md) : future work that is not a check (actions, output, ideas).
 
-`banner.svg` is the project logo. `demo-1.42.jpg` shows the old tool's output, replace it with a capture of the new report.
+`banner.svg` is the project logo. `demo-list.jpg` and `demo-dialog.jpg` are captures of the dashboard on a demo account (fake repos and a fake `gh`, nothing real in them).

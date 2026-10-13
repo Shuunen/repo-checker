@@ -52,7 +52,9 @@ export function ConfirmDialog({ canConfirm, children, confirmLabel, heading, isD
             <AlertDialog.Header>
               <AlertDialog.Heading>{heading}</AlertDialog.Heading>
             </AlertDialog.Header>
-            <AlertDialog.Body data-testid={`${prefix}-dialog-body`}>{children}</AlertDialog.Body>
+            <AlertDialog.Body className="flex flex-col gap-3" data-testid={`${prefix}-dialog-body`}>
+              {children}
+            </AlertDialog.Body>
             <AlertDialog.Footer>
               <Button data-testid={`${prefix}-cancel`} isDisabled={isPending} onPress={onCancel} variant="tertiary">
                 Cancel

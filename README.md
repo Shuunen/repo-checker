@@ -22,11 +22,15 @@
 
 ## Demo
 
-![demo](docs/demo-1.42.jpg)
+`repo-check ui` lists every project of a folder next to what GitHub says, and fixes what it can, each fix behind a confirmation (a demo account, no real repo):
+
+![the project list](docs/demo-list.jpg)
+
+![the confirmation of an action](docs/demo-dialog.jpg)
 
 ## Usage
 
-Run it in a folder of projects to check them all against your GitHub account, or inside one project to check only that one. It needs `git` and an authenticated [GitHub CLI](https://cli.github.com) (`gh auth login`), and changes nothing: it only reports.
+Run it in a folder of projects to check them all against your GitHub account, or inside one project to check only that one. It needs `git` and an authenticated [GitHub CLI](https://cli.github.com) (`gh auth login`), and the report changes nothing. `repo-check ui` can fix things, always after a confirmation that says what will happen.
 
 ```bash
 npx repo-check

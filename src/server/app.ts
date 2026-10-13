@@ -1,9 +1,11 @@
+import { homedir } from 'node:os'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono, type MiddlewareHandler } from 'hono'
 import { type SSEStreamingApi, streamSSE } from 'hono/streaming'
 import type { ScanEvent } from '../shared/scan-event.ts'
 import type { Actions } from './actions/actions-contract.ts'
 import { actionRoutes } from './app-actions.ts'
+import { homePath } from './home-path.ts'
 import type { ScanHooks } from './scan.ts'
 import { toScanProject } from './to-scan-project.ts'
 
@@ -23,7 +25,7 @@ export type ScanRunner = (shouldFetch: boolean, hooks: Readonly<Required<ScanHoo
 interface AppOptions {
   /** The actions the page can ask for */
   actions: Actions
-  /** The folder scanned, sent first so the page can show it while the scan runs */
+  /** The folder scanned, sent first so the page can show it while the scan runs, with the home folder as `~` */
   target: string
   /** The built web app, served on every path that is not an API route */
   webFolder: string
@@ -79,7 +81,7 @@ function eventSender(stream: Readonly<SSEStreamingApi>): SendEvent {
  */
 async function streamScan(runScan: ScanRunner, { send, shouldFetch, target }: Readonly<{ send: SendEvent; shouldFetch: boolean; target: string }>) {
   const started = Date.now()
-  await send({ target, type: 'started' })
+  await send({ target: homePath(target, homedir()), type: 'started' })
   try {
     const { isSingle, owner } = await runScan(shouldFetch, { onProgress: line => send({ line, type: 'progress' }), onProject: result => send({ result: toScanProject(result), type: 'project' }) })
     await send({ durationMs: Date.now() - started, isSingle, owner, type: 'done' })
