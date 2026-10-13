@@ -1,11 +1,11 @@
 import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono, type MiddlewareHandler } from 'hono'
 import { type SSEStreamingApi, streamSSE } from 'hono/streaming'
-import type { ScanEvent, ScanProject } from '../shared/scan-event.ts'
-import type { Actions } from './actions/actions.ts'
+import type { ScanEvent } from '../shared/scan-event.ts'
+import type { Actions } from './actions/actions-contract.ts'
 import { actionRoutes } from './app-actions.ts'
-import type { ProjectResult } from './check-projects.ts'
 import type { ScanHooks } from './scan.ts'
+import { toScanProject } from './to-scan-project.ts'
 
 /** The host names the server answers to, any other is refused so a web page on another domain cannot reach it through DNS rebinding */
 const localHosts = new Set(['127.0.0.1', 'localhost'])
@@ -31,18 +31,6 @@ interface AppOptions {
 
 /** Send one scan event, after the ones sent before it */
 type SendEvent = (event: Readonly<ScanEvent>) => Promise<void>
-
-/**
- * Turn a project result into its JSON-safe shape: the edits of a fix are functions, only their files are kept
- * @param result the project result
- * @param result.findings the findings, with their edits
- * @param result.outcomes one outcome per rule
- * @param result.project the project
- * @returns the result as the page receives it
- */
-export function toScanProject({ findings, outcomes, project }: Readonly<ProjectResult>): ScanProject {
-  return { findings: findings.map(({ edits, ...finding }) => ({ ...finding, fixFiles: [...new Set(edits.map(edit => edit.file))] })), outcomes, project }
-}
 
 /**
  * Refuse any request whose host is not 127.0.0.1 or localhost

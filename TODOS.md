@@ -18,7 +18,6 @@ v1 is the Sync checks only (see `docs/features.md`). Every check, built or wante
 
 ## Output and UX
 
-- After an action, scan again only the project it changed instead of the whole folder (today the whole list scans again, up to about 12 s).
 - Open the confirmation straight from the row's action button, instead of linking to the project view.
 
 - A health score per repo.

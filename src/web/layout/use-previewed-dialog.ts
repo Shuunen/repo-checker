@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { getPreview, type PreviewedAction } from '../actions/get-preview.ts'
 import { postAction } from '../actions/post-action.ts'
-import { scanQueryKey } from '../scan/scan-query.ts'
+import { refreshProject } from '../scan/refresh-project.ts'
 
 /**
  * The confirmation of an action that shows what it would do first: when the dialog opens the server proves again that the action is right and says what it would do, and the action only runs once confirmed. For an action that throws something away, the fingerprint of the list shown is sent with the confirmation, and the server refuses if the clone changed. When it worked the dialog closes and the scan runs again, when it was refused the dialog stays open with the reason
@@ -18,7 +18,7 @@ export function usePreviewedDialog<Preview extends { ok: boolean }>(name: string
   const client = useQueryClient()
   const preview = useQuery({ enabled: isOpen, gcTime: 0, queryFn: () => getPreview<Preview>(name, action), queryKey: ['preview', action, name], retry: false })
   const fingerprint = preview.data?.ok === true ? fingerprintOf?.(preview.data as Extract<Preview, { ok: true }>) : undefined
-  const run = useMutation({ mutationFn: () => postAction(name, action, fingerprint), onSuccess: () => client.invalidateQueries({ queryKey: scanQueryKey }) })
+  const run = useMutation({ mutationFn: () => postAction(name, action, fingerprint), onSuccess: () => refreshProject(client, name) })
   const handleOpen = () => {
     run.reset()
     setIsOpen(true)

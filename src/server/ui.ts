@@ -2,6 +2,7 @@ import path from 'node:path'
 import { createActions } from './actions/actions.ts'
 import { createApp } from './app.ts'
 import type { AnyRule } from './engine/define-project-rule.ts'
+import { splitRules } from './engine/load-rules.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { scan } from './scan.ts'
 import type { OpenBrowser } from './open-browser.ts'
@@ -76,7 +77,7 @@ function parsePort(value = String(defaultPort)) {
  */
 export async function startUi({ fetch, owner, port, rules, shouldOpen, target }: Readonly<UiOptions>, { gh, openBrowser, print, startServer }: Readonly<UiEnvironment>) {
   const listenOn = parsePort(port)
-  const app = createApp((shouldFetch, hooks) => scan({ gh, owner, rules, shouldFetch: fetch !== false && shouldFetch, target }, hooks), { actions: createActions(gh, owner, target), target, webFolder })
+  const app = createApp((shouldFetch, hooks) => scan({ gh, owner, rules, shouldFetch: fetch !== false && shouldFetch, target }, hooks), { actions: createActions({ gh, owner, rules: splitRules(rules), target }), target, webFolder })
   const { url } = await startServer(app.fetch, listenOn)
   print(`repo-check ui · ${target}\nopen ${url} in your browser\npress Ctrl+C to stop`)
   if (shouldOpen !== false) openBrowser(url)

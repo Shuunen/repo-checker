@@ -1,5 +1,5 @@
-import { aProject } from '../fixtures.ts'
-import { describeScan, initialScanState, reduceScan } from './scan-state.ts'
+import { aFinding, aProject } from '../fixtures.ts'
+import { describeScan, initialScanState, reduceScan, replaceProject } from './scan-state.ts'
 
 describe(reduceScan, () => {
   it('builds the state event by event', () => {
@@ -34,5 +34,28 @@ describe(describeScan, () => {
   it('shows nothing before the scan starts', () => {
     expect.hasAssertions()
     expect(describeScan(initialScanState, false)).toBe('')
+  })
+})
+
+describe(replaceProject, () => {
+  const state = { ...initialScanState, projects: [aProject('a'), aProject('b'), aProject('c')] }
+
+  it('puts the project as it is now in place of its old entry, the others untouched', () => {
+    expect.hasAssertions()
+    const now = aProject('b', [aFinding()])
+    const next = replaceProject(state, 'b', now)
+    expect(next.projects.map(item => item.project.name)).toStrictEqual(['a', 'b', 'c'])
+    expect(next.projects[1]).toBe(now)
+    expect(next.projects[0]).toBe(state.projects[0])
+  })
+
+  it('removes a project that is gone', () => {
+    expect.hasAssertions()
+    expect(replaceProject(state, 'b', undefined).projects.map(item => item.project.name)).toStrictEqual(['a', 'c'])
+  })
+
+  it('adds a project the scan did not have', () => {
+    expect.hasAssertions()
+    expect(replaceProject(state, 'd', aProject('d')).projects.map(item => item.project.name)).toStrictEqual(['a', 'b', 'c', 'd'])
   })
 })

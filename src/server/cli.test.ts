@@ -256,6 +256,12 @@ describe('cli ui', () => {
     expect(kept.openBrowser).not.toHaveBeenCalled()
   })
 
+  it('wires the rescan of one project, and says a repo that is not on GitHub is gone', async () => {
+    expect.hasAssertions()
+    const { call } = await ui([], fakeCloneGh('owner/finga'))
+    await expect(call('finga/rescan', 'GET')).resolves.toMatchObject({ ok: true, project: { project: { name: 'finga' } } })
+  })
+
   it('takes the port from the options', async () => {
     expect.hasAssertions()
     const startServer = vi.fn<StartServer>(() => Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:8080' }))

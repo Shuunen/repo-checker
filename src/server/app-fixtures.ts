@@ -1,4 +1,4 @@
-import type { Actions } from './actions/actions.ts'
+import type { Actions } from './actions/actions-contract.ts'
 import { createApp, type ScanRunner } from './app.ts'
 
 export const worksFine: Actions = {
@@ -9,6 +9,7 @@ export const worksFine: Actions = {
   previewDeleteClone: () => Promise.resolve({ ignoredFiles: ['.env'], ok: true, path: '/projects/old' }),
   previewDeleteFork: () => Promise.resolve({ branches: 1, clone: undefined, ok: true, parent: 'them/lib' }),
   previewDiscard: () => Promise.resolve({ fingerprint: 'abc', groups: [{ items: ['master: fix'], title: 'Unpushed commits' }], ok: true, path: '/projects/old' }),
+  rescan: () => Promise.resolve({ ok: true, project: undefined }),
   unarchivePush: () => Promise.resolve({ message: 'pushed', ok: true }),
 }
 

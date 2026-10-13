@@ -3,7 +3,8 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import type { ScanEvent } from '../shared/scan-event.ts'
 import { app } from './app-fixtures.ts'
-import { createApp, type ScanRunner, toScanProject } from './app.ts'
+import { createApp, type ScanRunner } from './app.ts'
+import { toScanProject } from './to-scan-project.ts'
 import type { ProjectResult } from './check-projects.ts'
 
 const result: ProjectResult = {

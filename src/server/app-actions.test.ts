@@ -1,5 +1,5 @@
 import type { ActionResult } from '../shared/action.ts'
-import type { Actions } from './actions/actions.ts'
+import type { Actions } from './actions/actions-contract.ts'
 import { app, worksFine } from './app-fixtures.ts'
 import type { ScanRunner } from './app.ts'
 
@@ -197,5 +197,22 @@ describe('delete fork', () => {
     const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, deleteFork }).request('http://127.0.0.1/api/projects/lib/delete-fork', { method: 'POST' })
     expect(response.status).toBe(403)
     expect(deleteFork).not.toHaveBeenCalled()
+  })
+})
+
+describe('rescan', () => {
+  it('answers the project as it is now', async () => {
+    expect.hasAssertions()
+    const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/finga/rescan')
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toStrictEqual({ ok: true })
+  })
+
+  it('answers 409 with the reason when the project cannot be scanned', async () => {
+    expect.hasAssertions()
+    const refused: ActionResult = { ok: false, reason: 'the target is a single project, actions work on a folder of projects' }
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, rescan: () => Promise.resolve(refused) }).request('http://127.0.0.1/api/projects/finga/rescan')
+    expect(response.status).toBe(409)
+    await expect(response.json()).resolves.toStrictEqual(refused)
   })
 })

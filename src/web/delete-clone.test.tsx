@@ -1,7 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import type { DeletePreview } from '../shared/action.ts'
 import type { ScanEvent } from '../shared/scan-event.ts'
-import { aFinding, aProject, scanRequest } from './fixtures.ts'
+import { aFinding, aProject, scanRequest, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 
 const safe = aFinding({ actions: ['delete-clone'], message: 'archived on GitHub, and the clone holds nothing that is not on GitHub', messageId: 'safe', ruleId: 'archived-clone', scope: 'project', severity: 'info' })
@@ -11,24 +11,6 @@ const events: ScanEvent[] = [
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]
 const preview = (ignoredFiles: string[] = ['.env']): DeletePreview => ({ ignoredFiles, ok: true, path: '/projects/old' })
-
-/**
- * Replace fetch with a fake: a GET answers the preview, a POST answers the delete. Put the real fetch back when the test ends
- * @param previewResponse what the server answers to the preview
- * @param deleteResponse what the server answers to the delete
- * @returns the fake
- */
-function stubServer(previewResponse: Response | Error, deleteResponse = Response.json({ message: 'deleted the clone /projects/old', ok: true })) {
-  const fetchMock = vi.fn<typeof fetch>((_url, init) => {
-    if (init?.method === 'POST') return Promise.resolve(deleteResponse)
-    return previewResponse instanceof Error ? Promise.reject(previewResponse) : Promise.resolve(previewResponse)
-  })
-  vi.stubGlobal('fetch', fetchMock)
-  onTestFinished(() => {
-    vi.unstubAllGlobals()
-  })
-  return fetchMock
-}
 
 /**
  * Open the project and the delete confirmation, once the server has answered the preview
@@ -53,7 +35,7 @@ function isDeleteDisabled() {
 describe('delete clone', () => {
   it('checks again first, then says what would be lost and offers the delete', async () => {
     expect.hasAssertions()
-    const fetchMock = stubServer(Response.json(preview(['.env', 'data/'])))
+    const fetchMock = stubApi({ preview: Response.json(preview(['.env', 'data/'])) })
     renderApp(scanRequest(events), '/project/old')
     fireEvent.click(await screen.findByTestId('action-delete-clone'))
     await screen.findByTestId('delete-checking')
@@ -65,7 +47,7 @@ describe('delete clone', () => {
 
   it('says when no ignored file would be lost', async () => {
     expect.hasAssertions()
-    stubServer(Response.json(preview([])))
+    stubApi({ preview: Response.json(preview([])) })
     await openConfirmation()
     expect(screen.getByTestId('delete-preview').textContent).toContain('No ignored file would be lost.')
   })
@@ -73,7 +55,7 @@ describe('delete clone', () => {
   it('lists the first ignored files only, and counts them all', async () => {
     expect.hasAssertions()
     const manyFiles = Array.from({ length: 25 }, (_item, index) => `file-${index}`)
-    stubServer(Response.json(preview(manyFiles)))
+    stubApi({ preview: Response.json(preview(manyFiles)) })
     await openConfirmation()
     expect(screen.getByTestId('delete-preview').querySelectorAll('li')).toHaveLength(20)
     expect(screen.getByTestId('delete-preview').textContent).toContain('25 ignored files would be lost, the first 20 are listed.')
@@ -85,7 +67,7 @@ describe('delete clone', () => {
     ['why the server could not be asked', new Error('Failed to fetch'), 'Failed to fetch'],
   ])('shows %s and cannot delete', async (_name, response, reason) => {
     expect.hasAssertions()
-    const fetchMock = stubServer(response)
+    const fetchMock = stubApi({ preview: response })
     await openConfirmation()
     expect(screen.getByTestId('delete-refused').textContent).toBe(reason)
     expect(isDeleteDisabled()).toBe(true)
@@ -94,7 +76,7 @@ describe('delete clone', () => {
 
   it('closes without deleting on cancel, and checks again when opened again', async () => {
     expect.hasAssertions()
-    const fetchMock = stubServer(Response.json(preview()))
+    const fetchMock = stubApi({ preview: Response.json(preview()) })
     await openConfirmation()
     fireEvent.click(screen.getByTestId('delete-cancel'))
     await waitFor(() => expect(screen.queryByTestId('delete-dialog-body')).toBeNull())
@@ -104,13 +86,14 @@ describe('delete clone', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 
-  it('deletes when confirmed, with the action header, then scans again', async () => {
+  it('deletes when confirmed, with the action header, then scans only that project again', async () => {
     expect.hasAssertions()
-    const fetchMock = stubServer(Response.json(preview()))
+    const fetchMock = stubApi({ preview: Response.json(preview()) })
     const request = await openConfirmation()
     fireEvent.click(screen.getByTestId('delete-confirm'))
-    await waitFor(() => expect(request).toHaveBeenCalledTimes(2))
-    expect(fetchMock).toHaveBeenLastCalledWith('/api/projects/old/delete-clone', { headers: { 'x-repo-check': '1' }, method: 'POST' })
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/projects/old/rescan'))
+    expect(request).toHaveBeenCalledOnce()
+    expect(fetchMock).toHaveBeenCalledWith('/api/projects/old/delete-clone', { headers: { 'x-repo-check': '1' }, method: 'POST' })
     await waitFor(() => expect(screen.queryByTestId('delete-dialog-body')).toBeNull())
   })
 
@@ -118,7 +101,7 @@ describe('delete clone', () => {
     expect.hasAssertions()
     const reason = 'owner/old: archived on GitHub, but the clone holds work that exists nowhere else: 1 changed file'
     const request = scanRequest(events)
-    stubServer(Response.json(preview()), Response.json({ ok: false, reason }, { status: 409 }))
+    stubApi({ action: Response.json({ ok: false, reason }, { status: 409 }), preview: Response.json(preview()) })
     await openConfirmation(request)
     fireEvent.click(screen.getByTestId('delete-confirm'))
     const error = await screen.findByTestId('delete-error')

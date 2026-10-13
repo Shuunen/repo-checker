@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { postAction } from '../actions/post-action.ts'
-import { scanQueryKey } from '../scan/scan-query.ts'
+import { refreshProject } from '../scan/refresh-project.ts'
 
 /**
  * The confirmation of an action: open or not, and the action it runs through the server once confirmed. When it worked the dialog closes and the scan runs again, when it was refused the dialog stays open with the reason
@@ -13,7 +13,7 @@ import { scanQueryKey } from '../scan/scan-query.ts'
 export function useActionDialog(name: string, action: 'clone' | 'unarchive-push') {
   const [isOpen, setIsOpen] = useState(false)
   const client = useQueryClient()
-  const run = useMutation({ mutationFn: () => postAction(name, action), onSuccess: () => client.invalidateQueries({ queryKey: scanQueryKey }) })
+  const run = useMutation({ mutationFn: () => postAction(name, action), onSuccess: () => refreshProject(client, name) })
   const handleOpen = () => {
     run.reset()
     setIsOpen(true)

@@ -19,7 +19,7 @@ None so far.
 4. **Discard keeps the ignored files** (`.env`, local databases) and only removes what git knows or sees as untracked. They are listed by the Delete clone dialog later. *Change it if you want Discard to remove them too.*
 5. **Discard lands on `origin/HEAD`** when the checked out branch only exists locally, or else on the first branch that has an upstream, and refuses when none does.
 6. **Discard asks for a fingerprint of the list the user saw** and refuses when the clone changed. This costs a fresh fetch when the dialog opens (a few seconds), and is what makes "after listing every item" true.
-7. **After an action the whole list is scanned again** (up to about 12 s) instead of only the project that changed. It is in `TODOS.md`.
+7. **After an action only the changed project is scanned again** (about 1 to 2.5 s), with the whole scan as a fallback when that fails.
 8. **The row action in the list links to the project view**, where the confirmation lives, instead of opening the dialog from the row. It is in `TODOS.md`.
 9. **`plural` now adds `es` after `ch`, `sh`, `s`, `x` and `z`** (it said "branchs" and "stashs").
 10. **`max-lines-per-function` is 30** (your change), and I regrouped the web components to fit it.

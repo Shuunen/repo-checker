@@ -59,3 +59,6 @@ export type ScanEvent =
   | { result: ScanProject; type: 'project' }
   /** The scan begins, always the first event */
   | { target: string; type: 'started' }
+
+/** What scanning one project again gives: the project as it is now, undefined when it is gone (a deleted fork, a deleted folder of a repo that does not exist), or the reason it could not be scanned */
+export type RescanResult = { ok: true; project: ScanProject | undefined } | { ok: false; reason: string }

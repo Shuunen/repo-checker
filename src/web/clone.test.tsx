@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import type { ScanEvent } from '../shared/scan-event.ts'
-import { aFinding, aProject, scanRequest } from './fixtures.ts'
+import { aFinding, aProject, scanRequest, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 
 const notCloned = aFinding({ actions: ['clone'], message: 'on GitHub but not cloned in this folder', messageId: 'missing', ruleId: 'not-cloned', scope: 'project', severity: 'info' })
@@ -9,20 +9,6 @@ const events: ScanEvent[] = [
   { result: aProject('finga', [notCloned], { local: undefined }), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]
-
-/**
- * Replace fetch with a fake that answers the clone request, put the real one back when the test ends
- * @param response what the server answers
- * @returns the fake
- */
-function stubClone(response: Response) {
-  const fetchMock = vi.fn<typeof fetch>(() => Promise.resolve(response))
-  vi.stubGlobal('fetch', fetchMock)
-  onTestFinished(() => {
-    vi.unstubAllGlobals()
-  })
-  return fetchMock
-}
 
 /**
  * Open the project and the clone confirmation
@@ -39,7 +25,7 @@ async function openConfirmation(request = scanRequest(events)) {
 describe('clone', () => {
   it('asks for a confirmation that says what it will do, and does nothing before it', async () => {
     expect.hasAssertions()
-    const fetchMock = stubClone(Response.json({ message: 'cloned', ok: true }))
+    const fetchMock = stubApi({ action: Response.json({ message: 'cloned', ok: true }) })
     await openConfirmation()
     expect(screen.getByTestId('clone-dialog-body').textContent).toBe('owner/finga is cloned into /projects/finga with gh. Nothing that already exists is changed, and the clone is refused if a folder of that name appears before.')
     expect(fetchMock).not.toHaveBeenCalled()
@@ -47,19 +33,20 @@ describe('clone', () => {
 
   it('closes without cloning on cancel', async () => {
     expect.hasAssertions()
-    const fetchMock = stubClone(Response.json({ message: 'cloned', ok: true }))
+    const fetchMock = stubApi({ action: Response.json({ message: 'cloned', ok: true }) })
     await openConfirmation()
     fireEvent.click(screen.getByTestId('clone-cancel'))
     await waitFor(() => expect(screen.queryByTestId('clone-dialog-body')).toBeNull())
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('clones when confirmed, with the action header, then scans again', async () => {
+  it('clones when confirmed, with the action header, then scans only that project again', async () => {
     expect.hasAssertions()
-    const fetchMock = stubClone(Response.json({ message: 'cloned owner/finga into /projects/finga', ok: true }))
+    const fetchMock = stubApi({ action: Response.json({ message: 'cloned owner/finga into /projects/finga', ok: true }) })
     const request = await openConfirmation()
     fireEvent.click(screen.getByTestId('clone-confirm'))
-    await waitFor(() => expect(request).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/projects/finga/rescan'))
+    expect(request).toHaveBeenCalledOnce()
     expect(fetchMock).toHaveBeenCalledWith('/api/projects/finga/clone', { headers: { 'x-repo-check': '1' }, method: 'POST' })
     await waitFor(() => expect(screen.queryByTestId('clone-dialog-body')).toBeNull())
   })
@@ -70,7 +57,7 @@ describe('clone', () => {
   ])('keeps the dialog open and shows %s', async (_name, response, reason) => {
     expect.hasAssertions()
     const request = scanRequest(events)
-    stubClone(response)
+    stubApi({ action: response })
     await openConfirmation(request)
     fireEvent.click(screen.getByTestId('clone-confirm'))
     const error = await screen.findByTestId('clone-error')

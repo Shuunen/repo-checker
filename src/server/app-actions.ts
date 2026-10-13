@@ -1,5 +1,5 @@
 import { type Context, Hono } from 'hono'
-import type { Actions } from './actions/actions.ts'
+import type { Actions } from './actions/actions-contract.ts'
 
 /** The HTTP status of an action that worked */
 const succeeded = 200
@@ -32,6 +32,7 @@ export function actionRoutes(actions: Actions) {
     .post('/api/projects/:name/unarchive-push', async context => reply(context, await actions.unarchivePush(context.req.param('name'))))
     .get('/api/projects/:name/delete-fork', async context => reply(context, await actions.previewDeleteFork(context.req.param('name'))))
     .post('/api/projects/:name/delete-fork', async context => reply(context, await actions.deleteFork(context.req.param('name'))))
+    .get('/api/projects/:name/rescan', async context => reply(context, await actions.rescan(context.req.param('name'))))
     .get('/api/projects/:name/discard', async context => reply(context, await actions.previewDiscard(context.req.param('name'))))
     .post('/api/projects/:name/discard', async context => reply(context, await actions.discard(context.req.param('name'), context.req.query('fingerprint') ?? '')))
 }

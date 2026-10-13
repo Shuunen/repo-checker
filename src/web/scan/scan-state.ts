@@ -47,3 +47,18 @@ export function describeScan(state: Readonly<ScanState>, isScanning: boolean) {
   const status = isScanning ? state.progress : state.done && `scanned in ${(state.done.durationMs / second).toFixed(1)}s`
   return [state.target, state.done?.owner, status].filter(part => part !== undefined && part !== '').join(' · ')
 }
+
+/**
+ * Put a project, scanned again after an action, in place of its old entry, or remove it when it is gone. A project the scan did not have yet is added
+ * @param state the scan state
+ * @param name the project name
+ * @param project the project as it is now, undefined when it is gone
+ * @returns the new state, the other projects untouched
+ * @example replaceProject(state, 'finga', rescanned)
+ */
+export function replaceProject(state: Readonly<ScanState>, name: string, project: ScanProject | undefined): ScanState {
+  const others = state.projects.filter(item => item.project.name !== name)
+  if (project === undefined) return { ...state, projects: others }
+  const index = state.projects.findIndex(item => item.project.name === name)
+  return { ...state, projects: index === -1 ? [...others, project] : state.projects.map(item => (item.project.name === name ? project : item)) }
+}

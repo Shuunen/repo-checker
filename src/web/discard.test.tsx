@@ -1,7 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import type { DiscardPreview } from '../shared/action.ts'
 import type { ScanEvent } from '../shared/scan-event.ts'
-import { aFinding, aProject, scanRequest } from './fixtures.ts'
+import { aFinding, aProject, scanRequest, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 
 const unsaved = aFinding({ actions: ['unarchive-push-rearchive', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
@@ -18,24 +18,6 @@ const preview: DiscardPreview = {
   ],
   ok: true,
   path: '/projects/old',
-}
-
-/**
- * Replace fetch with a fake: a GET answers the preview, a POST answers the discard. Put the real fetch back when the test ends
- * @param previewResponse what the server answers to the preview
- * @param discardResponse what the server answers to the discard
- * @returns the fake
- */
-function stubServer(previewResponse: Response | Error, discardResponse = Response.json({ message: 'discarded', ok: true })) {
-  const fetchMock = vi.fn<typeof fetch>((_url, init) => {
-    if (init?.method === 'POST') return Promise.resolve(discardResponse)
-    return previewResponse instanceof Error ? Promise.reject(previewResponse) : Promise.resolve(previewResponse)
-  })
-  vi.stubGlobal('fetch', fetchMock)
-  onTestFinished(() => {
-    vi.unstubAllGlobals()
-  })
-  return fetchMock
 }
 
 /**
@@ -61,7 +43,7 @@ function isDiscardDisabled() {
 describe('discard', () => {
   it('reads again first, then lists every item that would be thrown away', async () => {
     expect.hasAssertions()
-    const fetchMock = stubServer(Response.json(preview))
+    const fetchMock = stubApi({ preview: Response.json(preview) })
     renderApp(scanRequest(events), '/project/old')
     fireEvent.click(await screen.findByTestId('action-discard'))
     await screen.findByTestId('discard-checking')
@@ -78,7 +60,7 @@ describe('discard', () => {
     ['why the server could not be asked', new Error('Failed to fetch'), 'Failed to fetch'],
   ])('shows %s and cannot discard', async (_name, response, reason) => {
     expect.hasAssertions()
-    const fetchMock = stubServer(response)
+    const fetchMock = stubApi({ preview: response })
     await openConfirmation()
     expect(screen.getByTestId('discard-refused').textContent).toBe(reason)
     expect(isDiscardDisabled()).toBe(true)
@@ -87,7 +69,7 @@ describe('discard', () => {
 
   it('closes without discarding on cancel, and reads again when opened again', async () => {
     expect.hasAssertions()
-    const fetchMock = stubServer(Response.json(preview))
+    const fetchMock = stubApi({ preview: Response.json(preview) })
     await openConfirmation()
     fireEvent.click(screen.getByTestId('discard-cancel'))
     await waitFor(() => expect(screen.queryByTestId('discard-dialog-body')).toBeNull())
@@ -97,13 +79,14 @@ describe('discard', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 
-  it('discards when confirmed, with the fingerprint of the list shown and the action header, then scans again', async () => {
+  it('discards when confirmed, with the fingerprint of the list shown and the action header, then scans only that project again', async () => {
     expect.hasAssertions()
-    const fetchMock = stubServer(Response.json(preview))
+    const fetchMock = stubApi({ preview: Response.json(preview) })
     const request = await openConfirmation()
     fireEvent.click(screen.getByTestId('discard-confirm'))
-    await waitFor(() => expect(request).toHaveBeenCalledTimes(2))
-    expect(fetchMock).toHaveBeenLastCalledWith('/api/projects/old/discard?fingerprint=abc123', { headers: { 'x-repo-check': '1' }, method: 'POST' })
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/projects/old/rescan'))
+    expect(request).toHaveBeenCalledOnce()
+    expect(fetchMock).toHaveBeenCalledWith('/api/projects/old/discard?fingerprint=abc123', { headers: { 'x-repo-check': '1' }, method: 'POST' })
     await waitFor(() => expect(screen.queryByTestId('discard-dialog-body')).toBeNull())
   })
 
@@ -111,7 +94,7 @@ describe('discard', () => {
     expect.hasAssertions()
     const reason = 'the unsaved work of the clone is not what the dialog listed any more, nothing was discarded, open the dialog again'
     const request = scanRequest(events)
-    stubServer(Response.json(preview), Response.json({ ok: false, reason }, { status: 409 }))
+    stubApi({ action: Response.json({ ok: false, reason }, { status: 409 }), preview: Response.json(preview) })
     await openConfirmation(request)
     fireEvent.click(screen.getByTestId('discard-confirm'))
     const error = await screen.findByTestId('discard-error')

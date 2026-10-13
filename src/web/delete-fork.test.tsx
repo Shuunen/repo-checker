@@ -1,7 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import type { ForkDeletePreview } from '../shared/action.ts'
 import type { ScanEvent } from '../shared/scan-event.ts'
-import { aFinding, aProject, scanRequest } from './fixtures.ts'
+import { aFinding, aProject, scanRequest, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 
 const pristine = aFinding({ actions: ['delete-fork'], message: 'a pristine fork of them/qbt', messageId: 'pristine', ruleId: 'pristine-fork', scope: 'project', severity: 'info' })
@@ -11,24 +11,6 @@ const events: ScanEvent[] = [
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]
 const preview: ForkDeletePreview = { branches: 2, clone: undefined, ok: true, parent: 'them/qbt' }
-
-/**
- * Replace fetch with a fake: a GET answers the preview, a POST answers the delete. Put the real fetch back when the test ends
- * @param previewResponse what the server answers to the preview
- * @param deleteResponse what the server answers to the delete
- * @returns the fake
- */
-function stubServer(previewResponse: Response | Error, deleteResponse = Response.json({ message: 'deleted the fork owner/qbt on GitHub', ok: true })) {
-  const fetchMock = vi.fn<typeof fetch>((_url, init) => {
-    if (init?.method === 'POST') return Promise.resolve(deleteResponse)
-    return previewResponse instanceof Error ? Promise.reject(previewResponse) : Promise.resolve(previewResponse)
-  })
-  vi.stubGlobal('fetch', fetchMock)
-  onTestFinished(() => {
-    vi.unstubAllGlobals()
-  })
-  return fetchMock
-}
 
 /**
  * Open the project and the fork delete confirmation, once the server has answered the preview
@@ -53,7 +35,7 @@ function isDeleteDisabled() {
 describe('delete fork', () => {
   it('checks again first, then says what is deleted and that it cannot be undone', async () => {
     expect.hasAssertions()
-    const fetchMock = stubServer(Response.json(preview))
+    const fetchMock = stubApi({ preview: Response.json(preview) })
     renderApp(scanRequest(events), '/project/qbt')
     fireEvent.click(await screen.findByTestId('action-delete-fork'))
     await screen.findByTestId('fork-checking')
@@ -65,7 +47,7 @@ describe('delete fork', () => {
 
   it('says that the clean clone is deleted too, and lists the ignored files it holds', async () => {
     expect.hasAssertions()
-    stubServer(Response.json({ ...preview, clone: { ignoredFiles: ['.env'], path: '/projects/qbt' } }))
+    stubApi({ preview: Response.json({ ...preview, clone: { ignoredFiles: ['.env'], path: '/projects/qbt' } }) })
     await openConfirmation()
     expect(screen.getByTestId('fork-clone').textContent).toBe('Its clean local clone /projects/qbt is deleted too, with the files git ignores in it:')
     expect(screen.getByTestId('fork-preview').textContent).toContain('.env1 ignored file would be lost.')
@@ -78,7 +60,7 @@ describe('delete fork', () => {
     ['why the server could not be asked', new Error('Failed to fetch'), 'Failed to fetch'],
   ])('shows %s and cannot delete', async (_name, response, reason) => {
     expect.hasAssertions()
-    const fetchMock = stubServer(response)
+    const fetchMock = stubApi({ preview: response })
     await openConfirmation()
     expect(screen.getByTestId('fork-refused').textContent).toBe(reason)
     expect(isDeleteDisabled()).toBe(true)
@@ -87,7 +69,7 @@ describe('delete fork', () => {
 
   it('closes without deleting on cancel, and checks again when opened again', async () => {
     expect.hasAssertions()
-    const fetchMock = stubServer(Response.json(preview))
+    const fetchMock = stubApi({ preview: Response.json(preview) })
     await openConfirmation()
     fireEvent.click(screen.getByTestId('fork-cancel'))
     await waitFor(() => expect(screen.queryByTestId('fork-dialog-body')).toBeNull())
@@ -97,13 +79,14 @@ describe('delete fork', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 
-  it('deletes when confirmed, with the action header, then scans again', async () => {
+  it('deletes when confirmed, with the action header, then scans only that project again', async () => {
     expect.hasAssertions()
-    const fetchMock = stubServer(Response.json(preview))
+    const fetchMock = stubApi({ preview: Response.json(preview) })
     const request = await openConfirmation()
     fireEvent.click(screen.getByTestId('fork-confirm'))
-    await waitFor(() => expect(request).toHaveBeenCalledTimes(2))
-    expect(fetchMock).toHaveBeenLastCalledWith('/api/projects/qbt/delete-fork', { headers: { 'x-repo-check': '1' }, method: 'POST' })
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/projects/qbt/rescan'))
+    expect(request).toHaveBeenCalledOnce()
+    expect(fetchMock).toHaveBeenCalledWith('/api/projects/qbt/delete-fork', { headers: { 'x-repo-check': '1' }, method: 'POST' })
     await waitFor(() => expect(screen.queryByTestId('fork-dialog-body')).toBeNull())
   })
 
@@ -111,7 +94,7 @@ describe('delete fork', () => {
     expect.hasAssertions()
     const reason = 'GitHub refused to delete Owner/qbt: gh: Must have admin rights to Repository. (HTTP 403). If the token has no delete_repo scope, run: gh auth refresh -s delete_repo'
     const request = scanRequest(events)
-    stubServer(Response.json(preview), Response.json({ ok: false, reason }, { status: 409 }))
+    stubApi({ action: Response.json({ ok: false, reason }, { status: 409 }), preview: Response.json(preview) })
     await openConfirmation(request)
     fireEvent.click(screen.getByTestId('fork-confirm'))
     const error = await screen.findByTestId('fork-error')
