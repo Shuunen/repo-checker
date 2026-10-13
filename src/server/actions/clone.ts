@@ -1,6 +1,7 @@
 import path from 'node:path'
 import type { ActionResult } from '../../shared/action.ts'
 import { type GhRunner, getRepo } from '../inventory/github.ts'
+import type { ShellResult } from '../inventory/shell.ts'
 import { checkFolderOfProjects, exists, isRepoName } from './guards.ts'
 
 /** What a clone needs */
@@ -9,6 +10,8 @@ interface CloneOptions {
   gh: GhRunner
   /** The repo name, as asked by the page */
   name: string
+  /** Runs git, in the folder of projects */
+  runGit: (args: readonly string[]) => Promise<ShellResult>
   /** The GitHub owner the scan compares with */
   owner: string
   /** The folder of projects the clone goes in */
@@ -48,6 +51,7 @@ async function checkRepo(gh: GhRunner, slug: string) {
  * @param options what to clone and where
  * @param options.gh runs gh
  * @param options.name the repo name
+ * @param options.runGit runs git
  * @param options.owner the GitHub owner
  * @param options.target the folder of projects
  * @returns the reason to refuse, undefined when everything holds
@@ -59,7 +63,7 @@ async function refusal({ gh, name, owner, target }: Readonly<CloneOptions>) {
 }
 
 /**
- * Clone a repo of the owner into the folder of projects, after proving again that the scan was right: the repo is still on GitHub, not archived, not a fork, and no folder is in the way. The clone is made by `gh repo clone`, so it uses the protocol chosen in the gh config and the tool never sees a token
+ * Clone a repo of the owner into the folder of projects, after proving again that the scan was right: the repo is still on GitHub, not archived, not a fork, and no folder is in the way.  The clone is made by `git clone` over SSH (`git@github.com:owner/name.git`), always, like the other clones: it needs an SSH key known to GitHub, and the tool never sees a token
  * @param options what to clone and where
  * @param options.gh runs gh
  * @param options.name the repo name
@@ -69,12 +73,13 @@ async function refusal({ gh, name, owner, target }: Readonly<CloneOptions>) {
  * @example const result = await cloneRepo({ gh: ghCli, name: 'finga', owner: 'Shuunen', target: '/home/me/projects' })
  */
 export async function cloneRepo(options: Readonly<CloneOptions>): Promise<ActionResult> {
-  const { gh, name, owner, target } = options
+  const { name, owner, runGit, target } = options
   try {
     const reason = await refusal(options)
     if (reason !== undefined) return { ok: false, reason }
-    const { ok, stderr } = await gh(['repo', 'clone', `${owner}/${name}`, path.join(target, name)])
-    return ok ? { message: `cloned ${owner}/${name} into ${path.join(target, name)}`, ok } : { ok, reason: `gh repo clone ${owner}/${name} failed: ${stderr.trim()}` }
+    const url = `git@github.com:${owner}/${name}.git`
+    const { ok, stderr } = await runGit(['clone', url, path.join(target, name)])
+    return ok ? { message: `cloned ${owner}/${name} over SSH into ${path.join(target, name)}`, ok } : { ok, reason: `git clone ${url} failed: ${stderr.trim()}` }
   } catch (error) {
     return { ok: false, reason: error instanceof Error ? error.message : String(error) }
   }

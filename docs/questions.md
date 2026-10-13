@@ -13,8 +13,8 @@ None so far.
 
 ## Decisions taken without asking
 
-1. **Delete clone removes the folder for good** (`fs.rm`), not to a trash. The dialog lists the ignored files that would be lost, and everything else is proved to be on GitHub. A trash would need a dependency or a per-OS command. *Change it if you want a safety net.*
-2. **Clone uses `gh repo clone`**, so the protocol is the one in your gh config (SSH here). *Change it if you want a fixed HTTPS or SSH URL.*
+1. ✅ **Delete clone removes the folder for good** (`fs.rm`), not to a trash. Confirmed. The dialog lists the ignored files that would be lost, and everything else is proved to be on GitHub.
+2. ✅ **Clone always uses SSH** (`git clone git@github.com:owner/name.git`), like your existing clones. Decided in the review, it replaced `gh repo clone`. It needs an SSH key known to GitHub.
 3. **Unarchive, push, re-archive leaves the repo writable for a few seconds.** If archiving again fails, the error gives the hand command. The action never creates a commit and never forces a push. *Nothing was run against a real archived repo, only against a real bare git repo in tests: please try it on a throwaway archived repo before trusting it on `jozzo`.*
 4. **Discard keeps the ignored files** (`.env`, local databases) and only removes what git knows or sees as untracked. They are listed by the Delete clone dialog later. *Change it if you want Discard to remove them too.*
 5. **Discard lands on `origin/HEAD`** when the checked out branch only exists locally, or else on the first branch that has an upstream, and refuses when none does.

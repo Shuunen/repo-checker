@@ -27,7 +27,7 @@ describe('clone', () => {
     expect.hasAssertions()
     const fetchMock = stubApi({ action: Response.json({ message: 'cloned', ok: true }) })
     await openConfirmation()
-    expect(screen.getByTestId('clone-dialog-body').textContent).toBe('owner/finga is cloned into /projects/finga with gh. Nothing that already exists is changed, and the clone is refused if a folder of that name appears before.')
+    expect(screen.getByTestId('clone-dialog-body').textContent).toBe('owner/finga is cloned over SSH into /projects/finga. Nothing that already exists is changed, and the clone is refused if a folder of that name appears before.')
     expect(fetchMock).not.toHaveBeenCalled()
   })
 

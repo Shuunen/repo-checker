@@ -36,7 +36,7 @@ interface CloneDialogProps {
 export function CloneDialog({ error, folder, isOpen, isPending, onCancel, onConfirm, onOpenChange, slug }: Readonly<CloneDialogProps>) {
   return (
     <ConfirmDialog canConfirm confirmLabel="Clone" heading={`Clone ${slug}?`} isDanger={false} isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="clone">
-      {`${slug} is cloned into ${folder} with gh. Nothing that already exists is changed, and the clone is refused if a folder of that name appears before.`}
+      {`${slug} is cloned over SSH into ${folder}. Nothing that already exists is changed, and the clone is refused if a folder of that name appears before.`}
       {error !== undefined && <p data-testid="clone-error">{error}</p>}
     </ConfirmDialog>
   )

@@ -1,5 +1,6 @@
 import { readClone, readClones } from '../inventory/git.ts'
 import type { GhRunner } from '../inventory/github.ts'
+import { run } from '../inventory/shell.ts'
 
 /** How the clones are read, replaced by fakes in tests */
 export interface GitReaders {
@@ -25,3 +26,12 @@ export interface ActionOptions {
 
 /** The real git, the default of every action */
 export const realGit: GitReaders = { readClone, readClones }
+
+/**
+ * Run git with a fixed binary and an argument array, never a shell string
+ * @param args the git arguments
+ * @returns the outcome, it never throws
+ */
+export function realRunGit(args: readonly string[]) {
+  return run('git', args)
+}
