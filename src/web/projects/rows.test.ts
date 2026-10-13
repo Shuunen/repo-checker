@@ -49,6 +49,13 @@ describe(toRows, () => {
     expect(row?.pills[0]?.label).toBe('some new sync check')
   })
 
+  it('shows a project whose checks failed as an error pill with the reason on hover', () => {
+    expect.hasAssertions()
+    const failed = aFinding({ message: 'the checks of this project failed: boom', messageId: 'failed', ruleId: 'checks-failed', scope: 'project', severity: 'error' })
+    const [row] = toRows([aProject('bad', [failed])])
+    expect(row?.pills).toStrictEqual([{ color: 'danger', hint: 'the checks of this project failed: boom', label: 'checks failed' }])
+  })
+
   it('marks a clone of another owner', () => {
     expect.hasAssertions()
     const [row] = toRows([aProject('lib', [], { isOtherOwner: true })])

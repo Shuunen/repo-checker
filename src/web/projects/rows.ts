@@ -53,6 +53,7 @@ const syncLabels: Readonly<Record<string, string>> = {
   'broken-clone.noGit': 'no git',
   'broken-clone.noOrigin': 'no origin',
   'broken-clone.originNotFound': 'origin not found',
+  'checks-failed.failed': 'checks failed',
   'not-cloned.missing': 'not cloned',
   'pristine-fork.cannotVerify': 'fork · cannot verify',
   'pristine-fork.kept': 'fork with work',

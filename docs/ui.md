@@ -46,7 +46,7 @@ Built: identity, findings grouped by origin with the files a fix would change, t
 
 ## States to design for
 
-Loading, empty (everything is in sync), error (`gh` missing or not logged in, no network), partial (some projects failed to scan), missing `delete_repo` scope.
+Loading, empty (everything is in sync), error (`gh` missing or not logged in, no network), partial (a project whose checks threw shows a red "checks failed" pill with the reason, the rest of the list is there), missing `delete_repo` scope.
 
 ## Open points
 
