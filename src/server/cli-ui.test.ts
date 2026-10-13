@@ -82,6 +82,15 @@ describe('cli ui', () => {
     await expect(call('finga/rescan', 'GET')).resolves.toMatchObject({ ok: true, project: { project: { name: 'finga' } } })
   })
 
+  it.each([
+    ['GET', 'finga/fix-files'],
+    ['POST', 'finga/fix-files?fingerprint=abc'],
+  ] as const)('wires the file fixes with %s, and finds no clone to fix in an empty folder', async (method, route) => {
+    expect.hasAssertions()
+    const { call } = await ui([], fakeCloneGh('owner/finga'))
+    await expect(call(route, method)).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('no clone of owner/finga that holds files to fix in') })
+  })
+
   it('takes the port from the options', async () => {
     expect.hasAssertions()
     const startServer = vi.fn<StartServer>(() => Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:8080' }))

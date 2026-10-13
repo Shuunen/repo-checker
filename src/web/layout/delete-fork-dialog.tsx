@@ -32,7 +32,7 @@ interface DeleteForkDialogProps extends DeleteForkBodyProps {
  */
 export function DeleteForkDialog({ error, isLoading, isOpen, isPending, onCancel, onConfirm, onOpenChange, preview, previewError, slug }: Readonly<DeleteForkDialogProps>) {
   return (
-    <ConfirmDialog canConfirm={preview?.ok === true && !isLoading} confirmLabel="Delete the fork" heading={`Delete the fork ${slug}?`} isDanger isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="fork">
+    <ConfirmDialog isWide={false} canConfirm={preview?.ok === true && !isLoading} confirmLabel="Delete the fork" heading={`Delete the fork ${slug}?`} isDanger isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="fork">
       <DeleteForkBody error={error} isLoading={isLoading} preview={preview} previewError={previewError} slug={slug} />
     </ConfirmDialog>
   )

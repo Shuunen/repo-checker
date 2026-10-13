@@ -3,7 +3,7 @@
  * @module
  */
 import { Buffer } from 'node:buffer'
-import { glob, readFile, stat, writeFile } from 'node:fs/promises'
+import { glob, mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 /** The number of bytes in one Ko */
@@ -97,6 +97,21 @@ function withCache(io: Readonly<Io>): Io {
 }
 
 /**
+ * Write a file inside a project folder, creating the folders it needs. A path that leaves the project folder is refused: a fix only ever changes the project it is fixing
+ * @param folder the absolute path of the project folder
+ * @param file the path, relative to the project folder
+ * @param text the new content
+ * @throws {Error} when the path is outside the project folder
+ */
+async function writeInside(folder: string, file: string, text: string) {
+  const full = path.join(folder, file)
+  const relative = path.relative(folder, full)
+  if (relative === '' || relative.startsWith('..') || path.isAbsolute(relative)) throw new Error(`${file} is outside the project folder, it is not written`)
+  await mkdir(path.dirname(full), { recursive: true })
+  await writeFile(full, text)
+}
+
+/**
  * The files of a project folder on disk, reads are cached
  * @param folder the absolute path of the project folder
  * @returns the io
@@ -109,7 +124,7 @@ export function diskIo(folder: string) {
     readText,
     search: async (pattern, subFolder = '') => searchIn(await listFiles(folder, subFolder), readText, pattern),
     sizeKo: file => sizeOnDisk(fullPath(file)),
-    writeText: (file, text) => writeFile(fullPath(file), text),
+    writeText: (file, text) => writeInside(folder, file, text),
   })
 }
 

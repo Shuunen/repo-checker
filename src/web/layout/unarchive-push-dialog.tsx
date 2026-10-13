@@ -41,7 +41,19 @@ interface UnarchivePushDialogProps {
  */
 export function UnarchivePushDialog({ blocker, error, isOpen, isPending, local, onCancel, onConfirm, onOpenChange, slug }: Readonly<UnarchivePushDialogProps>) {
   return (
-    <ConfirmDialog canConfirm={blocker === undefined} confirmLabel="Unarchive, push, archive again" heading={`Save the unsaved work of ${slug}?`} isDanger={false} isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="unarchive">
+    <ConfirmDialog
+      isWide={false}
+      canConfirm={blocker === undefined}
+      confirmLabel="Unarchive, push, archive again"
+      heading={`Save the unsaved work of ${slug}?`}
+      isDanger={false}
+      isOpen={isOpen}
+      isPending={isPending}
+      onCancel={onCancel}
+      onConfirm={onConfirm}
+      onOpenChange={onOpenChange}
+      prefix="unarchive"
+    >
       <p>{`GitHub rejects a push to an archived repo, so ${slug} is unarchived, these branches are pushed without creating any commit, then it is archived again, even if the push fails. It is writable for a few seconds.`}</p>
       <UnsavedList groups={unsavedGroups(local)} />
       {blocker !== undefined && <p data-testid="unarchive-blocker">{blocker}</p>}

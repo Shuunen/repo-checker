@@ -3,6 +3,7 @@ import { factGroups } from '../projects/detail.ts'
 import { ActionsCard } from './actions-card.tsx'
 import { FactsCard } from './facts-card.tsx'
 import { FindingsCard } from './findings-card.tsx'
+import { FixFilesCard } from './fix-files-card.tsx'
 import { ProjectIdentity } from './project-identity.tsx'
 
 /**
@@ -19,6 +20,7 @@ export function ProjectDetail({ result: { findings, project }, target }: Readonl
     <>
       <ProjectIdentity project={project} />
       <FindingsCard findings={findings} />
+      <FixFilesCard findings={findings} project={project} />
       {factGroups(project).map(group => (
         <FactsCard facts={group.facts} key={group.title} title={group.title} />
       ))}

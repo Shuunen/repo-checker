@@ -28,3 +28,16 @@ export type DiscardPreview = { fingerprint: string; groups: UnsavedGroup[]; ok: 
 
 /** What deleting a fork would remove, shown before it is confirmed: the fork on GitHub, and its clean local clone with the files git ignores in it */
 export type ForkDeletePreview = { branches: number; clone: { ignoredFiles: string[]; path: string } | undefined; ok: true; parent: string } | { ok: false; reason: string }
+
+/** The planned change of one file, what the confirmation shows as a diff: `before` is empty when the file does not exist yet */
+export interface FixPlan {
+  /** The text once the fixes are applied */
+  after: string
+  /** The current text */
+  before: string
+  /** The file path, relative to the project folder */
+  file: string
+}
+
+/** What applying the file fixes of a project would change, read fresh when the dialog opens: the fingerprint of that plan is sent back with the confirmation, and the fix is refused when the plan is not the same any more. A file with uncommitted changes is never rewritten, it is listed in `blocked` */
+export type FixPreview = { blocked: { file: string; reason: string }[]; fingerprint: string; ok: true; path: string; plans: FixPlan[] } | { ok: false; reason: string }

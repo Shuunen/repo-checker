@@ -61,11 +61,15 @@ An archived fork gets only the `pristine-fork` rule, never `archived-clone` or `
 
 Every non-archived, non-fork GitHub repo is expected locally, however old. On 2026-10-12 that was about 25 repos. Cleaning the old ones up (archive) is the `archive-candidate` and `stale-uncloned-repo` checks in [checks.md](checks.md).
 
+## File fixes
+
+A finding of a file check can come with a fix (an edit of one or more files). The dashboard applies them for a whole project, after a confirmation that shows a diff per file. The fixes are planned again, from the files as they are now, when the dialog opens and again when it is confirmed, and the confirmation is refused if the plan is not the same. A file that git reports as changed is never rewritten and is listed as left alone: this keeps `git diff` exact and `git checkout` an undo. Nothing is committed. The fixes work in single project mode too, where the target is the clone.
+
 ## Safety rules
 
 These are requirements, each one gets a test.
 
-1. Nothing changes without an explicit confirmation, a confirm dialog in the UI with a clearly labeled action button. The CLI is report-only and never changes anything.
+1. Nothing changes without an explicit confirmation, a confirm dialog in the UI with a clearly labeled action button. The CLI is report-only and never changes anything. The file fixes never overwrite a file with uncommitted changes.
 2. A local clone delete is offered only when the clone is clean (and the server proves it again, with a fresh fetch, before it shows the dialog and again before it deletes): no uncommitted or untracked files, nothing unpushed, no stash, no local-only branch. Otherwise the tool says why it will not offer the delete. Gitignored files (`.env`, local databases...) do not block the delete, but the confirm dialog lists every one that will be lost, ignoring rebuildable folders such as `node_modules` and `dist`.
 3. A fork delete is offered only when the strict `pristine-fork` rule is proved, including the clean-clone rule for its local clone when one exists. A failed comparison is never read as "nothing to lose".
 4. The server binds to `127.0.0.1` only, and refuses any request whose `Host` is not `127.0.0.1` or `localhost`, so a web page on another domain cannot reach it through DNS rebinding. Any request that changes something must also carry the `x-repo-check: 1` header, which a web page of another site cannot add, so it cannot post an action.

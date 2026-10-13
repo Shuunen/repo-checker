@@ -1,6 +1,6 @@
 # UI
 
-Status: the project list and the project view are built. Every action works behind a confirmation dialog: Clone, Delete clone, Unarchive & push, Discard and Delete fork.
+Status: the project list and the project view are built. Every action works behind a confirmation dialog: Clone, Delete clone, Unarchive & push, Discard and Delete fork, and the file fixes.
 
 ## Library and theme
 
@@ -32,7 +32,7 @@ Light: ![light](ui/mockup-light.png)
 
 ### Project view (single-project mode opens here directly)
 
-Built: identity, findings grouped by origin with the files a fix would change, the local and fork fact cards, and a button per offered action, each opening its confirmation dialog (the list has the first action of each project in its row). What is not built is applying a file fix (a finding only says which files it would change).
+Built: identity, findings grouped by origin with the files a fix would change, the local and fork fact cards, and a button per offered action, each opening its confirmation dialog (the list has the first action of each project in its row). A Fixes card applies the file fixes after a diff per file, never over a file with uncommitted changes.
 
 - Identity: name, GitHub link, owner, archived and fork badges, last push.
 - Group A findings for this project, each with its explanation in plain words.

@@ -13,6 +13,8 @@ interface ConfirmDialogProps {
   heading: string
   /** True for an action that destroys something, the confirm button is red */
   isDanger: boolean
+  /** True for a dialog that shows a lot, like a diff: it is wider */
+  isWide: boolean
   /** True when the dialog is shown */
   isOpen: boolean
   /** True while the server runs the action */
@@ -35,6 +37,7 @@ interface ConfirmDialogProps {
  * @param props.confirmLabel the label of the confirm button
  * @param props.heading the question the dialog asks
  * @param props.isDanger true for an action that destroys something
+ * @param props.isWide true for a dialog that shows a lot, like a diff
  * @param props.isOpen true when the dialog is shown
  * @param props.isPending true while the action runs
  * @param props.onCancel closes the dialog
@@ -43,16 +46,16 @@ interface ConfirmDialogProps {
  * @param props.prefix the start of the test ids
  * @returns the dialog
  */
-export function ConfirmDialog({ canConfirm, children, confirmLabel, heading, isDanger, isOpen, isPending, onCancel, onConfirm, onOpenChange, prefix }: Readonly<ConfirmDialogProps>) {
+export function ConfirmDialog({ canConfirm, children, confirmLabel, heading, isDanger, isOpen, isWide, isPending, onCancel, onConfirm, onOpenChange, prefix }: Readonly<ConfirmDialogProps>) {
   return (
     <AlertDialog isOpen={isOpen} onOpenChange={onOpenChange}>
       <AlertDialog.Backdrop>
-        <AlertDialog.Container>
+        <AlertDialog.Container size={isWide ? 'lg' : 'md'}>
           <AlertDialog.Dialog>
             <AlertDialog.Header>
               <AlertDialog.Heading>{heading}</AlertDialog.Heading>
             </AlertDialog.Header>
-            <AlertDialog.Body className="flex flex-col gap-3" data-testid={`${prefix}-dialog-body`}>
+            <AlertDialog.Body className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto" data-testid={`${prefix}-dialog-body`}>
               {children}
             </AlertDialog.Body>
             <AlertDialog.Footer>

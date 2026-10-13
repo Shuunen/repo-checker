@@ -45,6 +45,19 @@ describe('disk io', () => {
     await expect(readFile(path.join(folder, 'new.txt'), 'utf8')).resolves.toBe('hello')
   })
 
+  it('creates the folders a new file needs', async () => {
+    expect.hasAssertions()
+    const folder = await makeFolder()
+    await diskIo(folder).writeText('.github/workflows/ci.yml', 'name: ci')
+    await expect(readFile(path.join(folder, '.github', 'workflows', 'ci.yml'), 'utf8')).resolves.toBe('name: ci')
+  })
+
+  it.each(['../outside.txt', 'a/../../outside.txt', '', '.'])('refuses to write the path "%s", it is outside the project or the folder itself', async file => {
+    expect.hasAssertions()
+    const folder = await makeFolder()
+    await expect(diskIo(folder).writeText(file, 'x')).rejects.toThrow('is outside the project folder, it is not written')
+  })
+
   it('searches the files by content, skipping node_modules', async () => {
     expect.hasAssertions()
     const folder = await makeFolder()

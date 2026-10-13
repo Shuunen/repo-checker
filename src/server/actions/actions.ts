@@ -3,9 +3,7 @@ import { type GhRunner, getLogin } from '../inventory/github.ts'
 import { cloneRepo } from './clone.ts'
 import { realGit, realRunGit } from './action-options.ts'
 import type { Actions } from './actions-contract.ts'
-import { deleteClone, previewDeleteClone } from './delete-clone.ts'
-import { deleteFork, previewDeleteFork } from './delete-fork.ts'
-import { discardClone, previewDiscard } from './discard.ts'
+import { createPreviewedActions } from './previewed-actions.ts'
 import { rescanProject } from './rescan.ts'
 import { unarchivePush } from './unarchive-push.ts'
 
@@ -34,13 +32,8 @@ interface ActionsContext {
 export function createActions({ gh, owner, rules, target }: Readonly<ActionsContext>): Actions {
   const options = async (name: string) => ({ gh, git: realGit, name, owner: owner ?? (await getLogin(gh)), target })
   return {
+    ...createPreviewedActions(options, rules),
     clone: async name => cloneRepo({ ...(await options(name)), runGit: realRunGit }),
-    deleteClone: async name => deleteClone(await options(name)),
-    deleteFork: async name => deleteFork(await options(name)),
-    discard: async (name, fingerprint) => discardClone({ ...(await options(name)), fingerprint }),
-    previewDeleteClone: async name => previewDeleteClone(await options(name)),
-    previewDeleteFork: async name => previewDeleteFork(await options(name)),
-    previewDiscard: async name => previewDiscard(await options(name)),
     rescan: async name => rescanProject({ ...(await options(name)), rules }),
     unarchivePush: async name => unarchivePush(await options(name)),
   }

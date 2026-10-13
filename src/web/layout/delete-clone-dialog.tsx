@@ -34,7 +34,7 @@ interface DeleteCloneDialogProps extends DeleteCloneBodyProps {
  */
 export function DeleteCloneDialog({ error, isLoading, isOpen, isPending, onCancel, onConfirm, onOpenChange, preview, previewError, slug }: Readonly<DeleteCloneDialogProps>) {
   return (
-    <ConfirmDialog canConfirm={preview?.ok === true && !isLoading} confirmLabel="Delete clone" heading={`Delete the local clone of ${slug}?`} isDanger isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="delete">
+    <ConfirmDialog isWide={false} canConfirm={preview?.ok === true && !isLoading} confirmLabel="Delete clone" heading={`Delete the local clone of ${slug}?`} isDanger isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="delete">
       <DeleteCloneBody error={error} isLoading={isLoading} preview={preview} previewError={previewError} />
     </ConfirmDialog>
   )

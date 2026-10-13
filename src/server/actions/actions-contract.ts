@@ -1,4 +1,4 @@
-import type { ActionResult, DeletePreview, DiscardPreview, ForkDeletePreview } from '../../shared/action.ts'
+import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, ForkDeletePreview } from '../../shared/action.ts'
 import type { RescanResult } from '../../shared/scan-event.ts'
 
 /** The actions the page can ask for, each one proves again that it is still safe before it acts */
@@ -11,10 +11,14 @@ export interface Actions {
   previewDeleteClone: (name: string) => Promise<DeletePreview>
   /** Delete a pristine fork on GitHub, and its clean local clone if it has one */
   deleteFork: (name: string) => Promise<ActionResult>
+  /** Write the file fixes the checks plan, refused unless the plan is the one the fingerprint stands for, and never over a file with uncommitted changes */
+  fixFiles: (name: string, fingerprint: string) => Promise<ActionResult>
   /** Throw away the unsaved work of an archived repo's clone, refused unless it is exactly the work the fingerprint stands for */
   discard: (name: string, fingerprint: string) => Promise<ActionResult>
   /** Say what deleting the fork would remove, after proving it is pristine */
   previewDeleteFork: (name: string) => Promise<ForkDeletePreview>
+  /** Say what the file fixes would change: a before and after per file, with the fingerprint of that plan */
+  previewFixFiles: (name: string) => Promise<FixPreview>
   /** Say what discarding would throw away, with the fingerprint of that list */
   previewDiscard: (name: string) => Promise<DiscardPreview>
   /** Scan one project again, after an action changed it, so the page does not scan everything again */

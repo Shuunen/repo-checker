@@ -24,6 +24,7 @@
     "@vitejs/plugin-react": "~6.1.2",
     "@vitest/coverage-v8": "~5.0.2",
     "dependency-cruiser": "~18.4.0",
+    "diff": "~9.0.0",
     "happy-dom": "~21.0.1",
     "knip": "~6.38.0",
     "oxfmt": "~0.72.0",

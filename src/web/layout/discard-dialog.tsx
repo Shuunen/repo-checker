@@ -34,7 +34,19 @@ interface DiscardDialogProps extends DiscardBodyProps {
  */
 export function DiscardDialog({ error, isLoading, isOpen, isPending, onCancel, onConfirm, onOpenChange, preview, previewError, slug }: Readonly<DiscardDialogProps>) {
   return (
-    <ConfirmDialog canConfirm={preview?.ok === true && !isLoading} confirmLabel="Discard everything listed" heading={`Discard the unsaved work of ${slug}?`} isDanger isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="discard">
+    <ConfirmDialog
+      isWide={false}
+      canConfirm={preview?.ok === true && !isLoading}
+      confirmLabel="Discard everything listed"
+      heading={`Discard the unsaved work of ${slug}?`}
+      isDanger
+      isOpen={isOpen}
+      isPending={isPending}
+      onCancel={onCancel}
+      onConfirm={onConfirm}
+      onOpenChange={onOpenChange}
+      prefix="discard"
+    >
       <DiscardBody error={error} isLoading={isLoading} preview={preview} previewError={previewError} />
     </ConfirmDialog>
   )

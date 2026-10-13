@@ -1,5 +1,5 @@
 /** The actions that show what they would do before they are confirmed, a route of the server each */
-export type PreviewedAction = 'delete-clone' | 'delete-fork' | 'discard'
+export type PreviewedAction = 'delete-clone' | 'delete-fork' | 'discard' | 'fix-files'
 
 /**
  * Ask the server what an action would do, before it is confirmed. The server proves again, with fresh data from GitHub and git, that the action is still right, so this takes a few seconds. A refusal is an answer (`ok: false` with its reason), not an error

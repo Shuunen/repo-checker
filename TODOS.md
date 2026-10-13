@@ -5,7 +5,7 @@ Every check, built or wanted, lives in `docs/checks.md`. This file holds the res
 ## Release
 
 - Every old check is ported (✅ in `docs/checks.md`) and the old code is removed. Ship the rewrite as a new major version.
-- Let the UI apply the file fixes the rules already plan (`planFixes`, `fixProject`: a before and after per file, confirmed, written, checked again), the successor of the old `--fix`. A finding already says which files its fix would change, and the Sync actions are built, so this is the main thing left.
+- Apply the file fixes finding by finding, today the whole project is fixed at once.
 - A json schema for `.repo-checker.json`, from the old README todo list.
 
 ## Actions
