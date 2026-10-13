@@ -25,3 +25,6 @@ export type DeletePreview = { ignoredFiles: string[]; ok: true; path: string } |
 
 /** What a discard would throw away, read fresh from the clone when the dialog opens: the fingerprint of that exact list is sent back with the confirmation, and the discard is refused when the work is not the same any more */
 export type DiscardPreview = { fingerprint: string; groups: UnsavedGroup[]; ok: true; path: string } | { ok: false; reason: string }
+
+/** What deleting a fork would remove, shown before it is confirmed: the fork on GitHub, and its clean local clone with the files git ignores in it */
+export type ForkDeletePreview = { branches: number; clone: { ignoredFiles: string[]; path: string } | undefined; ok: true; parent: string } | { ok: false; reason: string }

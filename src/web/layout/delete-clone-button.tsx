@@ -1,8 +1,9 @@
 import { Button } from '@heroui/react'
+import type { DeletePreview } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
 import { slugOf } from '../projects/detail.ts'
 import { DeleteCloneDialog } from './delete-clone-dialog.tsx'
-import { useDeleteCloneDialog } from './use-delete-clone-dialog.ts'
+import { usePreviewedDialog } from './use-previewed-dialog.ts'
 
 /**
  * The Delete clone action: the button opens a confirmation that first asks the server to prove again that nothing would be lost, and the delete only runs when it is confirmed. The scan runs again after it worked
@@ -11,7 +12,7 @@ import { useDeleteCloneDialog } from './use-delete-clone-dialog.ts'
  * @returns the button and its dialog
  */
 export function DeleteCloneButton({ project }: Readonly<{ project: Project }>) {
-  const dialog = useDeleteCloneDialog(project.name)
+  const dialog = usePreviewedDialog<DeletePreview>(project.name, 'delete-clone')
   return (
     <>
       <Button data-testid="action-delete-clone" onPress={dialog.handleOpen} size="sm" variant="outline">

@@ -1,6 +1,6 @@
-import { AlertDialog, Button } from '@heroui/react'
 import type { LocalClone } from '../../shared/project.ts'
 import { unsavedGroups } from '../../shared/unsaved.ts'
+import { ConfirmDialog } from './confirm-dialog.tsx'
 import { UnsavedList } from './unsaved-list.tsx'
 
 /** What the dialog shows and does */
@@ -41,30 +41,11 @@ interface UnarchivePushDialogProps {
  */
 export function UnarchivePushDialog({ blocker, error, isOpen, isPending, local, onCancel, onConfirm, onOpenChange, slug }: Readonly<UnarchivePushDialogProps>) {
   return (
-    <AlertDialog isOpen={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialog.Backdrop>
-        <AlertDialog.Container>
-          <AlertDialog.Dialog>
-            <AlertDialog.Header>
-              <AlertDialog.Heading>{`Save the unsaved work of ${slug}?`}</AlertDialog.Heading>
-            </AlertDialog.Header>
-            <AlertDialog.Body data-testid="unarchive-dialog-body">
-              <p>{`GitHub rejects a push to an archived repo, so ${slug} is unarchived, these branches are pushed without creating any commit, then it is archived again, even if the push fails. It is writable for a few seconds.`}</p>
-              <UnsavedList groups={unsavedGroups(local)} />
-              {blocker !== undefined && <p data-testid="unarchive-blocker">{blocker}</p>}
-              {error !== undefined && <p data-testid="unarchive-error">{error}</p>}
-            </AlertDialog.Body>
-            <AlertDialog.Footer>
-              <Button data-testid="unarchive-cancel" isDisabled={isPending} onPress={onCancel} variant="tertiary">
-                Cancel
-              </Button>
-              <Button data-testid="unarchive-confirm" isDisabled={blocker !== undefined} isPending={isPending} onPress={onConfirm}>
-                Unarchive, push, archive again
-              </Button>
-            </AlertDialog.Footer>
-          </AlertDialog.Dialog>
-        </AlertDialog.Container>
-      </AlertDialog.Backdrop>
-    </AlertDialog>
+    <ConfirmDialog canConfirm={blocker === undefined} confirmLabel="Unarchive, push, archive again" heading={`Save the unsaved work of ${slug}?`} isDanger={false} isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="unarchive">
+      <p>{`GitHub rejects a push to an archived repo, so ${slug} is unarchived, these branches are pushed without creating any commit, then it is archived again, even if the push fails. It is writable for a few seconds.`}</p>
+      <UnsavedList groups={unsavedGroups(local)} />
+      {blocker !== undefined && <p data-testid="unarchive-blocker">{blocker}</p>}
+      {error !== undefined && <p data-testid="unarchive-error">{error}</p>}
+    </ConfirmDialog>
   )
 }

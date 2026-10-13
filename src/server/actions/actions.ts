@@ -1,8 +1,9 @@
-import type { ActionResult, DeletePreview, DiscardPreview } from '../../shared/action.ts'
+import type { ActionResult, DeletePreview, DiscardPreview, ForkDeletePreview } from '../../shared/action.ts'
 import { type GhRunner, getLogin } from '../inventory/github.ts'
 import { cloneRepo } from './clone.ts'
-import { realGit } from './archived-proof.ts'
+import { realGit } from './action-options.ts'
 import { deleteClone, previewDeleteClone } from './delete-clone.ts'
+import { deleteFork, previewDeleteFork } from './delete-fork.ts'
 import { discardClone, previewDiscard } from './discard.ts'
 import { unarchivePush } from './unarchive-push.ts'
 
@@ -14,8 +15,12 @@ export interface Actions {
   deleteClone: (name: string) => Promise<ActionResult>
   /** Say what deleting that clone would remove, the files git ignores, or why it is refused */
   previewDeleteClone: (name: string) => Promise<DeletePreview>
+  /** Delete a pristine fork on GitHub, and its clean local clone if it has one */
+  deleteFork: (name: string) => Promise<ActionResult>
   /** Throw away the unsaved work of an archived repo's clone, refused unless it is exactly the work the fingerprint stands for */
   discard: (name: string, fingerprint: string) => Promise<ActionResult>
+  /** Say what deleting the fork would remove, after proving it is pristine */
+  previewDeleteFork: (name: string) => Promise<ForkDeletePreview>
   /** Say what discarding would throw away, with the fingerprint of that list */
   previewDiscard: (name: string) => Promise<DiscardPreview>
   /** Unarchive an archived repo, push the unsaved branches of its clone, archive it again */
@@ -35,8 +40,10 @@ export function createActions(gh: GhRunner, owner: string | undefined, target: s
   return {
     clone: async name => cloneRepo(await options(name)),
     deleteClone: async name => deleteClone(await options(name)),
+    deleteFork: async name => deleteFork(await options(name)),
     discard: async (name, fingerprint) => discardClone({ ...(await options(name)), fingerprint }),
     previewDeleteClone: async name => previewDeleteClone(await options(name)),
+    previewDeleteFork: async name => previewDeleteFork(await options(name)),
     previewDiscard: async name => previewDiscard(await options(name)),
     unarchivePush: async name => unarchivePush(await options(name)),
   }

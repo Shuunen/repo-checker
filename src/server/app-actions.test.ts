@@ -155,3 +155,47 @@ describe('discard', () => {
     expect(discard).not.toHaveBeenCalled()
   })
 })
+
+describe('delete fork', () => {
+  const post = { headers: { 'x-repo-check': '1' }, method: 'POST' }
+
+  it('says what deleting the fork would remove', async () => {
+    expect.hasAssertions()
+    const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/lib/delete-fork')
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toStrictEqual({ branches: 1, ok: true, parent: 'them/lib' })
+  })
+
+  it('answers 409 with the reason when the fork is not pristine', async () => {
+    expect.hasAssertions()
+    const refused: ActionResult = { ok: false, reason: 'Owner/lib: a fork of them/lib with work to keep: main is 1 ahead' }
+    const actions: Actions = { ...worksFine, previewDeleteFork: () => Promise.resolve(refused) }
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, actions).request('http://127.0.0.1/api/projects/lib/delete-fork')
+    expect(response.status).toBe(409)
+    await expect(response.json()).resolves.toStrictEqual(refused)
+  })
+
+  it('deletes the fork and answers its result', async () => {
+    expect.hasAssertions()
+    const deleteFork = vi.fn<Actions['deleteFork']>(() => Promise.resolve({ message: 'deleted the fork Owner/lib on GitHub', ok: true }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, deleteFork }).request('http://127.0.0.1/api/projects/lib/delete-fork', post)
+    expect(response.status).toBe(200)
+    expect(deleteFork).toHaveBeenCalledWith('lib')
+  })
+
+  it('answers 409 with the reason when the delete is refused', async () => {
+    expect.hasAssertions()
+    const refused: ActionResult = { ok: false, reason: 'the gh token has no delete_repo scope, run: gh auth refresh -s delete_repo' }
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, deleteFork: () => Promise.resolve(refused) }).request('http://127.0.0.1/api/projects/lib/delete-fork', post)
+    expect(response.status).toBe(409)
+    await expect(response.json()).resolves.toStrictEqual(refused)
+  })
+
+  it('refuses a delete without the action header, and does not run it', async () => {
+    expect.hasAssertions()
+    const deleteFork = vi.fn<Actions['deleteFork']>()
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, deleteFork }).request('http://127.0.0.1/api/projects/lib/delete-fork', { method: 'POST' })
+    expect(response.status).toBe(403)
+    expect(deleteFork).not.toHaveBeenCalled()
+  })
+})

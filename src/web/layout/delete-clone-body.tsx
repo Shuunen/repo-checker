@@ -1,8 +1,5 @@
 import type { DeletePreview } from '../../shared/action.ts'
-import { plural } from '../../shared/text.ts'
-
-/** How many ignored files are listed before the rest is counted */
-const maxListed = 20
+import { IgnoredFiles } from './ignored-files.tsx'
 
 /** What the body of the delete confirmation shows */
 export interface DeleteCloneBodyProps {
@@ -14,16 +11,6 @@ export interface DeleteCloneBodyProps {
   preview: DeletePreview | undefined
   /** Why the server could not be asked, undefined when it answered */
   previewError: string | undefined
-}
-
-/**
- * Say how many ignored files would be lost
- * @param count how many ignored files the clone holds
- * @returns the sentence
- */
-function lostText(count: number) {
-  if (count === 0) return 'No ignored file would be lost.'
-  return `${plural(count, 'ignored file')} would be lost${count > maxListed ? `, the first ${maxListed} are listed` : ''}.`
 }
 
 /**
@@ -42,12 +29,7 @@ export function DeleteCloneBody({ error, isLoading, preview, previewError }: Rea
   return (
     <div data-testid="delete-preview">
       <p>{`This deletes the folder ${preview.path} for good. Everything in it is on GitHub, except the files git ignores:`}</p>
-      <ul>
-        {preview.ignoredFiles.slice(0, maxListed).map(file => (
-          <li key={file}>{file}</li>
-        ))}
-      </ul>
-      <p>{lostText(preview.ignoredFiles.length)}</p>
+      <IgnoredFiles files={preview.ignoredFiles} />
       {error !== undefined && <p data-testid="delete-error">{error}</p>}
     </div>
   )

@@ -30,6 +30,8 @@ export function actionRoutes(actions: Actions) {
     .get('/api/projects/:name/delete-clone', async context => reply(context, await actions.previewDeleteClone(context.req.param('name'))))
     .post('/api/projects/:name/delete-clone', async context => reply(context, await actions.deleteClone(context.req.param('name'))))
     .post('/api/projects/:name/unarchive-push', async context => reply(context, await actions.unarchivePush(context.req.param('name'))))
+    .get('/api/projects/:name/delete-fork', async context => reply(context, await actions.previewDeleteFork(context.req.param('name'))))
+    .post('/api/projects/:name/delete-fork', async context => reply(context, await actions.deleteFork(context.req.param('name'))))
     .get('/api/projects/:name/discard', async context => reply(context, await actions.previewDiscard(context.req.param('name'))))
     .post('/api/projects/:name/discard', async context => reply(context, await actions.discard(context.req.param('name'), context.req.query('fingerprint') ?? '')))
 }

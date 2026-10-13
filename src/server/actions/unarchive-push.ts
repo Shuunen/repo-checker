@@ -3,7 +3,8 @@ import type { LocalClone } from '../../shared/project.ts'
 import { plural } from '../../shared/text.ts'
 import type { GhRunner } from '../inventory/github.ts'
 import { run } from '../inventory/shell.ts'
-import { type ArchivedOptions, proveArchived } from './archived-proof.ts'
+import type { ActionOptions } from './action-options.ts'
+import { proveArchived } from './archived-proof.ts'
 
 /**
  * Say why the action cannot run while the clone holds work it would have to commit: it only pushes, it never creates a commit
@@ -74,7 +75,7 @@ async function pushThroughUnarchive(gh: GhRunner, clone: Readonly<LocalClone>, s
  * @returns the result, refused with the reason when the proof fails
  * @example const result = await unarchivePush({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target })
  */
-export async function unarchivePush(options: Readonly<ArchivedOptions>): Promise<ActionResult> {
+export async function unarchivePush(options: Readonly<ActionOptions>): Promise<ActionResult> {
   try {
     const proof = await proveArchived(options, 'unarchive-push-rearchive')
     if (!proof.ok) return proof

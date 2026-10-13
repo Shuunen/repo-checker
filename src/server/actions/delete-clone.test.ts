@@ -5,7 +5,7 @@ import type { LocalClone } from '../../shared/project.ts'
 import type { GhRunner } from '../inventory/github.ts'
 import { run } from '../inventory/shell.ts'
 import { deleteClone, previewDeleteClone } from './delete-clone.ts'
-import type { GitReaders } from './archived-proof.ts'
+import type { GitReaders } from './action-options.ts'
 import { exists } from './guards.ts'
 
 const apiRepo = (fields: Readonly<Record<string, unknown>> = {}) => ({ archived: true, fork: false, name: 'old', owner: { login: 'Owner' }, private: false, pushed_at: '2025-01-01T00:00:00Z', ...fields })

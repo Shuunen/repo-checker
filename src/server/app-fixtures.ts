@@ -4,8 +4,10 @@ import { createApp, type ScanRunner } from './app.ts'
 export const worksFine: Actions = {
   clone: () => Promise.resolve({ message: 'cloned', ok: true }),
   deleteClone: () => Promise.resolve({ message: 'deleted', ok: true }),
+  deleteFork: () => Promise.resolve({ message: 'deleted the fork', ok: true }),
   discard: () => Promise.resolve({ message: 'discarded', ok: true }),
   previewDeleteClone: () => Promise.resolve({ ignoredFiles: ['.env'], ok: true, path: '/projects/old' }),
+  previewDeleteFork: () => Promise.resolve({ branches: 1, clone: undefined, ok: true, parent: 'them/lib' }),
   previewDiscard: () => Promise.resolve({ fingerprint: 'abc', groups: [{ items: ['master: fix'], title: 'Unpushed commits' }], ok: true, path: '/projects/old' }),
   unarchivePush: () => Promise.resolve({ message: 'pushed', ok: true }),
 }

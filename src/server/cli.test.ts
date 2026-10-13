@@ -240,6 +240,12 @@ describe('cli ui', () => {
     await expect(call('finga/discard?fingerprint=abc', 'POST')).resolves.toStrictEqual({ ok: false, reason })
   })
 
+  it.each(['GET', 'POST'] as const)('wires the delete of a fork with %s, and refuses a repo that is not a fork', async method => {
+    expect.hasAssertions()
+    const { call } = await ui([], fakeCloneGh('owner/finga'))
+    await expect(call('finga/delete-fork', method)).resolves.toStrictEqual({ ok: false, reason: 'owner/finga is not a fork, this only applies to a fork' })
+  })
+
   it('takes the port from the options', async () => {
     expect.hasAssertions()
     const startServer = vi.fn<StartServer>(() => Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:8080' }))

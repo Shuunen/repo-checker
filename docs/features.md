@@ -69,7 +69,7 @@ These are requirements, each one gets a test.
 3. A fork delete is offered only when the strict `pristine-fork` rule is proved, including the clean-clone rule for its local clone when one exists. A failed comparison is never read as "nothing to lose".
 4. The server binds to `127.0.0.1` only, and refuses any request whose `Host` is not `127.0.0.1` or `localhost`, so a web page on another domain cannot reach it through DNS rebinding. Any request that changes something must also carry the `x-repo-check: 1` header, which a web page of another site cannot add, so it cannot post an action.
 5. The tool never reads or stores a GitHub token. All GitHub calls go through `gh api`.
-6. Deleting a fork needs the `delete_repo` scope. When it is missing the UI shows `gh auth refresh -s delete_repo` instead of failing silently.
+6. Deleting a fork needs the `delete_repo` scope. When it is missing the dialog shows `gh auth refresh -s delete_repo` instead of failing silently: the server reads the scopes of the token before it offers the delete, and a 403 from GitHub gives the same command.
 7. Before any destructive action the tool fetches that repo again and re-checks the condition that justified it. A scan result is never trusted as current. If the fetch fails, the action refuses.
 
 ## Everything else

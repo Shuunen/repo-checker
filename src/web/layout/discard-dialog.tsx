@@ -1,7 +1,7 @@
-import { AlertDialog, Button } from '@heroui/react'
+import { ConfirmDialog } from './confirm-dialog.tsx'
 import { DiscardBody, type DiscardBodyProps } from './discard-body.tsx'
 
-/** What the dialog shows and does */
+/** What the dialog shows and does, with the props of its body */
 interface DiscardDialogProps extends DiscardBodyProps {
   /** True when the dialog is shown */
   isOpen: boolean
@@ -18,7 +18,7 @@ interface DiscardDialogProps extends DiscardBodyProps {
 }
 
 /**
- * The confirmation before a discard: the server reads, fresh, the exact list of what would be thrown away, and Discard is only possible once it did. The discard is refused if the clone holds anything else when it is pressed. Nothing is discarded until then
+ * The confirmation before a discard: the server reads, fresh, the exact list of what would be thrown away, and Discard is only possible once it did. The discard is refused if the clone holds anything else when it is pressed
  * @param props the props
  * @param props.error why the discard failed after it was confirmed
  * @param props.isLoading true while the list is read again
@@ -33,29 +33,9 @@ interface DiscardDialogProps extends DiscardBodyProps {
  * @returns the dialog
  */
 export function DiscardDialog({ error, isLoading, isOpen, isPending, onCancel, onConfirm, onOpenChange, preview, previewError, slug }: Readonly<DiscardDialogProps>) {
-  const canDiscard = preview?.ok === true && !isLoading
   return (
-    <AlertDialog isOpen={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialog.Backdrop>
-        <AlertDialog.Container>
-          <AlertDialog.Dialog>
-            <AlertDialog.Header>
-              <AlertDialog.Heading>{`Discard the unsaved work of ${slug}?`}</AlertDialog.Heading>
-            </AlertDialog.Header>
-            <AlertDialog.Body data-testid="discard-dialog-body">
-              <DiscardBody error={error} isLoading={isLoading} preview={preview} previewError={previewError} />
-            </AlertDialog.Body>
-            <AlertDialog.Footer>
-              <Button data-testid="discard-cancel" isDisabled={isPending} onPress={onCancel} variant="tertiary">
-                Cancel
-              </Button>
-              <Button data-testid="discard-confirm" isDisabled={!canDiscard} isPending={isPending} onPress={onConfirm} variant="danger">
-                Discard everything listed
-              </Button>
-            </AlertDialog.Footer>
-          </AlertDialog.Dialog>
-        </AlertDialog.Container>
-      </AlertDialog.Backdrop>
-    </AlertDialog>
+    <ConfirmDialog canConfirm={preview?.ok === true && !isLoading} confirmLabel="Discard everything listed" heading={`Discard the unsaved work of ${slug}?`} isDanger isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="discard">
+      <DiscardBody error={error} isLoading={isLoading} preview={preview} previewError={previewError} />
+    </ConfirmDialog>
   )
 }

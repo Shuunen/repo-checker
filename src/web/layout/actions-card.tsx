@@ -5,7 +5,7 @@ import { offeredActions } from '../projects/detail.ts'
 import { ActionButton } from './action-button.tsx'
 
 /**
- * The actions the findings offer. Each one asks for a confirmation first. Everything but Delete fork is built, its button is disabled
+ * The actions the findings offer. Each one asks for a confirmation first. Each one asks you to confirm again
  * @param props the props
  * @param props.findings the findings
  * @param props.project the project
@@ -18,7 +18,7 @@ export function ActionsCard({ findings, project, target }: Readonly<{ findings: 
   return (
     <Card data-testid="actions">
       <Card.Title>Actions</Card.Title>
-      <Card.Description>Each action asks you to confirm first. Everything but Delete fork is built, its button is disabled.</Card.Description>
+      <Card.Description>Each action asks you to confirm first, and the server proves again that it is still right when you do.</Card.Description>
       <span className="flex gap-2">
         {actions.map(action => (
           <ActionButton action={action} key={action} project={project} target={target} />

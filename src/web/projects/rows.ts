@@ -42,7 +42,7 @@ export const severityColor: Readonly<Record<Severity, PillColor>> = { error: 'da
 export const severityRank: Readonly<Record<Severity, number>> = { error: 0, info: 2, warning: 1 }
 
 /** The button label of each action */
-export const actionLabels: Readonly<Record<ActionKind, string>> = { clone: 'Clone', 'delete-clone': 'Delete clone', 'delete-fork': 'Delete fork', discard: 'Discard', 'unarchive-push-rearchive': 'Unarchive & push' }
+const actionLabels: Readonly<Record<ActionKind, string>> = { clone: 'Clone', 'delete-clone': 'Delete clone', 'delete-fork': 'Delete fork', discard: 'Discard', 'unarchive-push-rearchive': 'Unarchive & push' }
 
 /** The short label of each Sync finding, by `ruleId.messageId`, a finding missing here shows its rule id */
 const syncLabels: Readonly<Record<string, string>> = {

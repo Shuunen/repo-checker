@@ -4,7 +4,7 @@ import path from 'node:path'
 import type { LocalClone } from '../../shared/project.ts'
 import type { GhRunner } from '../inventory/github.ts'
 import { run } from '../inventory/shell.ts'
-import type { GitReaders } from './archived-proof.ts'
+import type { GitReaders } from './action-options.ts'
 import { unarchivePush } from './unarchive-push.ts'
 
 const identity = ['-c', 'user.name=Test', '-c', 'user.email=test@example.com', '-c', 'commit.gpgsign=false']

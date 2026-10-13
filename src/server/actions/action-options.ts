@@ -1,0 +1,27 @@
+import { readClone, readClones } from '../inventory/git.ts'
+import type { GhRunner } from '../inventory/github.ts'
+
+/** How the clones are read, replaced by fakes in tests */
+export interface GitReaders {
+  /** Read one clone, with a `git fetch` when asked */
+  readClone: typeof readClone
+  /** Read every clone of a folder */
+  readClones: typeof readClones
+}
+
+/** What an action on a project needs */
+export interface ActionOptions {
+  /** Runs gh */
+  gh: GhRunner
+  /** How the clones are read, the real git in the server, a fake in tests */
+  git: GitReaders
+  /** The repo name, as asked by the page */
+  name: string
+  /** The GitHub owner the scan compares with */
+  owner: string
+  /** The folder of projects */
+  target: string
+}
+
+/** The real git, the default of every action */
+export const realGit: GitReaders = { readClone, readClones }

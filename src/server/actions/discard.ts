@@ -3,10 +3,11 @@ import type { ActionResult, DiscardPreview } from '../../shared/action.ts'
 import type { LocalClone } from '../../shared/project.ts'
 import { type UnsavedGroup, unsavedGroups } from '../../shared/unsaved.ts'
 import { run } from '../inventory/shell.ts'
-import { type ArchivedOptions, proveArchived } from './archived-proof.ts'
+import type { ActionOptions } from './action-options.ts'
+import { proveArchived } from './archived-proof.ts'
 
 /** What discarding needs: the fingerprint of the list the user confirmed */
-interface DiscardOptions extends ArchivedOptions {
+interface DiscardOptions extends ActionOptions {
   /** The fingerprint of the list shown in the dialog, the discard is refused when the clone does not hold exactly that any more */
   fingerprint: string
 }
@@ -60,7 +61,7 @@ async function runSteps(folder: string, steps: readonly Step[]): Promise<string 
  * @returns the list, or the reason the discard is refused
  * @example const preview = await previewDiscard({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target })
  */
-export async function previewDiscard(options: Readonly<ArchivedOptions>): Promise<DiscardPreview> {
+export async function previewDiscard(options: Readonly<ActionOptions>): Promise<DiscardPreview> {
   try {
     const proof = await proveArchived(options, 'discard')
     if (!proof.ok) return proof

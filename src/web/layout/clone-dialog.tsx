@@ -1,4 +1,4 @@
-import { AlertDialog, Button } from '@heroui/react'
+import { ConfirmDialog } from './confirm-dialog.tsx'
 
 /** What the dialog shows and does */
 interface CloneDialogProps {
@@ -21,7 +21,7 @@ interface CloneDialogProps {
 }
 
 /**
- * The confirmation before a clone: what will happen, why it failed if it did, and Cancel and Clone. Nothing happens until Clone is pressed
+ * The confirmation before a clone: what will happen, and why it failed if it did. Nothing happens until Clone is pressed
  * @param props the props
  * @param props.error why the clone failed, undefined before
  * @param props.folder the folder the clone creates
@@ -35,28 +35,9 @@ interface CloneDialogProps {
  */
 export function CloneDialog({ error, folder, isOpen, isPending, onCancel, onConfirm, onOpenChange, slug }: Readonly<CloneDialogProps>) {
   return (
-    <AlertDialog isOpen={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialog.Backdrop>
-        <AlertDialog.Container>
-          <AlertDialog.Dialog>
-            <AlertDialog.Header>
-              <AlertDialog.Heading>{`Clone ${slug}?`}</AlertDialog.Heading>
-            </AlertDialog.Header>
-            <AlertDialog.Body data-testid="clone-dialog-body">
-              {`${slug} is cloned into ${folder} with gh. Nothing that already exists is changed, and the clone is refused if a folder of that name appears before.`}
-              {error !== undefined && <p data-testid="clone-error">{error}</p>}
-            </AlertDialog.Body>
-            <AlertDialog.Footer>
-              <Button data-testid="clone-cancel" isDisabled={isPending} onPress={onCancel} variant="tertiary">
-                Cancel
-              </Button>
-              <Button data-testid="clone-confirm" isPending={isPending} onPress={onConfirm}>
-                Clone
-              </Button>
-            </AlertDialog.Footer>
-          </AlertDialog.Dialog>
-        </AlertDialog.Container>
-      </AlertDialog.Backdrop>
-    </AlertDialog>
+    <ConfirmDialog canConfirm confirmLabel="Clone" heading={`Clone ${slug}?`} isDanger={false} isOpen={isOpen} isPending={isPending} onCancel={onCancel} onConfirm={onConfirm} onOpenChange={onOpenChange} prefix="clone">
+      {`${slug} is cloned into ${folder} with gh. Nothing that already exists is changed, and the clone is refused if a folder of that name appears before.`}
+      {error !== undefined && <p data-testid="clone-error">{error}</p>}
+    </ConfirmDialog>
   )
 }

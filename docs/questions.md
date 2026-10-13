@@ -6,6 +6,11 @@ Status: written during an autonomous session (2026-10-13). Each item is a decisi
 
 None so far.
 
+## Needs your hands
+
+- **The gh token has no `delete_repo` scope**, so Delete fork is refused for every fork today (the dialog says `gh auth refresh -s delete_repo`). Run it once when you want to try the action.
+- **Never run on real data**: unarchive and push, discard, delete clone and delete fork were only run on throwaway repos in tests and read-only against your real repos (the previews). Try them first on a throwaway archived repo or a throwaway fork.
+
 ## Decisions taken without asking
 
 1. **Delete clone removes the folder for good** (`fs.rm`), not to a trash. The dialog lists the ignored files that would be lost, and everything else is proved to be on GitHub. A trash would need a dependency or a per-OS command. *Change it if you want a safety net.*
@@ -18,3 +23,6 @@ None so far.
 8. **The row action in the list links to the project view**, where the confirmation lives, instead of opening the dialog from the row. It is in `TODOS.md`.
 9. **`plural` now adds `es` after `ch`, `sh`, `s`, `x` and `z`** (it said "branchs" and "stashs").
 10. **`max-lines-per-function` is 30** (your change), and I regrouped the web components to fit it.
+11. **Delete fork deletes on GitHub first, then the clean clone**, so a refused delete leaves your clone alone. A fork with a dirty clone is refused, as the strict rule says.
+12. **Every confirmation is one `ConfirmDialog`** and the three "show first" actions share one hook, to avoid five copies of the same dialog.
+13. **The scope check trusts `X-OAuth-Scopes`** and tries the delete when the header is absent (fine-grained tokens), where a 403 gives the same command.

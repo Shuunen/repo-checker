@@ -1,38 +1,13 @@
 import type { ActionKind } from '../../shared/action.ts'
 import type { GithubRepo, LocalClone } from '../../shared/project.ts'
 import { checkProjectRules } from '../engine/runner.ts'
-import { readClone, readClones } from '../inventory/git.ts'
 import { type GhRunner, getRepo } from '../inventory/github.ts'
 import { archivedClone, archivedWithUnsavedWork } from '../rules/sync/archived.rule.ts'
+import type { ActionOptions, GitReaders } from './action-options.ts'
 import { checkFolderOfProjects, isRepoName } from './guards.ts'
-
-/** How the clones are read, replaced by fakes in tests */
-export interface GitReaders {
-  /** Read one clone, with a `git fetch` when asked */
-  readClone: typeof readClone
-  /** Read every clone of a folder */
-  readClones: typeof readClones
-}
-
-/** What an action on the clone of an archived repo needs */
-export interface ArchivedOptions {
-  /** Runs gh */
-  gh: GhRunner
-  /** How the clones are read, the real git in the server, a fake in tests */
-  git: GitReaders
-  /** The repo name, as asked by the page */
-  name: string
-  /** The GitHub owner the scan compares with */
-  owner: string
-  /** The folder of projects */
-  target: string
-}
 
 /** The proof of an action: the clone to act on, or the reason to refuse */
 export type Proof = { clone: LocalClone; ok: true } | { ok: false; reason: string }
-
-/** The real git, the default of every action */
-export const realGit: GitReaders = { readClone, readClones }
 
 /**
  * Prove the repo is still archived on GitHub and not a fork, the only case `archived-clone` offers a delete for
@@ -91,7 +66,7 @@ async function refusalOf(repo: Readonly<GithubRepo>, clone: Readonly<LocalClone>
  * @throws {Error} when gh fails for a reason other than a 404
  * @example const proof = await proveArchived({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target }, 'delete-clone')
  */
-export async function proveArchived({ gh, git, name, owner, target }: Readonly<ArchivedOptions>, action: ActionKind): Promise<Proof> {
+export async function proveArchived({ gh, git, name, owner, target }: Readonly<ActionOptions>, action: ActionKind): Promise<Proof> {
   if (!isRepoName(name)) return { ok: false, reason: `${name} is not a repo name` }
   const single = await checkFolderOfProjects(target)
   if (single !== undefined) return { ok: false, reason: single }
