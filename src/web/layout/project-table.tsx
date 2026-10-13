@@ -7,9 +7,10 @@ import { ProjectRowView } from './project-row.tsx'
  * @param props the props
  * @param props.isScanning true while the scan streams, the empty table then says it is scanning
  * @param props.rows the rows of the selected filter
+ * @param props.target the folder of projects, where a clone goes
  * @returns the table
  */
-export function ProjectTable({ isScanning, rows }: Readonly<{ isScanning: boolean; rows: readonly ProjectRow[] }>) {
+export function ProjectTable({ isScanning, rows, target }: Readonly<{ isScanning: boolean; rows: readonly ProjectRow[]; target: string }>) {
   return (
     <Table>
       <Table.ScrollContainer>
@@ -22,7 +23,7 @@ export function ProjectTable({ isScanning, rows }: Readonly<{ isScanning: boolea
             <Table.Column>Action</Table.Column>
           </Table.Header>
           <Table.Body items={rows} renderEmptyState={() => (isScanning ? 'Scanning…' : 'No project here')}>
-            {row => <ProjectRowView row={row} />}
+            {row => <ProjectRowView row={row} target={target} />}
           </Table.Body>
         </Table.Content>
       </Table.ScrollContainer>

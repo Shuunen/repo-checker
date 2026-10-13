@@ -18,7 +18,6 @@ v1 is the Sync checks only (see `docs/features.md`). Every check, built or wante
 
 ## Output and UX
 
-- Open the confirmation straight from the row's action button, instead of linking to the project view.
 
 - A health score per repo.
 - `--json` output for scripts and for Claude.

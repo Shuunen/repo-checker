@@ -32,7 +32,7 @@ describe(App, () => {
     await screen.findByTestId('row-jozzo')
     fireEvent.click(screen.getByTestId('filter-not-cloned'))
     expect(screen.queryByTestId('row-jozzo')).toBeNull()
-    expect(screen.getByTestId('row-finga').textContent).toContain('Clone →')
+    expect(screen.getByTestId('row-finga').textContent).toContain('Clone')
   })
 
   it('says when a filter holds no project', async () => {

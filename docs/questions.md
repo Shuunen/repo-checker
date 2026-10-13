@@ -22,7 +22,7 @@ None so far.
 5. ✅ **Discard lands on `origin/HEAD`** when the checked out branch only exists locally, or else on the first branch that has an upstream, and refuses when none does.
 6. ✅ **Discard asks for a fingerprint of the list the user saw** and refuses when the clone changed. This costs a fresh fetch when the dialog opens (a few seconds), and is what makes "after listing every item" true.
 7. ✅ **After an action only the changed project is scanned again** (about 1 to 2.5 s), with the whole scan as a fallback when that fails.
-8. **The row action in the list links to the project view**, where the confirmation lives, instead of opening the dialog from the row. It is in `TODOS.md`.
+8. ✅ **The row action in the list opens its confirmation directly**, for every action (decided in the review, it replaced the link to the project page). The row shows the first action the project offers.
 9. ✅ **`plural` now adds `es` after `ch`, `sh`, `s`, `x` and `z`** (it said "branchs" and "stashs").
 10. ✅ **`max-lines-per-function` is 30** (your change), and I regrouped the web components to fit it.
 11. **Delete fork deletes on GitHub first, then the clean clone**, so a refused delete leaves your clone alone. A fork with a dirty clone is refused, as the strict rule says.

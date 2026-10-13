@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import type { ScanEvent } from '../shared/scan-event.ts'
 import { aFinding, aProject, scanRequest, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
@@ -38,6 +38,21 @@ describe('after an action', () => {
     const request = await runAction('finga', 'action-clone', 'clone-confirm')
     await waitFor(() => expect(screen.queryByTestId('actions')).toBeNull())
     expect(screen.getByTestId('fact-branch').textContent).toBe('cloned-branch')
+    expect(request).toHaveBeenCalledOnce()
+  })
+
+  it('updates the row in place when the action was started from the list', async () => {
+    expect.hasAssertions()
+    const now = aProject('finga', [])
+    const fetchMock = stubApi({ rescan: Response.json({ ok: true, project: now }) })
+    const request = scanRequest(events)
+    renderApp(request)
+    fireEvent.click(within(await screen.findByTestId('row-finga')).getByTestId('action-clone'))
+    fireEvent.click(await screen.findByTestId('clone-confirm'))
+    const pill = await within(screen.getByTestId('row-finga')).findByText('all good')
+    expect(pill.textContent).toBe('all good')
+    expect(screen.queryByTestId('action-clone')).toBeNull()
+    expect(fetchMock).toHaveBeenCalledWith('/api/projects/finga/rescan')
     expect(request).toHaveBeenCalledOnce()
   })
 

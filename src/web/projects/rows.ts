@@ -1,4 +1,5 @@
 import type { ActionKind } from '../../shared/action.ts'
+import type { Project } from '../../shared/project.ts'
 import type { ScanFinding, ScanProject, Severity } from '../../shared/scan-event.ts'
 import { plural } from '../../shared/text.ts'
 
@@ -17,8 +18,8 @@ interface Pill {
 
 /** What one table row shows */
 export interface ProjectRow {
-  /** The action a click would start, undefined when there is none */
-  action: string | undefined
+  /** The first action the project offers, its button opens the confirmation from the row, undefined when there is none */
+  action: ActionKind | undefined
   /** The address of the project view */
   href: string
   /** The row key, the project name */
@@ -29,6 +30,8 @@ export interface ProjectRow {
   lastPush: string
   /** The project name */
   name: string
+  /** The project, for its action button */
+  project: Project
   /** The status pills */
   pills: Pill[]
   /** Sort key: 0 for an error, 1 for a warning, 2 for info, 3 for nothing to report */
@@ -40,9 +43,6 @@ export const severityColor: Readonly<Record<Severity, PillColor>> = { error: 'da
 
 /** The rank of each severity, the worst first */
 export const severityRank: Readonly<Record<Severity, number>> = { error: 0, info: 2, warning: 1 }
-
-/** The button label of each action */
-const actionLabels: Readonly<Record<ActionKind, string>> = { clone: 'Clone', 'delete-clone': 'Delete clone', 'delete-fork': 'Delete fork', discard: 'Discard', 'unarchive-push-rearchive': 'Unarchive & push' }
 
 /** The short label of each Sync finding, by `ruleId.messageId`, a finding missing here shows its rule id */
 const syncLabels: Readonly<Record<string, string>> = {
@@ -110,7 +110,7 @@ function toRow(result: Readonly<ScanProject>): ProjectRow {
   const action = findings.find(finding => finding.actions.length > 0)?.actions[0]
   const rank = Math.min(quietRank, ...findings.map(finding => severityRank[finding.severity]))
   const branch = project.local?.currentBranch ?? ''
-  return { action: action && actionLabels[action], branch: branch === '' ? '—' : branch, href: projectHref(project.name), id: project.name, lastPush: project.github?.pushedAt.slice(0, 'yyyy-mm'.length) ?? '—', name: project.name, pills: toPills(result), rank }
+  return { action, branch: branch === '' ? '—' : branch, href: projectHref(project.name), id: project.name, lastPush: project.github?.pushedAt.slice(0, 'yyyy-mm'.length) ?? '—', name: project.name, pills: toPills(result), project, rank }
 }
 
 /**

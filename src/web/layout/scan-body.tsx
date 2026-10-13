@@ -20,7 +20,7 @@ export function ScanBody({ error, filterId, isScanning, state }: Readonly<{ erro
   return (
     <>
       <SummaryTiles projects={state.projects} />
-      <ProjectTable isScanning={isScanning} rows={toRows(state.projects.filter(filterById(filterId).matches))} />
+      <ProjectTable isScanning={isScanning} rows={toRows(state.projects.filter(filterById(filterId).matches))} target={state.target} />
     </>
   )
 }

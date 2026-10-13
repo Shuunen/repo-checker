@@ -8,7 +8,7 @@ describe(toRows, () => {
     expect.hasAssertions()
     const [row] = toRows([aProject('jozzo', [unsaved, aFinding({ severity: 'error' }), aFinding(), aFinding(), aFinding({ severity: 'info' })])])
     expect(row).toStrictEqual({
-      action: 'Unarchive & push',
+      action: 'unarchive-push-rearchive',
       branch: 'master',
       href: '/project/jozzo',
       id: 'jozzo',
@@ -19,6 +19,7 @@ describe(toRows, () => {
         { color: 'danger', hint: '1 error in the project files', label: '1 error' },
         { color: 'warning', hint: '2 warnings in the project files', label: '2 warnings' },
       ],
+      project: expect.objectContaining({ name: 'jozzo' }),
       rank: 0,
     })
   })
@@ -32,7 +33,7 @@ describe(toRows, () => {
   it('shows dashes for a repo that is not cloned', () => {
     expect.hasAssertions()
     const [row] = toRows([aProject('finga', [aFinding({ actions: ['clone'], messageId: 'missing', ruleId: 'not-cloned', scope: 'project', severity: 'info' })], { local: undefined })])
-    expect(row).toMatchObject({ action: 'Clone', branch: '—', pills: [{ color: 'accent', label: 'not cloned' }] })
+    expect(row).toMatchObject({ action: 'clone', branch: '—', pills: [{ color: 'accent', label: 'not cloned' }] })
   })
 
   it.each([

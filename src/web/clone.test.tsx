@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import type { ScanEvent } from '../shared/scan-event.ts'
 import { aFinding, aProject, scanRequest, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
@@ -65,11 +65,15 @@ describe('clone', () => {
     expect(request).toHaveBeenCalledOnce()
   })
 
-  it('links the action of a row to the project, where it is confirmed', async () => {
+  it('opens the confirmation right from the row of the list', async () => {
     expect.hasAssertions()
+    const fetchMock = stubApi({ action: Response.json({ message: 'cloned', ok: true }) })
     renderApp(scanRequest(events))
     const row = await screen.findByTestId('row-finga')
-    const links = [...row.querySelectorAll('a[href="/project/finga"]')]
-    expect(links.map(link => link.textContent)).toStrictEqual(['finga', 'Clone →'])
+    fireEvent.click(within(row).getByTestId('action-clone'))
+    await screen.findByTestId('clone-dialog-body')
+    expect(screen.getByTestId('clone-dialog-body').textContent).toContain('owner/finga is cloned over SSH into /projects/finga')
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(globalThis.location.pathname).toBe('/')
   })
 })

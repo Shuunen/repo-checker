@@ -1,14 +1,16 @@
 import { Chip, Table } from '@heroui/react'
 import { Link } from 'wouter'
 import type { ProjectRow } from '../projects/rows.ts'
+import { ActionButton } from './action-button.tsx'
 
 /**
- * One project row: its name (a link to the project view), status pills with their full message on hover, branch, last push, and the primary action, a link to the project view where it is confirmed
+ * One project row: its name (a link to the project view), status pills with their full message on hover, branch, last push, and the first action it offers, its button opens the confirmation right from the row
  * @param props the props
  * @param props.row the row
+ * @param props.target the folder of projects, where a clone goes
  * @returns the row
  */
-export function ProjectRowView({ row }: Readonly<{ row: ProjectRow }>) {
+export function ProjectRowView({ row, target }: Readonly<{ row: ProjectRow; target: string }>) {
   return (
     <Table.Row data-testid={`row-${row.name}`} id={row.id}>
       <Table.Cell className="font-medium">
@@ -27,7 +29,7 @@ export function ProjectRowView({ row }: Readonly<{ row: ProjectRow }>) {
       </Table.Cell>
       <Table.Cell className="text-muted">{row.branch}</Table.Cell>
       <Table.Cell className="text-muted">{row.lastPush}</Table.Cell>
-      <Table.Cell>{row.action !== undefined && <Link href={row.href}>{`${row.action} →`}</Link>}</Table.Cell>
+      <Table.Cell>{row.action !== undefined && <ActionButton action={row.action} project={row.project} target={target} />}</Table.Cell>
     </Table.Row>
   )
 }
