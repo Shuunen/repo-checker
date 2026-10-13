@@ -69,7 +69,7 @@ export const forgottenStash = defineProjectRule({
     const { stashes } = cloneOf(context)
     if (stashes.length > 0) context.report({ data: { stashes: plural(stashes.length, 'stash') }, messageId: 'found' })
   },
-  meta: { id: 'forgotten-stash', messages: { found: '{{stashes}} never reapplied or dropped' }, severity: 'warning' },
+  meta: { id: 'forgotten-stash', messages: { found: '{{stashes}} never reapplied or dropped' }, severity: 'info' },
 })
 
 export const branchWithoutUpstream = defineProjectRule({
@@ -78,7 +78,7 @@ export const branchWithoutUpstream = defineProjectRule({
     const { localOnlyBranches } = cloneOf(context)
     if (localOnlyBranches.length > 0) context.report({ data: { branches: localOnlyBranches.join(', ') }, messageId: 'found' })
   },
-  meta: { id: 'branch-without-upstream', messages: { found: 'local branches with no upstream, or whose upstream was deleted: {{branches}}' }, severity: 'warning' },
+  meta: { id: 'branch-without-upstream', messages: { found: 'local branches with no upstream, or whose upstream was deleted: {{branches}}' }, severity: 'info' },
 })
 
 export const notOnDefaultBranch = defineProjectRule({
