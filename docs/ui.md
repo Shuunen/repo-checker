@@ -1,6 +1,6 @@
 # UI
 
-Status: the project list and the project view are built (read only, the action buttons are disabled), the confirm dialogs are proposed.
+Status: the project list and the project view are built. Clone works behind a confirmation dialog, the other action buttons are disabled until their dialogs are built.
 
 ## Library and theme
 

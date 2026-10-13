@@ -5,6 +5,9 @@ import { initialScanState, reduceScan } from './scan-state.ts'
 /** Start the scan request, `fetch` in the page and a fake in tests */
 export type FetchScan = (signal: AbortSignal) => Promise<Response>
 
+/** The cache key of the scan, an action refetches it to show what it changed */
+export const scanQueryKey = ['scan']
+
 /**
  * Request the scan stream from the server
  * @param signal aborts the request when the query is cancelled
@@ -34,7 +37,7 @@ async function openScan(request: FetchScan, signal: AbortSignal) {
 export function scanQuery(request = fetchScan) {
   return queryOptions({
     queryFn: streamedQuery({ initialValue: initialScanState, reducer: reduceScan, refetchMode: 'reset', streamFn: ({ signal }) => openScan(request, signal) }),
-    queryKey: ['scan'],
+    queryKey: scanQueryKey,
     refetchOnWindowFocus: false,
     retry: false,
     staleTime: Number.POSITIVE_INFINITY,

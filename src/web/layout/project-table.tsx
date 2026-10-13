@@ -1,7 +1,6 @@
 import { Table } from '@heroui/react'
 import type { ProjectRow } from '../projects/rows.ts'
-import { TableHead } from './table-head.tsx'
-import { TableRows } from './table-rows.tsx'
+import { ProjectRowView } from './project-row.tsx'
 
 /**
  * The project table, one row per project, the worst first
@@ -15,8 +14,16 @@ export function ProjectTable({ isScanning, rows }: Readonly<{ isScanning: boolea
     <Table>
       <Table.ScrollContainer>
         <Table.Content aria-label="Projects">
-          <TableHead />
-          <TableRows isScanning={isScanning} rows={rows} />
+          <Table.Header>
+            <Table.Column isRowHeader>Project</Table.Column>
+            <Table.Column>Status</Table.Column>
+            <Table.Column>Branch</Table.Column>
+            <Table.Column>Last push</Table.Column>
+            <Table.Column>Action</Table.Column>
+          </Table.Header>
+          <Table.Body items={rows} renderEmptyState={() => (isScanning ? 'Scanning…' : 'No project here')}>
+            {row => <ProjectRowView row={row} />}
+          </Table.Body>
         </Table.Content>
       </Table.ScrollContainer>
     </Table>

@@ -1,6 +1,5 @@
 import type { ScanProject } from '../../shared/scan-event.ts'
 import { type FilterId, filters } from '../projects/filters.ts'
-import { Brand } from './brand.tsx'
 import { SidebarEntry } from './sidebar-entry.tsx'
 
 /**
@@ -14,7 +13,10 @@ import { SidebarEntry } from './sidebar-entry.tsx'
 export function Sidebar({ active, onSelect, projects }: Readonly<{ active: FilterId; onSelect: (id: FilterId) => void; projects: readonly ScanProject[] }>) {
   return (
     <nav className="flex w-56 shrink-0 flex-col gap-1 border-r border-separator p-3">
-      <Brand />
+      <p className="mb-4 flex items-center gap-2 px-2 font-semibold">
+        <span className="size-4 rounded bg-accent" />
+        repo-checker
+      </p>
       {filters.map(filter => (
         <SidebarEntry count={projects.filter(project => filter.matches(project)).length} id={filter.id} isActive={filter.id === active} key={filter.id} label={filter.label} onSelect={onSelect} />
       ))}

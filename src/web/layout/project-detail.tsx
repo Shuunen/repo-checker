@@ -11,9 +11,10 @@ import { ProjectIdentity } from './project-identity.tsx'
  * @param props.result the project result
  * @param props.result.findings its findings
  * @param props.result.project the project
+ * @param props.target the folder of projects
  * @returns the detail
  */
-export function ProjectDetail({ result: { findings, project } }: Readonly<{ result: ScanProject }>) {
+export function ProjectDetail({ result: { findings, project }, target }: Readonly<{ result: ScanProject; target: string }>) {
   return (
     <>
       <ProjectIdentity project={project} />
@@ -21,7 +22,7 @@ export function ProjectDetail({ result: { findings, project } }: Readonly<{ resu
       {factGroups(project).map(group => (
         <FactsCard facts={group.facts} key={group.title} title={group.title} />
       ))}
-      <ActionsCard findings={findings} />
+      <ActionsCard findings={findings} project={project} target={target} />
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { Card } from '@heroui/react'
 import type { ScanFinding } from '../../shared/scan-event.ts'
 import { findingGroups } from '../projects/detail.ts'
-import { FindingGroup } from './finding-group.tsx'
+import { FindingItem } from './finding-item.tsx'
 
 /**
  * Every finding of a project, grouped by origin, with what to do about it
@@ -16,7 +16,14 @@ export function FindingsCard({ findings }: Readonly<{ findings: readonly ScanFin
       <Card.Title>Findings</Card.Title>
       {groups.length === 0 && <Card.Description>Nothing to report</Card.Description>}
       {groups.map(group => (
-        <FindingGroup findings={group.findings} key={group.title} title={group.title} />
+        <section key={group.title}>
+          <h2 className="mb-2 font-medium">{group.title}</h2>
+          <ul className="flex flex-col gap-3">
+            {group.findings.map(finding => (
+              <FindingItem finding={finding} key={`${finding.ruleId}-${finding.message}`} />
+            ))}
+          </ul>
+        </section>
       ))}
     </Card>
   )

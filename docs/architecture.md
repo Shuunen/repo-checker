@@ -1,6 +1,6 @@
 # Architecture
 
-Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI, the HTTP server with its streaming scan and the project list and project view of the web app exist, and the old code is removed. The actions do not yet, so the other routes below are still a sketch.
+Status: partly built. The inventory, the checks engine, every check of the old tool, the five Sync checks, the report-only CLI, the HTTP server with its streaming scan, the project list and project view of the web app and the first action, Clone, exist, and the old code is removed. The other actions do not yet, so the other routes below are still a sketch.
 
 ## Shape
 
@@ -56,7 +56,7 @@ The CLI is `src/server/cli.ts` (`scan.ts` reads the inventory and `check-project
 - `projects/`: pure logic, no React. `rows.ts` turns a project result into a table row (pills, branch, last push, primary action) and sorts the worst first, then by name. `filters.ts` has the sidebar entries (overview, needs attention, not cloned, forks, archived) and the four summary tiles. A Sync finding gets a short pill label from `ruleId.messageId`, with the full message on hover, and an unknown one falls back on its rule id.
 - `projects/detail.ts` is the logic of the project view, no React: the identity badges and GitHub link, the fact cards (`localFacts`: path, branch, upstream, unpushed commits, uncommitted files, stashes, local-only branches, or why the folder cannot be compared; `forkFacts`: parent, branches ahead, open pull requests, every failure), the findings grouped by origin (Sync with GitHub, then project files, the worst first) and the distinct actions offered.
 - Routing is wouter with path addresses: `/` is the list, `/project/:name` the project view (`routes.tsx`). The name cell of a row links to it, and picking a sidebar filter goes back to the list (`use-filter.ts`). When the scan is of a single project, `use-open-single-project.ts` opens its view once, so the back link still works. A project the scan does not have yet says it is looking for it, then that it is not in the scan.
-- `layout/`: one small component per file (HeroUI v3: Table, Chip, Card, Button, Alert, Spinner): `dashboard` (query and selected filter), `sidebar`, `page`, `scan-header`, `scan-body`, `summary-tiles`, `project-table` and its parts. The row action button is disabled until the actions are built.
+- `layout/`: one component per file, each under the 30 lines of `max-lines-per-function` (HeroUI v3: Table, Chip, Card, Button, Alert, AlertDialog, Spinner). A piece gets its own file only when it is reused or owns state: `dashboard` (query), `routes`, `sidebar` and `sidebar-entry`, `page`, `scan-header`, `scan-body`, `scan-failure`, `summary-tiles`, `project-table` and `project-row` (the cells are inline), `project-page` (back link, and the project or why it is missing), `project-detail`, `project-identity`, `findings-card` and `finding-item`, `facts-card`, `actions-card` and `action-button`, `clone-button`, `clone-dialog`, and the hooks `use-filter`, `use-open-single-project` and `use-clone-dialog`. The row's action is a link to the project view, where the action is confirmed.
 - `theme.ts` follows the OS theme by toggling the `dark` class that HeroUI reads.
 - Tests: `fixtures.ts` builds findings, projects and a server-sent events response, and `app.test.tsx` renders the whole app against a fake scan request. The web tests run in happy-dom, the server tests in node (two vitest projects in `vitest.config.mts`). `main.tsx` only starts the page and is excluded from coverage.
 
@@ -103,7 +103,9 @@ src/shared/                   types and helpers for the server and the web app
 src/web/                      the page: main.tsx, app.tsx, scan/ (stream), projects/ (rows, filters), layout/ (components)
 src/server/
   bin.ts, cli.ts              the CLI entry point, its options and the ui command
-  app.ts, serve.ts            the Hono app (GET /api/scan as server-sent events, then the web app) and its server on 127.0.0.1
+  app.ts, serve.ts            the Hono app (GET /api/scan as server-sent events, the actions, then the web app) and its server on 127.0.0.1
+  ui.ts                       the ui command: the port, the app, the server
+  actions/                    actions.ts (the actions of a server) and clone.ts, each proves again before it acts
   scan.ts                     read the inventory, then check each project
   check-projects.ts           check every project, forks after their comparison, others meanwhile
   check-project.ts            project rules on every project, file rules on usable clones
@@ -131,13 +133,21 @@ src/server/
 |---|---|
 | `GET /api/scan` | Stream scan events for the whole target (built, see Scan flow) |
 | `GET /api/projects/:name` | Full detail of one project |
-| `POST /api/projects/:name/clone` | Clone a missing repo |
+| `POST /api/projects/:name/clone` | Clone a missing repo (built, see Actions) |
 | `POST /api/projects/:name/unarchive-push` | Unarchive, push, re-archive an archived repo that has unpushed commits |
 | `POST /api/projects/:name/discard` | Discard unsaved local work, after listing it |
 | `POST /api/projects/:name/delete-clone` | Delete a local clone, after re-checking it is safe |
 | `POST /api/forks/:name/delete` | Delete a pristine fork, after re-checking the strict rule on every branch |
 
 Every `POST` re-validates the safety rule on the server and refuses if it no longer holds, whatever the page sent.
+
+## Actions
+
+An action is a function in `src/server/actions` that takes the repo name and proves again, right before acting, that the scan was right, then acts, and returns an `ActionResult` (`src/shared/action.ts`): `{ ok: true, message }`, or `{ ok: false, reason }` with the reason to show. A refusal is a normal answer, not an exception. `actions.ts` builds them for a server started on a folder (the owner is the `--owner` option, or the gh login read when an action runs), and `app.ts` routes them: status 200 when it worked, 409 with the reason when it was refused or failed.
+
+- **Request guard**: every request that is not a GET must carry the header `x-repo-check: 1`, otherwise it is a 403. A web page of another site can post to `127.0.0.1` (the host is allowed), but it cannot add a custom header without a preflight request, which the server never answers. The `Host` check against DNS rebinding applies to every request too. The page's `post-clone.ts` adds the header.
+- **Clone** (`actions/clone.ts`): refuses a name that is not a plain repo name (letters, digits, `.`, `-`, `_`, never a path, `.` or `..`), a target that is itself a git repo (single project mode), a folder of that name that already exists, a repo that is gone from GitHub, was renamed, is archived or is a fork (the `not-cloned` rule only offers non-archived non-forks). Then it runs `gh repo clone owner/name target/name`, so the protocol is the one of the gh config (SSH on this machine) and the tool never sees a token. A failed clone gives the gh error as the reason.
+- **Page**: the project view's Clone button opens a confirmation (HeroUI AlertDialog) that says what will be cloned and where, and nothing is sent before Clone is pressed. On success TanStack Query invalidates the scan, which scans again, and the dialog closes. A refusal stays in the dialog, with its reason. The row's action in the list is a link to the project view, where the confirmation lives. The other actions' buttons are disabled until they are built.
 
 ## Testing
 

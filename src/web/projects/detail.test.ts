@@ -1,6 +1,6 @@
 import type { ForkStatus, LocalClone } from '../../shared/project.ts'
 import { aFinding, aProject } from '../fixtures.ts'
-import { factGroups, findingGroups, fixText, forkFacts, githubUrl, identityBadges, localFacts, offeredActions } from './detail.ts'
+import { factGroups, findingGroups, fixText, forkFacts, githubUrl, identityBadges, localFacts, offeredActions, slugOf } from './detail.ts'
 
 const clone = aProject('app').project.local as LocalClone
 const dirty: LocalClone = {
@@ -31,6 +31,14 @@ describe(githubUrl, () => {
   it('has no link without a GitHub repo', () => {
     expect.hasAssertions()
     expect(githubUrl(aProject('app', [], { github: undefined }).project)).toBeUndefined()
+  })
+})
+
+describe(slugOf, () => {
+  it('is the owner and the name of the repo, or the project name without repo', () => {
+    expect.hasAssertions()
+    expect(slugOf(aProject('app').project)).toBe('owner/app')
+    expect(slugOf(aProject('app', [], { github: undefined }).project)).toBe('app')
   })
 })
 

@@ -51,6 +51,17 @@ export function githubUrl({ github }: Readonly<Project>) {
 }
 
 /**
+ * The `owner/name` of the project's GitHub repo, the project name when it has none
+ * @param project the project
+ * @param project.github the GitHub repo
+ * @param project.name the project name
+ * @returns like `Shuunen/repo-checker`
+ */
+export function slugOf({ github, name }: Readonly<Project>) {
+  return github ? `${github.owner}/${github.name}` : name
+}
+
+/**
  * The badges of a project: archived, fork, private, other owner
  * @param project the project
  * @param project.github the GitHub repo
