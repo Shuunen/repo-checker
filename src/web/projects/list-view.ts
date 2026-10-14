@@ -1,6 +1,7 @@
 import type { ScanProject } from '../../shared/scan-event.ts'
 import type { FilterId } from './filters.ts'
 import { type Bucket, worstBucket } from './health.ts'
+import { initialSort, type Sort } from './sort.ts'
 
 /** What the user picked to look at the list, on top of the sidebar filter */
 export interface ListView {
@@ -10,10 +11,12 @@ export interface ListView {
   isArchivedShown: boolean
   /** The text typed in the search field, projects whose name holds it are kept, case ignored */
   search: string
+  /** The column and the direction that order the rows */
+  sort: Sort
 }
 
 /** The view when the page opens: every project, the quiet archived ones folded */
-export const initialListView: ListView = { bucket: undefined, isArchivedShown: false, search: '' }
+export const initialListView: ListView = { bucket: undefined, isArchivedShown: false, search: '', sort: initialSort }
 
 /**
  * Tell if an archived project has nothing to report, the kind of row that is folded

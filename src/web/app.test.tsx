@@ -76,6 +76,15 @@ describe(App, () => {
     expect(screen.getByTestId('result-count').textContent).toBe('1 of 2 projects')
   })
 
+  it('sorts the rows when a column header is clicked', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest(scanEvents))
+    await screen.findByTestId('row-jozzo')
+    expect(screen.getAllByTestId(/^row-/u).map(row => row.dataset.testid)).toStrictEqual(['row-jozzo', 'row-finga'])
+    fireEvent.click(screen.getByTestId('column-project'))
+    expect(screen.getAllByTestId(/^row-/u).map(row => row.dataset.testid)).toStrictEqual(['row-finga', 'row-jozzo'])
+  })
+
   it('says when a filter holds no project', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(scanEvents))

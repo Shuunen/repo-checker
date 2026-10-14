@@ -1,28 +1,54 @@
 import { Table } from '@heroui/react'
+import type { Key } from 'react'
 import type { ProjectRow } from '../projects/rows.ts'
+import type { Sort, SortColumn } from '../projects/sort.ts'
 import { ProjectRowView } from './project-row.tsx'
 
+/** The sortable columns, in order, then the Actions column that does not sort */
+const columns = [
+  { className: '', id: 'project', label: 'Project' },
+  { className: 'text-center', id: 'visibility', label: 'Visibility' },
+  { className: 'text-center', id: 'state', label: 'State' },
+  { className: 'text-center', id: 'health', label: 'Health' },
+  { className: '', id: 'branch', label: 'Branch' },
+  { className: 'text-center', id: 'lastPush', label: 'Last push' },
+] as const satisfies readonly { className: string; id: SortColumn; label: string }[]
+
 /**
- * The project table, one row per project, the worst first
+ * The label of a sortable column, with the arrow of its direction when it is the sorted one
+ * @param label the label
+ * @param sortDirection the direction when the column is sorted
+ * @returns the header
+ */
+function columnHeader(label: string, sortDirection: Sort['direction'] | undefined) {
+  return sortDirection === undefined ? <Table.SortableColumnHeader>{label}</Table.SortableColumnHeader> : <Table.SortableColumnHeader sortDirection={sortDirection}>{label}</Table.SortableColumnHeader>
+}
+
+/**
+ * The project table, one row per project in the order of the sort, every column but Actions sorts when its header is clicked
  * @param props the props
  * @param props.isScanning true while the scan streams, the empty table then says it is scanning
- * @param props.rows the rows of the selected filter
+ * @param props.onSort called with the new sort
+ * @param props.rows the rows of the selected filter, already sorted
+ * @param props.sort the column and the direction of the sort
  * @param props.target the folder of projects, where a clone goes
  * @returns the table
  */
-export function ProjectTable({ isScanning, rows, target }: Readonly<{ isScanning: boolean; rows: readonly ProjectRow[]; target: string }>) {
+export function ProjectTable({ isScanning, onSort, rows, sort, target }: Readonly<{ isScanning: boolean; onSort: (sort: Sort) => void; rows: readonly ProjectRow[]; sort: Sort; target: string }>) {
+  const handleSort = (descriptor: { column: Key; direction: Sort['direction'] }) => onSort({ column: descriptor.column as SortColumn, direction: descriptor.direction })
   return (
     <Table>
       <Table.ScrollContainer>
-        <Table.Content aria-label="Projects">
+        <Table.Content aria-label="Projects" onSortChange={handleSort} sortDescriptor={sort}>
           <Table.Header>
-            <Table.Column isRowHeader>Project</Table.Column>
-            <Table.Column className="text-center">Visibility</Table.Column>
-            <Table.Column className="text-center">State</Table.Column>
-            <Table.Column className="text-center">Health</Table.Column>
-            <Table.Column>Branch</Table.Column>
-            <Table.Column className="text-center">Last push</Table.Column>
-            <Table.Column className="text-center">Actions</Table.Column>
+            {columns.map(column => (
+              <Table.Column allowsSorting className={column.className} data-testid={`column-${column.id}`} id={column.id} isRowHeader={column.id === 'project'} key={column.id}>
+                {({ sortDirection }) => columnHeader(column.label, sortDirection)}
+              </Table.Column>
+            ))}
+            <Table.Column className="text-center" id="actions">
+              Actions
+            </Table.Column>
           </Table.Header>
           <Table.Body items={rows} renderEmptyState={() => (isScanning ? 'Scanning…' : 'No project here')}>
             {row => <ProjectRowView row={row} target={target} />}

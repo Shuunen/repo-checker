@@ -1,6 +1,7 @@
 import { filterById, type FilterId, summaryTiles } from '../projects/filters.ts'
 import { applyView, foldableCount, type ListView } from '../projects/list-view.ts'
 import { toRows } from '../projects/rows.ts'
+import { sortRows } from '../projects/sort.ts'
 import type { ScanState } from '../scan/scan-state.ts'
 import { ArchivedFold } from './archived-fold.tsx'
 import { ListToolbar } from './list-toolbar.tsx'
@@ -39,12 +40,12 @@ export function ScanBody({ error, filterId, isScanning, onView, state, view }: R
   const failure = state.failure ?? error?.message
   if (failure !== undefined) return <ScanFailure message={failure} />
   const inFilter = state.projects.filter(filterById(filterId).matches)
-  const rows = toRows(applyView(inFilter, filterId, view))
+  const rows = sortRows(toRows(applyView(inFilter, filterId, view)), view.sort)
   return (
     <>
       <HealthBar active={view.bucket} onSelect={bucket => onView({ ...view, bucket })} projects={inFilter} tiles={summaryTiles(state.projects)} />
       <ListToolbar onSearch={search => onView({ ...view, search })} search={view.search} shown={rows.length} total={inFilter.length} />
-      <ProjectTable isScanning={isScanning} rows={rows} target={state.target} />
+      <ProjectTable isScanning={isScanning} onSort={sort => onView({ ...view, sort })} rows={rows} sort={view.sort} target={state.target} />
       <ArchivedFold count={foldableCount(inFilter, filterId, view)} isShown={view.isArchivedShown} onToggle={() => onView({ ...view, isArchivedShown: !view.isArchivedShown })} />
     </>
   )
