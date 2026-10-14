@@ -23,6 +23,13 @@ describe(applyView, () => {
   })
 })
 
+describe('the search of a view', () => {
+  it('keeps the projects whose name holds the text, case and spaces ignored', () => {
+    expect.hasAssertions()
+    expect(applyView(results, 'overview', { ...initialListView, search: ' BRO ' }).map(result => result.project.name)).toStrictEqual(['broken'])
+  })
+})
+
 describe(foldableCount, () => {
   it('counts the folded projects, none when the filter asks for them', () => {
     expect.hasAssertions()

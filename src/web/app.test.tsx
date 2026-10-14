@@ -65,6 +65,17 @@ describe(App, () => {
     expect(screen.getByTestId('archived-toggle').textContent).toBe('Hide')
   })
 
+  it('searches the projects by name and counts the result', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest(scanEvents))
+    await screen.findByTestId('row-jozzo')
+    expect(screen.getByTestId('result-count').textContent).toBe('2 of 2 projects')
+    fireEvent.change(screen.getByTestId('search-input'), { target: { value: 'joz' } })
+    expect(screen.queryByTestId('row-finga')).toBeNull()
+    expect(screen.getByTestId('row-jozzo')).toBeDefined()
+    expect(screen.getByTestId('result-count').textContent).toBe('1 of 2 projects')
+  })
+
   it('says when a filter holds no project', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(scanEvents))

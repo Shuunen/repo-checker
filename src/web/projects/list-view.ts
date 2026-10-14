@@ -8,10 +8,12 @@ export interface ListView {
   bucket: Bucket | undefined
   /** True when the archived projects with nothing to report are listed, they are folded in one row otherwise */
   isArchivedShown: boolean
+  /** The text typed in the search field, projects whose name holds it are kept, case ignored */
+  search: string
 }
 
 /** The view when the page opens: every project, the quiet archived ones folded */
-export const initialListView: ListView = { bucket: undefined, isArchivedShown: false }
+export const initialListView: ListView = { bucket: undefined, isArchivedShown: false, search: '' }
 
 /**
  * Tell if an archived project has nothing to report, the kind of row that is folded
@@ -45,7 +47,7 @@ export function foldableCount(results: readonly ScanProject[], filterId: FilterI
 }
 
 /**
- * Keep the projects of a view: the ones of its bucket, without the folded archived ones
+ * Keep the projects of a view: the ones of its bucket, whose name holds the search, without the folded archived ones
  * @param results the project results, already filtered by the sidebar
  * @param filterId the selected sidebar filter
  * @param view the view
@@ -54,5 +56,6 @@ export function foldableCount(results: readonly ScanProject[], filterId: FilterI
  */
 export function applyView(results: readonly ScanProject[], filterId: FilterId, view: Readonly<ListView>) {
   const isFolding = isFoldable(filterId, view) && !view.isArchivedShown
-  return results.filter(result => (view.bucket === undefined || worstBucket(result.findings) === view.bucket) && !(isFolding && isQuietArchived(result)))
+  const search = view.search.trim().toLowerCase()
+  return results.filter(result => (view.bucket === undefined || worstBucket(result.findings) === view.bucket) && !(isFolding && isQuietArchived(result)) && result.project.name.toLowerCase().includes(search))
 }
