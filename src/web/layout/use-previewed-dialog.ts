@@ -10,12 +10,13 @@ import { refreshProject } from '../scan/refresh-project.ts'
  * @template Preview the shape of the server's answer
  * @param name the repo name
  * @param action the action
- * @param fingerprintOf reads the fingerprint of the list from an offered preview, only for the actions that throw something away
- * @param onDone called once the action worked, before the scan of the project runs again
+ * @param options the optional parts
+ * @param options.fingerprintOf reads the fingerprint of the list from an offered preview, only for the actions that throw something away
+ * @param options.onDone called once the action worked, before the scan of the project runs again
  * @returns what the button and the dialog need
  * @example const dialog = usePreviewedDialog<DeletePreview>('jozzo', 'delete-clone')
  */
-export function usePreviewedDialog<Preview extends { ok: boolean }>(name: string, action: PreviewedAction, fingerprintOf?: (preview: Extract<Preview, { ok: true }>) => string, onDone?: () => void) {
+export function usePreviewedDialog<Preview extends { ok: boolean }>(name: string, action: PreviewedAction, { fingerprintOf, onDone }: Readonly<{ fingerprintOf?: (preview: Extract<Preview, { ok: true }>) => string; onDone?: () => void }> = {}) {
   const [isOpen, setIsOpen] = useState(false)
   const client = useQueryClient()
   const preview = useQuery({ enabled: isOpen, gcTime: 0, queryFn: () => getPreview<Preview>(name, action), queryKey: ['preview', action, name], retry: false })
@@ -28,16 +29,14 @@ export function usePreviewedDialog<Preview extends { ok: boolean }>(name: string
       return refreshProject(client, name)
     },
   })
-  const handleOpen = () => {
-    run.reset()
-    setIsOpen(true)
-  }
-  const handleConfirm = () => run.mutate(undefined, { onSuccess: () => setIsOpen(false) })
   return {
     error: run.error?.message,
     handleClose: () => setIsOpen(false),
-    handleConfirm,
-    handleOpen,
+    handleConfirm: () => run.mutate(undefined, { onSuccess: () => setIsOpen(false) }),
+    handleOpen: () => {
+      run.reset()
+      setIsOpen(true)
+    },
     handleOpenChange: setIsOpen,
     isLoading: preview.isFetching,
     isOpen,

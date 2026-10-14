@@ -79,6 +79,64 @@ describe(previewDeleteProject, () => {
   })
 })
 
+describe('refusals of both', () => {
+  const noScope = 'HTTP/2.0 200 OK\nX-Oauth-Scopes: repo\n\n{}'
+  const answers: Record<string, string> = { 'api -i user': noScope }
+  const fakeGhWithoutScope = () => vi.fn<GhRunner>(args => Promise.resolve({ ok: true, stderr: '', stdout: answers[args.join(' ')] ?? JSON.stringify(repo) }))
+
+  it.each([previewDeleteProject, deleteProject])('refuses a folder of projects that is a single project', async action => {
+    expect.hasAssertions()
+    const { git, target } = await makeWorkspace()
+    await mkdir(path.join(target, '.git'))
+    await expect(action({ gh: fakeGh(), git, name: 'lib', owner: 'Owner', target })).resolves.toMatchObject({ ok: false })
+  })
+
+  it.each([previewDeleteProject, deleteProject])('refuses a repo that was renamed', async action => {
+    expect.hasAssertions()
+    const { git, target } = await makeWorkspace()
+    const gh = vi.fn<GhRunner>(() => Promise.resolve({ ok: true, stderr: '', stdout: JSON.stringify({ ...repo, name: 'other' }) }))
+    await expect(action({ gh, git, name: 'lib', owner: 'Owner', target })).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('was renamed or moved') as string })
+  })
+
+  it.each([previewDeleteProject, deleteProject])('refuses two clones of the same repo', async action => {
+    expect.hasAssertions()
+    const { git, target } = await makeWorkspace()
+    const [clone] = await git.readClones(target, { shouldFetch: false })
+    git.readClones = () => Promise.resolve([clone, clone] as LocalClone[])
+    await expect(action({ gh: fakeGh(), git, name: 'lib', owner: 'Owner', target })).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('2 clones') as string })
+  })
+
+  it('finds a clone by its folder name when the repo is gone from GitHub', async () => {
+    expect.hasAssertions()
+    const { folder, git, target } = await makeWorkspace({ slug: 'other/else' })
+    const preview = await previewDeleteProject({ gh: fakeGh({ hasRepo: false }), git, name: 'lib', owner: 'Owner', target })
+    expect(preview).toMatchObject({ clone: { path: folder }, ok: true, repo: undefined })
+  })
+
+  it('refuses a preview when the token has no delete scope', async () => {
+    expect.hasAssertions()
+    const { git, target } = await makeWorkspace()
+    const gh = fakeGhWithoutScope()
+    await expect(previewDeleteProject({ gh, git, name: 'lib', owner: 'Owner', target })).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('no delete_repo scope') as string })
+  })
+
+  it('refuses a delete when the token has no delete scope, and keeps the clone', async () => {
+    expect.hasAssertions()
+    const { folder, git, target } = await makeWorkspace()
+    const gh = fakeGhWithoutScope()
+    await expect(deleteProject({ gh, git, name: 'lib', owner: 'Owner', target })).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('no delete_repo scope') as string })
+    await expect(exists(folder)).resolves.toBe(true)
+  })
+
+  it.each([previewDeleteProject, deleteProject])('gives the reason when something throws, an error or not', async action => {
+    expect.hasAssertions()
+    const { git, target } = await makeWorkspace()
+    const options = { git, name: 'lib', owner: 'Owner', target }
+    await expect(action({ ...options, gh: () => Promise.reject(new Error('boom')) })).resolves.toStrictEqual({ ok: false, reason: 'boom' })
+    await expect(action({ ...options, gh: () => Promise.reject(new Error('plain', { cause: 'x' }).cause) })).resolves.toStrictEqual({ ok: false, reason: 'x' })
+  })
+})
+
 describe(deleteProject, () => {
   it('deletes the repo on GitHub, then the clone, even with unsaved work', async () => {
     expect.hasAssertions()
@@ -101,6 +159,13 @@ describe(deleteProject, () => {
     expect.hasAssertions()
     const { git, target } = await makeWorkspace('none')
     await expect(deleteProject({ gh: fakeGh(), git, name: 'lib', owner: 'Owner', target })).resolves.toStrictEqual({ message: 'deleted the repo owner/lib on GitHub', ok: true })
+  })
+
+  it('gives the GitHub own reason when the refusal is not about the scope', async () => {
+    expect.hasAssertions()
+    const { git, target } = await makeWorkspace()
+    const gh = fakeGh({ deleted: { ok: false, stderr: 'HTTP 500' } })
+    await expect(deleteProject({ gh, git, name: 'lib', owner: 'Owner', target })).resolves.toStrictEqual({ ok: false, reason: 'GitHub refused to delete owner/lib: HTTP 500' })
   })
 
   it('keeps the clone when GitHub refuses, and gives the command for a missing scope', async () => {

@@ -15,7 +15,7 @@ import { usePreviewedDialog } from './use-previewed-dialog.ts'
  * @returns the card, or nothing
  */
 export function FixFilesCard({ findings, project }: Readonly<{ findings: readonly ScanFinding[]; project: Project }>) {
-  const dialog = usePreviewedDialog<FixPreview>(project.name, 'fix-files', preview => preview.fingerprint)
+  const dialog = usePreviewedDialog<FixPreview>(project.name, 'fix-files', { fingerprintOf: preview => preview.fingerprint })
   const fixable = findings.filter(finding => finding.fixFiles.length > 0)
   if (fixable.length === 0) return undefined
   return (

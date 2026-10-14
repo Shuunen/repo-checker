@@ -65,4 +65,39 @@ describe(checkoutDefault, () => {
     const result = await checkoutDefault({ gh: fakeGh(apiRepo()), git: fakeReaders(aClone()), name: 'finga', owner: 'Owner', runGit: fakeGit(false), target: await makeTarget() })
     expect(result).toStrictEqual({ ok: false, reason: 'git checkout master failed: error: pathspec did not match' })
   })
+
+  it('runs the real git by default, which refuses outside a repository', async () => {
+    expect.hasAssertions()
+    const target = await makeTarget()
+    const result = await checkoutDefault({ gh: fakeGh(apiRepo()), git: fakeReaders(aClone({ path: target })), name: 'finga', owner: 'Owner', target })
+    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('git checkout master failed') as string })
+  })
+
+  it('gives the reason when something throws', async () => {
+    expect.hasAssertions()
+    const gh = vi.fn<GhRunner>(() => Promise.reject(new Error('boom')))
+    const result = await checkoutDefault({ gh, git: fakeReaders(aClone()), name: 'finga', owner: 'Owner', runGit: fakeGit(), target: await makeTarget() })
+    expect(result).toStrictEqual({ ok: false, reason: 'boom' })
+  })
+
+  it('refuses when no clone of the repo is found', async () => {
+    expect.hasAssertions()
+    const git: GitReaders = { readClone: () => Promise.resolve(aClone()), readClones: () => Promise.resolve([]) }
+    const result = await checkoutDefault({ gh: fakeGh(apiRepo()), git, name: 'finga', owner: 'Owner', runGit: fakeGit(), target: await makeTarget() })
+    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('found 0') as string })
+  })
+
+  it('refuses when two clones of the repo are found', async () => {
+    expect.hasAssertions()
+    const git: GitReaders = { readClone: () => Promise.resolve(aClone()), readClones: () => Promise.resolve([aClone(), aClone()]) }
+    const result = await checkoutDefault({ gh: fakeGh(apiRepo()), git, name: 'finga', owner: 'Owner', runGit: fakeGit(), target: await makeTarget() })
+    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('found 2') as string })
+  })
+
+  it('gives the text of something thrown that is not an error', async () => {
+    expect.hasAssertions()
+    const gh = vi.fn<GhRunner>(() => Promise.reject(new TypeError('x', { cause: 'plain' }).cause))
+    const result = await checkoutDefault({ gh, git: fakeReaders(aClone()), name: 'finga', owner: 'Owner', runGit: fakeGit(), target: await makeTarget() })
+    expect(result).toStrictEqual({ ok: false, reason: 'plain' })
+  })
 })

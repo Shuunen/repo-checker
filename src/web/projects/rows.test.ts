@@ -65,8 +65,7 @@ describe(toRows, () => {
 
   it('puts the archived and private flags before the other pills', () => {
     expect.hasAssertions()
-    const base = aProject('lib').project.github
-    const [row] = toRows([aProject('lib', [aFinding({ severity: 'error' })], { github: base && { ...base, isArchived: true, isPrivate: true } })])
+    const [row] = toRows([aProject('lib', [aFinding({ severity: 'error' })], { github: { ...aProject('lib').project.github, isArchived: true, isPrivate: true } as never })])
     expect(row?.pills.map(pill => pill.label)).toStrictEqual(['archived', 'private', '1 error'])
   })
 

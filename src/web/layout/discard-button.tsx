@@ -12,7 +12,7 @@ import { usePreviewedDialog } from './use-previewed-dialog.ts'
  * @returns the button and its dialog
  */
 export function DiscardButton({ project }: Readonly<{ project: Project }>) {
-  const dialog = usePreviewedDialog<DiscardPreview>(project.name, 'discard', preview => preview.fingerprint)
+  const dialog = usePreviewedDialog<DiscardPreview>(project.name, 'discard', { fingerprintOf: preview => preview.fingerprint })
   return (
     <>
       <Button data-testid="action-discard" onPress={dialog.handleOpen} size="sm" variant="outline">

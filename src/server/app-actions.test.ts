@@ -253,3 +253,32 @@ describe('fix files', () => {
     expect(fixFiles).not.toHaveBeenCalled()
   })
 })
+
+describe('checkout default', () => {
+  it('checks the default branch out and answers its result', async () => {
+    expect.hasAssertions()
+    const checkoutDefault = vi.fn<Actions['checkoutDefault']>(() => Promise.resolve({ message: 'checked out master', ok: true }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, checkoutDefault }).request('http://127.0.0.1/api/projects/lib/checkout-default', { headers: { 'x-repo-check': '1' }, method: 'POST' })
+    expect(response.status).toBe(200)
+    expect(checkoutDefault).toHaveBeenCalledWith('lib')
+  })
+})
+
+describe('delete project', () => {
+  const post = { headers: { 'x-repo-check': '1' }, method: 'POST' }
+
+  it('says what deleting the project would remove', async () => {
+    expect.hasAssertions()
+    const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/old/delete-project')
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toStrictEqual({ clone: { ignoredFiles: [], path: '/projects/old', unsaved: [] }, ok: true, repo: 'owner/old' })
+  })
+
+  it('deletes the project and answers its result', async () => {
+    expect.hasAssertions()
+    const deleteProject = vi.fn<Actions['deleteProject']>(() => Promise.resolve({ message: 'deleted the project', ok: true }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, deleteProject }).request('http://127.0.0.1/api/projects/old/delete-project', post)
+    expect(response.status).toBe(200)
+    expect(deleteProject).toHaveBeenCalledWith('old')
+  })
+})

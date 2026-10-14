@@ -1,11 +1,9 @@
-import { Chip, Table } from '@heroui/react'
+import { Table } from '@heroui/react'
 import { Link } from 'wouter'
 import type { ProjectRow } from '../projects/rows.ts'
+import { PillView } from './pill-view.tsx'
 import { ActionButton } from './action-button.tsx'
 import { DeleteProjectButton } from './delete-project-button.tsx'
-
-/** The path of each pill icon, drawn on a 24px grid */
-const iconPaths = { archive: 'M3 4h18v4H3zM5 8v12h14V8M10 12h4', lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4' } as const
 
 /**
  * One project row: its name (a link to the project view), status pills with their full message on hover, branch, last push, the first action it offers, its button opens the confirmation right from the row, and a trash icon that deletes the whole project
@@ -25,14 +23,7 @@ export function ProjectRowView({ row, target }: Readonly<{ row: ProjectRow; targ
       <Table.Cell>
         <span className="flex flex-wrap gap-1">
           {row.pills.map(pill => (
-            <Chip color={pill.color} key={pill.label} size="sm" title={pill.hint}>
-              {pill.icon !== undefined && (
-                <svg aria-hidden="true" fill="none" height="12" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="12">
-                  <path d={iconPaths[pill.icon]} />
-                </svg>
-              )}
-              {pill.label}
-            </Chip>
+            <PillView key={pill.label} pill={pill} />
           ))}
         </span>
       </Table.Cell>

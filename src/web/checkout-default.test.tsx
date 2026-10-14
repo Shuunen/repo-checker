@@ -28,4 +28,20 @@ describe('checkout default branch', () => {
     fireEvent.click(await screen.findByTestId('checkout-default-confirm'))
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/projects/finga/checkout-default', { headers: { 'x-repo-check': '1' }, method: 'POST' }))
   })
+
+  it('shows the reason when the checkout is refused', async () => {
+    expect.hasAssertions()
+    stubApi({ action: Response.json({ ok: false, reason: 'uncommitted files' }, { status: 409 }) })
+    renderApp(scanRequest(events), '/')
+    fireEvent.click(await screen.findByTestId('action-checkout-default'))
+    fireEvent.click(await screen.findByTestId('checkout-default-confirm'))
+    await waitFor(() => expect(screen.getByTestId('checkout-default-error').textContent).toBe('uncommitted files'))
+  })
+
+  it('falls back to a generic label for a project that is not on GitHub', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest([events[0] as ScanEvent, { result: aProject('finga', [offPath], { github: undefined }), type: 'project' }, events[2] as ScanEvent]), '/')
+    const button = await screen.findByTestId('action-checkout-default')
+    expect(button.textContent).toBe('Default')
+  })
 })

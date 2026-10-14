@@ -15,7 +15,7 @@ import { usePreviewedDialog } from './use-previewed-dialog.ts'
  */
 export function DeleteProjectButton({ isLabelled = false, project }: Readonly<{ isLabelled?: boolean; project: Project }>) {
   const [, navigate] = useLocation()
-  const dialog = usePreviewedDialog<ProjectDeletePreview>(project.name, 'delete-project', undefined, () => navigate('/'))
+  const dialog = usePreviewedDialog<ProjectDeletePreview>(project.name, 'delete-project', { onDone: () => navigate('/') })
   return (
     <>
       <Button aria-label={`Delete ${project.name}`} data-testid="action-delete-project" isIconOnly={!isLabelled} onPress={dialog.handleOpen} size="sm" variant={isLabelled ? 'danger-soft' : 'ghost'}>
