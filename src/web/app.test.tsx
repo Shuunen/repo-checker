@@ -46,6 +46,25 @@ describe(App, () => {
     expect(screen.getByTestId('row-finga')).toBeDefined()
   })
 
+  it('folds the quiet archived projects in one row that shows them', async () => {
+    expect.hasAssertions()
+    const old = aProject('old', [], { github: { ...aProject('old').project.github, isArchived: true } as never })
+    renderApp(
+      scanRequest([
+        { target: '/projects', type: 'started' },
+        { result: jozzo, type: 'project' },
+        { result: old, type: 'project' },
+        { durationMs: 10, isSingle: false, owner: 'owner', type: 'done' },
+      ]),
+    )
+    await screen.findByTestId('row-jozzo')
+    expect(screen.queryByTestId('row-old')).toBeNull()
+    expect(screen.getByTestId('archived-fold').textContent).toContain('1 archived project')
+    fireEvent.click(screen.getByTestId('archived-toggle'))
+    expect(screen.getByTestId('row-old')).toBeDefined()
+    expect(screen.getByTestId('archived-toggle').textContent).toBe('Hide')
+  })
+
   it('says when a filter holds no project', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(scanEvents))
