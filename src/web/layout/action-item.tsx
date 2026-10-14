@@ -1,5 +1,5 @@
 import { Dropdown } from '@heroui/react'
-import type { ActionKind } from '../../shared/action.ts'
+import type { ProjectAction } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
 import { actionMeta } from './action-meta.ts'
 
@@ -10,7 +10,7 @@ import { actionMeta } from './action-meta.ts'
  * @param props.project the project
  * @returns the item
  */
-export function ActionItem({ action, project }: Readonly<{ action: ActionKind | 'delete-project'; project: Project }>) {
+export function ActionItem({ action, project }: Readonly<{ action: ProjectAction; project: Project }>) {
   const { icon, label } = actionMeta(action, project)
   return (
     <Dropdown.Item className="data-[focused=true]:bg-background/50! data-[hovered=true]:bg-background/50!" data-testid={`menu-${action}`} id={action} textValue={label} variant={action === 'delete-project' ? 'danger' : 'default'}>

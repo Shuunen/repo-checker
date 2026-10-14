@@ -3,6 +3,8 @@ import type { RescanResult } from '../../shared/scan-event.ts'
 
 /** The actions the page can ask for, each one proves again that it is still safe before it acts */
 export interface Actions {
+  /** Archive the repo on GitHub, after proving again that it is there and not archived yet */
+  archive: (name: string) => Promise<ActionResult>
   /** Check out the default branch of the repo in its clone, refused when the clone has uncommitted files */
   checkoutDefault: (name: string) => Promise<ActionResult>
   /** Clone a repo of the owner into the folder of projects */
@@ -29,6 +31,8 @@ export interface Actions {
   previewDiscard: (name: string) => Promise<DiscardPreview>
   /** Scan one project again, after an action changed it, so the page does not scan everything again */
   rescan: (name: string) => Promise<RescanResult>
+  /** Unarchive the repo on GitHub, after proving again that it is there and archived */
+  unarchive: (name: string) => Promise<ActionResult>
   /** Unarchive an archived repo, push the unsaved branches of its clone, archive it again */
   unarchivePush: (name: string) => Promise<ActionResult>
 }

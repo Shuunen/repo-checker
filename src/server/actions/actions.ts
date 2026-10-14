@@ -1,5 +1,6 @@
 import type { SplitRules } from '../check-project.ts'
 import { type GhRunner, getLogin } from '../inventory/github.ts'
+import { archiveRepo, unarchiveRepo } from './archive.ts'
 import { checkoutDefault } from './checkout-default.ts'
 import { cloneRepo } from './clone.ts'
 import { realGit, realRunGit } from './action-options.ts'
@@ -34,9 +35,11 @@ export function createActions({ gh, owner, rules, target }: Readonly<ActionsCont
   const options = async (name: string) => ({ gh, git: realGit, name, owner: owner ?? (await getLogin(gh)), target })
   return {
     ...createPreviewedActions(options, rules),
+    archive: async name => archiveRepo(await options(name)),
     checkoutDefault: async name => checkoutDefault(await options(name)),
     clone: async name => cloneRepo({ ...(await options(name)), runGit: realRunGit }),
     rescan: async name => rescanProject({ ...(await options(name)), rules }),
+    unarchive: async name => unarchiveRepo(await options(name)),
     unarchivePush: async name => unarchivePush(await options(name)),
   }
 }

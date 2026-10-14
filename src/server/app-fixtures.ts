@@ -2,6 +2,7 @@ import type { Actions } from './actions/actions-contract.ts'
 import { createApp, type ScanRunner } from './app.ts'
 
 export const worksFine: Actions = {
+  archive: () => Promise.resolve({ message: 'archived', ok: true }),
   checkoutDefault: () => Promise.resolve({ message: 'checked out', ok: true }),
   clone: () => Promise.resolve({ message: 'cloned', ok: true }),
   deleteClone: () => Promise.resolve({ message: 'deleted', ok: true }),
@@ -15,6 +16,7 @@ export const worksFine: Actions = {
   previewDiscard: () => Promise.resolve({ fingerprint: 'abc', groups: [{ items: ['master: fix'], title: 'Unpushed commits' }], ok: true, path: '/projects/old' }),
   previewFixFiles: () => Promise.resolve({ blocked: [], fingerprint: 'abc', ok: true, path: '/projects/app', plans: [{ after: 'b', before: 'a', file: 'package.json' }] }),
   rescan: () => Promise.resolve({ ok: true, project: undefined }),
+  unarchive: () => Promise.resolve({ message: 'unarchived', ok: true }),
   unarchivePush: () => Promise.resolve({ message: 'pushed', ok: true }),
 }
 

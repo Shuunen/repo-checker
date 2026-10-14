@@ -1,8 +1,9 @@
 import { Card } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
 import type { ScanFinding } from '../../shared/scan-event.ts'
-import { offeredActions } from '../projects/detail.ts'
+import { canArchive, canUnarchive, offeredActions } from '../projects/detail.ts'
 import { ActionButton } from './action-button.tsx'
+import { ArchiveButton } from './archive-button.tsx'
 import { DeleteProjectButton } from './delete-project-button.tsx'
 
 /**
@@ -23,6 +24,8 @@ export function ActionsCard({ findings, project, target }: Readonly<{ findings: 
         {actions.map(action => (
           <ActionButton action={action} key={action} project={project} target={target} />
         ))}
+        {canArchive(project) && <ArchiveButton action="archive" project={project} />}
+        {canUnarchive(project) && <ArchiveButton action="unarchive" project={project} />}
         <DeleteProjectButton isLabelled project={project} />
       </span>
     </Card>

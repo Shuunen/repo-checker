@@ -51,6 +51,28 @@ export function githubUrl({ github }: Readonly<Project>) {
 }
 
 /**
+ * Tell if a project can be archived: it is on GitHub and not archived yet
+ * @param project the project
+ * @param project.github the GitHub repo
+ * @returns true when the Archive action is offered
+ * @example canArchive(project) // true
+ */
+export function canArchive({ github }: Readonly<Project>) {
+  return github !== undefined && !github.isArchived
+}
+
+/**
+ * Tell if a project can be unarchived: it is on GitHub and archived
+ * @param project the project
+ * @param project.github the GitHub repo
+ * @returns true when the Unarchive action is offered
+ * @example canUnarchive(project) // false
+ */
+export function canUnarchive({ github }: Readonly<Project>) {
+  return github?.isArchived === true
+}
+
+/**
  * The `owner/name` of the project's GitHub repo, the project name when it has none
  * @param project the project
  * @param project.github the GitHub repo

@@ -37,4 +37,10 @@ describe(sortRows, () => {
     expect.hasAssertions()
     expect(names(sortRows(rows, { column, direction }))).toStrictEqual(expected)
   })
+
+  it('puts rows with nothing in the column last, by name', () => {
+    expect.hasAssertions()
+    const dashes = toRows([aProject('echo', [], { github: undefined }), aProject('charlie', [], { github: undefined })])
+    expect(names(sortRows(dashes, { column: 'lastPush', direction: 'ascending' }))).toStrictEqual(['charlie', 'echo'])
+  })
 })

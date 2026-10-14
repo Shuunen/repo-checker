@@ -164,4 +164,12 @@ describe(App, () => {
     const empty = await screen.findByText('Scanning…')
     expect(empty.textContent).toBe('Scanning…')
   })
+
+  it('flags a push that is a year old or more', async () => {
+    expect.hasAssertions()
+    const github = { ...jozzo.project.github, pushedAt: '2020-01-01T00:00:00Z' } as never
+    renderApp(scanRequest([scanEvents[0] as ScanEvent, { result: aProject('stale', [], { github }), type: 'project' }, scanEvents[4] as ScanEvent]))
+    const row = await screen.findByTestId('row-stale')
+    expect(row.querySelector('.text-warning')).not.toBeNull()
+  })
 })

@@ -26,6 +26,8 @@ function reply(context: Context, result: Readonly<{ ok: boolean }>) {
  */
 export function actionRoutes(actions: Actions) {
   return new Hono()
+    .post('/api/projects/:name/archive', async context => reply(context, await actions.archive(context.req.param('name'))))
+    .post('/api/projects/:name/unarchive', async context => reply(context, await actions.unarchive(context.req.param('name'))))
     .post('/api/projects/:name/clone', async context => reply(context, await actions.clone(context.req.param('name'))))
     .post('/api/projects/:name/checkout-default', async context => reply(context, await actions.checkoutDefault(context.req.param('name'))))
     .get('/api/projects/:name/delete-clone', async context => reply(context, await actions.previewDeleteClone(context.req.param('name'))))

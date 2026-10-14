@@ -19,6 +19,12 @@ export type ActionKind =
   /** Unarchive the repo, push the unsaved commits and branches, archive it again */
   | 'unarchive-push-rearchive'
 
+/** An action every project can offer, whatever the findings say: it is not tied to a Sync finding */
+type StandaloneAction = 'archive' | 'delete-project' | 'unarchive'
+
+/** Everything the Actions menu of a project can hold */
+export type ProjectAction = ActionKind | StandaloneAction
+
 /** What running an action gives: it worked, or it was refused or failed with the reason to show */
 export type ActionResult = { message: string; ok: true } | { ok: false; reason: string }
 

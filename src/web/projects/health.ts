@@ -14,7 +14,7 @@ export type Bucket = (typeof buckets)[number]
  * @example worstBucket([]) // 'quiet'
  */
 export function worstBucket(findings: readonly ScanFinding[]): Bucket {
-  return buckets.find(bucket => bucket === 'quiet' || findings.some(finding => finding.severity === bucket)) ?? 'quiet'
+  return buckets.find(bucket => findings.some(finding => finding.severity === bucket)) ?? 'quiet'
 }
 
 /**

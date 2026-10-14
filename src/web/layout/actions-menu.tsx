@@ -2,13 +2,13 @@ import { Button, Dropdown } from '@heroui/react'
 import type { ActionKind } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
 import { ActionItem } from './action-item.tsx'
-import { ActionButton } from './action-button.tsx'
-import { DeleteProjectButton } from './delete-project-button.tsx'
+import { ArchiveItem } from './archive-item.tsx'
+import { ChosenButton } from './chosen-button.tsx'
 import { LinkItem } from './link-item.tsx'
 import { useMenuChoice } from './use-menu-choice.ts'
 
 /**
- * The Actions menu of a row: a trigger that opens a menu next to it: Open project, Open on GitHub, one item per action, then Delete project apart in its own section, with its long label and its icon. The confirmation of each action lives in its own button, mounted hidden next to the trigger only once its item is chosen (a table cell is rendered twice by the table, so mounting every dialog of every row made the menu slow) so the dialog survives the menu closing: the item presses that button
+ * The Actions menu of a row: a trigger that opens a menu next to it: Open project, Open on GitHub, one item per action, Archive on GitHub or Unarchive on GitHub, then Delete project apart in its own section, with its long label and its icon. The confirmation of each action lives in its own button, mounted hidden next to the trigger only once its item is chosen (a table cell is rendered twice by the table, so mounting every dialog of every row made the menu slow) so the dialog survives the menu closing: the item presses that button
  * @param props the props
  * @param props.actions the actions the project offers
  * @param props.project the project
@@ -31,6 +31,7 @@ export function ActionsMenu({ actions, project, target }: Readonly<{ actions: re
               {actions.map(action => (
                 <ActionItem action={action} key={action} project={project} />
               ))}
+              <ArchiveItem project={project} />
             </Dropdown.Section>
             <Dropdown.Section className="mt-1 border-t border-foreground/20 pt-1">
               <ActionItem action="delete-project" project={project} />
@@ -39,8 +40,7 @@ export function ActionsMenu({ actions, project, target }: Readonly<{ actions: re
         </Dropdown.Popover>
       </Dropdown>
       <span className="hidden" ref={holder}>
-        {chosen === 'delete-project' && <DeleteProjectButton project={project} />}
-        {chosen !== undefined && chosen !== 'delete-project' && actions.includes(chosen) && <ActionButton action={chosen} project={project} target={target} />}
+        <ChosenButton actions={actions} chosen={chosen} project={project} target={target} />
       </span>
     </>
   )
