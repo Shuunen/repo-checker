@@ -46,15 +46,15 @@ export function ProjectTable({ isScanning, onSort, rows, sort, target }: Readonl
   const handleSort = (descriptor: { column: Key; direction: Sort['direction'] }) => onSort({ column: descriptor.column as SortColumn, direction: descriptor.direction })
   return (
     <Table>
-      <Table.ScrollContainer>
+      <Table.ScrollContainer className="overflow-visible">
         <Table.Content aria-label="Projects" onSortChange={handleSort} sortDescriptor={sort}>
-          <Table.Header>
+          <Table.Header className="sticky top-4 z-10 shadow-[0_-1rem_0_0_var(--background)]">
             {columns.map(column => (
-              <Table.Column allowsSorting className={column.className} data-testid={`column-${column.id}`} id={column.id} isRowHeader={column.id === 'project'} key={column.id}>
+              <Table.Column allowsSorting className={`${column.className} text-sm`} data-testid={`column-${column.id}`} id={column.id} isRowHeader={column.id === 'project'} key={column.id}>
                 {({ sortDirection }) => columnHeader(column.label, column.className === 'text-center', sortDirection)}
               </Table.Column>
             ))}
-            <Table.Column className="text-center" id="actions">
+            <Table.Column className="text-center text-sm" id="actions">
               Actions
             </Table.Column>
           </Table.Header>
