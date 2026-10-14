@@ -20,7 +20,7 @@ export function ScanHeader({ isScanning, onRescan, state, title }: Readonly<{ is
           {describeScan(state, isScanning)}
         </p>
       </div>
-      <Button data-testid="rescan" isDisabled={isScanning} onPress={onRescan}>
+      <Button className="bg-zinc-800 text-white hover:bg-zinc-700" data-testid="rescan" isDisabled={isScanning} onPress={onRescan}>
         Rescan
       </Button>
     </header>
