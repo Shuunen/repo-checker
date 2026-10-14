@@ -36,7 +36,7 @@ describe('after an action', () => {
     const now = aProject('finga', [])
     stubApi({ rescan: Response.json({ ok: true, project: { ...now, project: { ...now.project, local: { ...now.project.local, currentBranch: 'cloned-branch' } } } }) })
     const request = await runAction('finga', 'action-clone', 'clone-confirm')
-    await waitFor(() => expect(screen.queryByTestId('actions')).toBeNull())
+    await waitFor(() => expect(screen.queryByTestId('action-clone')).toBeNull())
     expect(screen.getByTestId('fact-branch').textContent).toBe('cloned-branch')
     expect(request).toHaveBeenCalledOnce()
   })

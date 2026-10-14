@@ -1,6 +1,6 @@
 # UI
 
-Status: the project list and the project view are built. Every action works behind a confirmation dialog: Clone, Delete clone, Unarchive & push, Discard and Delete fork, and the file fixes.
+Status: the project list and the project view are built. Every action works behind a confirmation dialog: Clone, Delete clone, Unarchive & push, Discard and Delete fork, the file fixes, and the trash icon of a row that deletes a whole project (its GitHub repo and its clone, whatever they hold; the dialog lists the unsaved work and ignored files lost).
 
 ## Library and theme
 

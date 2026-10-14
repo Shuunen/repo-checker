@@ -21,6 +21,7 @@ export function ProjectTable({ isScanning, rows, target }: Readonly<{ isScanning
             <Table.Column>Branch</Table.Column>
             <Table.Column>Last push</Table.Column>
             <Table.Column>Action</Table.Column>
+            <Table.Column aria-label="Delete" className="w-0" />
           </Table.Header>
           <Table.Body items={rows} renderEmptyState={() => (isScanning ? 'Scanning…' : 'No project here')}>
             {row => <ProjectRowView row={row} target={target} />}

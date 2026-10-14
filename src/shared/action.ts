@@ -29,6 +29,9 @@ export type DiscardPreview = { fingerprint: string; groups: UnsavedGroup[]; ok: 
 /** What deleting a fork would remove, shown before it is confirmed: the fork on GitHub, and its clean local clone with the files git ignores in it */
 export type ForkDeletePreview = { branches: number; clone: { ignoredFiles: string[]; path: string } | undefined; ok: true; parent: string } | { ok: false; reason: string }
 
+/** What deleting a whole project would remove, shown before it is confirmed: its repo on GitHub, and its local clone with the unsaved work and the files git ignores, all lost for good */
+export type ProjectDeletePreview = { clone: { ignoredFiles: string[]; path: string; unsaved: string[] } | undefined; ok: true; repo: string | undefined } | { ok: false; reason: string }
+
 /** The planned change of one file, what the confirmation shows as a diff: `before` is empty when the file does not exist yet */
 export interface FixPlan {
   /** The text once the fixes are applied */

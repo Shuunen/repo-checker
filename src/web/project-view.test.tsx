@@ -59,7 +59,7 @@ describe('project view', () => {
     renderApp(scanRequest(listEvents), '/project/lib')
     await screen.findByTestId('facts-fork')
     expect(textOf('fact-branches-ahead-of-the-parent')).toBe('patch-1 (2 ahead)')
-    expect(screen.queryByTestId('actions')).toBeNull()
+    expect(screen.queryByTestId('action-delete-fork')).toBeNull()
     expect(screen.queryByTestId('facts-on-disk')).toBeNull()
   })
 

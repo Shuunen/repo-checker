@@ -3,11 +3,12 @@ import type { ActionOptions } from './action-options.ts'
 import type { Actions } from './actions-contract.ts'
 import { deleteClone, previewDeleteClone } from './delete-clone.ts'
 import { deleteFork, previewDeleteFork } from './delete-fork.ts'
+import { deleteProject, previewDeleteProject } from './delete-project.ts'
 import { discardClone, previewDiscard } from './discard.ts'
 import { fixFiles, previewFixFiles } from './fix-files.ts'
 
-/** The actions that show what they would do before they are confirmed: the delete of a clone, the delete of a fork, the discard and the file fixes */
-export type PreviewedActions = Pick<Actions, 'deleteClone' | 'deleteFork' | 'discard' | 'fixFiles' | 'previewDeleteClone' | 'previewDeleteFork' | 'previewDiscard' | 'previewFixFiles'>
+/** The actions that show what they would do before they are confirmed: the delete of a clone, the delete of a fork, the delete of a whole project, the discard and the file fixes */
+export type PreviewedActions = Pick<Actions, 'deleteClone' | 'deleteFork' | 'deleteProject' | 'discard' | 'fixFiles' | 'previewDeleteClone' | 'previewDeleteFork' | 'previewDeleteProject' | 'previewDiscard' | 'previewFixFiles'>
 
 /**
  * Build the actions that show what they would do first, each one proves again before it acts
@@ -20,10 +21,12 @@ export function createPreviewedActions(options: (name: string) => Promise<Action
   return {
     deleteClone: async name => deleteClone(await options(name)),
     deleteFork: async name => deleteFork(await options(name)),
+    deleteProject: async name => deleteProject(await options(name)),
     discard: async (name, fingerprint) => discardClone({ ...(await options(name)), fingerprint }),
     fixFiles: async (name, fingerprint) => fixFiles({ ...(await options(name)), fingerprint, rules }),
     previewDeleteClone: async name => previewDeleteClone(await options(name)),
     previewDeleteFork: async name => previewDeleteFork(await options(name)),
+    previewDeleteProject: async name => previewDeleteProject(await options(name)),
     previewDiscard: async name => previewDiscard(await options(name)),
     previewFixFiles: async name => previewFixFiles({ ...(await options(name)), rules }),
   }
