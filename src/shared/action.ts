@@ -6,6 +6,8 @@ import type { UnsavedGroup } from './unsaved.ts'
 
 /** An action that changes something outside the project files, on disk or on GitHub */
 export type ActionKind =
+  /** Check out the default branch of GitHub in the clone */
+  | 'checkout-default'
   /** Clone a repo that has no local clone */
   | 'clone'
   /** Delete a local clone, only offered when it is provably clean */

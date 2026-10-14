@@ -11,10 +11,12 @@ import { refreshProject } from '../scan/refresh-project.ts'
  * @returns what the button and the dialog need
  * @example const dialog = useActionDialog('finga', 'clone')
  */
-export function useActionDialog(name: string, action: 'clone' | 'unarchive-push') {
+export function useActionDialog(name: string, action: 'checkout-default' | 'clone' | 'unarchive-push') {
   const [isOpen, setIsOpen] = useState(false)
   const client = useQueryClient()
-  const run = useMutation({ mutationFn: () => postAction(name, action), onSuccess: () => {
+  const run = useMutation({
+    mutationFn: () => postAction(name, action),
+    onSuccess: () => {
       toast.success(doneMessages[action].replace('{name}', name))
       return refreshProject(client, name)
     },

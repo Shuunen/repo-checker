@@ -57,8 +57,8 @@ testProjectRule(branchWithoutUpstream, {
 
 testProjectRule(notOnDefaultBranch, {
   invalid: [
-    { errors: ['found'], github: { defaultBranch: 'master' }, local: { currentBranch: 'feat/astro' }, name: 'another branch than the default one' },
-    { errors: ['found'], github: { defaultBranch: 'master' }, local: { currentBranch: '' }, name: 'a detached HEAD' },
+    { actions: [['checkout-default']], errors: ['found'], github: { defaultBranch: 'master' }, local: { currentBranch: 'feat/astro' }, name: 'another branch than the default one' },
+    { actions: [['checkout-default']], errors: ['found'], github: { defaultBranch: 'master' }, local: { currentBranch: '' }, name: 'a detached HEAD' },
   ],
   valid: [
     { github: { defaultBranch: 'master' }, local: { currentBranch: 'master' }, name: 'the default branch' },

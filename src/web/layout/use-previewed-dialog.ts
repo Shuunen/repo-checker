@@ -20,7 +20,9 @@ export function usePreviewedDialog<Preview extends { ok: boolean }>(name: string
   const client = useQueryClient()
   const preview = useQuery({ enabled: isOpen, gcTime: 0, queryFn: () => getPreview<Preview>(name, action), queryKey: ['preview', action, name], retry: false })
   const fingerprint = preview.data?.ok === true ? fingerprintOf?.(preview.data as Extract<Preview, { ok: true }>) : undefined
-  const run = useMutation({ mutationFn: () => postAction(name, action, fingerprint), onSuccess: () => {
+  const run = useMutation({
+    mutationFn: () => postAction(name, action, fingerprint),
+    onSuccess: () => {
       toast.success(doneMessages[action].replace('{name}', name))
       onDone?.()
       return refreshProject(client, name)

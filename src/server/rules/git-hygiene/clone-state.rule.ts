@@ -86,7 +86,7 @@ export const notOnDefaultBranch = defineProjectRule({
   check({ project, report }) {
     invariant(project.local !== undefined && project.github !== undefined, 'appliesTo guarantees a clone and its repo')
     const { currentBranch } = project.local
-    if (currentBranch !== project.github.defaultBranch) report({ data: { branch: currentBranch === '' ? 'a detached HEAD' : currentBranch, defaultBranch: project.github.defaultBranch }, messageId: 'found' })
+    if (currentBranch !== project.github.defaultBranch) report({ actions: ['checkout-default'], data: { branch: currentBranch === '' ? 'a detached HEAD' : currentBranch, defaultBranch: project.github.defaultBranch }, messageId: 'found' })
   },
   meta: { id: 'not-on-default-branch', messages: { found: 'checked out on {{branch}}, the default branch is {{defaultBranch}}' }, severity: 'info' },
 })

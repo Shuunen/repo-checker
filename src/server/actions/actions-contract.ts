@@ -3,6 +3,8 @@ import type { RescanResult } from '../../shared/scan-event.ts'
 
 /** The actions the page can ask for, each one proves again that it is still safe before it acts */
 export interface Actions {
+  /** Check out the default branch of the repo in its clone, refused when the clone has uncommitted files */
+  checkoutDefault: (name: string) => Promise<ActionResult>
   /** Clone a repo of the owner into the folder of projects */
   clone: (name: string) => Promise<ActionResult>
   /** Delete the local clone of an archived repo, after proving again that it holds nothing that is not on GitHub */

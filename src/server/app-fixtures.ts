@@ -2,6 +2,7 @@ import type { Actions } from './actions/actions-contract.ts'
 import { createApp, type ScanRunner } from './app.ts'
 
 export const worksFine: Actions = {
+  checkoutDefault: () => Promise.resolve({ message: 'checked out', ok: true }),
   clone: () => Promise.resolve({ message: 'cloned', ok: true }),
   deleteClone: () => Promise.resolve({ message: 'deleted', ok: true }),
   deleteFork: () => Promise.resolve({ message: 'deleted the fork', ok: true }),

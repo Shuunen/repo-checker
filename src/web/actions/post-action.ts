@@ -1,7 +1,7 @@
 import type { ActionResult } from '../../shared/action.ts'
 
 /** The actions that change something, a route of the server each */
-type PostedAction = 'clone' | 'delete-clone' | 'delete-fork' | 'delete-project' | 'discard' | 'fix-files' | 'unarchive-push'
+type PostedAction = 'checkout-default' | 'clone' | 'delete-clone' | 'delete-fork' | 'delete-project' | 'discard' | 'fix-files' | 'unarchive-push'
 
 /**
  * Ask the server to run an action on a project. The `x-repo-check` header is required by the server for any request that changes something
@@ -21,6 +21,7 @@ export async function postAction(name: string, action: PostedAction, fingerprint
 
 /** What the toast says once an action worked, `{name}` being the project */
 export const doneMessages: Record<PostedAction, string> = {
+  'checkout-default': 'Checked out the default branch of {name}',
   clone: 'Cloned {name}',
   'delete-clone': 'Deleted the clone of {name}',
   'delete-fork': 'Deleted the fork of {name}',

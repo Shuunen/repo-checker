@@ -39,7 +39,7 @@ State of each clone and of its git history.
 - 🚀 🟡 `unpushed-commits`: commits that are not on the remote.
 - 🚀 🔵 `forgotten-stash`: a stash that was never reapplied or dropped.
 - 🚀 🔵 `branch-without-upstream`: a local branch with no upstream.
-- 🚀 🔵 `not-on-default-branch`: the clone is checked out on another branch than the default one.
+- 🚀 🔵 `not-on-default-branch`: the clone is checked out on another branch than the default one, it offers to check the default branch out.
 - 📋 🔵 `stale-local-branch`: a local branch that is already merged, deleted on GitHub, or untouched for N months.
 - 📋 🔵 `stale-remote-branch`: the same, for branches on GitHub.
 - 📋 🔵 `stale-last-tag`: the last git tag is old, suggest tagging. From the old README todo list.
