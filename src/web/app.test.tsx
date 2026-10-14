@@ -20,7 +20,7 @@ describe(App, () => {
     expect.hasAssertions()
     renderApp(scanRequest(scanEvents))
     const row = await screen.findByTestId('row-jozzo')
-    expect(row.textContent).toContain('archived · unsaved work')
+    expect(row.textContent).toContain('1 error')
     expect(screen.getByTestId('scan-line').textContent).toBe('/projects · owner · scanned in 1.5s')
     expect(screen.getByTestId('tile-at-risk').textContent).toBe('At risk1')
     expect(screen.getByTestId('filter-not-cloned').textContent).toBe('Not cloned1')
@@ -32,7 +32,7 @@ describe(App, () => {
     await screen.findByTestId('row-jozzo')
     fireEvent.click(screen.getByTestId('filter-not-cloned'))
     expect(screen.queryByTestId('row-jozzo')).toBeNull()
-    expect(screen.getByTestId('row-finga').textContent).toContain('Clone')
+    expect(screen.getByTestId('row-finga').textContent).toContain('Actions')
   })
 
   it('says when a filter holds no project', async () => {

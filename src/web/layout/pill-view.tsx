@@ -1,5 +1,5 @@
 import { Chip } from '@heroui/react'
-import type { ProjectRow } from '../projects/rows.ts'
+import type { Pill } from '../projects/rows.ts'
 
 /** The path of each pill icon, drawn on a 24px grid */
 const iconPaths = { archive: 'M3 4h18v4H3zM5 8v12h14V8M10 12h4', lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4' } as const
@@ -10,7 +10,7 @@ const iconPaths = { archive: 'M3 4h18v4H3zM5 8v12h14V8M10 12h4', lock: 'M5 11h14
  * @param props.pill the pill
  * @returns the pill
  */
-export function PillView({ pill }: Readonly<{ pill: ProjectRow['pills'][number] }>) {
+export function PillView({ pill }: Readonly<{ pill: Pill }>) {
   return (
     <Chip color={pill.color} size="sm" title={pill.hint}>
       {pill.icon !== undefined && (

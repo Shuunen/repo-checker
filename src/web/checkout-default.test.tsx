@@ -11,11 +11,12 @@ const events: ScanEvent[] = [
 ]
 
 describe('checkout default branch', () => {
-  it('has a short label on the list and a long one on the project page', async () => {
+  it('has the long label in the menu of the list', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(events), '/')
-    const button = await screen.findByTestId('action-checkout-default')
-    expect(button.textContent).toBe('Master')
+    fireEvent.click(await screen.findByTestId('actions-finga'))
+    const item = await screen.findByTestId('menu-checkout-default')
+    expect(item.textContent).toBe('Checkout master branch')
   })
 
   it('has the long label on the project page, and checks out once confirmed', async () => {
@@ -33,7 +34,8 @@ describe('checkout default branch', () => {
     expect.hasAssertions()
     stubApi({ action: Response.json({ ok: false, reason: 'uncommitted files' }, { status: 409 }) })
     renderApp(scanRequest(events), '/')
-    fireEvent.click(await screen.findByTestId('action-checkout-default'))
+    fireEvent.click(await screen.findByTestId('actions-finga'))
+    fireEvent.click(await screen.findByTestId('menu-checkout-default'))
     fireEvent.click(await screen.findByTestId('checkout-default-confirm'))
     await waitFor(() => expect(screen.getByTestId('checkout-default-error').textContent).toBe('uncommitted files'))
   })
@@ -41,7 +43,15 @@ describe('checkout default branch', () => {
   it('falls back to a generic label for a project that is not on GitHub', async () => {
     expect.hasAssertions()
     renderApp(scanRequest([events[0] as ScanEvent, { result: aProject('finga', [offPath], { github: undefined }), type: 'project' }, events[2] as ScanEvent]), '/')
+    fireEvent.click(await screen.findByTestId('actions-finga'))
+    const item = await screen.findByTestId('menu-checkout-default')
+    expect(item.textContent).toBe('Checkout default branch')
+  })
+
+  it('falls back to a generic label on the project page of a project that is not on GitHub', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest([events[0] as ScanEvent, { result: aProject('finga', [offPath], { github: undefined }), type: 'project' }, events[2] as ScanEvent]), '/project/finga')
     const button = await screen.findByTestId('action-checkout-default')
-    expect(button.textContent).toBe('Default')
+    expect(button.textContent).toBe('Checkout default branch')
   })
 })

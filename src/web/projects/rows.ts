@@ -7,7 +7,7 @@ import { plural } from '../../shared/text.ts'
 export type PillColor = 'accent' | 'danger' | 'default' | 'success' | 'warning'
 
 /** One status pill of a row */
-interface Pill {
+export interface Pill {
   /** The chip color */
   color: PillColor
   /** The full message, shown on hover */
@@ -20,8 +20,8 @@ interface Pill {
 
 /** What one table row shows */
 export interface ProjectRow {
-  /** The first action the project offers, its button opens the confirmation from the row, undefined when there is none */
-  action: ActionKind | undefined
+  /** Every action the project offers, the Actions menu of the row lists them, empty when there is none */
+  actions: ActionKind[]
   /** The address of the project view */
   href: string
   /** The row key, the project name */
@@ -32,10 +32,14 @@ export interface ProjectRow {
   lastPush: string
   /** The project name */
   name: string
+  /** Private or public, undefined without GitHub repo */
+  visibility: Pill | undefined
+  /** Active or archived, undefined without GitHub repo */
+  state: Pill | undefined
   /** The project, for its action button */
   project: Project
-  /** The status pills */
-  pills: Pill[]
+  /** The health pill */
+  health: Pill
   /** Sort key: 0 for an error, 1 for a warning, 2 for info, 3 for nothing to report */
   rank: number
 }
@@ -46,63 +50,39 @@ export const severityColor: Readonly<Record<Severity, PillColor>> = { error: 'da
 /** The rank of each severity, the worst first */
 export const severityRank: Readonly<Record<Severity, number>> = { error: 0, info: 2, warning: 1 }
 
-/** The short label of each Sync finding, by `ruleId.messageId`, a finding missing here shows its rule id */
-const syncLabels: Readonly<Record<string, string>> = {
-  'archived-clone.cannotVerify': 'archived · cannot verify',
-  'archived-clone.safe': 'archived · safe to delete',
-  'archived-with-unsaved-work.unsaved': 'archived · unsaved work',
-  'archived-with-unsaved-work.unsavedNoFetch': 'archived · unsaved work',
-  'broken-clone.noGit': 'no git',
-  'broken-clone.noOrigin': 'no origin',
-  'broken-clone.originNotFound': 'origin not found',
-  'checks-failed.failed': 'checks failed',
-  'not-cloned.missing': 'not cloned',
-  'pristine-fork.cannotVerify': 'fork · cannot verify',
-  'pristine-fork.kept': 'fork with work',
-  'pristine-fork.notChecked': 'fork · not compared',
-  'pristine-fork.pristine': 'pristine fork',
-  'pristine-fork.pristineWithClone': 'pristine fork',
-}
-
-/**
- * The pill of a Sync finding
- * @param finding the finding
- * @returns the pill
- */
-function syncPill(finding: Readonly<ScanFinding>): Pill {
-  return { color: severityColor[finding.severity], hint: finding.message, label: syncLabels[`${finding.ruleId}.${finding.messageId}`] ?? finding.ruleId.replaceAll('-', ' ') }
-}
-
 /** The rank of a project with nothing to report */
 const quietRank = 3
 
 /**
- * The pills of the GitHub repo flags, archived then private, each only when it applies
+ * The visibility pill of a project, undefined without GitHub repo
  * @param project the project
- * @returns the pills
+ * @returns the pill
  */
-function flagPills(project: Readonly<Project>): Pill[] {
-  const pills: Pill[] = []
-  if (project.github?.isArchived === true) pills.push({ color: 'default', hint: 'the GitHub repo is archived, read-only', icon: 'archive', label: 'archived' })
-  if (project.github?.isPrivate === true) pills.push({ color: 'default', hint: 'the GitHub repo is private', icon: 'lock', label: 'private' })
-  return pills
+function visibilityPill(project: Readonly<Project>): Pill | undefined {
+  if (project.github === undefined) return undefined
+  return project.github.isPrivate ? { color: 'default', hint: 'the GitHub repo is private', icon: 'lock', label: 'private' } : { color: 'default', hint: 'the GitHub repo is public', label: 'public' }
 }
 
 /**
- * The status pills of a project: the archived and private flags, then one per Sync finding, then the counts of file errors and warnings, or "all good"
- * @param result the project result
- * @param result.findings the findings
- * @param result.project the project
- * @returns the pills
+ * The state pill of a project, undefined without GitHub repo
+ * @param project the project
+ * @returns the pill
  */
-function toPills({ findings, project }: Readonly<ScanProject>): Pill[] {
-  const flags = flagPills(project)
-  if (project.isOtherOwner) return [...flags, { color: 'default', hint: 'the origin belongs to another owner, the Sync checks leave it out', label: 'other owner' }]
-  const sync = findings.filter(finding => finding.scope === 'project').map(finding => syncPill(finding))
-  const counts = (['error', 'warning'] as const).map(severity => ({ count: findings.filter(finding => finding.scope === 'file' && finding.severity === severity).length, severity }))
-  const files = counts.filter(({ count }) => count > 0).map(({ count, severity }) => ({ color: severityColor[severity], hint: `${plural(count, severity)} in the project files`, label: plural(count, severity) }))
-  const pills = [...sync, ...files]
-  return [...flags, ...(pills.length > 0 ? pills : [{ color: 'success' as const, hint: 'no error and no warning', label: 'all good' }])]
+function statePill(project: Readonly<Project>): Pill | undefined {
+  if (project.github === undefined) return undefined
+  return project.github.isArchived ? { color: 'default', hint: 'the GitHub repo is archived, read-only', icon: 'archive', label: 'archived' } : { color: 'default', hint: 'the GitHub repo is active', label: 'active' }
+}
+
+/**
+ * The health pill of a project: the count of its worst severity, or "all good" when it has no finding
+ * @param findings the findings
+ * @returns the pill
+ */
+function healthPill(findings: readonly ScanFinding[]): Pill {
+  const worst = (['error', 'warning', 'info'] as const).find(severity => findings.some(finding => finding.severity === severity))
+  if (worst === undefined) return { color: 'success', hint: 'nothing to report', label: 'all good' }
+  const hint = findings.map(finding => finding.message).join('\n')
+  return { color: severityColor[worst], hint, label: plural(findings.filter(finding => finding.severity === worst).length, worst) }
 }
 
 /**
@@ -122,10 +102,21 @@ export function projectHref(name: string) {
  */
 function toRow(result: Readonly<ScanProject>): ProjectRow {
   const { findings, project } = result
-  const action = findings.find(finding => finding.actions.length > 0)?.actions[0]
   const rank = Math.min(quietRank, ...findings.map(finding => severityRank[finding.severity]))
   const branch = project.local?.currentBranch ?? ''
-  return { action, branch: branch === '' ? '—' : branch, href: projectHref(project.name), id: project.name, lastPush: project.github?.pushedAt.slice(0, 'yyyy-mm'.length) ?? '—', name: project.name, pills: toPills(result), project, rank }
+  return {
+    actions: [...new Set(findings.flatMap(finding => finding.actions))],
+    branch: branch === '' ? '—' : branch,
+    health: healthPill(findings),
+    href: projectHref(project.name),
+    id: project.name,
+    lastPush: project.github?.pushedAt.slice(0, 'yyyy-mm'.length) ?? '—',
+    name: project.name,
+    project,
+    rank,
+    state: statePill(project),
+    visibility: visibilityPill(project),
+  }
 }
 
 /**

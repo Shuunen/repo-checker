@@ -8,32 +8,39 @@ describe(toRows, () => {
     expect.hasAssertions()
     const [row] = toRows([aProject('jozzo', [unsaved, aFinding({ severity: 'error' }), aFinding(), aFinding(), aFinding({ severity: 'info' })])])
     expect(row).toStrictEqual({
-      action: 'unarchive-push-rearchive',
+      actions: ['unarchive-push-rearchive', 'discard'],
       branch: 'master',
+      health: { color: 'danger', hint: expect.any(String), label: '2 errors' },
       href: '/project/jozzo',
       id: 'jozzo',
       lastPush: '2026-10',
       name: 'jozzo',
-      pills: [
-        { color: 'danger', hint: 'archived on GitHub, but the clone holds work', label: 'archived · unsaved work' },
-        { color: 'danger', hint: '1 error in the project files', label: '1 error' },
-        { color: 'warning', hint: '2 warnings in the project files', label: '2 warnings' },
-      ],
       project: expect.objectContaining({ name: 'jozzo' }),
       rank: 0,
+      state: expect.objectContaining({ label: 'active' }),
+      visibility: expect.objectContaining({ label: expect.stringMatching(/^(?:private|public)$/u) }),
     })
   })
 
-  it('says all is good when only info is left', () => {
+  it('says all good without finding', () => {
     expect.hasAssertions()
-    const [row] = toRows([aProject('app', [aFinding({ severity: 'info' })])])
-    expect(row?.pills).toStrictEqual([{ color: 'success', hint: 'no error and no warning', label: 'all good' }])
+    const [row] = toRows([aProject('app')])
+    expect(row?.health).toStrictEqual({ color: 'success', hint: 'nothing to report', label: 'all good' })
+  })
+
+  it.each([
+    ['warning', 'warning', '2 warnings'],
+    ['info', 'accent', '2 infos'],
+  ] as const)('counts the %s findings when it is the worst', (severity, color, label) => {
+    expect.hasAssertions()
+    const [row] = toRows([aProject('app', [aFinding({ severity }), aFinding({ severity })])])
+    expect(row?.health).toMatchObject({ color, label })
   })
 
   it('shows dashes for a repo that is not cloned', () => {
     expect.hasAssertions()
     const [row] = toRows([aProject('finga', [aFinding({ actions: ['clone'], messageId: 'missing', ruleId: 'not-cloned', scope: 'project', severity: 'info' })], { local: undefined })])
-    expect(row).toMatchObject({ action: 'clone', branch: '—', pills: [{ color: 'accent', label: 'not cloned' }] })
+    expect(row).toMatchObject({ actions: ['clone'], branch: '—', health: { color: 'accent', label: '1 info' } })
   })
 
   it.each([
@@ -44,29 +51,18 @@ describe(toRows, () => {
     expect(toRows([aProject('app', [], project)])[0]).toMatchObject(expected)
   })
 
-  it('names an unknown Sync finding by its rule id', () => {
-    expect.hasAssertions()
-    const [row] = toRows([aProject('app', [aFinding({ messageId: 'new', ruleId: 'some-new-sync-check', scope: 'project' })])])
-    expect(row?.pills[0]?.label).toBe('some new sync check')
-  })
-
   it('shows a project whose checks failed as an error pill with the reason on hover', () => {
     expect.hasAssertions()
     const failed = aFinding({ message: 'the checks of this project failed: boom', messageId: 'failed', ruleId: 'checks-failed', scope: 'project', severity: 'error' })
     const [row] = toRows([aProject('bad', [failed])])
-    expect(row?.pills).toStrictEqual([{ color: 'danger', hint: 'the checks of this project failed: boom', label: 'checks failed' }])
+    expect(row?.health).toStrictEqual({ color: 'danger', hint: 'the checks of this project failed: boom', label: '1 error' })
   })
 
-  it('marks a clone of another owner', () => {
+  it('shows private and archived for a private archived repo, dashes without GitHub', () => {
     expect.hasAssertions()
-    const [row] = toRows([aProject('lib', [], { isOtherOwner: true })])
-    expect(row?.pills.map(pill => pill.label)).toStrictEqual(['other owner'])
-  })
-
-  it('puts the archived and private flags before the other pills', () => {
-    expect.hasAssertions()
-    const [row] = toRows([aProject('lib', [aFinding({ severity: 'error' })], { github: { ...aProject('lib').project.github, isArchived: true, isPrivate: true } as never })])
-    expect(row?.pills.map(pill => pill.label)).toStrictEqual(['archived', 'private', '1 error'])
+    const [row] = toRows([aProject('lib', [], { github: { ...aProject('lib').project.github, isArchived: true, isPrivate: true } as never })])
+    const [bare] = toRows([aProject('bare', [], { github: undefined })])
+    expect([row?.visibility?.label, row?.state?.label, bare?.visibility, bare?.state]).toStrictEqual(['private', 'archived', undefined, undefined])
   })
 
   it('sorts the worst first, then by name', () => {

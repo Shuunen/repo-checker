@@ -17,11 +17,12 @@ export function ProjectTable({ isScanning, rows, target }: Readonly<{ isScanning
         <Table.Content aria-label="Projects">
           <Table.Header>
             <Table.Column isRowHeader>Project</Table.Column>
-            <Table.Column>Status</Table.Column>
+            <Table.Column className="text-center">Visibility</Table.Column>
+            <Table.Column className="text-center">State</Table.Column>
+            <Table.Column className="text-center">Health</Table.Column>
             <Table.Column>Branch</Table.Column>
-            <Table.Column>Last push</Table.Column>
-            <Table.Column>Action</Table.Column>
-            <Table.Column aria-label="Delete" className="w-0" />
+            <Table.Column className="text-center">Last push</Table.Column>
+            <Table.Column className="text-center">Actions</Table.Column>
           </Table.Header>
           <Table.Body items={rows} renderEmptyState={() => (isScanning ? 'Scanning…' : 'No project here')}>
             {row => <ProjectRowView row={row} target={target} />}
