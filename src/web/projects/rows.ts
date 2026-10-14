@@ -12,6 +12,8 @@ interface Pill {
   color: PillColor
   /** The full message, shown on hover */
   hint: string
+  /** The icon drawn before the text, none when absent */
+  icon?: 'archive' | 'lock'
   /** The text */
   label: string
 }
@@ -75,19 +77,32 @@ function syncPill(finding: Readonly<ScanFinding>): Pill {
 const quietRank = 3
 
 /**
- * The status pills of a project: one per Sync finding, then the counts of file errors and warnings, or "all good"
+ * The pills of the GitHub repo flags, archived then private, each only when it applies
+ * @param project the project
+ * @returns the pills
+ */
+function flagPills(project: Readonly<Project>): Pill[] {
+  const pills: Pill[] = []
+  if (project.github?.isArchived === true) pills.push({ color: 'default', hint: 'the GitHub repo is archived, read-only', icon: 'archive', label: 'archived' })
+  if (project.github?.isPrivate === true) pills.push({ color: 'default', hint: 'the GitHub repo is private', icon: 'lock', label: 'private' })
+  return pills
+}
+
+/**
+ * The status pills of a project: the archived and private flags, then one per Sync finding, then the counts of file errors and warnings, or "all good"
  * @param result the project result
  * @param result.findings the findings
  * @param result.project the project
  * @returns the pills
  */
 function toPills({ findings, project }: Readonly<ScanProject>): Pill[] {
-  if (project.isOtherOwner) return [{ color: 'default', hint: 'the origin belongs to another owner, the Sync checks leave it out', label: 'other owner' }]
+  const flags = flagPills(project)
+  if (project.isOtherOwner) return [...flags, { color: 'default', hint: 'the origin belongs to another owner, the Sync checks leave it out', label: 'other owner' }]
   const sync = findings.filter(finding => finding.scope === 'project').map(finding => syncPill(finding))
   const counts = (['error', 'warning'] as const).map(severity => ({ count: findings.filter(finding => finding.scope === 'file' && finding.severity === severity).length, severity }))
   const files = counts.filter(({ count }) => count > 0).map(({ count, severity }) => ({ color: severityColor[severity], hint: `${plural(count, severity)} in the project files`, label: plural(count, severity) }))
   const pills = [...sync, ...files]
-  return pills.length > 0 ? pills : [{ color: 'success', hint: 'no error and no warning', label: 'all good' }]
+  return [...flags, ...(pills.length > 0 ? pills : [{ color: 'success' as const, hint: 'no error and no warning', label: 'all good' }])]
 }
 
 /**

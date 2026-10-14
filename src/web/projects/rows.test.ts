@@ -63,6 +63,13 @@ describe(toRows, () => {
     expect(row?.pills.map(pill => pill.label)).toStrictEqual(['other owner'])
   })
 
+  it('puts the archived and private flags before the other pills', () => {
+    expect.hasAssertions()
+    const base = aProject('lib').project.github
+    const [row] = toRows([aProject('lib', [aFinding({ severity: 'error' })], { github: base && { ...base, isArchived: true, isPrivate: true } })])
+    expect(row?.pills.map(pill => pill.label)).toStrictEqual(['archived', 'private', '1 error'])
+  })
+
   it('sorts the worst first, then by name', () => {
     expect.hasAssertions()
     const rows = toRows([aProject('b'), aProject('a'), aProject('c', [aFinding({ severity: 'info' })]), aProject('d', [aFinding()]), aProject('e', [unsaved])])
