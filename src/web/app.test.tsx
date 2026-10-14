@@ -92,6 +92,31 @@ describe(App, () => {
     expect(screen.getByTestId('row-secret').textContent).toMatch(/private.*archived/u)
   })
 
+  it('opens the project from the Actions menu of the row', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest(scanEvents))
+    fireEvent.click(await screen.findByTestId('actions-jozzo'))
+    fireEvent.click(await screen.findByTestId('menu-open-project'))
+    expect(globalThis.location.pathname).toBe('/project/jozzo')
+  })
+
+  it('opens the repo on GitHub from the Actions menu, nothing to open without a repo', async () => {
+    expect.hasAssertions()
+    const open = vi.spyOn(globalThis, 'open').mockReturnValue(undefined as never)
+    renderApp(
+      scanRequest([
+        { target: '/projects', type: 'started' },
+        { result: jozzo, type: 'project' },
+        { result: aProject('bare', [], { github: undefined }), type: 'project' },
+        { durationMs: 10, isSingle: false, owner: 'owner', type: 'done' },
+      ]),
+    )
+    fireEvent.click(await screen.findByTestId('actions-jozzo'))
+    fireEvent.click(await screen.findByTestId('menu-open-github'))
+    expect(open).toHaveBeenCalledWith('https://github.com/owner/jozzo', '_blank', 'noopener,noreferrer')
+    fireEvent.keyDown(document.body, { key: 'Escape' })
+  })
+
   it('sorts the rows when a column header is clicked', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(scanEvents))

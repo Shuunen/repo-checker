@@ -4,10 +4,11 @@ import type { Project } from '../../shared/project.ts'
 import { ActionItem } from './action-item.tsx'
 import { ActionButton } from './action-button.tsx'
 import { DeleteProjectButton } from './delete-project-button.tsx'
-import { useChosenAction } from './use-chosen-action.ts'
+import { LinkItem } from './link-item.tsx'
+import { useMenuChoice } from './use-menu-choice.ts'
 
 /**
- * The Actions menu of a row: a trigger that opens a menu next to it, one item per action then Delete project with its long label and its icon. The confirmation of each action lives in its own button, mounted hidden next to the trigger only once its item is chosen (a table cell is rendered twice by the table, so mounting every dialog of every row made the menu slow) so the dialog survives the menu closing: the item presses that button
+ * The Actions menu of a row: a trigger that opens a menu next to it: Open project, Open on GitHub, one item per action, then Delete project apart in its own section, with its long label and its icon. The confirmation of each action lives in its own button, mounted hidden next to the trigger only once its item is chosen (a table cell is rendered twice by the table, so mounting every dialog of every row made the menu slow) so the dialog survives the menu closing: the item presses that button
  * @param props the props
  * @param props.actions the actions the project offers
  * @param props.project the project
@@ -15,7 +16,7 @@ import { useChosenAction } from './use-chosen-action.ts'
  * @returns the trigger, the menu and the hidden buttons
  */
 export function ActionsMenu({ actions, project, target }: Readonly<{ actions: readonly ActionKind[]; project: Project; target: string }>) {
-  const { chosen, handleAction, holder } = useChosenAction()
+  const { chosen, handleChoice, holder } = useMenuChoice(project)
   return (
     <>
       <Dropdown>
@@ -23,11 +24,17 @@ export function ActionsMenu({ actions, project, target }: Readonly<{ actions: re
           Actions
         </Button>
         <Dropdown.Popover className="border border-foreground/20 bg-surface-tertiary!" placement="bottom end">
-          <Dropdown.Menu onAction={handleAction}>
-            {actions.map(action => (
-              <ActionItem action={action} key={action} project={project} />
-            ))}
-            <ActionItem action="delete-project" project={project} />
+          <Dropdown.Menu onAction={handleChoice}>
+            <Dropdown.Section>
+              <LinkItem icon="M5 12h14M13 6l6 6-6 6" id="open-project" label="Open project" />
+              {project.github !== undefined && <LinkItem icon="M14 4h6v6M20 4l-9 9M10 6H5v13h13v-5" id="open-github" label="Open on GitHub" />}
+              {actions.map(action => (
+                <ActionItem action={action} key={action} project={project} />
+              ))}
+            </Dropdown.Section>
+            <Dropdown.Section className="mt-1 border-t border-foreground/20 pt-1">
+              <ActionItem action="delete-project" project={project} />
+            </Dropdown.Section>
           </Dropdown.Menu>
         </Dropdown.Popover>
       </Dropdown>

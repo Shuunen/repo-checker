@@ -1,7 +1,7 @@
 import type { ProjectRow } from './rows.ts'
 
 /** The columns of the table that sort the rows, every one but Actions */
-export const sortColumns = ['project', 'visibility', 'state', 'health', 'branch', 'lastPush'] as const
+const sortColumns = ['project', 'visibility', 'state', 'health', 'branch', 'lastPush'] as const
 
 /** One sortable column */
 export type SortColumn = (typeof sortColumns)[number]
