@@ -4,6 +4,10 @@ import { runCli } from './cli.ts'
 import { ghCli } from './inventory/github.ts'
 import { browserCommand } from './open-browser.ts'
 import { startServer } from './serve.ts'
+import { watchUi } from './watch.ts'
+
+/** The flag that runs the ui server for development, handled here and not by the CLI */
+const watchFlag = '--watch'
 
 /** `process.argv` starts with node and this script */
 const firstArgument = 2
@@ -19,4 +23,11 @@ function openBrowser(url: string) {
     .unref()
 }
 
-process.exitCode = await runCli(process.argv.slice(firstArgument), { cwd: process.cwd(), gh: ghCli, hasColors: process.stdout.isTTY, openBrowser, print: text => process.stdout.write(`${text}\n`), printProgress: line => process.stderr.write(`› ${line}\n`), startServer })
+const argv = process.argv.slice(firstArgument)
+
+process.exitCode = argv.includes(watchFlag)
+  ? await watchUi(
+      import.meta.filename,
+      argv.filter(argument => argument !== watchFlag),
+    )
+  : await runCli(argv, { cwd: process.cwd(), gh: ghCli, hasColors: process.stdout.isTTY, openBrowser, print: text => process.stdout.write(`${text}\n`), printProgress: line => process.stderr.write(`› ${line}\n`), startServer })
