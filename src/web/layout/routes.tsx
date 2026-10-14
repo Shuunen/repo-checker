@@ -1,5 +1,6 @@
 import { Route, Switch } from 'wouter'
 import type { FilterId } from '../projects/filters.ts'
+import type { ListView } from '../projects/list-view.ts'
 import type { ScanState } from '../scan/scan-state.ts'
 import { Page } from './page.tsx'
 import { ProjectPage } from './project-page.tsx'
@@ -14,8 +15,12 @@ interface RoutesProps {
   isScanning: boolean
   /** Starts a new scan */
   onRescan: () => void
+  /** Changes the view of the list */
+  onView: (view: ListView) => void
   /** The scan state */
   state: ScanState
+  /** The view of the list */
+  view: ListView
 }
 
 /**
@@ -25,15 +30,17 @@ interface RoutesProps {
  * @param props.filterId the selected filter of the list
  * @param props.isScanning true while the scan streams
  * @param props.onRescan starts a new scan
+ * @param props.onView changes the view of the list
  * @param props.state the scan state
+ * @param props.view the view of the list
  * @returns the page of the current address
  */
-export function Routes({ error, filterId, isScanning, onRescan, state }: Readonly<RoutesProps>) {
+export function Routes({ error, filterId, isScanning, onRescan, onView, state, view }: Readonly<RoutesProps>) {
   return (
     <Switch>
       <Route path="/project/:name">{params => <ProjectPage error={error} isScanning={isScanning} name={params.name} state={state} />}</Route>
       <Route>
-        <Page error={error} filterId={filterId} isScanning={isScanning} onRescan={onRescan} state={state} />
+        <Page error={error} filterId={filterId} isScanning={isScanning} onRescan={onRescan} onView={onView} state={state} view={view} />
       </Route>
     </Switch>
   )

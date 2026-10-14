@@ -22,7 +22,7 @@ describe(App, () => {
     const row = await screen.findByTestId('row-jozzo')
     expect(row.textContent).toContain('1 error')
     expect(screen.getByTestId('scan-line').textContent).toBe('/projects · owner · scanned in 1.5s')
-    expect(screen.getByTestId('tile-at-risk').textContent).toBe('At risk1')
+    expect(screen.getByTestId('tile-at-risk').textContent).toBe('At risk 1')
     expect(screen.getByTestId('filter-not-cloned').textContent).toBe('Not cloned1')
   })
 
@@ -33,6 +33,17 @@ describe(App, () => {
     fireEvent.click(screen.getByTestId('filter-not-cloned'))
     expect(screen.queryByTestId('row-jozzo')).toBeNull()
     expect(screen.getByTestId('row-finga').textContent).toContain('Actions')
+  })
+
+  it('filters the table with the health bar and clears the filter on a second click', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest(scanEvents))
+    await screen.findByTestId('row-jozzo')
+    fireEvent.click(screen.getByTestId('bucket-error'))
+    expect(screen.queryByTestId('row-finga')).toBeNull()
+    expect(screen.getByTestId('row-jozzo')).toBeDefined()
+    fireEvent.click(screen.getByTestId('bucket-error'))
+    expect(screen.getByTestId('row-finga')).toBeDefined()
   })
 
   it('says when a filter holds no project', async () => {

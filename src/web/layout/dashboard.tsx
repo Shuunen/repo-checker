@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { initialListView } from '../projects/list-view.ts'
 import { type FetchScan, scanQuery } from '../scan/scan-query.ts'
 import { initialScanState } from '../scan/scan-state.ts'
 import { Routes } from './routes.tsx'
@@ -15,12 +17,13 @@ import { useOpenSingleProject } from './use-open-single-project.ts'
 export function Dashboard({ request }: Readonly<{ request: FetchScan | undefined }>) {
   const query = useQuery(scanQuery(request))
   const [filterId, selectFilter] = useFilter()
+  const [view, setView] = useState(initialListView)
   const state = query.data ?? initialScanState
   useOpenSingleProject(state)
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       <Sidebar active={filterId} onSelect={selectFilter} projects={state.projects} />
-      <Routes error={query.error} filterId={filterId} isScanning={query.isFetching} onRescan={() => query.refetch()} state={state} />
+      <Routes error={query.error} filterId={filterId} isScanning={query.isFetching} onRescan={() => query.refetch()} onView={setView} state={state} view={view} />
     </div>
   )
 }
