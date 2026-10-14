@@ -2,6 +2,7 @@ import type { ActionKind } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
 import type { ScanFinding, ScanProject, Severity } from '../../shared/scan-event.ts'
 import { plural } from '../../shared/text.ts'
+import { describeAge } from './age.ts'
 
 /** A HeroUI chip color */
 export type PillColor = 'accent' | 'danger' | 'default' | 'success' | 'warning'
@@ -30,8 +31,14 @@ export interface ProjectRow {
   id: string
   /** The checked out branch, a dash when not cloned, without git or on a detached HEAD */
   branch: string
-  /** The month of the last push, like `2026-10`, a dash without GitHub repo */
+  /** The month of the last push, like `2026-10`, a dash without GitHub repo, it sorts the column and shows on hover */
   lastPush: string
+  /** How long ago the last push was, like `1 month ago`, a dash without GitHub repo */
+  lastPushAge: string
+  /** True when the last push is a year old or more */
+  isStale: boolean
+  /** The pill of a branch worth a look: not cloned, or a branch that is not the default one, undefined otherwise */
+  branchPill: Pill | undefined
   /** The project name */
   name: string
   /** Private or public, undefined without GitHub repo */
@@ -76,6 +83,19 @@ function statePill(project: Readonly<Project>): Pill | undefined {
 }
 
 /**
+ * The pill of a branch worth a look: a GitHub repo that is not cloned, or a clone on a branch that is not the default one
+ * @param project the project
+ * @param branch the checked out branch, empty without clone or on a detached HEAD
+ * @returns the pill, undefined when the branch is the default one or there is nothing to say
+ */
+function branchPill(project: Readonly<Project>, branch: string): Pill | undefined {
+  if (project.github === undefined) return undefined
+  if (project.local === undefined) return { color: 'accent', hint: 'the repo is on GitHub only, there is no local clone', label: 'not cloned' }
+  if (branch !== '' && branch !== project.github.defaultBranch) return { color: 'warning', hint: `the default branch is ${project.github.defaultBranch}`, label: branch }
+  return undefined
+}
+
+/**
  * The health pill of a project: the count of its worst severity, or "all good" when it has no finding
  * @param findings the findings
  * @returns the pill
@@ -100,19 +120,24 @@ export function projectHref(name: string) {
 /**
  * Turn a project result into a table row
  * @param result the project result
+ * @param now the date the age of the last push is counted from
  * @returns the row
  */
-function toRow(result: Readonly<ScanProject>): ProjectRow {
+function toRow(result: Readonly<ScanProject>, now: Date): ProjectRow {
   const { findings, project } = result
   const rank = Math.min(quietRank, ...findings.map(finding => severityRank[finding.severity]))
   const branch = project.local?.currentBranch ?? ''
+  const age = project.github === undefined ? undefined : describeAge(project.github.pushedAt, now)
   return {
     actions: [...new Set(findings.flatMap(finding => finding.actions))],
     branch: branch === '' ? '—' : branch,
+    branchPill: branchPill(project, branch),
     health: healthPill(findings),
     href: projectHref(project.name),
     id: project.name,
+    isStale: age?.isStale ?? false,
     lastPush: project.github?.pushedAt.slice(0, 'yyyy-mm'.length) ?? '—',
+    lastPushAge: age?.label ?? '—',
     name: project.name,
     project,
     rank,
@@ -124,9 +149,10 @@ function toRow(result: Readonly<ScanProject>): ProjectRow {
 /**
  * Turn project results into rows, the worst first, then by name
  * @param results the project results
+ * @param now the date the age of the last push is counted from
  * @returns the sorted rows
  * @example const rows = toRows(state.projects)
  */
-export function toRows(results: readonly ScanProject[]) {
-  return results.map(result => toRow(result)).toSorted((first, second) => first.rank - second.rank || first.name.localeCompare(second.name))
+export function toRows(results: readonly ScanProject[], now = new Date()) {
+  return results.map(result => toRow(result, now)).toSorted((first, second) => first.rank - second.rank || first.name.localeCompare(second.name))
 }

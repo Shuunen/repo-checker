@@ -6,7 +6,7 @@ import { PillView } from './pill-view.tsx'
 import { ActionsMenu } from './actions-menu.tsx'
 
 /**
- * One project row: its name (a link to the project view), visibility and state pills (only the exceptions, private and archived), health pill (the health hint lists the messages), branch, last push, an Actions menu with every action it offers, each opens its confirmation right from the row
+ * One project row: its name (a link to the project view), visibility and state pills (only the exceptions, private and archived), health pill (the health hint lists the messages), branch (a pill when not cloned or off the default branch), last push (how long ago, in warning color when a year old or more), an Actions menu with every action it offers, each opens its confirmation right from the row
  * @param props the props
  * @param props.row the row
  * @param props.target the folder of projects, where a clone goes
@@ -29,8 +29,12 @@ export function ProjectRowView({ row, target }: Readonly<{ row: ProjectRow; targ
       <Table.Cell className="text-center">
         <PillView pill={row.health} />
       </Table.Cell>
-      <Table.Cell className="text-muted">{row.branch}</Table.Cell>
-      <Table.Cell className="text-center text-muted">{row.lastPush}</Table.Cell>
+      <Table.Cell className="text-muted">{row.branchPill === undefined ? row.branch : <PillView pill={row.branchPill} />}</Table.Cell>
+      <Table.Cell className="text-center text-muted">
+        <span className={row.isStale ? 'text-warning' : undefined} title={row.lastPush}>
+          {row.lastPushAge}
+        </span>
+      </Table.Cell>
       <Table.Cell className="text-center focus-visible:shadow-none! data-[focus-visible=true]:shadow-none!">
         <ActionsMenu actions={row.actions} project={row.project} target={target} />
       </Table.Cell>

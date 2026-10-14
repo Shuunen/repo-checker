@@ -1,19 +1,24 @@
 import { aFinding, aProject } from '../fixtures.ts'
 import { toRows } from './rows.ts'
 
+const now = new Date('2026-10-14T12:00:00Z')
+
 const unsaved = aFinding({ actions: ['unarchive-push-rearchive', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
 
 describe(toRows, () => {
   it('turns a project into a row', () => {
     expect.hasAssertions()
-    const [row] = toRows([aProject('jozzo', [unsaved, aFinding({ severity: 'error' }), aFinding(), aFinding(), aFinding({ severity: 'info' })])])
+    const [row] = toRows([aProject('jozzo', [unsaved, aFinding({ severity: 'error' }), aFinding(), aFinding(), aFinding({ severity: 'info' })])], now)
     expect(row).toStrictEqual({
       actions: ['unarchive-push-rearchive', 'discard'],
       branch: 'master',
+      branchPill: undefined,
       health: { color: 'danger', hint: expect.any(String), label: '2 errors' },
       href: '/project/jozzo',
       id: 'jozzo',
+      isStale: false,
       lastPush: '2026-10',
+      lastPushAge: 'this month',
       name: 'jozzo',
       project: expect.objectContaining({ name: 'jozzo' }),
       rank: 0,
@@ -63,6 +68,24 @@ describe(toRows, () => {
     const [row] = toRows([aProject('lib', [], { github: { ...aProject('lib').project.github, isArchived: true, isPrivate: true } as never })])
     const [bare] = toRows([aProject('bare', [], { github: undefined })])
     expect([row?.visibility?.label, row?.state?.label, bare?.visibility, bare?.state]).toStrictEqual(['private', 'archived', undefined, undefined])
+  })
+
+  it('tells a project not cloned and a clone off its default branch with a pill', () => {
+    expect.hasAssertions()
+    const [offDefault] = toRows([aProject('folio', [], { local: { ...aProject('folio').project.local, currentBranch: 'feat/astro' } as never })], now)
+    const [notCloned] = toRows([aProject('finga', [], { local: undefined })], now)
+    const [bare] = toRows([aProject('bare', [], { github: undefined })], now)
+    expect(offDefault?.branchPill).toStrictEqual({ color: 'warning', hint: 'the default branch is master', label: 'feat/astro' })
+    expect(notCloned?.branchPill).toMatchObject({ color: 'accent', label: 'not cloned' })
+    expect(bare?.branchPill).toBeUndefined()
+  })
+
+  it('says how long ago the last push was and flags a stale one', () => {
+    expect.hasAssertions()
+    const github = { ...aProject('old').project.github, pushedAt: '2022-04-01T00:00:00Z' } as never
+    const [old] = toRows([aProject('old', [], { github })], now)
+    const [bare] = toRows([aProject('bare', [], { github: undefined })], now)
+    expect([old?.lastPushAge, old?.isStale, bare?.lastPushAge, bare?.isStale]).toStrictEqual(['4 years ago', true, '—', false])
   })
 
   it('marks public and active as the usual values, private and archived are exceptions', () => {
