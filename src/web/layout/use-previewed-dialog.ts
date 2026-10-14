@@ -1,7 +1,8 @@
+import { toast } from '@heroui/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { getPreview, type PreviewedAction } from '../actions/get-preview.ts'
-import { postAction } from '../actions/post-action.ts'
+import { doneMessages, postAction } from '../actions/post-action.ts'
 import { refreshProject } from '../scan/refresh-project.ts'
 
 /**
@@ -10,15 +11,21 @@ import { refreshProject } from '../scan/refresh-project.ts'
  * @param name the repo name
  * @param action the action
  * @param fingerprintOf reads the fingerprint of the list from an offered preview, only for the actions that throw something away
+ * @param onDone called once the action worked, before the scan of the project runs again
  * @returns what the button and the dialog need
  * @example const dialog = usePreviewedDialog<DeletePreview>('jozzo', 'delete-clone')
  */
-export function usePreviewedDialog<Preview extends { ok: boolean }>(name: string, action: PreviewedAction, fingerprintOf?: (preview: Extract<Preview, { ok: true }>) => string) {
+export function usePreviewedDialog<Preview extends { ok: boolean }>(name: string, action: PreviewedAction, fingerprintOf?: (preview: Extract<Preview, { ok: true }>) => string, onDone?: () => void) {
   const [isOpen, setIsOpen] = useState(false)
   const client = useQueryClient()
   const preview = useQuery({ enabled: isOpen, gcTime: 0, queryFn: () => getPreview<Preview>(name, action), queryKey: ['preview', action, name], retry: false })
   const fingerprint = preview.data?.ok === true ? fingerprintOf?.(preview.data as Extract<Preview, { ok: true }>) : undefined
-  const run = useMutation({ mutationFn: () => postAction(name, action, fingerprint), onSuccess: () => refreshProject(client, name) })
+  const run = useMutation({ mutationFn: () => postAction(name, action, fingerprint), onSuccess: () => {
+      toast.success(doneMessages[action].replace('{name}', name))
+      onDone?.()
+      return refreshProject(client, name)
+    },
+  })
   const handleOpen = () => {
     run.reset()
     setIsOpen(true)

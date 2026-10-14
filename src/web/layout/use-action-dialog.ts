@@ -1,6 +1,7 @@
+import { toast } from '@heroui/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { postAction } from '../actions/post-action.ts'
+import { doneMessages, postAction } from '../actions/post-action.ts'
 import { refreshProject } from '../scan/refresh-project.ts'
 
 /**
@@ -13,7 +14,11 @@ import { refreshProject } from '../scan/refresh-project.ts'
 export function useActionDialog(name: string, action: 'clone' | 'unarchive-push') {
   const [isOpen, setIsOpen] = useState(false)
   const client = useQueryClient()
-  const run = useMutation({ mutationFn: () => postAction(name, action), onSuccess: () => refreshProject(client, name) })
+  const run = useMutation({ mutationFn: () => postAction(name, action), onSuccess: () => {
+      toast.success(doneMessages[action].replace('{name}', name))
+      return refreshProject(client, name)
+    },
+  })
   const handleOpen = () => {
     run.reset()
     setIsOpen(true)

@@ -18,3 +18,14 @@ export async function postAction(name: string, action: PostedAction, fingerprint
   const result = await response.json().catch((): ActionResult => ({ ok: false, reason: `the server answered HTTP ${response.status}` }))
   if (!(result as ActionResult).ok) throw new Error((result as { reason: string }).reason)
 }
+
+/** What the toast says once an action worked, `{name}` being the project */
+export const doneMessages: Record<PostedAction, string> = {
+  clone: 'Cloned {name}',
+  'delete-clone': 'Deleted the clone of {name}',
+  'delete-fork': 'Deleted the fork of {name}',
+  'delete-project': 'Deleted {name}, its GitHub repo and its clone',
+  discard: 'Discarded the unsaved work of {name}',
+  'fix-files': 'Fixed the files of {name}',
+  'unarchive-push': 'Unarchived and pushed {name}',
+}

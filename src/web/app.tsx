@@ -1,3 +1,4 @@
+import { Toast } from '@heroui/react'
 import { type QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Dashboard } from './layout/dashboard.tsx'
 import type { FetchScan } from './scan/scan-query.ts'
@@ -13,6 +14,7 @@ export function App({ client, request }: Readonly<{ client: QueryClient; request
   return (
     <QueryClientProvider client={client}>
       <Dashboard request={request} />
+      <Toast.Provider placement="bottom end" />
     </QueryClientProvider>
   )
 }
