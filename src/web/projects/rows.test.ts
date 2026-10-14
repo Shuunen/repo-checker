@@ -65,6 +65,13 @@ describe(toRows, () => {
     expect([row?.visibility?.label, row?.state?.label, bare?.visibility, bare?.state]).toStrictEqual(['private', 'archived', undefined, undefined])
   })
 
+  it('marks public and active as the usual values, private and archived are exceptions', () => {
+    expect.hasAssertions()
+    const [usual] = toRows([aProject('app')])
+    const [exception] = toRows([aProject('lib', [], { github: { ...aProject('lib').project.github, isArchived: true, isPrivate: true } as never })])
+    expect([usual?.visibility?.isUsual, usual?.state?.isUsual, exception?.visibility?.isUsual, exception?.state?.isUsual]).toStrictEqual([true, true, undefined, undefined])
+  })
+
   it('sorts the worst first, then by name', () => {
     expect.hasAssertions()
     const rows = toRows([aProject('b'), aProject('a'), aProject('c', [aFinding({ severity: 'info' })]), aProject('d', [aFinding()]), aProject('e', [unsaved])])

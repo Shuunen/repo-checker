@@ -76,6 +76,22 @@ describe(App, () => {
     expect(screen.getByTestId('result-count').textContent).toBe('1 of 2 projects')
   })
 
+  it('leaves public and active blank and shows private and archived', async () => {
+    expect.hasAssertions()
+    const secret = aProject('secret', [aFinding()], { github: { ...aProject('secret').project.github, isArchived: true, isPrivate: true } as never })
+    renderApp(
+      scanRequest([
+        { target: '/projects', type: 'started' },
+        { result: jozzo, type: 'project' },
+        { result: secret, type: 'project' },
+        { durationMs: 10, isSingle: false, owner: 'owner', type: 'done' },
+      ]),
+    )
+    await screen.findByTestId('row-jozzo')
+    expect(screen.getByTestId('row-jozzo').textContent).not.toMatch(/public|active/u)
+    expect(screen.getByTestId('row-secret').textContent).toMatch(/private.*archived/u)
+  })
+
   it('sorts the rows when a column header is clicked', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(scanEvents))

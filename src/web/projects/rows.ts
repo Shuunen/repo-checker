@@ -14,6 +14,8 @@ export interface Pill {
   hint: string
   /** The icon drawn before the text, none when absent */
   icon?: 'archive' | 'lock'
+  /** True for the usual value (public, active), the list leaves it blank to show only the exceptions */
+  isUsual?: true
   /** The text */
   label: string
 }
@@ -60,7 +62,7 @@ const quietRank = 3
  */
 function visibilityPill(project: Readonly<Project>): Pill | undefined {
   if (project.github === undefined) return undefined
-  return project.github.isPrivate ? { color: 'default', hint: 'the GitHub repo is private', icon: 'lock', label: 'private' } : { color: 'default', hint: 'the GitHub repo is public', label: 'public' }
+  return project.github.isPrivate ? { color: 'default', hint: 'the GitHub repo is private', icon: 'lock', label: 'private' } : { color: 'default', hint: 'the GitHub repo is public', isUsual: true, label: 'public' }
 }
 
 /**
@@ -70,7 +72,7 @@ function visibilityPill(project: Readonly<Project>): Pill | undefined {
  */
 function statePill(project: Readonly<Project>): Pill | undefined {
   if (project.github === undefined) return undefined
-  return project.github.isArchived ? { color: 'default', hint: 'the GitHub repo is archived, read-only', icon: 'archive', label: 'archived' } : { color: 'default', hint: 'the GitHub repo is active', label: 'active' }
+  return project.github.isArchived ? { color: 'default', hint: 'the GitHub repo is archived, read-only', icon: 'archive', label: 'archived' } : { color: 'default', hint: 'the GitHub repo is active', isUsual: true, label: 'active' }
 }
 
 /**
