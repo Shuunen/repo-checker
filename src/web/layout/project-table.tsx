@@ -17,11 +17,19 @@ const columns = [
 /**
  * The label of a sortable column, with the arrow of its direction when it is the sorted one
  * @param label the label
+ * @param isCentered true when the column is centered, the label then sits in the middle of the header like its cells
  * @param sortDirection the direction when the column is sorted
  * @returns the header
  */
-function columnHeader(label: string, sortDirection: Sort['direction'] | undefined) {
-  return sortDirection === undefined ? <Table.SortableColumnHeader>{label}</Table.SortableColumnHeader> : <Table.SortableColumnHeader sortDirection={sortDirection}>{label}</Table.SortableColumnHeader>
+function columnHeader(label: string, isCentered: boolean, sortDirection: Sort['direction'] | undefined) {
+  const className = isCentered ? 'justify-center gap-1' : undefined
+  return sortDirection === undefined ? (
+    <Table.SortableColumnHeader className={className}>{label}</Table.SortableColumnHeader>
+  ) : (
+    <Table.SortableColumnHeader className={className} sortDirection={sortDirection}>
+      {label}
+    </Table.SortableColumnHeader>
+  )
 }
 
 /**
@@ -43,7 +51,7 @@ export function ProjectTable({ isScanning, onSort, rows, sort, target }: Readonl
           <Table.Header>
             {columns.map(column => (
               <Table.Column allowsSorting className={column.className} data-testid={`column-${column.id}`} id={column.id} isRowHeader={column.id === 'project'} key={column.id}>
-                {({ sortDirection }) => columnHeader(column.label, sortDirection)}
+                {({ sortDirection }) => columnHeader(column.label, column.className === 'text-center', sortDirection)}
               </Table.Column>
             ))}
             <Table.Column className="text-center" id="actions">
