@@ -1,34 +1,44 @@
 import { Chip } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
-import { githubUrl, identityBadges } from '../projects/detail.ts'
+import type { ScanFinding } from '../../shared/scan-event.ts'
+import { describePush, githubUrl, identityBadges } from '../projects/detail.ts'
+import { CopyPathButton } from './copy-path-button.tsx'
+import { FindingCounts } from './finding-counts.tsx'
 
 /**
- * Who a project is: its name, badges, owner, GitHub link and last push
+ * Who a project is: its name and badges, the owner, the GitHub link and the last push, how many findings of each severity it has, and the button that copies its folder
  * @param props the props
+ * @param props.findings the findings of the project
  * @param props.project the project
  * @returns the header
  */
-export function ProjectIdentity({ project }: Readonly<{ project: Project }>) {
+export function ProjectIdentity({ findings, project }: Readonly<{ findings: readonly ScanFinding[]; project: Project }>) {
   const url = githubUrl(project)
   return (
-    <header className="flex flex-col gap-2">
-      <h1 className="text-xl font-semibold">{project.name}</h1>
-      <span className="flex gap-1" data-testid="badges">
-        {identityBadges(project).map(badge => (
-          <Chip color={badge.color} key={badge.label} size="sm">
-            {badge.label}
-          </Chip>
-        ))}
-      </span>
-      <p className="flex gap-3 text-sm text-muted" data-testid="identity-line">
-        {project.github && <span>{project.github.owner}</span>}
-        {url && (
-          <a className="text-accent" href={url} rel="noreferrer" target="_blank">
-            GitHub
-          </a>
-        )}
-        {project.github && <span>{`last push ${project.github.pushedAt.slice(0, 'yyyy-mm-dd'.length)}`}</span>}
-      </p>
+    <header className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-semibold">{project.name}</h1>
+          <span className="flex gap-1" data-testid="badges">
+            {identityBadges(project).map(badge => (
+              <Chip color={badge.color} key={badge.label} size="sm">
+                {badge.label}
+              </Chip>
+            ))}
+          </span>
+        </div>
+        <p className="flex gap-3 text-sm text-muted" data-testid="identity-line">
+          {project.github && <span>{project.github.owner}</span>}
+          {url && (
+            <a className="text-accent" href={url} rel="noreferrer" target="_blank">
+              GitHub ↗
+            </a>
+          )}
+          {project.github && <span>{describePush(project.github.pushedAt)}</span>}
+        </p>
+        <FindingCounts findings={findings} />
+      </div>
+      {project.local && <CopyPathButton path={project.local.path} />}
     </header>
   )
 }

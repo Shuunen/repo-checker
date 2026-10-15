@@ -46,7 +46,7 @@ describe(App, () => {
     expect(screen.getByTestId('row-finga')).toBeDefined()
   })
 
-  it('folds the quiet archived projects in one row that shows them', async () => {
+  it('folds the archived projects in one row that shows them', async () => {
     expect.hasAssertions()
     const old = aProject('old', [], { github: { ...aProject('old').project.github, isArchived: true } as never })
     renderApp(
@@ -87,6 +87,7 @@ describe(App, () => {
         { durationMs: 10, isSingle: false, owner: 'owner', type: 'done' },
       ]),
     )
+    fireEvent.click(await screen.findByTestId('archived-toggle'))
     await screen.findByTestId('row-jozzo')
     expect(screen.getByTestId('row-jozzo').textContent).not.toMatch(/public|active/u)
     expect(screen.getByTestId('row-secret').textContent).toMatch(/private.*archived/u)
@@ -155,6 +156,41 @@ describe(App, () => {
     renderApp(vi.fn<FetchScan>(() => Promise.resolve(new Response('nope', { status: 403 }))))
     const failure = await screen.findByTestId('scan-failure')
     expect(failure.textContent).toContain('the server did not start the scan (HTTP 403)')
+  })
+
+  it('shows how many projects are checked while the scan runs', async () => {
+    expect.hasAssertions()
+    const progress: ScanEvent[] = [
+      { target: '/projects', type: 'started' },
+      { line: 'checking 2 projects', type: 'progress' },
+      { result: finga, type: 'project' },
+    ]
+    const encoder = new TextEncoder()
+    const open = new Response(
+      new ReadableStream({
+        start: controller => {
+          for (const event of progress) controller.enqueue(encoder.encode(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`))
+        },
+      }),
+    )
+    renderApp(vi.fn<FetchScan>(() => Promise.resolve(open)))
+    await screen.findByTestId('row-finga')
+    expect(screen.getByTestId('scan-line').textContent).toBe('/projects · checking 1 of 2 projects…')
+    expect(screen.getByTestId('scan-progress').getAttribute('aria-valuenow')).toBe('1')
+  })
+
+  it('copies the scanned path', async () => {
+    expect.hasAssertions()
+    const writeText = vi.fn<(text: string) => Promise<void>>(() => Promise.resolve())
+    vi.stubGlobal('navigator', { clipboard: { writeText } })
+    renderApp(scanRequest(scanEvents))
+    await screen.findByTestId('row-jozzo')
+    fireEvent.click(screen.getByTestId('copy-path'))
+    expect(writeText).toHaveBeenCalledWith('/projects')
+    const button = await screen.findByTestId('copy-path')
+    expect(button.textContent).toBe('Copied')
+    await vi.waitFor(() => expect(screen.getByTestId('copy-path').textContent).toBe('Copy path'), { timeout: 3000 })
+    vi.unstubAllGlobals()
   })
 
   it('says it is scanning before the first project', async () => {

@@ -2,9 +2,9 @@ import { Button } from '@heroui/react'
 import { plural } from '../../shared/text.ts'
 
 /**
- * The row under the table that folds the archived projects with nothing to report: it says how many they are and shows or hides them
+ * The row under the table that folds the archived projects: it says how many they are and shows or hides them
  * @param props the props
- * @param props.count how many archived projects have nothing to report
+ * @param props.count how many archived projects there are
  * @param props.isShown true when they are listed in the table
  * @param props.onToggle shows or hides them
  * @returns the row, or nothing when there is none

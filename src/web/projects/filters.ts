@@ -1,6 +1,6 @@
 import type { ScanFinding, ScanProject } from '../../shared/scan-event.ts'
 
-/** One entry of the sidebar */
+/** One filter tab */
 interface ProjectFilter {
   /** The key */
   id: string
@@ -10,7 +10,7 @@ interface ProjectFilter {
   matches: (result: Readonly<ScanProject>) => boolean
 }
 
-/** The sidebar entries, in order */
+/** The filter tabs, in order */
 export const filters = [
   { id: 'overview', label: 'Overview', matches: () => true },
   { id: 'attention', label: 'Needs attention', matches: ({ findings }) => findings.some(finding => finding.severity !== 'info') },
@@ -19,11 +19,11 @@ export const filters = [
   { id: 'archived', label: 'Archived', matches: ({ project }) => project.github?.isArchived === true },
 ] as const satisfies readonly ProjectFilter[]
 
-/** The key of a sidebar entry */
+/** The key of a filter tab */
 export type FilterId = (typeof filters)[number]['id']
 
 /**
- * Find a sidebar entry
+ * Find a filter tab
  * @param id the key
  * @returns the entry, the overview for an unknown key
  */

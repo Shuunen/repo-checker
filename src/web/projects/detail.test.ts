@@ -1,6 +1,6 @@
 import type { ForkStatus, LocalClone } from '../../shared/project.ts'
 import { aFinding, aProject } from '../fixtures.ts'
-import { factGroups, findingGroups, fixText, forkFacts, githubUrl, identityBadges, localFacts, offeredActions, slugOf, unarchiveBlocker } from './detail.ts'
+import { describePush, factGroups, findingCounts, findingGroups, fixText, foldQuietFacts, forkFacts, githubUrl, identityBadges, localFacts, offeredActions, slugOf, unarchiveBlocker } from './detail.ts'
 
 const clone = aProject('app').project.local as LocalClone
 const dirty: LocalClone = {
@@ -170,5 +170,34 @@ describe(unarchiveBlocker, () => {
   ])('says why for %j', (fields, reason) => {
     expect.hasAssertions()
     expect(unarchiveBlocker({ ...clone, ...fields })).toBe(reason)
+  })
+})
+
+describe(findingCounts, () => {
+  it('counts the findings by severity, the worst first, without the empty ones', () => {
+    expect.hasAssertions()
+    const findings = [aFinding({ severity: 'warning' }), aFinding({ severity: 'error' }), aFinding({ severity: 'warning' })]
+    expect(findingCounts(findings).map(item => item.label)).toStrictEqual(['1 error', '2 warnings'])
+    expect(findingCounts([aFinding({ severity: 'info' })]).map(item => item.label)).toStrictEqual(['1 info'])
+    expect(findingCounts([])).toStrictEqual([])
+  })
+})
+
+describe(foldQuietFacts, () => {
+  it('moves the empty facts into a list of lowercase labels', () => {
+    expect.hasAssertions()
+    const facts = [
+      { label: 'Branch', value: 'master' },
+      { label: 'Stashes', value: 'none' },
+      { label: 'Local-only branches', value: 'none' },
+    ]
+    expect(foldQuietFacts(facts)).toStrictEqual({ quiet: ['stashes', 'local-only branches'], shown: [{ label: 'Branch', value: 'master' }] })
+  })
+})
+
+describe(describePush, () => {
+  it('says the age and the date of the last push', () => {
+    expect.hasAssertions()
+    expect(describePush('2026-09-14T10:00:00Z', new Date('2026-10-14T00:00:00Z'))).toBe('last push 1 month ago (2026-09-14)')
   })
 })

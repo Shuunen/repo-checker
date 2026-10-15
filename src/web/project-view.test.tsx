@@ -37,6 +37,7 @@ describe('project view', () => {
   it('opens from the name of a row, with its identity and findings', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(listEvents))
+    fireEvent.click(await screen.findByTestId('archived-toggle'))
     fireEvent.click(await screen.findByTestId('open-jozzo'))
     await screen.findByTestId('findings')
     expect(textOf('badges')).toBe('archived')
@@ -70,6 +71,22 @@ describe('project view', () => {
     expect(textOf('findings')).toContain('Nothing to report')
   })
 
+  it('counts the findings in the header and folds the empty facts of a clean clone', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest([...listEvents, { result: aProject('quiet'), type: 'project' }]), '/project/quiet')
+    await screen.findByTestId('facts-on-disk')
+    expect(textOf('finding-counts')).toBe('')
+    expect(textOf('quiet-on-disk')).toBe('cleanno unpushed commits, uncommitted files, stashes, local-only branches')
+    expect(screen.queryByTestId('fact-stashes')).toBeNull()
+  })
+
+  it('counts the findings by severity in the header', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest(listEvents), '/project/jozzo')
+    await screen.findByTestId('findings')
+    expect(textOf('finding-counts')).toMatch(/error|warning|info/u)
+  })
+
   it('opens on a project address, and finds the project once the scan has it', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(listEvents), '/project/jozzo')
@@ -94,7 +111,7 @@ describe('project view', () => {
     expect(globalThis.location.pathname).toBe('/')
   })
 
-  it('goes back to the list when a sidebar filter is picked', async () => {
+  it('goes back to the list when a filter tab is picked', async () => {
     expect.hasAssertions()
     renderApp(scanRequest(listEvents), '/project/jozzo')
     fireEvent.click(await screen.findByTestId('filter-forks'))
@@ -108,7 +125,7 @@ describe('project view', () => {
     await screen.findByTestId('findings')
     expect(globalThis.location.pathname).toBe('/project/jozzo')
     fireEvent.click(screen.getByTestId('back'))
-    await screen.findByTestId('row-jozzo')
+    await screen.findByTestId('archived-toggle')
     expect(globalThis.location.pathname).toBe('/')
   })
 

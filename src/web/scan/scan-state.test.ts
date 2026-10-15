@@ -1,5 +1,5 @@
 import { aFinding, aProject } from '../fixtures.ts'
-import { describeScan, initialScanState, reduceScan, replaceProject } from './scan-state.ts'
+import { describeScan, initialScanState, readTotal, reduceScan, replaceProject } from './scan-state.ts'
 
 describe(reduceScan, () => {
   it('builds the state event by event', () => {
@@ -9,7 +9,13 @@ describe(reduceScan, () => {
     const events = [{ target: '/projects', type: 'started' } as const, { line: 'checking 1 project', type: 'progress' } as const, { result: app, type: 'project' } as const, done]
     let state = initialScanState
     for (const event of events) state = reduceScan(state, event)
-    expect(state).toStrictEqual({ done, failure: undefined, progress: 'checking 1 project', projects: [app], target: '/projects' })
+    expect(state).toStrictEqual({ done, failure: undefined, progress: 'checking 1 project', projects: [app], target: '/projects', total: 1 })
+  })
+
+  it('keeps the known total when a progress line does not give one', () => {
+    expect.hasAssertions()
+    const state = reduceScan({ ...initialScanState, total: 3 }, { line: 'comparing 2 forks with their parent', type: 'progress' })
+    expect(state.total).toBe(3)
   })
 
   it('keeps the failure message', () => {
@@ -18,12 +24,30 @@ describe(reduceScan, () => {
   })
 })
 
-describe(describeScan, () => {
-  const started = { ...initialScanState, progress: 'checking 3 projects', target: '/projects' }
-
-  it('shows the progress while scanning', () => {
+describe(readTotal, () => {
+  it('reads the count of a checking line', () => {
     expect.hasAssertions()
-    expect(describeScan(started, true)).toBe('/projects · checking 3 projects')
+    expect(readTotal('checking 59 projects, each clone is fetched just before its check')).toBe(59)
+    expect(readTotal('checking 1 project')).toBe(1)
+  })
+
+  it('ignores the other lines', () => {
+    expect.hasAssertions()
+    expect(readTotal('comparing 2 forks with their parent')).toBeUndefined()
+  })
+})
+
+describe(describeScan, () => {
+  const started = { ...initialScanState, progress: 'checking 3 projects', target: '/projects', total: 3 }
+
+  it('shows how many projects are checked while scanning', () => {
+    expect.hasAssertions()
+    expect(describeScan({ ...started, projects: [aProject('app')] }, true)).toBe('/projects · checking 1 of 3 projects…')
+  })
+
+  it('shows the last progress line while the total is unknown', () => {
+    expect.hasAssertions()
+    expect(describeScan({ ...started, progress: 'reading the local clones', total: undefined }, true)).toBe('/projects · reading the local clones')
   })
 
   it('shows the owner and the duration once done', () => {

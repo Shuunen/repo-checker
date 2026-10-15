@@ -7,7 +7,7 @@ import { plural } from '../../shared/text.ts'
  * @param props.onSearch called with the text typed
  * @param props.search the text typed
  * @param props.shown how many projects the table lists
- * @param props.total how many projects the sidebar filter holds
+ * @param props.total how many projects the filter tab holds
  * @returns the toolbar
  */
 export function ListToolbar({ onSearch, search, shown, total }: Readonly<{ onSearch: (search: string) => void; search: string; shown: number; total: number }>) {

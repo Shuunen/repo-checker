@@ -1,8 +1,9 @@
 import type { ActionKind } from '../../shared/action.ts'
 import type { ForkStatus, LocalClone, Project } from '../../shared/project.ts'
-import type { ScanFinding } from '../../shared/scan-event.ts'
+import type { ScanFinding, Severity } from '../../shared/scan-event.ts'
 import { plural } from '../../shared/text.ts'
-import { type PillColor, severityRank } from './rows.ts'
+import { describeAge } from './age.ts'
+import { type PillColor, severityColor, severityRank } from './rows.ts'
 
 /** A small label under the project name */
 interface Badge {
@@ -26,6 +27,16 @@ interface FactGroup {
   facts: Fact[]
   /** The card title */
   title: string
+}
+
+/** How many findings of one severity a project has */
+interface FindingCount {
+  /** The chip color of the severity */
+  color: PillColor
+  /** Like `4 errors`, `1 warning` or `2 info` */
+  label: string
+  /** The severity, for tests */
+  severity: Severity
 }
 
 /** The findings of one origin, worst first */
@@ -219,4 +230,36 @@ export function unarchiveBlocker(local: Readonly<LocalClone>) {
   if (local.changedFiles.length > 0) return `The clone has ${plural(local.changedFiles.length, 'uncommitted file')}. This action only pushes and never creates a commit: commit or discard them by hand first.`
   if (local.stashes.length > 0) return `The clone has ${plural(local.stashes.length, 'stash')}. This action only pushes: apply or drop them by hand first.`
   return undefined
+}
+
+/**
+ * Count the findings by severity, the worst first, without the severities that have none
+ * @param findings the findings
+ * @returns one count per severity present
+ * @example findingCounts(findings)[0] // { color: 'danger', label: '4 errors', severity: 'error' }
+ */
+export function findingCounts(findings: readonly ScanFinding[]): FindingCount[] {
+  const severities: Severity[] = ['error', 'warning', 'info']
+  const counts = severities.map(severity => ({ count: findings.filter(finding => finding.severity === severity).length, severity }))
+  return counts.filter(item => item.count > 0).map(({ count, severity }) => ({ color: severityColor[severity], label: severity === 'info' ? `${count} info` : plural(count, severity), severity }))
+}
+
+/**
+ * Split facts into the ones worth reading and the names of the ones that are empty (`none`), so that an all clear clone does not list four empty rows
+ * @param facts the facts
+ * @returns the facts that say something, and the lowercase labels of the empty ones
+ * @example foldQuietFacts([{ label: 'Stashes', value: 'none' }]) // { quiet: ['stashes'], shown: [] }
+ */
+export function foldQuietFacts(facts: readonly Fact[]) {
+  return { quiet: facts.filter(fact => fact.value === 'none').map(fact => fact.label.toLowerCase()), shown: facts.filter(fact => fact.value !== 'none') }
+}
+
+/**
+ * Say when a project was last pushed, as an age and the date
+ * @param pushedAt the ISO date of the last push
+ * @param now the date to count from
+ * @returns like `last push 1 month ago (2026-09-14)`
+ */
+export function describePush(pushedAt: string, now = new Date()) {
+  return `last push ${describeAge(pushedAt, now).label} (${pushedAt.slice(0, 'yyyy-mm-dd'.length)})`
 }

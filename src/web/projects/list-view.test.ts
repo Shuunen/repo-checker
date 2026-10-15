@@ -5,7 +5,7 @@ const archived = aProject('old', [], { github: { ...aProject('old').project.gith
 const results = [aProject('broken', [aFinding({ severity: 'error' })]), aProject('meh', [aFinding()]), aProject('fine'), archived]
 
 describe(applyView, () => {
-  it('folds the archived projects with nothing to report in the initial view', () => {
+  it('folds the archived projects in the initial view', () => {
     expect.hasAssertions()
     expect(applyView(results, 'overview', initialListView).map(result => result.project.name)).toStrictEqual(['broken', 'meh', 'fine'])
   })
@@ -15,6 +15,13 @@ describe(applyView, () => {
     expect(applyView(results, 'overview', { ...initialListView, isArchivedShown: true })).toHaveLength(4)
     expect(applyView(results, 'archived', initialListView)).toHaveLength(4)
     expect(applyView(results, 'overview', { ...initialListView, bucket: 'quiet' }).map(result => result.project.name)).toStrictEqual(['fine', 'old'])
+  })
+
+  it('folds an archived project whatever its findings', () => {
+    expect.hasAssertions()
+    const github = { ...archived.project.github, isArchived: true } as never
+    const warned = aProject('warned', [aFinding({ actions: ['delete-clone'], severity: 'error' })], { github })
+    expect(applyView([warned], 'overview', initialListView)).toStrictEqual([])
   })
 
   it('keeps the projects of the picked bucket', () => {

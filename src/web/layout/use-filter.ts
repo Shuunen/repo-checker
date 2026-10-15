@@ -3,7 +3,7 @@ import { useLocation } from 'wouter'
 import type { FilterId } from '../projects/filters.ts'
 
 /**
- * The selected sidebar filter, and how to change it: picking a filter always goes back to the project list
+ * The selected filter tab, and how to change it: picking a filter always goes back to the project list
  * @returns the selected filter and the function that selects another one
  * @example const [filterId, selectFilter] = useFilter()
  */

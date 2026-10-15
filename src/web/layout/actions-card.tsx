@@ -20,7 +20,7 @@ export function ActionsCard({ findings, project, target }: Readonly<{ findings: 
     <Card data-testid="actions">
       <Card.Title>Actions</Card.Title>
       <Card.Description>Each action asks you to confirm first, and the server proves again that it is still right when you do.</Card.Description>
-      <span className="flex gap-2">
+      <span className="flex flex-wrap gap-2">
         {actions.map(action => (
           <ActionButton action={action} key={action} project={project} target={target} />
         ))}

@@ -12,7 +12,7 @@ const bucketColors: Readonly<Record<Bucket, string>> = { error: 'bg-danger', inf
  * @param props the props
  * @param props.active the selected bucket, none when undefined
  * @param props.onSelect called with the bucket clicked, or undefined when the selected one is clicked again
- * @param props.projects the projects of the sidebar filter
+ * @param props.projects the projects of the filter tab
  * @param props.tiles the facts about every project: at risk, not cloned, pristine forks
  * @returns the bar, or nothing before the first project
  */
