@@ -10,6 +10,8 @@ interface ReadmePatternOptions {
   id: string
   message: string
   pattern: RegExp
+  /** Skip the rule when the GitHub repo is private */
+  publicOnly?: boolean
   severity: Severity
 }
 
@@ -30,12 +32,13 @@ export function hasReadme({ readme }: Readonly<Context>) {
  * @param options.id the check id
  * @param options.message the message when it does not match
  * @param options.pattern the pattern, without the `g` flag
+ * @param options.publicOnly skip the rule when the GitHub repo is private
  * @param options.severity the severity
  * @returns the rule
  */
-export function requireInReadme({ fix, id, message, pattern, severity }: Readonly<ReadmePatternOptions>) {
+export function requireInReadme({ fix, id, message, pattern, publicOnly, severity }: Readonly<ReadmePatternOptions>) {
   return defineRule({
-    appliesTo: hasReadme,
+    appliesTo: context => hasReadme(context) && !(publicOnly === true && context.flags.isPrivate === true),
     check({ readme, report }) {
       invariant(readme !== undefined, 'appliesTo guarantees a README')
       if (pattern.test(readme.text)) return

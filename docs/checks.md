@@ -173,7 +173,7 @@ Linting, formatting, typing and architecture config files.
 - ✅ 🟡 `tsconfig-lib`: a non-empty `lib` compiler option (`ts-config.ts`).
 - ✅ 🔴 `tsconfig-no-wildcard-files`: no wildcard in the `files` section (`ts-config.ts`).
 - ✅ 🟡 `tsconfig-no-useless-glob`: no `my-folder/**/*` in `include`, `my-folder` is enough (`ts-config.ts`).
-- ✅ 🟡 `dependency-tool-choice`: use knip or dependency-cruiser. Skipped when the project uses knip (`dependency-cruiser.ts`).
+- ✅ 🟡 `dependency-tool-choice`: use knip or dependency-cruiser. Skipped when the project uses knip or has no package.json (`dependency-cruiser.ts`).
 - ✅ 🔴 `dependency-cruiser-config`: a `.dependency-cruiser.js` or `.dependency-cruiser.cjs` file exists, when the project uses dependency-cruiser (`dependency-cruiser.ts`).
 - ✅ 🔴 `tailwind-content`: the Tailwind config (`.js`, `.ts`, `.mjs` or `.cjs`) has a `content` option, like `content: ['./src/**/*.{vue,js,ts,jsx,tsx}']`, when the project uses Tailwind (`tailwind.ts`).
 
@@ -233,8 +233,8 @@ How the project introduces itself, on GitHub and in the repo.
 - ✅ 🟡 `package-repository`: a `repository` property, whose url starts with `git+https` (`package.file.ts`).
 - ✅ 🔴 `readme-exists`: a `README.md` or `readme.md` file exists (`readme.ts`).
 - ✅ 🔴 `readme-title`: the README starts with a title (`readme.ts`).
-- ✅ 🟡 `readme-logo`: a `![logo](...)` image (`readme.ts`).
-- ✅ 🟡 `readme-demo`: a `![demo](...)` image or gif (`readme.ts`).
+- ✅ 🟡 `readme-logo`: a `![logo](...)` image. Skipped for private repos (`readme.ts`).
+- ✅ 🟡 `readme-demo`: a `![demo](...)` image or gif. Skipped for private repos (`readme.ts`).
 - ✅ 🔴 `readme-no-netlify-com`: no link to the deprecated `*.netlify.com` (`readme.ts`).
 - ✅ 🔴 `readme-links-https`: no link without an `https` scheme (`readme.ts`).
 - ✅ 🔴 `readme-no-crlf`: no Windows CRLF line endings, use Unix LF (`readme.ts`).

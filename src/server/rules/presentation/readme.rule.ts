@@ -24,8 +24,8 @@ export const readmeExists = defineRule({
 
 export const readmeContentRules = [
   requireInReadme({ id: 'readme-title', message: 'the README does not start with a title, like "# My project"', pattern: /^#\s\w+/u, severity: 'error' }),
-  requireInReadme({ id: 'readme-logo', message: 'the README has no logo, like ![logo](folder/any-file.ext)', pattern: /!\[logo\]\(.*\.\w{3,4}\)/u, severity: 'warning' }),
-  requireInReadme({ id: 'readme-demo', message: 'the README has no demo image or gif, like ![demo](folder/any-file.ext)', pattern: /!\[demo\]\(.*\.\w{3,4}\)/u, severity: 'warning' }),
+  requireInReadme({ id: 'readme-logo', message: 'the README has no logo, like ![logo](folder/any-file.ext)', pattern: /!\[logo\]\(.*\.\w{3,4}\)/u, publicOnly: true, severity: 'warning' }),
+  requireInReadme({ id: 'readme-demo', message: 'the README has no demo image or gif, like ![demo](folder/any-file.ext)', pattern: /!\[demo\]\(.*\.\w{3,4}\)/u, publicOnly: true, severity: 'warning' }),
   forbidInReadme({ id: 'readme-no-netlify-com', message: 'the README links to the deprecated *.netlify.com, use *.netlify.app', pattern: /\.netlify\.com/u, severity: 'error' }),
   forbidInReadme({ id: 'readme-links-https', message: 'the README has a link without scheme, like //example.com, use https://', pattern: /[^:]\/\/[\w-]+\.\w+/u, severity: 'error' }),
   forbidInReadme({ fix: text => text.replaceAll('\r\n', '\n'), id: 'readme-no-crlf', message: 'the README has Windows CRLF line endings, use Unix LF', pattern: /\r/u, severity: 'error' }),

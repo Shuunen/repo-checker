@@ -33,8 +33,20 @@ testRule(byId('readme-title'), {
   valid: [{ files: readme('# app\n'), name: 'a title' }, { name: 'no README, readme-exists reports it' }],
 })
 
-testRule(byId('readme-logo'), { invalid: [{ errors: ['missing'], files: readme('# app'), name: 'no logo' }], valid: [{ files: readme('# app\n![logo](docs/logo.svg)'), name: 'a logo' }] })
-testRule(byId('readme-demo'), { invalid: [{ errors: ['missing'], files: readme('# app'), name: 'no demo' }], valid: [{ files: readme('# app\n![demo](docs/demo.gif)'), name: 'a demo' }] })
+testRule(byId('readme-logo'), {
+  invalid: [{ errors: ['missing'], files: readme('# app'), name: 'no logo' }],
+  valid: [
+    { files: readme('# app\n![logo](docs/logo.svg)'), name: 'a logo' },
+    { files: readme('# app'), flags: { isPrivate: true }, name: 'private repo' },
+  ],
+})
+testRule(byId('readme-demo'), {
+  invalid: [{ errors: ['missing'], files: readme('# app'), name: 'no demo' }],
+  valid: [
+    { files: readme('# app\n![demo](docs/demo.gif)'), name: 'a demo' },
+    { files: readme('# app'), flags: { isPrivate: true }, name: 'private repo' },
+  ],
+})
 testRule(byId('readme-no-netlify-com'), { invalid: [{ errors: ['found'], files: readme('see app.netlify.com'), name: 'netlify.com' }], valid: [{ files: readme('see app.netlify.app'), name: 'netlify.app' }] })
 testRule(byId('readme-links-https'), { invalid: [{ errors: ['found'], files: readme('see //example.com'), name: 'no scheme' }], valid: [{ files: readme('see https://example.com'), name: 'https' }] })
 
