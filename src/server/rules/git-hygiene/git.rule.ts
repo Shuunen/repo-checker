@@ -10,6 +10,6 @@ export const avoidMainBranch = defineRule({
 
 export const gitignoreRules = [
   requireFile({ content: 'node_modules\n', files: ['.gitignore'], id: 'gitignore-exists', message: 'no {{file}} file', severity: 'error' }),
-  requireInFile({ files: ['.gitignore'], fix: text => `${text.trimEnd()}\nnode_modules\n`, id: 'gitignore-node-modules', message: '{{file}} does not list node_modules', pattern: /node_modules/u, severity: 'warning' }),
+  requireInFile({ files: ['.gitignore'], fix: text => `${text.trimEnd()}\nnode_modules\n`, id: 'gitignore-node-modules', message: '{{file}} does not list node_modules', pattern: /node_modules/u, severity: 'warning', when: ({ pkg }) => pkg !== undefined }),
   forbidInFile({ files: ['.gitignore'], id: 'gitignore-keeps-pnpm-lock', message: '{{file}} excludes pnpm-lock.yaml, the lock file must be committed', pattern: /pnpm-lock\.yaml/u, severity: 'warning' }),
 ]

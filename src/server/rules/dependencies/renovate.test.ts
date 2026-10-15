@@ -16,7 +16,7 @@ function byId(id: string) {
 const good = { 'renovate.json': '{ "$schema": "https://docs.renovatebot.com/renovate-schema.json", "extends": ["config:semverAllMonthly", ":automergeAll"], "dependencyDashboard": false }' }
 
 testRule(byId('renovate-config-exists'), {
-  invalid: [{ errors: ['missing'], name: 'no renovate.json', output: '{\n  "$schema": "https://docs.renovatebot.com/renovate-schema.json",\n  "dependencyDashboard": false,\n  "extends": [\n    "config:semverAllMonthly",\n    ":automergeAll"\n  ]\n}\n' }],
+  invalid: [{ errors: ['missing'], name: 'no renovate.json', output: '{\n  "$schema": "https://docs.renovatebot.com/renovate-schema.json",\n  "dependencyDashboard": false,\n  "extends": [\n    "config:semverAllMonthly",\n    ":automergeAll"\n  ]\n}\n', pkg: {} }],
   valid: [{ files: good, name: 'a renovate.json' }],
 })
 testRule(byId('renovate-schema'), { invalid: [{ errors: ['missing'], files: { 'renovate.json': '{}' }, name: 'no schema', output: '{\n  "$schema": "https://docs.renovatebot.com/renovate-schema.json"\n}' }], valid: [{ files: good, name: 'the schema' }] })

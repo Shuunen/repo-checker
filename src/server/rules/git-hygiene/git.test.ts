@@ -19,5 +19,11 @@ testRule(avoidMainBranch, {
 })
 
 testRule(byId('gitignore-exists'), { invalid: [{ errors: ['missing'], name: 'no .gitignore', output: 'node_modules\n' }], valid: [{ files: { '.gitignore': 'node_modules' }, name: 'a .gitignore' }] })
-testRule(byId('gitignore-node-modules'), { invalid: [{ errors: ['missing'], files: { '.gitignore': 'dist' }, name: 'no node_modules', output: 'dist\nnode_modules\n' }], valid: [{ files: { '.gitignore': 'node_modules\ndist' }, name: 'node_modules' }] })
+testRule(byId('gitignore-node-modules'), {
+  invalid: [{ errors: ['missing'], files: { '.gitignore': 'dist' }, name: 'no node_modules', output: 'dist\nnode_modules\n', pkg: {} }],
+  valid: [
+    { files: { '.gitignore': 'node_modules\ndist' }, name: 'node_modules' },
+    { files: { '.gitignore': 'dist' }, name: 'no package.json, nothing to ignore' },
+  ],
+})
 testRule(byId('gitignore-keeps-pnpm-lock'), { invalid: [{ errors: ['found'], files: { '.gitignore': 'pnpm-lock.yaml' }, name: 'the lock excluded' }], valid: [{ files: { '.gitignore': 'node_modules' }, name: 'the lock kept' }] })
