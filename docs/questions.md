@@ -84,7 +84,7 @@ Questions, findings left without a fixer on purpose:
 9. **Schema fixers**: not applied to the real clones, you apply them from the dashboard.
 10. **GitHub-side**: description and homepage become actions that copy from `package.json`. Topics stay manual.
 11. **Projects with no JS**: detect them automatically (no `package.json` and no JS/TS files) and skip the Node checks.
-12. **Tool installation**, as a new action with a preview and a confirmation, running `pnpm install`:
+12. **Tool installation** is part of the file fix, not a separate action: when a fix adds a dependency, `pnpm install` runs automatically right after the fix is applied, with no extra step for the user:
     - a. `dependency-tool-choice`: install `knip`, add a `lint:knip` script, no config file.
     - b. `unit-testing-dependency`: install `vitest`, add `"test": "vitest --run && echo test success"`, without `--passWithNoTests`.
     - c. `coverage-dependency`: install `@vitest/coverage-v8`, add `--coverage` to the `test` script and set this repo's 100% threshold in the vitest config. Expect `test` to fail at once on a project with few tests.
