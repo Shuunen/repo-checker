@@ -87,4 +87,4 @@ Questions, findings left without a fixer on purpose:
 12. **Tool installation**, as a new action with a preview and a confirmation, running `pnpm install`:
     - a. `dependency-tool-choice`: install `knip`, add a `lint:knip` script, no config file.
     - b. `unit-testing-dependency`: install `vitest`, add `"test": "vitest --run && echo test success"`, without `--passWithNoTests`.
-    - c. `coverage-dependency`: install `c8` (the tool-agnostic one).
+    - c. `coverage-dependency`: install `@vitest/coverage-v8`, add `--coverage` to the `test` script and set this repo's 100% threshold in the vitest config. Expect `test` to fail at once on a project with few tests.
