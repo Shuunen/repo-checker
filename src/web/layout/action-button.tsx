@@ -6,6 +6,7 @@ import { CloneButton } from './clone-button.tsx'
 import { DeleteCloneButton } from './delete-clone-button.tsx'
 import { DeleteForkButton } from './delete-fork-button.tsx'
 import { DiscardButton } from './discard-button.tsx'
+import { SyncGithubMetadataButton } from './sync-github-metadata-button.tsx'
 import { UnarchivePushButton } from './unarchive-push-button.tsx'
 
 /** What every button needs to open its confirmation */
@@ -23,6 +24,7 @@ const buttons: Readonly<Record<ActionKind, (props: Readonly<ButtonProps>) => Rea
   'delete-clone': ({ project }) => <DeleteCloneButton project={project} />,
   'delete-fork': ({ project }) => <DeleteForkButton project={project} />,
   discard: ({ project }) => <DiscardButton project={project} />,
+  'sync-github-metadata': ({ project }) => <SyncGithubMetadataButton project={project} />,
   'unarchive-push-rearchive': ({ project }) => <UnarchivePushButton project={project} />,
 }
 

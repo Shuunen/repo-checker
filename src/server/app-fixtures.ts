@@ -16,6 +16,7 @@ export const worksFine: Actions = {
   previewDiscard: () => Promise.resolve({ fingerprint: 'abc', groups: [{ items: ['master: fix'], title: 'Unpushed commits' }], ok: true, path: '/projects/old' }),
   previewFixFiles: () => Promise.resolve({ blocked: [], fingerprint: 'abc', installs: [], ok: true, path: '/projects/app', plans: [{ after: 'b', before: 'a', file: 'package.json' }] }),
   rescan: () => Promise.resolve({ ok: true, project: undefined, target: '/projects' }),
+  syncGithubMetadata: () => Promise.resolve({ message: 'synced', ok: true }),
   unarchive: () => Promise.resolve({ message: 'unarchived', ok: true }),
   unarchivePush: () => Promise.resolve({ message: 'pushed', ok: true }),
 }

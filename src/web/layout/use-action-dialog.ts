@@ -11,7 +11,7 @@ import { refreshProject } from '../scan/refresh-project.ts'
  * @returns what the button and the dialog need
  * @example const dialog = useActionDialog('finga', 'clone')
  */
-export function useActionDialog(name: string, action: 'archive' | 'checkout-default' | 'clone' | 'unarchive' | 'unarchive-push') {
+export function useActionDialog(name: string, action: 'archive' | 'checkout-default' | 'clone' | 'sync-github-metadata' | 'unarchive' | 'unarchive-push') {
   const [isOpen, setIsOpen] = useState(false)
   const client = useQueryClient()
   const run = useMutation({

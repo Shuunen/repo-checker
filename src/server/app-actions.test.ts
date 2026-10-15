@@ -264,6 +264,16 @@ describe('checkout default', () => {
   })
 })
 
+describe('sync github metadata', () => {
+  it('copies the description and the homepage and answers the result', async () => {
+    expect.hasAssertions()
+    const syncGithubMetadata = vi.fn<Actions['syncGithubMetadata']>(() => Promise.resolve({ message: 'set the description of owner/lib on GitHub', ok: true }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, syncGithubMetadata }).request('http://127.0.0.1/api/projects/lib/sync-github-metadata', { headers: { 'x-repo-check': '1' }, method: 'POST' })
+    expect(response.status).toBe(200)
+    expect(syncGithubMetadata).toHaveBeenCalledWith('lib')
+  })
+})
+
 describe('delete project', () => {
   const post = { headers: { 'x-repo-check': '1' }, method: 'POST' }
 

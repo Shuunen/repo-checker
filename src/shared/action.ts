@@ -14,6 +14,8 @@ export type ActionKind =
   | 'delete-clone'
   /** Delete a pristine fork on GitHub, and its clean local clone if any */
   | 'delete-fork'
+  /** Copy the description and the homepage of package.json to the repo on GitHub, for the fields it has none */
+  | 'sync-github-metadata'
   /** Reset an archived repo's clone to the remote state, dropping every unsaved item */
   | 'discard'
   /** Unarchive the repo, push the unsaved commits and branches, archive it again */

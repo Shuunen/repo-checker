@@ -17,7 +17,7 @@ testProjectRule(missingLicense, {
 })
 
 testProjectRule(missingDescription, {
-  invalid: [{ errors: ['missing'], github: { description: undefined }, name: 'no description' }],
+  invalid: [{ actions: [['sync-github-metadata']], errors: ['missing'], github: { description: undefined }, name: 'no description' }],
   valid: [{ github: {}, name: 'a description' }, ...notChecked({ description: undefined })],
 })
 
@@ -27,6 +27,6 @@ testProjectRule(missingTopics, {
 })
 
 testProjectRule(missingHomepage, {
-  invalid: [{ errors: ['missing'], github: { homepage: undefined }, name: 'no homepage' }],
+  invalid: [{ actions: [['sync-github-metadata']], errors: ['missing'], github: { homepage: undefined }, name: 'no homepage' }],
   valid: [{ github: {}, name: 'a homepage' }, ...notChecked({ homepage: undefined })],
 })

@@ -29,6 +29,8 @@ export interface Actions {
   previewFixFiles: (name: string) => Promise<FixPreview>
   /** Say what discarding would throw away, with the fingerprint of that list */
   previewDiscard: (name: string) => Promise<DiscardPreview>
+  /** Copy the description and the homepage of package.json to the repo on GitHub, only for what GitHub has none */
+  syncGithubMetadata: (name: string) => Promise<ActionResult>
   /** Scan one project again, after an action changed it, so the page does not scan everything again */
   rescan: (name: string) => Promise<RescanResult>
   /** Unarchive the repo on GitHub, after proving again that it is there and archived */
