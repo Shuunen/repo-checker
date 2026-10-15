@@ -3,10 +3,10 @@ import { requireFile, requireInFile } from '../../engine/file-rules.ts'
 import { usesKnip, usesTailwind } from './code-tooling.utils.ts'
 
 export const dependencyToolChoice = defineRule({
-  appliesTo: context => !usesKnip(context),
-  check({ flags, pkg, report }) {
+  appliesTo: context => context.pkg !== undefined && !usesKnip(context),
+  check({ flags, report }) {
     if (flags.isUsingDependencyCruiser === true) return
-    report(pkg === undefined ? { messageId: 'missing' } : { fix: fixer => fixer.json('package.json').update(['scripts', 'lint:knip'], current => current ?? 'knip && echo lint:knip success'), installs: ['knip'], messageId: 'missing' })
+    report({ fix: fixer => fixer.json('package.json').update(['scripts', 'lint:knip'], current => current ?? 'knip && echo lint:knip success'), installs: ['knip'], messageId: 'missing' })
   },
   meta: { fixable: true, id: 'dependency-tool-choice', messages: { missing: 'no tool checks the dependencies, use knip (https://knip.dev) or dependency-cruiser' }, severity: 'warning' },
 })
