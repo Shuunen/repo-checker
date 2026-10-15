@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import path from 'node:path'
-import type { FixPlan } from '../../shared/action.ts'
+import type { FixPlan, FixStage } from '../../shared/action.ts'
 import type { LocalClone } from '../../shared/project.ts'
 import type { SplitRules } from '../check-project.ts'
 import { diskIo, type Io } from '../engine/io.ts'
@@ -16,8 +16,12 @@ export interface FixOptions extends ActionOptions {
 
 /** What fixing needs, with the fingerprint of the plan the user confirmed */
 export interface ApplyOptions extends FixOptions {
+  /** True to commit the written files and push them once the fixes are applied */
+  commit?: boolean
   /** The fingerprint of the plan shown in the dialog */
   fingerprint: string
+  /** Called when the fix enters a step, for the dialog to say what is going on */
+  onStage?: ((stage: FixStage) => void) | undefined
 }
 
 /** The plan of a project: what can be written, what is blocked, and where */
@@ -50,7 +54,7 @@ const statusPrefix = 3
  * @param lines the lines
  * @returns the paths, relative to the clone
  */
-function changedPaths(lines: readonly string[]) {
+export function changedPaths(lines: readonly string[]) {
   return new Set(
     lines.map(line => {
       const text = line.slice(statusPrefix)

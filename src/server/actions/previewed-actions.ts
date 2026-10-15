@@ -23,7 +23,7 @@ export function createPreviewedActions(options: (name: string) => Promise<Action
     deleteFork: async name => deleteFork(await options(name)),
     deleteProject: async name => deleteProject(await options(name)),
     discard: async (name, fingerprint) => discardClone({ ...(await options(name)), fingerprint }),
-    fixFiles: async (name, fingerprint) => fixFiles({ ...(await options(name)), fingerprint, rules }),
+    fixFiles: async (name, fingerprint, run = {}) => fixFiles({ ...(await options(name)), ...run, fingerprint, rules }),
     previewDeleteClone: async name => previewDeleteClone(await options(name)),
     previewDeleteFork: async name => previewDeleteFork(await options(name)),
     previewDeleteProject: async name => previewDeleteProject(await options(name)),

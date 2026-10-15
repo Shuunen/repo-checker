@@ -1,5 +1,13 @@
-import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, ForkDeletePreview, ProjectDeletePreview } from '../../shared/action.ts'
+import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, FixStage, ForkDeletePreview, ProjectDeletePreview } from '../../shared/action.ts'
 import type { RescanResult } from '../../shared/scan-event.ts'
+
+/** How the file fixes run */
+interface FixRun {
+  /** True to commit and push the written files once the check of the project passes */
+  commit?: boolean
+  /** Called when the fix enters a step */
+  onStage?: ((stage: FixStage) => void) | undefined
+}
 
 /** The actions the page can ask for, each one proves again that it is still safe before it acts */
 export interface Actions {
@@ -19,8 +27,8 @@ export interface Actions {
   deleteProject: (name: string) => Promise<ActionResult>
   /** Say what deleting the project would remove, the unsaved work of its clone included */
   previewDeleteProject: (name: string) => Promise<ProjectDeletePreview>
-  /** Write the file fixes the checks plan, refused unless the plan is the one the fingerprint stands for, and never over a file with uncommitted changes */
-  fixFiles: (name: string, fingerprint: string) => Promise<ActionResult>
+  /** Write the file fixes the checks plan, refused unless the plan is the one the fingerprint stands for, and never over a file with uncommitted changes. The written files are committed and pushed when asked */
+  fixFiles: (name: string, fingerprint: string, run?: FixRun) => Promise<ActionResult>
   /** Throw away the unsaved work of an archived repo's clone, refused unless it is exactly the work the fingerprint stands for */
   discard: (name: string, fingerprint: string) => Promise<ActionResult>
   /** Say what deleting the fork would remove, after proving it is pristine */

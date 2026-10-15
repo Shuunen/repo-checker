@@ -45,7 +45,9 @@ describe('installs', () => {
     expect(preview).toMatchObject({ installs: ['knip'], ok: true })
     invariant(preview.ok, 'the preview is fine')
     const install = vi.fn<Installer>(() => Promise.resolve(fine))
-    const result = await fixFiles({ ...options, fingerprint: preview.fingerprint, install })
+    const stages: string[] = []
+    const result = await fixFiles({ ...options, fingerprint: preview.fingerprint, install, onStage: stage => stages.push(stage) })
+    expect(stages).toStrictEqual(['writing', 'installing'])
     expect(result).toMatchObject({ message: expect.stringContaining('fixed 1 file (a.txt), installed knip'), ok: true })
     expect(install).toHaveBeenCalledWith(folder, ['knip'])
     await expect(readFile(path.join(folder, 'a.txt'), 'utf8')).resolves.toBe('tooled a')

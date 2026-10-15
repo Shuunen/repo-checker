@@ -1,4 +1,5 @@
 import { type Context, Hono } from 'hono'
+import type { ActionResult, FixStage } from '../shared/action.ts'
 import type { Actions } from './actions/actions-contract.ts'
 
 /** The HTTP status of an action that worked */
@@ -16,6 +17,23 @@ const conflict = 409
  */
 function reply(context: Context, result: Readonly<{ ok: boolean }>) {
   return context.json(result, result.ok ? succeeded : conflict)
+}
+
+/**
+ * Answer an action as a stream of JSON lines: a `{ stage }` line each time it enters a step, then a `{ result }` line, so the page can say what is going on while it runs. The HTTP status is always 200, `result.ok` tells if it worked
+ * @param run the action, given what to call when it enters a step
+ * @returns the streamed response
+ */
+function stream(run: (onStage: (stage: FixStage) => void) => Promise<ActionResult>) {
+  const encoder = new TextEncoder()
+  const body = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const send = (line: object) => controller.enqueue(encoder.encode(`${JSON.stringify(line)}\n`))
+      send({ result: await run(stage => send({ stage })) })
+      controller.close()
+    },
+  })
+  return new Response(body, { headers: { 'content-type': 'application/x-ndjson' } })
 }
 
 /**
@@ -40,7 +58,11 @@ export function actionRoutes(actions: Actions) {
     .post('/api/projects/:name/delete-project', async context => reply(context, await actions.deleteProject(context.req.param('name'))))
     .get('/api/projects/:name/rescan', async context => reply(context, await actions.rescan(context.req.param('name'))))
     .get('/api/projects/:name/fix-files', async context => reply(context, await actions.previewFixFiles(context.req.param('name'))))
-    .post('/api/projects/:name/fix-files', async context => reply(context, await actions.fixFiles(context.req.param('name'), context.req.query('fingerprint') ?? '')))
+    .post('/api/projects/:name/fix-files', async context => {
+      const [name, fingerprint] = [context.req.param('name'), context.req.query('fingerprint') ?? '']
+      if (context.req.query('commit') !== 'true') return reply(context, await actions.fixFiles(name, fingerprint))
+      return stream(onStage => actions.fixFiles(name, fingerprint, { commit: true, onStage }))
+    })
     .get('/api/projects/:name/discard', async context => reply(context, await actions.previewDiscard(context.req.param('name'))))
     .post('/api/projects/:name/discard', async context => reply(context, await actions.discard(context.req.param('name'), context.req.query('fingerprint') ?? '')))
 }

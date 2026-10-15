@@ -1,6 +1,7 @@
 import { readClone, readClones } from '../inventory/git.ts'
 import type { GhRunner } from '../inventory/github.ts'
 import { run } from '../inventory/shell.ts'
+import type { Checker } from './check-script.ts'
 import type { Installer } from './install.ts'
 
 /** How the clones are read, replaced by fakes in tests */
@@ -13,6 +14,8 @@ export interface GitReaders {
 
 /** What an action on a project needs */
 export interface ActionOptions {
+  /** Runs the `check` script of a project before its fixes are committed, the real one when omitted */
+  check?: Checker
   /** Runs gh */
   gh: GhRunner
   /** How the clones are read, the real git in the server, a fake in tests */

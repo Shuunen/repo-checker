@@ -7,6 +7,8 @@ interface ConfirmDialogProps {
   canConfirm: boolean
   /** What the dialog says: what will happen, why it is refused, what failed */
   children: ReactNode
+  /** What sits at the start of the footer, next to the buttons, like an option of the action */
+  footerStart?: ReactNode
   /** The label of the confirm button */
   confirmLabel: string
   /** The question the dialog asks */
@@ -35,6 +37,7 @@ interface ConfirmDialogProps {
  * @param props.canConfirm false keeps the confirm button disabled
  * @param props.children what the dialog says
  * @param props.confirmLabel the label of the confirm button
+ * @param props.footerStart what sits at the start of the footer
  * @param props.heading the question the dialog asks
  * @param props.isDanger true for an action that destroys something
  * @param props.isWide true for a dialog that shows a lot, like a diff
@@ -46,7 +49,7 @@ interface ConfirmDialogProps {
  * @param props.prefix the start of the test ids
  * @returns the dialog
  */
-export function ConfirmDialog({ canConfirm, children, confirmLabel, heading, isDanger, isOpen, isWide, isPending, onCancel, onConfirm, onOpenChange, prefix }: Readonly<ConfirmDialogProps>) {
+export function ConfirmDialog({ canConfirm, children, confirmLabel, footerStart, heading, isDanger, isOpen, isWide, isPending, onCancel, onConfirm, onOpenChange, prefix }: Readonly<ConfirmDialogProps>) {
   return (
     <AlertDialog isOpen={isOpen} onOpenChange={onOpenChange}>
       <AlertDialog.Backdrop>
@@ -59,6 +62,7 @@ export function ConfirmDialog({ canConfirm, children, confirmLabel, heading, isD
               {children}
             </AlertDialog.Body>
             <AlertDialog.Footer>
+              {footerStart !== undefined && <div className="mr-auto">{footerStart}</div>}
               <Button data-testid={`${prefix}-cancel`} isDisabled={isPending} onPress={onCancel} variant="tertiary">
                 Cancel
               </Button>

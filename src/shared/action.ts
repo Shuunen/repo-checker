@@ -27,8 +27,11 @@ type StandaloneAction = 'archive' | 'delete-project' | 'unarchive'
 /** Everything the Actions menu of a project can hold */
 export type ProjectAction = ActionKind | StandaloneAction
 
-/** What running an action gives: it worked, or it was refused or failed with the reason to show */
-export type ActionResult = { message: string; ok: true } | { ok: false; reason: string }
+/** The steps of applying the file fixes the dialog can show: the files are written, the dependencies installed, the check of the project runs, the commit is prepared, then pushed */
+export type FixStage = 'checking' | 'committing' | 'installing' | 'pushing' | 'writing'
+
+/** What running an action gives: it worked, or it was refused or failed with the reason to show. `commitBlocked` is set when the files were fixed but the automatic commit was prevented, with the output of the failing check */
+export type ActionResult = { commitBlocked?: string; message: string; ok: true } | { ok: false; reason: string }
 
 /** What a delete of a local clone would remove, shown before it is confirmed: the files git ignores are lost for good, everything else is on GitHub */
 export type DeletePreview = { ignoredFiles: string[]; ok: true; path: string } | { ok: false; reason: string }
