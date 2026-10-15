@@ -42,7 +42,7 @@ interface CheckProjectsOptions {
  */
 function failedResult(project: Readonly<Project>, error: unknown): ProjectResult {
   const message = error instanceof Error ? error.message : String(error)
-  return { findings: [{ actions: [], edits: [], message: `the checks of this project failed: ${message}`, messageId: 'failed', ruleId: 'checks-failed', scope: 'project', severity: 'error' }], outcomes: [], project }
+  return { findings: [{ actions: [], edits: [], installs: [], message: `the checks of this project failed: ${message}`, messageId: 'failed', ruleId: 'checks-failed', scope: 'project', severity: 'error' }], outcomes: [], project }
 }
 
 /** Gets a project ready to be checked, a fork gets its comparison with the parent */

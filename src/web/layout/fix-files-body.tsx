@@ -33,6 +33,7 @@ export function FixFilesBody({ error, isLoading, preview, previewError }: Readon
       {preview.plans.map(plan => (
         <FileDiff after={plan.after} before={plan.before} file={plan.file} key={plan.file} />
       ))}
+      {preview.installs.length > 0 && <p data-testid="fix-installs">{`Then installs ${preview.installs.join(', ')} with the package manager of the project.`}</p>}
       {preview.blocked.map(item => (
         <p data-testid={`fix-blocked-${item.file}`} key={item.file}>{`${item.file} is left alone, ${item.reason}.`}</p>
       ))}

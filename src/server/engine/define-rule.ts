@@ -16,6 +16,8 @@ export interface Report<MessageId extends string> {
   data?: Record<string, number | string>
   /** Describe the fix with the given fixer, nothing is written here: the runner decides if and when the edits are applied. Only allowed when `meta.fixable` is true */
   fix?: (fixer: Fixer) => Edit | Edit[]
+  /** The dev dependencies the fix needs installed, like `['knip']`, installed with the package manager of the project after the files are written. Only with a `fix` */
+  installs?: string[]
   /** Which message of `meta.messages` to show */
   messageId: MessageId
 }
@@ -63,6 +65,8 @@ export interface Finding {
   actions: ActionKind[]
   /** The edits of the fix, empty when the rule gave no fix or is a project rule */
   edits: Edit[]
+  /** The dev dependencies the fix installs after the edits are written, empty for most findings */
+  installs: string[]
   /** The final message, placeholders filled */
   message: string
   /** The message id the rule reported, stable for tests and for the UI */

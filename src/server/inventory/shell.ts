@@ -1,7 +1,7 @@
 import { execFile } from 'node:child_process'
 
 /** The only binaries the tool runs */
-export type Binary = 'gh' | 'git'
+export type Binary = 'bun' | 'gh' | 'git' | 'pnpm'
 
 /** The outcome of one command */
 export interface ShellResult {

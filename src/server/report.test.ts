@@ -12,7 +12,7 @@ const options = { durationMs: 1234, hasColors: false, isVerbose: false, owner: '
  * @returns the finding
  */
 function finding(ruleId: string, severity: Severity): Finding {
-  return { actions: [], edits: [], message: `${ruleId} message`, messageId: 'found', ruleId, scope: 'file', severity }
+  return { actions: [], edits: [], installs: [], message: `${ruleId} message`, messageId: 'found', ruleId, scope: 'file', severity }
 }
 
 /**

@@ -29,6 +29,8 @@ export interface Plan {
   clone: LocalClone
   /** The files the fixes change and that can be written */
   fixable: FixPlan[]
+  /** The dev dependencies to install once the files are written, only those of fixes whose files can all be written */
+  installs: string[]
   /** The files of the clone */
   io: Io
   /** The flags that do not come from the files: the git user, the Node LTS and what GitHub says of the repo */
@@ -90,16 +92,18 @@ export async function planOf(options: Readonly<FixOptions>): Promise<Plan | { re
   const plans = await planFixes(findings, io)
   if (plans.length === 0) return { reason: `no file of ${options.owner}/${options.name} has a fix to apply` }
   const changed = changedPaths(found.clone.changedFiles)
-  return { blocked: plans.filter(plan => changed.has(plan.file)).map(plan => ({ file: plan.file, reason: blockedReason })), clone: found.clone, fixable: plans.filter(plan => !changed.has(plan.file)), flags, io }
+  const installs = findings.filter(finding => finding.edits.every(edit => !changed.has(edit.file))).flatMap(finding => finding.installs)
+  return { blocked: plans.filter(plan => changed.has(plan.file)).map(plan => ({ file: plan.file, reason: blockedReason })), clone: found.clone, fixable: plans.filter(plan => !changed.has(plan.file)), flags, installs: [...new Set(installs)].toSorted(), io }
 }
 
 /**
  * Fingerprint a plan, so the fix can be refused when it is not the plan the user saw
  * @param plans the files and their new content
+ * @param installs the dev dependencies to install
  * @returns a hash of the plan
  */
-export function fingerprintOf(plans: readonly FixPlan[]) {
+export function fingerprintOf(plans: readonly FixPlan[], installs: readonly string[]) {
   return createHash('sha256')
-    .update(JSON.stringify(plans.map(plan => [plan.file, plan.before, plan.after])))
+    .update(JSON.stringify([plans.map(plan => [plan.file, plan.before, plan.after]), installs]))
     .digest('hex')
 }

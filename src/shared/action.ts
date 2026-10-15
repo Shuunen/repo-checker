@@ -50,5 +50,5 @@ export interface FixPlan {
   file: string
 }
 
-/** What applying the file fixes of a project would change, read fresh when the dialog opens: the fingerprint of that plan is sent back with the confirmation, and the fix is refused when the plan is not the same any more. A file with uncommitted changes is never rewritten, it is listed in `blocked` */
-export type FixPreview = { blocked: { file: string; reason: string }[]; fingerprint: string; ok: true; path: string; plans: FixPlan[] } | { ok: false; reason: string }
+/** What applying the file fixes of a project would change, read fresh when the dialog opens: the fingerprint of that plan is sent back with the confirmation, and the fix is refused when the plan is not the same any more. A file with uncommitted changes is never rewritten, it is listed in `blocked`. `installs` are the dev dependencies installed with the package manager of the project once the files are written */
+export type FixPreview = { blocked: { file: string; reason: string }[]; fingerprint: string; installs: string[]; ok: true; path: string; plans: FixPlan[] } | { ok: false; reason: string }

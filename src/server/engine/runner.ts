@@ -60,7 +60,7 @@ function toFinding(rule: Readonly<Rule>, report: Readonly<Report<string>>): Find
   const { fixable = false, id, severity } = rule.meta
   if (report.fix !== undefined && !fixable) throw new Error(`rule ${id} reported a fix but its meta.fixable is not true`)
   const edits = report.fix === undefined ? [] : [report.fix(fixer)].flat()
-  return { actions: [], edits, message: formatMessage(messageTemplate(rule.meta, report.messageId), report.data), messageId: report.messageId, ruleId: id, scope: 'file', severity }
+  return { actions: [], edits, installs: report.fix === undefined ? [] : (report.installs ?? []), message: formatMessage(messageTemplate(rule.meta, report.messageId), report.data), messageId: report.messageId, ruleId: id, scope: 'file', severity }
 }
 
 /**
@@ -72,7 +72,7 @@ function toFinding(rule: Readonly<Rule>, report: Readonly<Report<string>>): Find
  */
 function toProjectFinding(rule: Readonly<ProjectRule>, report: Readonly<ProjectReport<string>>): Finding {
   const { id, severity } = rule.meta
-  return { actions: report.actions ?? [], edits: [], message: formatMessage(messageTemplate(rule.meta, report.messageId), report.data), messageId: report.messageId, ruleId: id, scope: 'project', severity }
+  return { actions: report.actions ?? [], edits: [], installs: [], message: formatMessage(messageTemplate(rule.meta, report.messageId), report.data), messageId: report.messageId, ruleId: id, scope: 'project', severity }
 }
 
 /** What running rules on one project gives */

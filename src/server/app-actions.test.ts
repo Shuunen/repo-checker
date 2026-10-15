@@ -224,7 +224,7 @@ describe('fix files', () => {
     expect.hasAssertions()
     const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/app/fix-files')
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toStrictEqual({ blocked: [], fingerprint: 'abc', ok: true, path: '/projects/app', plans: [{ after: 'b', before: 'a', file: 'package.json' }] })
+    await expect(response.json()).resolves.toStrictEqual({ blocked: [], fingerprint: 'abc', installs: [], ok: true, path: '/projects/app', plans: [{ after: 'b', before: 'a', file: 'package.json' }] })
   })
 
   it('answers 409 with the reason when there is nothing to fix', async () => {

@@ -32,8 +32,10 @@ interface ValidCase {
 interface InvalidCase extends ValidCase {
   /** The expected message ids, in report order */
   errors: string[]
-  /** The file expected after every fix is applied: a package.json, or the raw text of another file. Leave it out when the rule cannot fix. When set, nothing must be reported after the fix */
-  output?: PackageJson | string
+  /** The dev dependencies the fix is expected to install, none when left out. The tester does not install them, so the findings that need them are still reported after the fix */
+  installs?: string[]
+  /** The file expected after every fix is applied: a package.json, or the raw text of another file, or a list of them when the fix writes several files. Leave it out when the rule cannot fix. When set, nothing must be reported after the fix */
+  output?: (PackageJson | string)[] | PackageJson | string
 }
 
 /**
@@ -78,19 +80,20 @@ async function runInvalid(rule: Readonly<Rule>, testCase: Readonly<InvalidCase>)
   const io = memoryIo(toFiles(testCase))
   const { findings } = await checkProject([rule], await buildContext(io, testCase.flags))
   const fixed = await fixProject({ confirm: () => Promise.resolve(true), flags: testCase.flags, io, rules: [rule] })
-  return { errors: findings.map(finding => finding.messageId), outputs: fixed.applied.map(plan => plan.after), remaining: fixed.findings.length }
+  return { errors: findings.map(finding => finding.messageId), installs: findings.flatMap(finding => finding.installs), outputs: fixed.applied.map(plan => plan.after), remaining: fixed.findings.length }
 }
 
 /**
  * What `runInvalid` should give: the errors, the fixed package.json and nothing left once fixed, or no fix and every error left
  * @param testCase the case
  * @param testCase.errors the expected message ids
+ * @param testCase.installs the expected dev dependencies to install
  * @param testCase.output the expected package.json or file text once fixed
  * @returns the expected result
  */
-function expectedInvalid({ errors, output }: Readonly<InvalidCase>) {
-  const outputs = output === undefined ? [] : [typeof output === 'string' ? output : toJsonText(output)]
-  return { errors, outputs, remaining: output === undefined ? errors.length : 0 }
+function expectedInvalid({ errors, installs = [], output }: Readonly<InvalidCase>) {
+  const outputs = [output ?? []].flat().map(item => (typeof item === 'string' ? item : toJsonText(item)))
+  return { errors, installs, outputs, remaining: output === undefined || installs.length > 0 ? errors.length : 0 }
 }
 
 /**

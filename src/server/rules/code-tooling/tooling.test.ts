@@ -16,7 +16,10 @@ function byId(id: string) {
 const cruiser = { devDependencies: { 'dependency-cruiser': '^17.0.0' } }
 
 testRule(dependencyToolChoice, {
-  invalid: [{ errors: ['missing'], name: 'neither knip nor dependency-cruiser', pkg: { name: 'app' } }],
+  invalid: [
+    { errors: ['missing'], installs: ['knip'], name: 'neither knip nor dependency-cruiser, knip is installed', output: { name: 'app', scripts: { 'lint:knip': 'knip && echo lint:knip success' } }, pkg: { name: 'app' } },
+    { errors: ['missing'], files: { 'a.ts': 'export {}' }, name: 'no package.json, not fixed' },
+  ],
   valid: [
     { name: 'knip', pkg: { devDependencies: { knip: '^5.0.0' } } },
     { name: 'dependency-cruiser', pkg: cruiser },

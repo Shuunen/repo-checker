@@ -4,10 +4,11 @@ import { usesKnip, usesTailwind } from './code-tooling.utils.ts'
 
 export const dependencyToolChoice = defineRule({
   appliesTo: context => !usesKnip(context),
-  check({ flags, report }) {
-    if (flags.isUsingDependencyCruiser !== true) report({ messageId: 'missing' })
+  check({ flags, pkg, report }) {
+    if (flags.isUsingDependencyCruiser === true) return
+    report(pkg === undefined ? { messageId: 'missing' } : { fix: fixer => fixer.json('package.json').update(['scripts', 'lint:knip'], current => current ?? 'knip && echo lint:knip success'), installs: ['knip'], messageId: 'missing' })
   },
-  meta: { id: 'dependency-tool-choice', messages: { missing: 'no tool checks the dependencies, use knip (https://knip.dev) or dependency-cruiser' }, severity: 'warning' },
+  meta: { fixable: true, id: 'dependency-tool-choice', messages: { missing: 'no tool checks the dependencies, use knip (https://knip.dev) or dependency-cruiser' }, severity: 'warning' },
 })
 
 export const toolingRules = [

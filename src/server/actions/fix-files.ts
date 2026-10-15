@@ -3,6 +3,7 @@ import { plural } from '../../shared/text.ts'
 import { buildContext } from '../engine/context.ts'
 import { diskIo } from '../engine/io.ts'
 import { checkProject } from '../engine/runner.ts'
+import { realInstall } from './install.ts'
 import { type ApplyOptions, blockedReason, fingerprintOf, type FixOptions, planOf } from './fix-plan.ts'
 
 /**
@@ -16,7 +17,7 @@ export async function previewFixFiles(options: Readonly<FixOptions>): Promise<Fi
     const plan = await planOf(options)
     if ('reason' in plan) return { ok: false, reason: plan.reason }
     if (plan.fixable.length === 0) return { ok: false, reason: `every file with a fix has uncommitted changes (${plan.blocked.map(item => item.file).join(', ')}): ${blockedReason}` }
-    return { blocked: plan.blocked, fingerprint: fingerprintOf(plan.fixable), ok: true, path: plan.clone.path, plans: plan.fixable }
+    return { blocked: plan.blocked, fingerprint: fingerprintOf(plan.fixable, plan.installs), installs: plan.installs, ok: true, path: plan.clone.path, plans: plan.fixable }
   } catch (error) {
     return { ok: false, reason: error instanceof Error ? error.message : String(error) }
   }
@@ -32,11 +33,16 @@ export async function fixFiles(options: Readonly<ApplyOptions>): Promise<ActionR
   try {
     const plan = await planOf(options)
     if ('reason' in plan) return { ok: false, reason: plan.reason }
-    if (plan.fixable.length === 0 || fingerprintOf(plan.fixable) !== options.fingerprint) return { ok: false, reason: 'the fixes are not what the dialog listed any more, nothing was written, open the dialog again' }
+    if (plan.fixable.length === 0 || fingerprintOf(plan.fixable, plan.installs) !== options.fingerprint) return { ok: false, reason: 'the fixes are not what the dialog listed any more, nothing was written, open the dialog again' }
     await Promise.all(plan.fixable.map(item => plan.io.writeText(item.file, item.after)))
+    const installed = plan.installs.length === 0 ? undefined : await (options.install ?? realInstall)(plan.clone.path, plan.installs)
+    if (installed?.ok === false) return { ok: false, reason: `the files were written but installing ${plan.installs.join(', ')} failed: ${installed.stderr.trim()}` }
     const { findings } = await checkProject(options.rules.fileRules, await buildContext(diskIo(plan.clone.path), plan.flags))
     const left = findings.filter(finding => finding.edits.length > 0).length
-    return { message: `fixed ${plural(plan.fixable.length, 'file')} (${plan.fixable.map(item => item.file).join(', ')}), ${left === 0 ? 'no fix left' : `${plural(left, 'finding')} left with a fix`}, check git diff`, ok: true }
+    return {
+      message: `fixed ${plural(plan.fixable.length, 'file')} (${plan.fixable.map(item => item.file).join(', ')})${plan.installs.length === 0 ? '' : `, installed ${plan.installs.join(', ')}`}, ${left === 0 ? 'no fix left' : `${plural(left, 'finding')} left with a fix`}, check git diff`,
+      ok: true,
+    }
   } catch (error) {
     return { ok: false, reason: error instanceof Error ? error.message : String(error) }
   }

@@ -15,6 +15,7 @@ const events = (findings = [noLicense, noBadge, noFix]): ScanEvent[] => [
 const preview: FixPreview = {
   blocked: [{ file: 'README.md', reason: 'it has uncommitted changes' }],
   fingerprint: 'abc123',
+  installs: ['knip', 'vitest'],
   ok: true,
   path: '/projects/app',
   plans: [
@@ -63,6 +64,13 @@ describe('fix files', () => {
     expect(screen.getByTestId('diff-docs/new.md').textContent).toContain('docs/new.md (new file)+ # new')
     expect(screen.getByTestId('fix-blocked-README.md').textContent).toBe('README.md is left alone, it has uncommitted changes.')
     expect((screen.getByTestId('fix-confirm') as HTMLButtonElement).disabled).toBe(false)
+  })
+
+  it('says which dev dependencies are installed after the files are written', async () => {
+    expect.hasAssertions()
+    stubApi({ preview: Response.json(preview) })
+    await openConfirmation()
+    expect(screen.getByTestId('fix-installs').textContent).toBe('Then installs knip, vitest with the package manager of the project.')
   })
 
   it.each([

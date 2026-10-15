@@ -1,6 +1,7 @@
 import { readClone, readClones } from '../inventory/git.ts'
 import type { GhRunner } from '../inventory/github.ts'
 import { run } from '../inventory/shell.ts'
+import type { Installer } from './install.ts'
 
 /** How the clones are read, replaced by fakes in tests */
 export interface GitReaders {
@@ -16,6 +17,8 @@ export interface ActionOptions {
   gh: GhRunner
   /** How the clones are read, the real git in the server, a fake in tests */
   git: GitReaders
+  /** Installs the dev dependencies a file fix needs, the real package manager when omitted */
+  install?: Installer
   /** The repo name, as asked by the page */
   name: string
   /** The GitHub owner the scan compares with */

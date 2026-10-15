@@ -9,7 +9,7 @@ import type { ProjectResult } from './check-projects.ts'
 
 const result: ProjectResult = {
   findings: [
-    { actions: [], edits: [], message: 'no license', messageId: 'missing', ruleId: 'license-exists', scope: 'file', severity: 'error' },
+    { actions: [], edits: [], installs: [], message: 'no license', messageId: 'missing', ruleId: 'license-exists', scope: 'file', severity: 'error' },
     {
       actions: [],
       edits: [
@@ -17,6 +17,7 @@ const result: ProjectResult = {
         { apply: text => text, file: 'package.json' },
         { apply: text => text, file: 'README.md' },
       ],
+      installs: [],
       message: 'no name',
       messageId: 'missing',
       ruleId: 'package-name',
