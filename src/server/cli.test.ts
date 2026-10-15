@@ -1,3 +1,4 @@
+import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import type { GhRunner } from './inventory/github.ts'
 import { run } from './inventory/shell.ts'
@@ -51,6 +52,7 @@ describe(cli, () => {
     const folder = await makeEmptyFolder()
     await run('git', ['init', '--quiet', 'app'], folder)
     await run('git', ['remote', 'add', 'origin', 'git@github.com:owner/app.git'], path.join(folder, 'app'))
+    await writeFile(path.join(folder, 'app', 'index.ts'), 'export {}')
     const { code, output } = await cli(['--no-fetch'], { cwd: folder, gh: fakeAccount([apiRepo('app', false)]) })
     expect(code).toBe(1)
     expect(output).toContain('package-json-exists')

@@ -9,6 +9,7 @@ describe('flags detection', () => {
       hasMainBranch: false,
       isCli: false,
       isModule: false,
+      isNotNode: true,
       isPublishedPackage: false,
       isUsingBun: false,
       isUsingDependencyCruiser: false,
@@ -18,6 +19,13 @@ describe('flags detection', () => {
       isWebPublished: false,
       shouldAvoidSass: true,
     })
+  })
+
+  it('is not a Node project with no package.json and no script file', async () => {
+    expect.hasAssertions()
+    await expect(detectFlags(memoryIo({ 'index.html': '<p>hi</p>', 'style.css': 'p {}' }))).resolves.toMatchObject({ isNotNode: true })
+    await expect(detectFlags(memoryIo({ 'src/app.vue': '<template></template>' }))).resolves.toMatchObject({ isNotNode: false })
+    await expect(detectFlags(memoryIo({ 'package.json': '{}' }))).resolves.toMatchObject({ isNotNode: false })
   })
 
   it('detects the tools from package.json', async () => {

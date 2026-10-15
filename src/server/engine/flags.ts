@@ -26,6 +26,8 @@ export interface ProjectFlags {
   isPrivate?: boolean
   /** Published to npm, its scripts run `npm publish` */
   isPublishedPackage?: boolean
+  /** No package.json and no JavaScript or TypeScript file: the Node checks do not apply, detected */
+  isNotNode?: boolean
   /** Uses Bun as runtime or package manager */
   isUsingBun?: boolean
   /** Uses dependency-cruiser */
@@ -113,6 +115,19 @@ function detectFromGitConfig(text: string): ProjectFlags {
   return { ...origin, hasMainBranch: text.includes('[branch "main"]') }
 }
 
+/** The files that tell a project runs on Node, or in a browser with a build */
+const scriptFile = /\.(?:[cm]?[jt]sx?|vue|svelte|astro)$/u
+
+/**
+ * Tell if a project has at least one JavaScript or TypeScript file
+ * @param files the reader of the project files
+ * @returns true when it has one
+ */
+async function hasScriptFile(files: FileReader) {
+  const found = await files.search(/\S/u)
+  return found.some(file => scriptFile.test(file))
+}
+
 /**
  * Detect the flags of a project, then apply what its `.repo-checker.json` declares
  * @param files the reader of the project files
@@ -120,6 +135,7 @@ function detectFromGitConfig(text: string): ProjectFlags {
  * @example const flags = await detectFlags(diskIo(folder))
  */
 export async function detectFlags(files: FileReader): Promise<ProjectFlags> {
-  const [packageText = '', gitText = '', configText = '{}'] = await Promise.all([files.readText('package.json'), files.readText('.git/config'), files.readText(configFile)])
-  return { canAutoMergeDeps: true, shouldAvoidSass: true, ...detectFromPackageJson(packageText), ...detectFromGitConfig(gitText), ...(parse(configText) as ProjectFlags) }
+  const [packageText, gitText = '', configText = '{}'] = await Promise.all([files.readText('package.json'), files.readText('.git/config'), files.readText(configFile)])
+  const isNotNode = packageText === undefined && !(await hasScriptFile(files))
+  return { canAutoMergeDeps: true, isNotNode, shouldAvoidSass: true, ...detectFromPackageJson(packageText ?? ''), ...detectFromGitConfig(gitText), ...(parse(configText) as ProjectFlags) }
 }

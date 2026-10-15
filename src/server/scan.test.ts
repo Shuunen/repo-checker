@@ -101,7 +101,7 @@ describe(scan, () => {
     expect(projects.map(({ findings, project }) => [project.name, findings.map(item => item.ruleId)])).toStrictEqual([
       ['app', ['archived-with-unsaved-work']],
       ['finga', ['not-cloned']],
-      ['gone', ['broken-clone', 'package-json-exists']],
+      ['gone', ['broken-clone']],
       ['lib', []],
       ['plain', ['broken-clone']],
     ])
@@ -181,7 +181,7 @@ describe(scan, () => {
   it('reports a single project whose repo is gone as a broken clone', async () => {
     expect.hasAssertions()
     const { projects } = await scan({ gh: fakeGh(user), owner: undefined, rules, shouldFetch: false, target: path.join(await makeWorkspace(), 'gone') })
-    expect(projects.map(({ findings }) => findings.map(item => item.messageId))).toStrictEqual([['originNotFound', 'missing']])
+    expect(projects.map(({ findings }) => findings.map(item => item.messageId))).toStrictEqual([['originNotFound']])
   })
 
   it('asks nothing to GitHub for a single project without GitHub origin', async () => {

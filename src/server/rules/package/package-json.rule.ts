@@ -1,6 +1,7 @@
 import { defineRule } from '../../engine/define-rule.ts'
 
 export const packageJsonExists = defineRule({
+  appliesTo: ({ flags }) => flags.isNotNode !== true,
   check({ pkg, report }) {
     if (pkg === undefined) report({ messageId: 'missing' })
   },
