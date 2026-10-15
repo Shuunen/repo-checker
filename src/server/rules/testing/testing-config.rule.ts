@@ -1,3 +1,4 @@
+import { editConfig } from '../../engine/fixer.ts'
 import { requireFile, requireInFile, requireJsonSchema } from '../../engine/file-rules.ts'
 import { hasDependency } from '../../engine/package-json.ts'
 
@@ -6,9 +7,14 @@ const nycFiles = ['.nycrc', '.nycrc.json']
 export const testingConfigRules = [
   requireInFile({
     files: ['vitest.config.mts', 'vitest.config.ts', 'vitest.config.mjs', 'vitest.config.js'],
+    fix: text =>
+      editConfig(text, options => {
+        options.test ??= {}
+        options.test.pool = 'threads'
+      }),
     id: 'vitest-pool-threads',
     message: "{{file}} does not run the tests in threads, like pool: 'threads'",
-    pattern: /pool: 'threads'/u,
+    pattern: /pool: ['"]threads['"]/u,
     severity: 'warning',
     when: ({ pkg }) => hasDependency(pkg, 'vitest'),
   }),

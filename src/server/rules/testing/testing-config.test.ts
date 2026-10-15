@@ -17,7 +17,17 @@ const vitest = { devDependencies: { vitest: '^4.0.0' } }
 const nyc = { devDependencies: { nyc: '^17.0.0' } }
 
 testRule(byId('vitest-pool-threads'), {
-  invalid: [{ errors: ['missing'], files: { 'vitest.config.ts': 'export default {}' }, name: 'no pool', pkg: vitest }],
+  invalid: [
+    { errors: ['missing'], files: { 'vitest.config.ts': 'export default {}' }, name: 'no pool, a test section is added', output: 'export default {\n  test: {\n    pool: "threads"\n  }\n};', pkg: vitest },
+    {
+      errors: ['missing'],
+      files: { 'vitest.config.ts': "import { defineConfig } from 'vitest/config'\n\nexport default defineConfig({\n  test: { globals: true },\n})\n" },
+      name: 'no pool, kept in the test section',
+      output: "import { defineConfig } from 'vitest/config'\n\nexport default defineConfig({\n  test: {\n    globals: true,\n    pool: 'threads',\n  },\n})\n",
+      pkg: vitest,
+    },
+    { errors: ['missing'], files: { 'vitest.config.ts': 'export const config = {}' }, name: 'a config that cannot be read, not fixed', pkg: vitest },
+  ],
   valid: [
     { files: { 'vitest.config.mts': "export default { test: { pool: 'threads' } }" }, name: 'threads', pkg: vitest },
     { files: { 'vitest.config.ts': 'export default {}' }, name: 'vitest not used', pkg: { name: 'app' } },

@@ -45,3 +45,16 @@ describe('fixer text edits', () => {
     expect(fixer.text('.nvmrc', text => text.replace('22', '24')).apply('22\n')).toBe('24\n')
   })
 })
+
+describe('fixer config edits', () => {
+  it('changes the options exported by default, keeping the rest of the file', () => {
+    expect.hasAssertions()
+    const text = "import { defineConfig } from 'vitest/config'\n\nexport default defineConfig({\n  test: { globals: true },\n})\n"
+    expect(fixer.config('vitest.config.ts', options => void (options.test.pool = 'threads')).apply(text)).toContain("pool: 'threads'")
+  })
+
+  it('leaves a file it cannot read as it is', () => {
+    expect.hasAssertions()
+    expect(fixer.config('vitest.config.ts', () => void 0).apply('export const config = {}')).toBe('export const config = {}')
+  })
+})

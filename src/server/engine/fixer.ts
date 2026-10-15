@@ -2,6 +2,8 @@
  * The fixer handed to `report({ fix })`. It never writes: it builds edits that the runner chains, previews and applies after confirmation.
  * @module
  */
+import { generateCode, parseModule } from 'magicast'
+import { getDefaultExportOptions } from 'magicast/helpers'
 import { applyEdits, findNodeAtLocation, getNodeValue, type JSONPath, modify, parseTree } from 'jsonc-parser'
 
 /** A change to one file, applied on the latest text of that file so the edits of several rules can be chained */
@@ -99,8 +101,37 @@ function json(file: string): JsonEdits {
   }
 }
 
+/** The options object a config file exports by default, like the one given to `defineConfig`, that `editConfig` lets a rule change */
+export type ConfigOptions = ReturnType<typeof getDefaultExportOptions>
+
+/**
+ * Change the options a JavaScript or TypeScript config file exports by default, like the object given to `defineConfig`. The text is left as is when the file does not export options in a way that can be read
+ * @param text the text of the config file
+ * @param update change the options
+ * @returns the new text
+ * @example editConfig("export default defineConfig({})", options => { options.test = { pool: 'threads' } })
+ */
+export function editConfig(text: string, update: (options: ConfigOptions) => void) {
+  try {
+    const module = parseModule(text)
+    update(getDefaultExportOptions(module))
+    const { code } = generateCode(module)
+    return text.endsWith('\n') && !code.endsWith('\n') ? `${code}\n` : code
+  } catch {
+    return text
+  }
+}
+
 /** The edit builders a rule gets in `report({ fix: fixer => ... })` */
 export const fixer = {
+  /**
+   * An edit of the options a config file exports by default, see `editConfig`
+   * @param file the file path, relative to the project folder
+   * @param update change the options
+   * @returns the edit
+   * @example fixer.config('vitest.config.ts', options => { options.test = { pool: 'threads' } })
+   */
+  config: (file: string, update: (options: ConfigOptions) => void): Edit => ({ apply: text => editConfig(text, update), file }),
   /** Json edits that keep formatting and comments, see `json` */
   json,
   /**
