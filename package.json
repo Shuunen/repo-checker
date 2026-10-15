@@ -39,7 +39,8 @@
     "wouter": "~3.13.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "schema.json"
   ],
   "homepage": "https://github.com/Shuunen/repo-checker",
   "keywords": [

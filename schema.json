@@ -1,0 +1,25 @@
+{
+  "$id": "https://github.com/Shuunen/repo-checker/blob/master/schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "description": "The .repo-checker.json file: what repo-check should know about a project, it overrides what repo-check detects",
+  "properties": {
+    "$schema": { "description": "The schema of this file, for the autocompletion of your editor", "type": "string" },
+    "canAutoMergeDeps": { "default": true, "description": "Renovate may merge the dependency updates on its own", "type": "boolean" },
+    "isCli": { "description": "The project is a CLI, meant to be run in a terminal", "type": "boolean" },
+    "isModule": { "description": "The project is an ESM package, \"type\": \"module\"", "type": "boolean" },
+    "isPublishedPackage": { "description": "The project is published to npm, its scripts run npm publish", "type": "boolean" },
+    "isUsingBun": { "description": "The project uses Bun as runtime or package manager", "type": "boolean" },
+    "isUsingDependencyCruiser": { "description": "The project uses dependency-cruiser", "type": "boolean" },
+    "isUsingEslint": { "description": "The project uses ESLint", "type": "boolean" },
+    "isUsingShuutils": { "description": "The project uses shuutils", "type": "boolean" },
+    "isUsingTypescript": { "description": "The project uses TypeScript", "type": "boolean" },
+    "isWebPublished": { "description": "The project is published as a website or web app, so its README shows a \"Website up\" badge", "type": "boolean" },
+    "license": { "description": "The license the project must declare, like MIT or GPL-3.0", "type": "string" },
+    "maxSizeKo": { "description": "The maximum size of the main file of the package, in Ko", "minimum": 1, "type": "number" },
+    "shouldAvoidSass": { "default": true, "description": "Report the sass dependencies", "type": "boolean" },
+    "webUrl": { "description": "The url of the published website", "format": "uri", "type": "string" }
+  },
+  "title": "repo-check project config",
+  "type": "object"
+}
