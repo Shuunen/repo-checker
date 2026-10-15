@@ -5,10 +5,11 @@ const looks: Readonly<Record<LineKind, { classes: string; sign: string }>> = {
   added: { classes: 'bg-success/15 text-success', sign: '+' },
   kept: { classes: 'text-muted', sign: ' ' },
   removed: { classes: 'bg-danger/15 text-danger', sign: '-' },
+  skipped: { classes: 'py-1 text-center italic text-muted', sign: '…' },
 }
 
 /**
- * The change of one file as a diff: the lines that go are red with a minus, the lines that come are green with a plus, the others are dimmed. A file that does not exist yet is all green
+ * The change of one file as a diff: the lines that go are red with a minus, the lines that come are green with a plus, the others are dimmed. Only the changes are shown with 15 lines around them, the rest is one line that counts what was left out. A file that does not exist yet is all green
  * @param props the props
  * @param props.after the text once fixed
  * @param props.before the text now, empty when the file does not exist yet
@@ -22,7 +23,7 @@ export function FileDiff({ after, before, file }: Readonly<{ after: string; befo
       <pre className="overflow-x-auto rounded-md bg-default/30 p-2 text-xs">
         {diffLinesOf(before, after).map(line => (
           <div className={looks[line.kind].classes} key={line.id}>
-            {`${looks[line.kind].sign} ${line.text}`}
+            {line.kind === 'skipped' ? `${looks.skipped.sign} ${line.text} ${looks.skipped.sign}` : `${looks[line.kind].sign} ${line.text}`}
           </div>
         ))}
       </pre>
