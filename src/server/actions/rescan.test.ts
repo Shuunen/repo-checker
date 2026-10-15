@@ -76,7 +76,8 @@ describe(rescanProject, () => {
 
   it('says the project is gone when it has neither a repo nor a folder', async () => {
     expect.hasAssertions()
-    await expect(rescanProject({ gh: fakeGh('missing'), git: readers([]), name: 'finga', owner: 'Owner', rules, target: await makeTarget() })).resolves.toStrictEqual({ ok: true, project: undefined })
+    const target = await makeTarget()
+    await expect(rescanProject({ gh: fakeGh('missing'), git: readers([]), name: 'finga', owner: 'Owner', rules, target })).resolves.toStrictEqual({ ok: true, project: undefined, target })
   })
 
   it.each(['../finga', '.', '..', 'a/b', ''])('refuses the name "%s", it is not a repo name', async name => {

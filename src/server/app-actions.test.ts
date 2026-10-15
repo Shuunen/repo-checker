@@ -205,7 +205,7 @@ describe('rescan', () => {
     expect.hasAssertions()
     const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/finga/rescan')
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toStrictEqual({ ok: true })
+    await expect(response.json()).resolves.toStrictEqual({ ok: true, target: '/projects' })
   })
 
   it('answers 409 with the reason when the project cannot be scanned', async () => {
