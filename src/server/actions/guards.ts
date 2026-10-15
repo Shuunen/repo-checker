@@ -1,5 +1,6 @@
 import { stat } from 'node:fs/promises'
 import path from 'node:path'
+import { externalFlags } from '../facts.ts'
 import { getRepo, type GhRunner } from '../inventory/github.ts'
 
 /** A repo name: letters, digits, dots, dashes and underscores, never a path */
@@ -34,12 +35,11 @@ export async function checkFolderOfProjects(target: string) {
 }
 
 /**
- * Tell if the GitHub repo is private, false when GitHub cannot say
+ * Read the flags of one repo from GitHub: what it says about the repo and the global facts, the same as a scan when GitHub cannot say
  * @param gh the gh runner
  * @param slug `owner/name`
- * @returns true for a private repo
+ * @returns the flags
  */
-export async function isPrivateRepo(gh: GhRunner, slug: string) {
-  const repo = await getRepo(gh, slug).catch(() => undefined)
-  return repo?.isPrivate === true
+export async function repoFlags(gh: GhRunner, slug: string) {
+  return externalFlags(await getRepo(gh, slug).catch(() => undefined))
 }

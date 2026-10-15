@@ -33,4 +33,4 @@ testRule(byId('tailwind-content'), {
   invalid: [{ errors: ['missing'], files: { 'tailwind.config.ts': 'export default {}' }, name: 'no content', pkg: { devDependencies: { tailwindcss: '^3.0.0' } } }],
   valid: [{ files: { 'tailwind.config.js': "module.exports = { content: ['./src/**/*.ts'] }" }, name: 'content', pkg: { devDependencies: { tailwindcss: '^3.0.0' } } }],
 })
-testRule(byId('repo-checker-config'), { invalid: [{ errors: ['missing'], name: 'no .repo-checker.json' }], valid: [{ files: { '.repo-checker.json': '{}' }, name: 'a .repo-checker.json' }] })
+testRule(byId('repo-checker-config'), { invalid: [{ errors: ['missing'], name: 'no .repo-checker.json', output: '{\n  "$schema": "./node_modules/repo-check/schema.json"\n}\n' }], valid: [{ files: { '.repo-checker.json': '{}' }, name: 'a .repo-checker.json' }] })

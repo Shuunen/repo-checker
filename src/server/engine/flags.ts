@@ -16,6 +16,12 @@ export interface ProjectFlags {
   isCli?: boolean
   /** An ESM package, `"type": "module"` */
   isModule?: boolean
+  /** The git user, from the global git config, used to fill the author of a new file */
+  gitAuthor?: { email?: string | undefined; name: string } | undefined
+  /** The description of the GitHub repo, given by the scan */
+  githubDescription?: string | undefined
+  /** The homepage of the GitHub repo, given by the scan */
+  githubHomepage?: string | undefined
   /** The GitHub repo is private, given by the scan, never detected from the files */
   isPrivate?: boolean
   /** Published to npm, its scripts run `npm publish` */
@@ -36,6 +42,8 @@ export interface ProjectFlags {
   license?: string
   /** The maximum size of the main file in Ko, only from `.repo-checker.json` */
   maxSizeKo?: number
+  /** The latest Node LTS, given by the scan, like `24.11.0` */
+  nodeVersion?: string
   /** The GitHub owner, from the `origin` url of the git config */
   owner?: string
   /** The repository name, from the `origin` url of the git config */
@@ -44,6 +52,21 @@ export interface ProjectFlags {
   shouldAvoidSass?: boolean
   /** The url of the published website, only from `.repo-checker.json` */
   webUrl?: string
+}
+
+/** The Node version used when the LTS cannot be read from nodejs.org */
+export const fallbackNodeVersion = '24.21.0'
+
+/**
+ * The GitHub url of the project, from the `origin` of its git config
+ * @param flags the project flags
+ * @param flags.owner the GitHub owner
+ * @param flags.repoId the repository name
+ * @returns the url, undefined when the project has no GitHub origin
+ * @example repoUrl({ owner: 'Shuunen', repoId: 'app' }) // 'https://github.com/Shuunen/app'
+ */
+export function repoUrl({ owner, repoId }: Readonly<ProjectFlags>) {
+  return owner === undefined || repoId === undefined ? undefined : `https://github.com/${owner}/${repoId}`
 }
 
 /** The project config file, its content overrides the detected flags */

@@ -7,7 +7,7 @@ import { buildContext } from '../engine/context.ts'
 import { diskIo, type Io } from '../engine/io.ts'
 import { checkProject, planFixes } from '../engine/runner.ts'
 import type { ActionOptions } from './action-options.ts'
-import { exists, isPrivateRepo, isRepoName } from './guards.ts'
+import { exists, isRepoName, repoFlags } from './guards.ts'
 
 /** What fixing the files of a project needs */
 export interface FixOptions extends ActionOptions {
@@ -31,8 +31,8 @@ export interface Plan {
   fixable: FixPlan[]
   /** The files of the clone */
   io: Io
-  /** The GitHub repo is private, so the checks skip what only a public repo needs */
-  isPrivate: boolean
+  /** The flags that do not come from the files: the git user, the Node LTS and what GitHub says of the repo */
+  flags: Awaited<ReturnType<typeof repoFlags>>
 }
 
 /** Why a file with uncommitted changes is not rewritten */
@@ -85,12 +85,12 @@ export async function planOf(options: Readonly<FixOptions>): Promise<Plan | { re
   const found = await findClone(options)
   if ('reason' in found) return found
   const io = diskIo(found.clone.path)
-  const isPrivate = await isPrivateRepo(options.gh, `${options.owner}/${options.name}`)
-  const { findings } = await checkProject(options.rules.fileRules, await buildContext(io, { isPrivate }))
+  const flags = await repoFlags(options.gh, `${options.owner}/${options.name}`)
+  const { findings } = await checkProject(options.rules.fileRules, await buildContext(io, flags))
   const plans = await planFixes(findings, io)
   if (plans.length === 0) return { reason: `no file of ${options.owner}/${options.name} has a fix to apply` }
   const changed = changedPaths(found.clone.changedFiles)
-  return { blocked: plans.filter(plan => changed.has(plan.file)).map(plan => ({ file: plan.file, reason: blockedReason })), clone: found.clone, fixable: plans.filter(plan => !changed.has(plan.file)), io, isPrivate }
+  return { blocked: plans.filter(plan => changed.has(plan.file)).map(plan => ({ file: plan.file, reason: blockedReason })), clone: found.clone, fixable: plans.filter(plan => !changed.has(plan.file)), flags, io }
 }
 
 /**

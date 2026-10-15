@@ -34,7 +34,7 @@ export async function fixFiles(options: Readonly<ApplyOptions>): Promise<ActionR
     if ('reason' in plan) return { ok: false, reason: plan.reason }
     if (plan.fixable.length === 0 || fingerprintOf(plan.fixable) !== options.fingerprint) return { ok: false, reason: 'the fixes are not what the dialog listed any more, nothing was written, open the dialog again' }
     await Promise.all(plan.fixable.map(item => plan.io.writeText(item.file, item.after)))
-    const { findings } = await checkProject(options.rules.fileRules, await buildContext(diskIo(plan.clone.path), { isPrivate: plan.isPrivate }))
+    const { findings } = await checkProject(options.rules.fileRules, await buildContext(diskIo(plan.clone.path), plan.flags))
     const left = findings.filter(finding => finding.edits.length > 0).length
     return { message: `fixed ${plural(plan.fixable.length, 'file')} (${plan.fixable.map(item => item.file).join(', ')}), ${left === 0 ? 'no fix left' : `${plural(left, 'finding')} left with a fix`}, check git diff`, ok: true }
   } catch (error) {

@@ -13,9 +13,15 @@ function byId(id: string) {
   return rule
 }
 
-testRule(byId('nvmrc-exists'), { invalid: [{ errors: ['missing'], name: 'no .nvmrc', output: '24.21.0\n' }], valid: [{ files: { '.nvmrc': '24.11.0' }, name: 'a .nvmrc' }] })
+testRule(byId('nvmrc-exists'), {
+  invalid: [
+    { errors: ['missing'], name: 'no .nvmrc', output: '24.21.0\n' },
+    { errors: ['missing'], flags: { nodeVersion: '24.99.1' }, name: 'no .nvmrc, the latest LTS', output: '24.99.1\n' },
+  ],
+  valid: [{ files: { '.nvmrc': '24.11.0' }, name: 'a .nvmrc' }],
+})
 testRule(byId('nvmrc-recent-node'), { invalid: [{ errors: ['missing'], files: { '.nvmrc': '20.1.0' }, name: 'node 20' }], valid: [{ files: { '.nvmrc': '24.11.0\n' }, name: 'node 24' }] })
-testRule(byId('npmrc-exists'), { invalid: [{ errors: ['missing'], name: 'no .npmrc' }], valid: [{ files: { '.npmrc': '' }, name: 'a .npmrc' }] })
+testRule(byId('npmrc-exists'), { invalid: [{ errors: ['missing'], name: 'no .npmrc', output: 'enable-pre-post-scripts=true\n' }], valid: [{ files: { '.npmrc': '' }, name: 'a .npmrc' }] })
 testRule(byId('npmrc-pre-post-scripts'), {
   invalid: [{ errors: ['missing'], files: { '.npmrc': 'save-exact=true\n' }, name: 'pre scripts without the option, added', output: 'save-exact=true\nenable-pre-post-scripts=true\n', pkg: { scripts: { preversion: 'pnpm check' } } }],
   valid: [

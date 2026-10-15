@@ -2,6 +2,7 @@ import type { Project } from '../shared/project.ts'
 import { buildContext } from './engine/context.ts'
 import type { ProjectRule } from './engine/define-project-rule.ts'
 import type { Rule } from './engine/define-rule.ts'
+import { externalFlags } from './facts.ts'
 import { diskIo } from './engine/io.ts'
 import { type CheckResult, checkProject, checkProjectRules } from './engine/runner.ts'
 
@@ -25,6 +26,6 @@ export async function checkOne(project: Readonly<Project>, { fileRules, projectR
   const result = await checkProjectRules(projectRules, project)
   const { isOtherOwner, local } = project
   if (local === undefined || local.problem !== undefined || isOtherOwner) return result
-  const files = await checkProject(fileRules, await buildContext(diskIo(local.path), { isPrivate: project.github?.isPrivate === true }))
+  const files = await checkProject(fileRules, await buildContext(diskIo(local.path), await externalFlags(project.github)))
   return { findings: [...result.findings, ...files.findings], outcomes: [...result.outcomes, ...files.outcomes] }
 }

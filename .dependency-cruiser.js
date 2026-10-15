@@ -34,6 +34,7 @@ export default {
           String.raw`(^|/)\.[^/]+\.(js|cjs|mjs|ts|json)$`, // dot files
           String.raw`\.d\.ts$`, // TypeScript declaration files
           String.raw`(^|/)tsconfig\.json$`, // TypeScript config
+          String.raw`(^|/)vitest\.setup\.ts$`, // test setup
           String.raw`(^|/)(babel|webpack)\.config\.(js|cjs|mjs|ts|json)$`, // other configs
         ],
       },
@@ -150,7 +151,7 @@ export default {
       from: {
         path: '^(src|tests)',
         // src/web is bundled by Vite into dist/web, so its packages are devDependencies on purpose: users never install them
-        pathNot: String.raw`(^src/web/|\.(spec|test)\.(js|mjs|cjs|ts|ls|coffee|litcoffee|coffee\.md)$)`,
+        pathNot: String.raw`(^src/web/|^src/server/vitest\.setup\.ts$|\.(spec|test)\.(js|mjs|cjs|ts|ls|coffee|litcoffee|coffee\.md)$)`,
       },
       name: 'not-to-dev-dep',
       severity: 'error',
