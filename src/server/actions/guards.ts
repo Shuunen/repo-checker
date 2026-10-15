@@ -1,5 +1,6 @@
 import { stat } from 'node:fs/promises'
 import path from 'node:path'
+import { getRepo, type GhRunner } from '../inventory/github.ts'
 
 /** A repo name: letters, digits, dots, dashes and underscores, never a path */
 const repoName = /^[\w.-]+$/u
@@ -30,4 +31,15 @@ export async function exists(file: string) {
  */
 export async function checkFolderOfProjects(target: string) {
   return (await exists(path.join(target, '.git'))) ? 'the target is a single project, actions work on a folder of projects' : undefined
+}
+
+/**
+ * Tell if the GitHub repo is private, false when GitHub cannot say
+ * @param gh the gh runner
+ * @param slug `owner/name`
+ * @returns true for a private repo
+ */
+export async function isPrivateRepo(gh: GhRunner, slug: string) {
+  const repo = await getRepo(gh, slug).catch(() => undefined)
+  return repo?.isPrivate === true
 }

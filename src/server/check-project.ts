@@ -25,6 +25,6 @@ export async function checkOne(project: Readonly<Project>, { fileRules, projectR
   const result = await checkProjectRules(projectRules, project)
   const { isOtherOwner, local } = project
   if (local === undefined || local.problem !== undefined || isOtherOwner) return result
-  const files = await checkProject(fileRules, await buildContext(diskIo(local.path)))
+  const files = await checkProject(fileRules, await buildContext(diskIo(local.path), { isPrivate: project.github?.isPrivate === true }))
   return { findings: [...result.findings, ...files.findings], outcomes: [...result.outcomes, ...files.outcomes] }
 }

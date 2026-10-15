@@ -19,6 +19,15 @@ const rewrite = defineRule({
 })
 const rules = splitRules([rewrite])
 
+/** Wants a `public.txt`, only a public repo needs it */
+const wantPublic = defineRule({
+  check({ flags, report }) {
+    if (flags.isPrivate !== true) report({ fix: fixer => fixer.text('public.txt', () => 'public\n'), messageId: 'missing' })
+  },
+  meta: { fixable: true, id: 'want-public', messages: { missing: 'no public.txt' }, severity: 'warning' },
+})
+const publicRules = splitRules([wantPublic])
+
 /** A project folder with the two files, and fake git readers that list it as the clone of `owner/app` */
 interface Workspace {
   /** The clone folder */
@@ -238,5 +247,18 @@ describe(fixFiles, () => {
     const workspace = await makeWorkspace()
     vi.spyOn(workspace.git, 'readClones').mockRejectedValue(thrown)
     await expect(fixFiles({ fingerprint: 'x', gh, git: workspace.git, name: 'app', owner: 'Owner', rules, target: workspace.target })).resolves.toStrictEqual({ ok: false, reason })
+  })
+})
+
+describe('private repo', () => {
+  it('plans what a public repo needs only when the GitHub repo is public, and fixes it the same way', async () => {
+    expect.hasAssertions()
+    const workspace = await makeWorkspace()
+    const repo = { archived: false, default_branch: 'master', fork: false, name: 'app', open_issues_count: 0, owner: { login: 'Owner' }, pushed_at: '2026-01-01T00:00:00Z' }
+    gh.mockResolvedValue({ ok: true, stderr: '', stdout: JSON.stringify({ ...repo, private: false }) })
+    const preview = await previewFixFiles({ gh, git: workspace.git, name: 'app', owner: 'Owner', rules: publicRules, target: workspace.target })
+    expect(preview).toMatchObject({ ok: true, plans: [{ file: 'public.txt' }] })
+    gh.mockResolvedValue({ ok: true, stderr: '', stdout: JSON.stringify({ ...repo, private: true }) })
+    await expect(previewFixFiles({ gh, git: workspace.git, name: 'app', owner: 'Owner', rules: publicRules, target: workspace.target })).resolves.toStrictEqual({ ok: false, reason: 'no file of Owner/app has a fix to apply' })
   })
 })

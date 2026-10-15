@@ -16,6 +16,8 @@ export interface ProjectFlags {
   isCli?: boolean
   /** An ESM package, `"type": "module"` */
   isModule?: boolean
+  /** The GitHub repo is private, given by the scan, never detected from the files */
+  isPrivate?: boolean
   /** Published to npm, its scripts run `npm publish` */
   isPublishedPackage?: boolean
   /** Uses Bun as runtime or package manager */
