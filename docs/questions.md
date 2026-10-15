@@ -70,3 +70,21 @@ Questions, findings left without a fixer on purpose:
 10. **GitHub-side findings** (`missing-description`, `missing-topics`, `missing-homepage`): need write calls to the GitHub API, which is a new kind of action. Want them as actions (with a preview), or leave manual?
 11. **`package-json-exists`** (3 repos, not Node projects like `css-gungame`): should the rule skip projects with no JS at all instead of asking for a `package.json`?
 12. **`dependency-tool-choice`, `coverage-dependency`, `unit-testing-dependency`**: installing packages is out of scope for file fixers. Keep unfixable?
+
+### Decisions from the review of 2026-10-15 (not built yet)
+
+1. **`.nvmrc`**: fetch the latest LTS from nodejs.org, fall back to the hardcoded `24.21.0` when the call fails.
+2. **`.npmrc`**: create with `enable-pre-post-scripts=true`.
+3. **`.repo-checker.json`**: the fixer creates `{ "$schema": ... }` pointing to a JSON schema shipped in the npm package (`node_modules/...`), for IDE autocompletion. The schema itself is to be built and published.
+4. **License**: MIT by default, author from `git config user.name`, current year, per-project override in `.repo-checker.json`. Fixes `license-file-exists` and `package-license`.
+5. **`package.json` fields**: derive `author`, `repository`, `bugs`, `homepage`, `description` and `license`. `keywords` and `files` stay manual. The description goes whichever way has a value (GitHub to `package.json` or the reverse), nothing when both are empty.
+6. **README**: generate a stub for `readme-exists` and `readme-thanks-section`. Logo and demo stay manual.
+7. **Scripts**: fix `scripts-final-echo` except dev, watch and serve scripts (list the skipped ones). `scripts-unique-mark` stays manual.
+8. **`vitest-pool-threads`**: add `magicast` and fix it with it, reusable for other JS/TS config fixers.
+9. **Schema fixers**: not applied to the real clones, you apply them from the dashboard.
+10. **GitHub-side**: description and homepage become actions that copy from `package.json`. Topics stay manual.
+11. **Projects with no JS**: detect them automatically (no `package.json` and no JS/TS files) and skip the Node checks.
+12. **Tool installation**, as a new action with a preview and a confirmation, running `pnpm install`:
+    - a. `dependency-tool-choice`: install `knip`, add a `lint:knip` script, no config file.
+    - b. `unit-testing-dependency`: install `vitest`, add `"test": "vitest --run && echo test success"`, without `--passWithNoTests`.
+    - c. `coverage-dependency`: install `c8` (the tool-agnostic one).
