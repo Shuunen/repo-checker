@@ -67,6 +67,7 @@ export const licenseFileExists = requireFile({
   id: 'license-file-exists',
   message: 'no {{file}} file',
   severity: 'error',
+  when: ({ flags }) => flags.isPrivate !== true,
 })
 
 export const licenseFileContent = defineRule({

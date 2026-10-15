@@ -14,6 +14,8 @@ interface RepoFieldOptions {
   isMissing: (repo: Readonly<GithubRepo>) => boolean
   /** The message, shown when the field is missing */
   message: string
+  /** Skip the check when the repo is private */
+  publicOnly?: boolean
   /** The severity of the check */
   severity: Severity
 }
@@ -25,13 +27,14 @@ interface RepoFieldOptions {
  * @param options.id the check id
  * @param options.isMissing tells if the repo lacks the field
  * @param options.message the message
+ * @param options.publicOnly skip the check when the repo is private
  * @param options.severity the severity
  * @returns the project rule
  * @example const missingTopics = requireRepoField({ id: 'missing-topics', isMissing: repo => repo.topics.length === 0, message: 'the repo has no topics', severity: 'info' })
  */
-export function requireRepoField({ actions = [], id, isMissing, message, severity }: Readonly<RepoFieldOptions>) {
+export function requireRepoField({ actions = [], id, isMissing, message, publicOnly = false, severity }: Readonly<RepoFieldOptions>) {
   return defineProjectRule({
-    appliesTo: ({ project }) => project.github !== undefined && !project.github.isArchived && !project.github.isFork && !project.isOtherOwner,
+    appliesTo: ({ project }) => project.github !== undefined && !project.github.isArchived && !project.github.isFork && !project.isOtherOwner && !(publicOnly && project.github.isPrivate),
     check({ project, report }) {
       invariant(project.github !== undefined, 'appliesTo guarantees a GitHub repo')
       if (isMissing(project.github)) report({ actions, messageId: 'missing' })

@@ -218,11 +218,11 @@ For projects that are deployed as a website.
 
 How the project introduces itself, on GitHub and in the repo.
 
-- 🚀 🟡 `missing-license`: the repo has no license on GitHub.
+- 🚀 🟡 `missing-license`: the repo has no license on GitHub. Skipped for private repos.
 - 🚀 🟡 `missing-description`: the repo has no description.
-- 🚀 🔵 `missing-topics`: the repo has no topics.
-- 🚀 🔵 `missing-homepage`: the repo has no homepage.
-- ✅ 🔴 `license-file-exists`: a `LICENSE` file exists (`license.ts`).
+- 🚀 🔵 `missing-topics`: the repo has no topics. Skipped for private repos.
+- 🚀 🔵 `missing-homepage`: the repo has no homepage. Skipped for private repos.
+- ✅ 🔴 `license-file-exists`: a `LICENSE` file exists. Skipped for private repos (`license.ts`).
 - ✅ 🔴 `license-file-content`: the `LICENSE` file matches the declared license: GPL-3.0 has the "GNU GENERAL PUBLIC LICENSE" title and the "Version 3, 29 June 2007" subtitle, MIT has the "MIT License" title (`license.ts`).
 - ✅ 🔴 `package-license`: a `license` property, with the expected license value (`package.file.ts`).
 - ✅ 🔴 `package-author`: an `author` property (`package.file.ts`).

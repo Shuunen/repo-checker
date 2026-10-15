@@ -13,7 +13,10 @@ testRule(licenseFileExists, {
     { errors: ['missing'], flags: { gitAuthor: { name: 'Me' } }, name: 'no LICENSE, another license, no fix', pkg: { license: 'GPL-3.0' } },
     { errors: ['missing'], name: 'no LICENSE, no author, no fix' },
   ],
-  valid: [{ files: { LICENSE: gpl }, name: 'a LICENSE' }],
+  valid: [
+    { files: { LICENSE: gpl }, name: 'a LICENSE' },
+    { flags: { isPrivate: true }, name: 'no LICENSE, private repo' },
+  ],
 })
 
 testRule(licenseFileContent, {

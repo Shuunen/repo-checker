@@ -11,9 +11,18 @@ function notChecked(missing: Readonly<Partial<GithubRepo>>) {
   return [{ github: { ...missing, isArchived: true }, name: 'an archived repo' }, { github: { ...missing, isFork: true }, name: 'a fork' }, { github: missing, isOtherOwner: true, name: 'a clone of another owner' }, { name: 'a folder without GitHub repo' }]
 }
 
+/**
+ * The case where a public-only check skips a private repo
+ * @param missing the repo fields that make the field missing
+ * @returns the valid case
+ */
+function notCheckedPrivate(missing: Readonly<Partial<GithubRepo>>) {
+  return { github: { ...missing, isPrivate: true }, name: 'a private repo' }
+}
+
 testProjectRule(missingLicense, {
   invalid: [{ errors: ['missing'], github: { hasLicense: false }, name: 'no license detected' }],
-  valid: [{ github: {}, name: 'a license' }, ...notChecked({ hasLicense: false })],
+  valid: [{ github: {}, name: 'a license' }, ...notChecked({ hasLicense: false }), notCheckedPrivate({ hasLicense: false })],
 })
 
 testProjectRule(missingDescription, {
@@ -23,10 +32,10 @@ testProjectRule(missingDescription, {
 
 testProjectRule(missingTopics, {
   invalid: [{ errors: ['missing'], github: { topics: [] }, name: 'no topics' }],
-  valid: [{ github: {}, name: 'a topic' }, ...notChecked({ topics: [] })],
+  valid: [{ github: {}, name: 'a topic' }, ...notChecked({ topics: [] }), notCheckedPrivate({ topics: [] })],
 })
 
 testProjectRule(missingHomepage, {
   invalid: [{ actions: [['sync-github-metadata']], errors: ['missing'], github: { homepage: undefined }, name: 'no homepage' }],
-  valid: [{ github: {}, name: 'a homepage' }, ...notChecked({ homepage: undefined })],
+  valid: [{ github: {}, name: 'a homepage' }, ...notChecked({ homepage: undefined }), notCheckedPrivate({ homepage: undefined })],
 })
