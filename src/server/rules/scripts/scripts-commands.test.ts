@@ -5,7 +5,17 @@ const eslint = { devDependencies: { eslint: '^9.0.0' } }
 const tsNode = { devDependencies: { 'ts-node': '^10.0.0' } }
 
 testRule(scriptsFinalEcho, {
-  invalid: [{ errors: ['missing', 'missing'], name: 'build and test without echo', pkg: { scripts: { build: 'tsc', check: 'pnpm build && echo check success', test: 'vitest' } } }],
+  invalid: [
+    {
+      errors: ['missing', 'missing'],
+      name: 'build and test without echo, fixed',
+      output: { scripts: { build: 'tsc && echo build success', check: 'pnpm build && echo check success', test: 'vitest run && echo test success' } },
+      pkg: { scripts: { build: 'tsc', check: 'pnpm build && echo check success', test: 'vitest run' } },
+    },
+    { errors: ['missing'], name: 'vitest in watch mode, not fixed', pkg: { scripts: { test: 'vitest' } } },
+    { errors: ['missing'], name: 'a --watch flag, not fixed', pkg: { scripts: { build: 'tsc --watch' } } },
+    { errors: ['missing'], name: 'a -w flag, not fixed', pkg: { scripts: { build: 'tsc -w' } } },
+  ],
   valid: [
     { name: 'every task echoes', pkg: { scripts: { build: 'tsc && echo build success', lint: 'eslint src && echo lint done' } } },
     { name: 'no such task', pkg: { scripts: { dev: 'vite' } } },

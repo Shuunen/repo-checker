@@ -5,6 +5,8 @@ import { defineRule } from '../../engine/define-rule.ts'
 import { hasDependency } from '../../engine/package-json.ts'
 
 interface ReadmePatternOptions {
+  /** Turn the README text into a fixed one, makes the rule fixable */
+  fix?: (text: string) => string
   id: string
   message: string
   pattern: RegExp
@@ -24,20 +26,22 @@ export function hasReadme({ readme }: Readonly<Context>) {
 /**
  * A rule that requires the README to match a pattern
  * @param options the options
+ * @param options.fix turn the README text into a fixed one
  * @param options.id the check id
  * @param options.message the message when it does not match
  * @param options.pattern the pattern, without the `g` flag
  * @param options.severity the severity
  * @returns the rule
  */
-export function requireInReadme({ id, message, pattern, severity }: Readonly<ReadmePatternOptions>) {
+export function requireInReadme({ fix, id, message, pattern, severity }: Readonly<ReadmePatternOptions>) {
   return defineRule({
     appliesTo: hasReadme,
     check({ readme, report }) {
       invariant(readme !== undefined, 'appliesTo guarantees a README')
-      if (!pattern.test(readme.text)) report({ messageId: 'missing' })
+      if (pattern.test(readme.text)) return
+      report(fix === undefined ? { messageId: 'missing' } : { fix: fixer => fixer.text(readme.file, fix), messageId: 'missing' })
     },
-    meta: { id, messages: { missing: message }, severity },
+    meta: { fixable: fix !== undefined, id, messages: { missing: message }, severity },
   })
 }
 

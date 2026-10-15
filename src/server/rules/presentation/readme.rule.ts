@@ -2,11 +2,24 @@ import { invariant } from 'es-toolkit'
 import { defineRule } from '../../engine/define-rule.ts'
 import { forbidInReadme, hasReadme, requireInReadme } from './readme.utils.ts'
 
+/**
+ * The text of a new README: a title, the description when known, and a Thanks section
+ * @param title the project name
+ * @param description what the project does, undefined when unknown
+ * @returns the text
+ */
+function readmeStub(title: string, description: string | undefined) {
+  return `# ${title}\n\n${description === undefined ? '' : `${description}\n\n`}## Thanks\n`
+}
+
 export const readmeExists = defineRule({
-  check({ readme, report }) {
-    if (readme === undefined) report({ messageId: 'missing' })
+  check({ flags, pkg, readme, report }) {
+    if (readme !== undefined) return
+    const title = pkg?.name ?? flags.repoId
+    if (title === undefined) report({ messageId: 'missing' })
+    else report({ fix: fixer => fixer.text('README.md', () => readmeStub(title, pkg?.description ?? flags.githubDescription)), messageId: 'missing' })
   },
-  meta: { id: 'readme-exists', messages: { missing: 'no README.md or readme.md file' }, severity: 'error' },
+  meta: { fixable: true, id: 'readme-exists', messages: { missing: 'no README.md or readme.md file' }, severity: 'error' },
 })
 
 export const readmeContentRules = [

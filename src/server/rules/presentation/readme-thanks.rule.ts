@@ -2,7 +2,7 @@ import { invariant } from 'es-toolkit'
 import { defineRule } from '../../engine/define-rule.ts'
 import { hasReadme, hasThanks, requireInReadme, thanksLine, thanksList } from './readme.utils.ts'
 
-export const readmeThanksSection = requireInReadme({ id: 'readme-thanks-section', message: 'the README has no "## Thanks" section', pattern: /## Thanks/u, severity: 'warning' })
+export const readmeThanksSection = requireInReadme({ fix: text => `${text.trimEnd()}\n\n## Thanks\n`, id: 'readme-thanks-section', message: 'the README has no "## Thanks" section', pattern: /## Thanks/u, severity: 'warning' })
 
 export const readmeThanksEntries = defineRule({
   appliesTo: context => hasReadme(context) && context.readme?.text.includes('## Thanks') === true,

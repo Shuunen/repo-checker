@@ -16,7 +16,12 @@ function byId(id: string) {
 const readme = (text: string) => ({ 'README.md': text })
 
 testRule(readmeExists, {
-  invalid: [{ errors: ['missing'], name: 'no README', pkg: { name: 'app' } }],
+  invalid: [
+    { errors: ['missing'], name: 'no README, the package name', output: '# app\n\n## Thanks\n', pkg: { name: 'app' } },
+    { errors: ['missing'], name: 'no README, the package description', output: '# app\n\nDoes things\n\n## Thanks\n', pkg: { description: 'Does things', name: 'app' } },
+    { errors: ['missing'], flags: { githubDescription: 'From GitHub', repoId: 'tool' }, name: 'no README, the repo name and the GitHub description', output: '# tool\n\nFrom GitHub\n\n## Thanks\n' },
+    { errors: ['missing'], name: 'no README, nothing known to write one' },
+  ],
   valid: [
     { files: readme('# app'), name: 'README.md' },
     { files: { 'readme.md': '# app' }, name: 'readme.md' },

@@ -4,13 +4,25 @@ import { isUsingEslint } from './scripts.utils.ts'
 
 const echoTasks = ['build', 'check', 'lint', 'test']
 
+/**
+ * Tell if a command keeps running, like a watch mode, so an echo after it would never print
+ * @param command the script command
+ * @returns true when it never ends by itself
+ */
+function isWatching(command: string) {
+  return /--watch|\s-w\b/u.test(command) || (/\bvitest\b/u.test(command) && !/\bvitest run\b|--run\b|--coverage/u.test(command))
+}
+
 export const scriptsFinalEcho = defineRule({
   check({ pkg, report }) {
     const scripts = pkg?.scripts ?? {}
     const missing = echoTasks.filter(task => scripts[task] !== undefined && !new RegExp(`.+ && echo [\\w\\s]*${task} \\w+`, 'u').test(scripts[task]))
-    for (const task of missing) report({ data: { task }, messageId: 'missing' })
+    for (const task of missing) {
+      const command = String(scripts[task])
+      report(isWatching(command) ? { data: { task }, messageId: 'missing' } : { data: { task }, fix: fixer => fixer.json('package.json').update(['scripts', task], current => `${String(current)} && echo ${task} success`), messageId: 'missing' })
+    }
   },
-  meta: { id: 'scripts-final-echo', messages: { missing: 'script "{{task}}" has no final echo, like "{{task}}": "... && echo {{task}} success"' }, severity: 'warning' },
+  meta: { fixable: true, id: 'scripts-final-echo', messages: { missing: 'script "{{task}}" has no final echo, like "{{task}}": "... && echo {{task}} success"' }, severity: 'warning' },
 })
 
 export const scriptsEslintCache = defineRule({

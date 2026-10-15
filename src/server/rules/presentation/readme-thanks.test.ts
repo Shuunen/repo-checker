@@ -6,7 +6,7 @@ const vitest = thanksList.find(thanks => thanks.label === 'Vitest')
 const github = '- [Github](https://github.com) : for all their great work'
 
 testRule(readmeThanksSection, {
-  invalid: [{ errors: ['missing'], files: { 'README.md': '# app\n' }, name: 'no thanks section' }],
+  invalid: [{ errors: ['missing'], files: { 'README.md': '# app\n' }, name: 'no thanks section, added', output: '# app\n\n## Thanks\n' }],
   valid: [{ files: { 'README.md': '# app\n\n## Thanks\n' }, name: 'a thanks section' }],
 })
 
