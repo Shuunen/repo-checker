@@ -93,8 +93,9 @@ async function readChecked(context: Readonly<Context>, files: Candidates): Promi
 }
 
 /**
- * A rule that requires one of the files to exist
+ * A rule that requires one of the files to exist, fixable when a content is given: the first candidate is created with it
  * @param options the options
+ * @param options.content the text of the file to create when fixing, the rule is not fixable when left out
  * @param options.files the candidates, any of them is enough
  * @param options.id the check id
  * @param options.message the message when none exists, `{{file}}` is the first candidate
@@ -103,14 +104,16 @@ async function readChecked(context: Readonly<Context>, files: Candidates): Promi
  * @returns the rule
  * @example requireFile({ files: ['.nvmrc'], id: 'nvmrc-exists', message: 'no {{file}} file', severity: 'error' })
  */
-export function requireFile({ files, id, message, severity, when = () => true }: Readonly<FileRuleOptions>) {
+export function requireFile({ content, files, id, message, severity, when = () => true }: Readonly<FileRuleOptions & { content?: string }>) {
   return defineRule({
     appliesTo: when,
     async check(context) {
       const candidates = candidatesOf(files, context)
-      if ((await firstExisting(context.files, candidates)) === undefined) context.report({ data: { file: String(candidates[0]) }, messageId: 'missing' })
+      if ((await firstExisting(context.files, candidates)) !== undefined) return
+      const file = String(candidates[0])
+      context.report(content === undefined ? { data: { file }, messageId: 'missing' } : { data: { file }, fix: fixer => fixer.text(file, () => content), messageId: 'missing' })
     },
-    meta: { id, messages: { missing: message }, severity },
+    meta: { fixable: content !== undefined, id, messages: { missing: message }, severity },
   })
 }
 

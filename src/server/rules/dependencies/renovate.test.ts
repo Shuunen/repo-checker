@@ -15,10 +15,13 @@ function byId(id: string) {
 
 const good = { 'renovate.json': '{ "$schema": "https://docs.renovatebot.com/renovate-schema.json", "extends": ["config:semverAllMonthly", ":automergeAll"], "dependencyDashboard": false }' }
 
-testRule(byId('renovate-config-exists'), { invalid: [{ errors: ['missing'], name: 'no renovate.json' }], valid: [{ files: good, name: 'a renovate.json' }] })
+testRule(byId('renovate-config-exists'), {
+  invalid: [{ errors: ['missing'], name: 'no renovate.json', output: '{\n  "$schema": "https://docs.renovatebot.com/renovate-schema.json",\n  "dependencyDashboard": false,\n  "extends": [\n    "config:semverAllMonthly",\n    ":automergeAll"\n  ]\n}\n' }],
+  valid: [{ files: good, name: 'a renovate.json' }],
+})
 testRule(byId('renovate-schema'), { invalid: [{ errors: ['missing'], files: { 'renovate.json': '{}' }, name: 'no schema', output: '{\n  "$schema": "https://docs.renovatebot.com/renovate-schema.json"\n}' }], valid: [{ files: good, name: 'the schema' }] })
 testRule(byId('renovate-extends'), { invalid: [{ errors: ['missing'], files: { 'renovate.json': '{}' }, name: 'no extends' }], valid: [{ files: good, name: 'extends' }] })
-testRule(byId('renovate-no-config-base'), { invalid: [{ errors: ['found'], files: { 'renovate.json': '{ "extends": ["config:base"] }' }, name: 'config:base' }], valid: [{ files: good, name: 'semver monthly' }] })
+testRule(byId('renovate-no-config-base'), { invalid: [{ errors: ['found'], files: { 'renovate.json': '{ "extends": ["config:base"] }' }, name: 'config:base', output: '{ "extends": ["config:semverAllMonthly"] }' }], valid: [{ files: good, name: 'semver monthly' }] })
 testRule(byId('renovate-dashboard-off'), { invalid: [{ errors: ['missing'], files: { 'renovate.json': '{ "dependencyDashboard": true }' }, name: 'dashboard on' }], valid: [{ files: good, name: 'dashboard off' }] })
 testRule(byId('renovate-automerge'), {
   invalid: [{ errors: ['missing'], files: { 'renovate.json': '{ "extends": [] }' }, name: 'no automerge' }],

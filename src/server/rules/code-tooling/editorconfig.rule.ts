@@ -2,8 +2,22 @@ import { forbidInFile, requireFile, requireInFile } from '../../engine/file-rule
 
 const files = ['.editorconfig']
 
+const editorconfigContent = `root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+`
+
 export const editorconfigRules = [
-  requireFile({ files, id: 'editorconfig-exists', message: 'no {{file}} file', severity: 'error' }),
+  requireFile({ content: editorconfigContent, files, id: 'editorconfig-exists', message: 'no {{file}} file', severity: 'error' }),
   requireInFile({ files, id: 'editorconfig-indent', message: '{{file}} does not indent with 2 spaces, like indent_style = space and indent_size = 2', pattern: /^(?=[\s\S]*indent_style = space)(?=[\s\S]*indent_size = 2)/u, severity: 'error' }),
   requireInFile({ files, id: 'editorconfig-line-endings', message: '{{file}} does not use Unix line endings, like end_of_line = lf', pattern: /end_of_line = lf/u, severity: 'error' }),
   requireInFile({ files, id: 'editorconfig-charset', message: '{{file}} does not use utf-8, like charset = utf-8', pattern: /charset = utf-8/u, severity: 'error' }),

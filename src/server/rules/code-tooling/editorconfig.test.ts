@@ -16,7 +16,10 @@ function byId(id: string) {
 const good = { '.editorconfig': 'root = true\n\n[*]\ncharset = utf-8\nend_of_line = lf\nindent_size = 2\nindent_style = space\ninsert_final_newline = true\ntrim_trailing_whitespace = true\n' }
 const bare = { '.editorconfig': 'root = true\n' }
 
-testRule(byId('editorconfig-exists'), { invalid: [{ errors: ['missing'], name: 'no .editorconfig' }], valid: [{ files: good, name: 'an .editorconfig' }] })
+testRule(byId('editorconfig-exists'), {
+  invalid: [{ errors: ['missing'], name: 'no .editorconfig', output: 'root = true\n\n[*]\nindent_style = space\nindent_size = 2\nend_of_line = lf\ncharset = utf-8\ntrim_trailing_whitespace = true\ninsert_final_newline = true\n\n[*.md]\ntrim_trailing_whitespace = false\n' }],
+  valid: [{ files: good, name: 'an .editorconfig' }],
+})
 testRule(byId('editorconfig-indent'), { invalid: [{ errors: ['missing'], files: { '.editorconfig': 'indent_style = space\nindent_size = 4' }, name: '4 spaces' }], valid: [{ files: good, name: '2 spaces, in any order' }] })
 testRule(byId('editorconfig-line-endings'), { invalid: [{ errors: ['missing'], files: bare, name: 'no line endings' }], valid: [{ files: good, name: 'lf' }] })
 testRule(byId('editorconfig-charset'), { invalid: [{ errors: ['missing'], files: bare, name: 'no charset' }], valid: [{ files: good, name: 'utf8' }] })

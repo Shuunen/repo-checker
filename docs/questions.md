@@ -43,3 +43,30 @@ None so far.
 - **The release**: a new major version of `repo-check` on npm (version bump, changelog, `npm publish`, tag). Publishing is yours to trigger. `bun check` passes, and `npm pack` holds `dist/`, the README and the LICENSE.
 - ✅ **The screenshots** of the README are done, from the demo account of `demo/` (fake repos and a fake `gh`, no real repo name appears), and the generator is kept: `bun run build && bun demo`, with a smoke test in `bun check`. To redo the captures, run it and take them in the browser.
 - **Checks that need data the scan does not read yet** (`checks.md`, 📋): stale branches and tags, outdated or deprecated dependencies and advisories (the npm registry), CI status, lockfile checks, the deployed site. Each one is a decision on cost (API calls) and noise.
+
+## Session 2026-10-15: new fixers, to review
+
+Added fixers (all tested, `bun run check` passes with 100% coverage). Created files are filled with this repo's own content, nothing is committed by the fix itself:
+
+- `nvmrc-exists` creates `.nvmrc` with `24.21.0` (this repo's version, hardcoded in `node.rule.ts`).
+- `editorconfig-exists` creates `.editorconfig` (same content as this repo's).
+- `gitignore-exists` creates `.gitignore` with `node_modules`; `gitignore-node-modules` appends it.
+- `renovate-config-exists` creates `renovate.json` (this repo's); `renovate-no-config-base` swaps `config:base` for `config:semverAllMonthly`.
+- `scripts-preversion` adds `pnpm check`, only when a `check` script exists.
+- `scripts-postversion` adds `git push && git push --tags`, never `npm publish`.
+- `requireFile` got an optional `content` option (the rule is fixable only when given).
+
+Questions, findings left without a fixer on purpose:
+
+1. **`.nvmrc` version**: hardcoding `24.21.0` will age. Should the fixer read the current LTS, or the Node of the machine running repo-check?
+2. **`npmrc-exists`**: which content should a new `.npmrc` get? Only `enable-pre-post-scripts=true` (this repo's), or nothing useful to add (an empty file would only silence the check)?
+3. **`repo-checker-config`** (14 projects): creating `{}` silences the check without saying anything. Should the fixer guess `maxSizeKo`, or stay unfixable?
+4. **`license-file-exists` / `missing-license` / `package-license`**: needs a license choice and author. Always MIT with the git user as author, or ask per project in the UI?
+5. **`package-files`, `package-author`, `package-bugs`, `package-homepage`, `package-repository`, `package-keywords`, `package-description`**: derivable from the GitHub repo and git config (author, `bugs`, `homepage`, `repository`, description) except `files` and `keywords`. Fill the derivable ones automatically?
+6. **`readme-exists`, `readme-logo`, `readme-demo`, `readme-thanks-section`**: a README stub with title and `## Thanks` could be generated, but logo and demo need images. Generate the stub only?
+7. **`scripts-final-echo`, `scripts-unique-mark`**: appending `&& echo test success` is safe but touches every script; `unique-mark` needs a file path. Fix only the echo?
+8. **`vitest-pool-threads`**: editing a vitest config means inserting into JS code, no AST tool here. Worth adding one, or keep it manual?
+9. **`tsconfig-schema`, `package-schema`**: already have fixers, so the 11 + 2 findings are fixable now from the UI.
+10. **GitHub-side findings** (`missing-description`, `missing-topics`, `missing-homepage`): need write calls to the GitHub API, which is a new kind of action. Want them as actions (with a preview), or leave manual?
+11. **`package-json-exists`** (3 repos, not Node projects like `css-gungame`): should the rule skip projects with no JS at all instead of asking for a `package.json`?
+12. **`dependency-tool-choice`, `coverage-dependency`, `unit-testing-dependency`**: installing packages is out of scope for file fixers. Keep unfixable?

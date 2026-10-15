@@ -46,18 +46,21 @@ export const isUsingBun: When = ({ flags }) => flags.isUsingBun === true
  * @param options the options
  * @param options.id the check id
  * @param options.message the message
+ * @param options.fix get the command to add when fixing, the rule is not fixable when left out
  * @param options.name the script name
  * @param options.severity the severity
  * @param options.when only check when it returns true
  * @returns the rule
  */
-export function requireScript({ id, message, name, severity, when = () => true }: Readonly<ScriptRuleOptions & { name: string }>) {
+export function requireScript({ fix, id, message, name, severity, when = () => true }: Readonly<ScriptRuleOptions & { fix?: (context: Readonly<Context>) => string | undefined; name: string }>) {
   return defineRule({
     appliesTo: context => context.pkg !== undefined && when(context),
-    check({ pkg, report }) {
-      if (pkg?.scripts?.[name] === undefined) report({ data: { name }, messageId: 'missing' })
+    check(context) {
+      if (context.pkg?.scripts?.[name] !== undefined) return
+      const command = fix?.(context)
+      context.report(command === undefined ? { data: { name }, messageId: 'missing' } : { data: { name }, fix: fixer => fixer.json('package.json').set(['scripts', name], command), messageId: 'missing' })
     },
-    meta: { id, messages: { missing: message }, severity },
+    meta: { fixable: fix !== undefined, id, messages: { missing: message }, severity },
   })
 }
 

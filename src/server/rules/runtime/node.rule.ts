@@ -15,7 +15,7 @@ function hasPrePostScripts({ pkg }: Readonly<Context>) {
 }
 
 export const nodeVersionRules = [
-  requireFile({ files: ['.nvmrc'], id: 'nvmrc-exists', message: 'no {{file}} file to pin the Node version', severity: 'error' }),
+  requireFile({ content: '24.21.0\n', files: ['.nvmrc'], id: 'nvmrc-exists', message: 'no {{file}} file to pin the Node version', severity: 'error' }),
   requireInFile({ files: ['.nvmrc'], id: 'nvmrc-recent-node', message: '{{file}} does not pin a recent LTS Node version, like 24.11.0', pattern: /\b24\.\d+\.\d+/u, severity: 'warning' }),
 ]
 

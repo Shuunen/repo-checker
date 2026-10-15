@@ -15,8 +15,14 @@ function byId(id: string) {
 
 testRule(byId('scripts-section'), { invalid: [{ errors: ['missing'], name: 'no scripts', pkg: { name: 'foo' } }], valid: [{ name: 'scripts', pkg: { scripts: {} } }] })
 testRule(byId('scripts-check'), { invalid: [{ errors: ['missing'], name: 'no check', pkg: { scripts: { test: 'vitest' } } }], valid: [{ name: 'a check', pkg: { scripts: { check: 'pnpm test' } } }, { name: 'no package.json' }] })
-testRule(byId('scripts-preversion'), { invalid: [{ errors: ['missing'], name: 'no preversion', pkg: { scripts: {} } }], valid: [{ name: 'a preversion', pkg: { scripts: { preversion: 'pnpm check' } } }] })
-testRule(byId('scripts-postversion'), { invalid: [{ errors: ['missing'], name: 'no postversion', pkg: { scripts: {} } }], valid: [{ name: 'a postversion', pkg: { scripts: { postversion: 'git push' } } }] })
+testRule(byId('scripts-preversion'), {
+  invalid: [
+    { errors: ['missing'], name: 'no preversion, check exists', output: { scripts: { check: 'pnpm lint', preversion: 'pnpm check' } }, pkg: { scripts: { check: 'pnpm lint' } } },
+    { errors: ['missing'], name: 'no preversion, no check to run', pkg: { scripts: {} } },
+  ],
+  valid: [{ name: 'a preversion', pkg: { scripts: { preversion: 'pnpm check' } } }],
+})
+testRule(byId('scripts-postversion'), { invalid: [{ errors: ['missing'], name: 'no postversion', output: { scripts: { postversion: 'git push && git push --tags' } }, pkg: { scripts: {} } }], valid: [{ name: 'a postversion', pkg: { scripts: { postversion: 'git push' } } }] })
 
 testRule(byId('scripts-depcruise'), {
   invalid: [{ errors: ['missing'], name: 'dependency-cruiser not run', pkg: { devDependencies: { 'dependency-cruiser': '^17.0.0' }, scripts: { lint: 'eslint' } } }],
