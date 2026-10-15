@@ -12,7 +12,7 @@ export const readmeThanksEntries = defineRule({
     const { text } = readme
     for (const thanks of thanksList) {
       const isUsed = thanks.isUsed(context)
-      if (isUsed && !hasThanks(text, thanks)) report({ data: { label: thanks.label }, fix: fixer => fixer.text(readme.file, current => current.replace(/(?<section>## Thank.*\n+)/u, `$<section>${thanksLine(thanks)}\n`)), messageId: 'missing' })
+      if (isUsed && !hasThanks(text, thanks)) report({ data: { label: thanks.label }, fix: fixer => fixer.text(readme.file, current => current.replace(/(?<heading>## Thank.*)\n+/u, `$<heading>\n\n${thanksLine(thanks)}\n`)), messageId: 'missing' })
       if (!isUsed && hasThanks(text, thanks)) report({ data: { label: thanks.label }, messageId: 'unused' })
     }
   },

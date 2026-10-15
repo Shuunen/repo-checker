@@ -13,6 +13,7 @@ testRule(readmeThanksSection, {
 testRule(readmeThanksEntries, {
   invalid: [
     { errors: ['missing'], files: { 'README.md': `# app\n\n## Thanks\n\n${github}\n` }, name: 'a used tool not thanked, added first', output: `# app\n\n## Thanks\n\n${vitest === undefined ? '' : thanksLine(vitest)}\n${github}\n`, pkg: { devDependencies: { vitest: '^4.0.0' } } },
+    { errors: ['missing'], files: { 'README.md': `# app\n\n## Thanks\n${github}\n` }, name: 'no blank line after the title, one is added', output: `# app\n\n## Thanks\n\n${vitest === undefined ? '' : thanksLine(vitest)}\n${github}\n`, pkg: { devDependencies: { vitest: '^4.0.0' } } },
     { errors: ['unused'], files: { 'README.md': '# app\n\n## Thanks\n\n- [Zod](https://zod.dev) : validation\n' }, name: 'a thanked tool no longer used', pkg: { name: 'app' } },
   ],
   valid: [

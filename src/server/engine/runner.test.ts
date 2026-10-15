@@ -2,7 +2,7 @@ import { buildContext } from './context.ts'
 import { defineRule, formatMessage } from './define-rule.ts'
 import { memoryIo } from './io.ts'
 import { toJsonText } from './rule-tester.ts'
-import { checkProject, type FilePlan, fixProject, planFixes } from './runner.ts'
+import { checkProject, type FilePlan, fixProject, planAllFixes, planFixes } from './runner.ts'
 
 const schema = 'https://json.schemastore.org/package'
 
@@ -73,6 +73,40 @@ describe('runner', () => {
     expect(findings.map(finding => finding.ruleId)).toStrictEqual(['needs-schema', 'needs-version'])
     const plans = await planFixes(findings, io)
     expect(plans.map(plan => plan.after)).toStrictEqual([toJsonText({ $schema: schema, name: 'foo', version: '0.0.0' })])
+  })
+
+  it('plans the fixes that only apply once other fixes are in', async () => {
+    expect.hasAssertions()
+    const files = { 'package.json': toJsonText({ name: 'foo' }) }
+    const followRule = defineRule({
+      appliesTo: ({ pkg }) => pkg?.version !== undefined,
+      check({ report }) {
+        report({ fix: fixer => fixer.json('package.json').set(['private'], true), messageId: 'missing' })
+      },
+      meta: { fixable: true, id: 'needs-private', messages: { missing: 'not private' }, severity: 'warning' },
+    })
+    const { findings, plans } = await planAllFixes([followRule, versionRule], memoryIo(files))
+    expect(new Set(findings.map(finding => finding.ruleId))).toStrictEqual(new Set(['needs-version', 'needs-private']))
+    expect(plans.map(plan => JSON.parse(plan.after) as unknown)).toStrictEqual([{ name: 'foo', private: true, version: '0.0.0' }])
+    expect(files['package.json']).toBe(toJsonText({ name: 'foo' }))
+  })
+
+  it('plans nothing when nothing changes', async () => {
+    expect.hasAssertions()
+    const { plans } = await planAllFixes([schemaRule], memoryIo({ 'package.json': toJsonText({ $schema: schema }) }))
+    expect(plans).toStrictEqual([])
+  })
+
+  it('stops after a few rounds when fixes never settle', async () => {
+    expect.hasAssertions()
+    const growRule = defineRule({
+      check({ report }) {
+        report({ fix: fixer => fixer.text('a.txt', text => `${text}x`), messageId: 'missing' })
+      },
+      meta: { fixable: true, id: 'grows', messages: { missing: 'grows' }, severity: 'warning' },
+    })
+    const { plans } = await planAllFixes([growRule], memoryIo())
+    expect(plans.map(plan => plan.after)).toStrictEqual(['xxxxx'])
   })
 
   it('writes nothing when the user does not confirm', async () => {

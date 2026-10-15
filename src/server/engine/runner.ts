@@ -11,7 +11,7 @@ import type { ProjectReport, ProjectRule } from './define-project-rule.ts'
 import { type Finding, formatMessage, type Report, type Rule, type RuleMeta } from './define-rule.ts'
 import { type Edit, fixer } from './fixer.ts'
 import type { ProjectFlags } from './flags.ts'
-import type { FileReader, Io } from './io.ts'
+import { type FileReader, type Io, overlayIo } from './io.ts'
 
 /** The planned change of one file, what the confirm dialog shows as a diff */
 export interface FilePlan {
@@ -164,6 +164,66 @@ export async function planFixes(findings: readonly Finding[], files: Readonly<Fi
   )
   const plans = await Promise.all([...editsPerFile].map(([file, edits]) => planFile(files, file, edits)))
   return plans.filter(plan => plan.after !== plan.before)
+}
+
+/** The most rounds of checks and fixes `planAllFixes` chains, a safety net against fixes that keep undoing each other */
+const maxRounds = 5
+
+/** What the rounds of `planAllFixes` gather */
+interface Rounds {
+  /** The text of each file the rounds changed, as of the last round */
+  files: Map<string, string>
+  /** The findings of every round */
+  findings: Finding[]
+}
+
+/** The options of `runRounds` */
+interface RoundsOptions {
+  /** The project flags */
+  flags: ProjectFlags
+  /** What the previous rounds found and changed */
+  gathered: Rounds
+  /** The rounds left */
+  left: number
+  /** The project files with the fixes of the previous rounds */
+  overlay: Io
+  /** The file rules to run */
+  rules: readonly Rule[]
+}
+
+/**
+ * Check and fix in memory, then again on the result, until a round has nothing to fix or the rounds run out
+ * @param options the options
+ * @param options.flags the project flags
+ * @param options.gathered what the previous rounds found and changed
+ * @param options.left the rounds left
+ * @param options.overlay the project files with the fixes of the previous rounds
+ * @param options.rules the file rules to run
+ * @returns what all the rounds found and changed
+ */
+async function runRounds({ flags, gathered, left, overlay, rules }: Readonly<RoundsOptions>): Promise<Rounds> {
+  if (left === 0) return gathered
+  const { findings } = await checkProject(rules, await buildContext(overlay, flags))
+  const plans = await planFixes(findings, overlay)
+  const next = { files: new Map([...gathered.files, ...plans.map(plan => [plan.file, plan.after] as const)]), findings: [...gathered.findings, ...findings] }
+  if (plans.length === 0) return next
+  await Promise.all(plans.map(plan => overlay.writeText(plan.file, plan.after)))
+  return runRounds({ flags, gathered: next, left: left - 1, overlay, rules })
+}
+
+/**
+ * Plan the fixes until the checks have nothing more to fix: a fix can make another rule apply, like a new README section the next rule fills. Fixes are applied in memory between rounds, nothing is written
+ * @param rules the file rules to run
+ * @param io the project files as they are
+ * @param flags the project flags
+ * @returns the findings of every round, and one plan per file that would change, from its text now to its text after every round
+ * @example const { findings, plans } = await planAllFixes(rules, diskIo(folder), flags)
+ */
+export async function planAllFixes(rules: readonly Rule[], io: Readonly<FileReader>, flags: ProjectFlags = {}) {
+  const overlay = overlayIo(io)
+  const { files, findings } = await runRounds({ flags, gathered: { files: new Map(), findings: [] }, left: maxRounds, overlay, rules })
+  const plans = await Promise.all([...files].map(async ([file, after]) => ({ after, before: (await io.readText(file)) ?? '', file })))
+  return { findings, plans: plans.filter(plan => plan.after !== plan.before) }
 }
 
 /** The options of `fixProject` */

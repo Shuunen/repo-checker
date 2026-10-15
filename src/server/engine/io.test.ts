@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { diskIo, memoryIo } from './io.ts'
+import { diskIo, memoryIo, overlayIo } from './io.ts'
 
 /**
  * Create a throwaway project folder with a 3Ko file, removed when the test ends
@@ -102,5 +102,29 @@ describe('memory io', () => {
   it('starts empty by default', async () => {
     expect.hasAssertions()
     await expect(memoryIo().readText('package.json')).resolves.toBeUndefined()
+  })
+})
+
+describe('overlay io', () => {
+  it('holds the writes in memory and leaves the base alone', async () => {
+    expect.hasAssertions()
+    const files: Record<string, string> = { 'a.txt': 'x'.repeat(1024) }
+    const io = overlayIo(memoryIo(files))
+    await expect(io.readText('a.txt')).resolves.toHaveLength(1024)
+    await io.writeText('a.txt', 'hello')
+    await io.writeText('b.txt', 'x'.repeat(2048))
+    await expect(io.readText('a.txt')).resolves.toBe('hello')
+    await expect(io.sizeKo('b.txt')).resolves.toBe(2)
+    await expect(io.sizeKo('c.txt')).resolves.toBeUndefined()
+    expect(files['a.txt']).toHaveLength(1024)
+  })
+
+  it('searches the base files with the changes on top', async () => {
+    expect.hasAssertions()
+    const io = overlayIo(memoryIo({ 'src/a.js': 'needle', 'src/b.js': 'needle', 'tests/c.js': 'needle' }))
+    await io.writeText('src/b.js', 'hay')
+    await io.writeText('src/d.js', 'needle')
+    await expect(io.search(/needle/u)).resolves.toStrictEqual(['src/a.js', 'src/d.js', 'tests/c.js'])
+    await expect(io.search(/needle/u, 'tests')).resolves.toStrictEqual(['tests/c.js'])
   })
 })

@@ -3,9 +3,8 @@ import path from 'node:path'
 import type { FixPlan } from '../../shared/action.ts'
 import type { LocalClone } from '../../shared/project.ts'
 import type { SplitRules } from '../check-project.ts'
-import { buildContext } from '../engine/context.ts'
 import { diskIo, type Io } from '../engine/io.ts'
-import { checkProject, planFixes } from '../engine/runner.ts'
+import { planAllFixes } from '../engine/runner.ts'
 import type { ActionOptions } from './action-options.ts'
 import { exists, isRepoName, repoFlags } from './guards.ts'
 
@@ -88,8 +87,7 @@ export async function planOf(options: Readonly<FixOptions>): Promise<Plan | { re
   if ('reason' in found) return found
   const io = diskIo(found.clone.path)
   const flags = await repoFlags(options.gh, `${options.owner}/${options.name}`)
-  const { findings } = await checkProject(options.rules.fileRules, await buildContext(io, flags))
-  const plans = await planFixes(findings, io)
+  const { findings, plans } = await planAllFixes(options.rules.fileRules, io, flags)
   if (plans.length === 0) return { reason: `no file of ${options.owner}/${options.name} has a fix to apply` }
   const changed = changedPaths(found.clone.changedFiles)
   const installs = findings.filter(finding => finding.edits.every(edit => !changed.has(edit.file))).flatMap(finding => finding.installs)

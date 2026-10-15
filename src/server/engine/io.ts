@@ -97,6 +97,34 @@ function withCache(io: Readonly<Io>): Io {
 }
 
 /**
+ * The files of a project with changes held in memory on top of a reader, nothing reaches the disk. Used to see what the checks say once fixes are applied
+ * @param base the reader of the files as they are
+ * @returns the io, reads see the writes
+ * @example const io = overlayIo(diskIo(folder))
+ */
+export function overlayIo(base: Readonly<FileReader>): Io {
+  const changes = new Map<string, string>()
+  const readText = (file: string) => Promise.resolve(changes.get(file)).then(text => text ?? base.readText(file))
+  return {
+    readText,
+    async search(pattern, folder = '') {
+      const found = await base.search(pattern, folder)
+      const changed = [...changes.keys()].filter(file => file.startsWith(folder))
+      const stale = new Set(changed)
+      return [...new Set([...found.filter(file => !stale.has(file)), ...(await searchIn(changed, readText, pattern))])].toSorted()
+    },
+    sizeKo(file) {
+      const text = changes.get(file)
+      return text === undefined ? base.sizeKo(file) : Promise.resolve(toKo(Buffer.byteLength(text)))
+    },
+    writeText(file, text) {
+      changes.set(file, text)
+      return Promise.resolve()
+    },
+  }
+}
+
+/**
  * Write a file inside a project folder, creating the folders it needs. A path that leaves the project folder is refused: a fix only ever changes the project it is fixing
  * @param folder the absolute path of the project folder
  * @param file the path, relative to the project folder
