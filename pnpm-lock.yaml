@@ -20,6 +20,9 @@ importers:
       jsonc-parser:
         specifier: ~3.3.1
         version: 3.3.1
+      magicast:
+        specifier: ~0.5.5
+        version: 0.5.5
     devDependencies:
       '@heroui/react':
         specifier: ~3.2.6

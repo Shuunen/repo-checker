@@ -71,7 +71,7 @@ Questions, findings left without a fixer on purpose:
 11. **`package-json-exists`** (3 repos, not Node projects like `css-gungame`): should the rule skip projects with no JS at all instead of asking for a `package.json`?
 12. **`dependency-tool-choice`, `coverage-dependency`, `unit-testing-dependency`**: installing packages is out of scope for file fixers. Keep unfixable?
 
-### Decisions from the review of 2026-10-15 (not built yet)
+### Decisions from the review of 2026-10-15 (built, see below)
 
 1. **`.nvmrc`**: fetch the latest LTS from nodejs.org, fall back to the hardcoded `24.21.0` when the call fails.
 2. **`.npmrc`**: create with `enable-pre-post-scripts=true`.
@@ -88,3 +88,26 @@ Questions, findings left without a fixer on purpose:
     - a. `dependency-tool-choice`: install `knip`, add a `lint:knip` script, no config file.
     - b. `unit-testing-dependency`: install `vitest`, add `"test": "vitest --run && echo test success"`, without `--passWithNoTests`.
     - c. `coverage-dependency`: install `@vitest/coverage-v8`, add `--coverage` to the `test` script and set this repo's 100% threshold in the vitest config. Expect `test` to fail at once on a project with few tests.
+
+### What was built from those decisions, and what I decided on the way (to review)
+
+All of it is in `bun run check` green with 100% coverage, one commit per theme on `rewrite/projects-dashboard`. **Nothing was run on your real clones or repos**: only a read-only dry run of every fixer on `~/Projects/github` (no crash, nothing written). Try the install and the GitHub action on a throwaway repo first.
+
+1. **Facts for fixers** (`src/server/facts.ts`): the git user (`git config --global`), the Node LTS (nodejs.org, 3 s timeout, fallback `24.21.0`) and what GitHub says of the repo are given to the rules as flags, so the rules stay pure. The tests block the internet with `src/server/vitest.setup.ts` (fetch is stubbed except for 127.0.0.1).
+2. **Two config exceptions to review** (you said never to bend a rule without asking): `.dependency-cruiser.js` got `vitest.setup.ts` in the `not-to-dev-dep` exception (the config comment says to do that for dev-only files) and in the orphan list. No oxlint rule was disabled.
+3. **`.nvmrc`**: the version is whatever the latest LTS is, even if it is not a 24.x: `nvmrc-recent-node` still hardcodes `24.x` and would then complain. Change that pattern when Node 26 becomes the LTS.
+4. **`.repo-checker.json`**: created with a `$schema` pointing to `./node_modules/repo-check/schema.json`, the schema is `schema.json` at the root, shipped in `files`. Your own `.repo-checker.json` now points to `./schema.json`. The schema lists every option from `ProjectFlags` that a project can set.
+5. **License file**: only written when the declared license is MIT or absent and the git user is known, with the git user name and the current year. `package-license` uses `.repo-checker.json`'s `license`, MIT otherwise.
+6. **`package.json` fields**: `author` (name and mail of the git user), `bugs` (`<repo>/issues`), `homepage` (the GitHub homepage, else the repo url), `description` (GitHub), `repository` (`git+https://github.com/owner/name.git`), `license`. Each is only fixed when the fact is known.
+7. **Description direction** (the point I flagged and you did not answer): `package.json` gets the description of GitHub when it has none, and the new GitHub action copies the description and the homepage of `package.json` to GitHub when GitHub has none. Never both ways on the same field. Say if you want it otherwise.
+8. **GitHub action "Copy the description and homepage to GitHub"** (`sync-github-metadata`), offered on `missing-description` and `missing-homepage`. It cannot know if the `package.json` has a value (project rules do not read files), so the button is always shown and the action refuses with a reason when there is nothing to copy. It never replaces what GitHub already has, and skips a homepage that only points to github.com.
+9. **README stub**: title (package name, else repo name), description when known, empty `## Thanks`. The Thanks entries are added by the next fix, not in the same pass.
+10. **Final echo**: fixed with ` && echo <task> success`, except when the command is a watch (`--watch`, ` -w`, `vitest` without `run`, `--run` or `--coverage`): those stay reported without a fix.
+11. **No JS projects**: `flags.isNotNode` (no `package.json` and no `.js/.ts/.jsx/.tsx/.vue/.svelte/.astro` file) skips `package-json-exists`, `nvmrc-exists` and `npmrc-exists` only. An empty folder counts as not Node, so tests with no files had to say `isNotNode: false`.
+12. **`vitest-pool-threads`** is fixed with `magicast` (a runtime dependency, `editConfig` in the fixer, `fixer.config(...)`). `magicast` rewrites new objects with double quotes and `;`, run `oxfmt` after. A config it cannot read is left alone. The pattern now accepts both quotes.
+13. **Installing tools** is part of the file fix: after the files are written, `pnpm add --save-dev --save-prefix=~ <packages>` runs in the clone (Bun projects, with `bun.lock` or `bun.lockb`, get `bun add --dev --tilde` instead, so a Bun project never gets a `pnpm-lock.yaml`: your instruction said pnpm, say if you want pnpm everywhere). The dialog lists the packages, they are part of the fingerprint, nothing is installed for a fix whose `package.json` has uncommitted changes, and a failing install says that the files were already written. `pnpm`, and `bun` were added to the binaries the tool runs.
+14. **`dependency-tool-choice`** adds `lint:knip` (`knip && echo lint:knip success`) when absent and installs `knip`. No `knip.json`.
+15. **`unit-testing-dependency`** installs `vitest` and sets `"test": "vitest --run && echo test success"` when there is no test script or a placeholder `echo ...`; an existing real script is kept. No `--passWithNoTests`.
+16. **`coverage-dependency`**: installs `@vitest/coverage-v8` (and `vitest` when missing), adds `--coverage` to a vitest test script, and sets the 100% threshold in the vitest config, creating `vitest.config.ts` when there is none (merged with the vite config with `mergeConfig` when there is a `vite.config.*`, which assumes that file exports an object, not a function). A project that tests with mocha, uvu or `bun test` is not touched (the finding stays). **Expect `test` to fail on `flood-it` and `ts-result-comparison`**, they have no tests: that is the point of the 100% threshold you chose.
+17. **Not done on purpose**: `missing-license` on GitHub (a license is a file, the LICENSE fixer covers it), `missing-topics`, `readme-logo`, `readme-demo`, `scripts-unique-mark`, `package-files`, `package-keywords`, and the findings of the clones (behind, stashes, branches).
+18. **`pnpm-lock.yaml` and `bun.lock`** are both in the repo, I updated both for `magicast` (`bun add`, `pnpm install --lockfile-only`).

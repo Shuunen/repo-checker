@@ -6,7 +6,7 @@ Every check, built or wanted, lives in `docs/checks.md`. This file holds the res
 
 - Every old check is ported (✅ in `docs/checks.md`) and the old code is removed. Ship the rewrite as a new major version.
 - Apply the file fixes finding by finding, today the whole project is fixed at once.
-- A json schema for `.repo-checker.json`, from the old README todo list.
+- ✅ The json schema for `.repo-checker.json` ships in the package (`schema.json`).
 
 ## Next checks
 

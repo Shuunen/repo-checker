@@ -63,6 +63,14 @@ A `.repo-checker.json` file in a project tells repo-check what it cannot detect,
 }
 ```
 
+For autocompletion in your editor, point it to the schema shipped with the package:
+
+```json
+{
+  "$schema": "./node_modules/repo-check/schema.json"
+}
+```
+
 ## Todo
 
 - [ ] if website : check static folder : should have "_headers" & "favicon.ico" and "manifest.json" files inside
