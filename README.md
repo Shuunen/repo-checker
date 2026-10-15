@@ -4,6 +4,7 @@
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/Shuunen/repo-checker?style=flat)](https://codeclimate.com/github/Shuunen/repo-checker)
 [![npm version](https://img.shields.io/npm/v/repo-check.svg?color=informational)](https://www.npmjs.com/package/repo-check)
 [![npm monthly downloads](https://img.shields.io/npm/dm/repo-check.svg?color=informational)](https://www.npmjs.com/package/repo-check)
+[![Visitors](https://hits.sh/github.com/Shuunen/repo-checker.svg?label=visitors&color=informational)](https://hits.sh/github.com/Shuunen/repo-checker/)
 
 [![Package Quality](https://npm.packagequality.com/shield/repo-check.svg)](https://packagequality.com/#?package=repo-check)
 [![Publish size](https://img.shields.io/bundlephobia/min/repo-check?label=publish%20size)](https://bundlephobia.com/package/repo-check)
@@ -18,7 +19,6 @@
   - [Configuration](#configuration)
   - [Todo](#todo)
   - [Thanks](#thanks)
-  - [Page views](#page-views)
 
 ## Demo
 
@@ -85,7 +85,3 @@ A `.repo-checker.json` file in a project tells repo-check what it cannot detect,
 - [Svg Omg](https://jakearchibald.github.io/svgomg) : the great king of svg file size reduction
 - [V8](https://github.com/demurgos/v8-coverage) : simple & effective cli for code coverage
 - [Vitest](https://github.com/vitest-dev/vitest) : super fast vite-native testing framework
-
-## Page views
-
-![Views Counter](https://views-counter.vercel.app/badge?pageId=Shuunen%2Frepo-checker&leftColor=5c5c5c&rightColor=07a62f&type=total&label=Visitors&style=none)

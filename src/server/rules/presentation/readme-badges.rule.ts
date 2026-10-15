@@ -1,7 +1,7 @@
 import { escapeRegExp, invariant } from 'es-toolkit'
 import type { Context } from '../../engine/context.ts'
 import { defineRule } from '../../engine/define-rule.ts'
-import { badgeMarkdown, expectedBadges, hasBadge, hasReadme, insertAfterBadges } from './readme.utils.ts'
+import { badgeMarkdown, expectedBadges, hasBadge, hasReadme, insertAfterBadges, viewsBadge } from './readme.utils.ts'
 
 /** Badge services that are gone or show wrong data */
 const deprecatedBadgeDomains = ['bettercodehub.com', 'david-dm.org', 'lgtm.com', 'scrutinizer-ci.com', 'libraries.io']
@@ -41,10 +41,10 @@ export const readmeNoDeprecatedBadges = defineRule({
 export const readmeViewsCounter = defineRule({
   appliesTo: hasReadmeAndRepo,
   check({ flags, readme, report }) {
-    const url = `https://views-counter.vercel.app/badge?pageId=${flags.owner}%2F${flags.repoId}&leftColor=5c5c5c&rightColor=07a62f&type=total&label=Visitors&style=none`
     invariant(readme !== undefined, 'appliesTo guarantees a README')
-    if (readme.text.includes(url)) return
-    report({ fix: fixer => fixer.text(readme.file, text => `${text}\n## Page views\n\n[![Views Counter](${url})](https://github.com/Kumara2mahe/Views-Counter)\n`), messageId: 'missing' })
+    const badge = viewsBadge(`${flags.owner}/${flags.repoId}`)
+    if (hasBadge(readme.text, badge)) return
+    report({ fix: fixer => fixer.text(readme.file, text => insertAfterBadges(text, badgeMarkdown(badge))), messageId: 'missing' })
   },
   meta: { fixable: true, id: 'readme-views-counter', messages: { missing: 'the README has no page views counter' }, severity: 'warning' },
 })

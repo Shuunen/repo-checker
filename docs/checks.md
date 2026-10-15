@@ -240,11 +240,11 @@ How the project introduces itself, on GitHub and in the repo.
 - ✅ 🔴 `readme-no-crlf`: no Windows CRLF line endings, use Unix LF (`readme.ts`).
 - ✅ 🟡 `readme-dash-lists`: no star-flavored lists, use dashes (`readme.ts`).
 - ✅ 🔵 `readme-todos`: unchecked `- [ ]` items are printed as TODO lines in the output. Informational (`readme.ts`).
-- ✅ 🟡 `readme-badges`: the recommended badges are present: project license, "Website up" when the project is published as a website, and npm monthly downloads, npm version, publish size and install size when it is a published package (`readme.ts`).
+- ✅ 🟡 `readme-badges`: the recommended badges are present: project license (not for a private repo), "Website up" when the project is published as a website, and npm monthly downloads, npm version, publish size and install size when it is a published package (`readme.ts`).
 - ✅ 🔴 `readme-no-deprecated-badges`: no badge from `bettercodehub.com`, `david-dm.org`, `lgtm.com`, `scrutinizer-ci.com` or `libraries.io` (`readme.ts`).
 - ✅ 🟡 `readme-thanks-section`: a `## Thanks` section (`readme.ts`).
 - ✅ 🟡 `readme-thanks-entries`: a thanks line for every tool the project uses, and no thanks line for a tool it no longer uses. Always: Shields.io, Github. When mentioned in the README: Travis-ci.com, Netlify, AppWrite, Boxy Svg and Svg Omg (when the README uses svg). From `package.json` or project data: Arg, Ava, Biome, Bun, C8, Chokidar, Cypress.io, Dependency-cruiser, Esbuild, Eslint, Knip, Mocha, Npm-parallel, Npm-run-all, Nuxt, Nyc, Oxc, Preact, React, Reef, Repo-checker, Rollup, Servor, Showdown, Shuutils, TailwindCss, Tsup, UvU, V8, Vite, Vitest, Vue, Watchlist, Xo, Zod (`readme.ts`).
-- ✅ 🟡 `readme-views-counter`: a page views counter badge (`readme.ts`).
+- ✅ 🟡 `readme-views-counter`: a page views counter badge, served by hits.sh, placed with the other badges under the title (`readme.ts`).
 
 ## GitHub health
 

@@ -87,13 +87,15 @@ export function badgeMarkdown({ image, label, link }: Readonly<Badge>) {
 }
 
 /**
- * Insert a badge line after the README title and the badge lines that follow it, so badges keep their order
+ * Insert a badge line after the README title and the badge lines that follow it, so badges keep their order,
+ * and keep a blank line between the badges and the text that follows, else markdown renders them inline
  * @param text the README text
  * @param line the badge line to insert
  * @returns the new text, unchanged when there is no title
  */
 export function insertAfterBadges(text: string, line: string) {
-  return text.replace(/^(?<top># .+\n+(?:\[!\[.*\n)*)/u, `$<top>${line}\n`)
+  const inserted = text.replace(/^(?<top># .+\n+(?:\[!\[.*\n)*)/u, `$<top>${line}\n`)
+  return inserted.replace(/^(?<badges># .+\n+(?:\[!\[.*\n)+)(?!\[!\[)(?=\S)/u, '$<badges>\n')
 }
 
 /**
@@ -120,6 +122,15 @@ function websiteBadge(webUrl: string | undefined): Badge {
 }
 
 /**
+ * The page views counter badge, served by hits.sh in the shields.io style
+ * @param slug the GitHub "owner/repo"
+ * @returns the badge
+ */
+export function viewsBadge(slug: string): Badge {
+  return { image: `https://hits.sh/github.com/${slug}.svg?label=visitors&color=informational`, isFixable: true, label: 'Visitors', link: `https://hits.sh/github.com/${slug}/` }
+}
+
+/**
  * List the badges the README should show, from the GitHub repo, the website and the npm package
  * @param context the project context
  * @param context.flags the project flags, with the GitHub owner and repo
@@ -132,7 +143,7 @@ export function expectedBadges({ flags, pkg, readme }: Readonly<Context>): Badge
   const license = { image: `https://img.shields.io/github/license/${slug}.svg?color=informational`, isFixable: true, label: 'Project license', link: `https://github.com/${slug}/blob/master/LICENSE` }
   const website = flags.isWebPublished === true && readme?.text.includes('shields.io/website/') !== true ? [websiteBadge(flags.webUrl)] : []
   const npm = flags.isPublishedPackage === true && pkg?.name !== undefined ? npmBadges(pkg.name) : []
-  return [license, ...website, ...npm]
+  return [...(flags.isPrivate === true ? [] : [license]), ...website, ...npm]
 }
 
 /**
