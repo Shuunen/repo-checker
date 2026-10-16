@@ -6,6 +6,9 @@ import { scriptsMatching } from '../../engine/package-json.ts'
 /** A condition on the project, the rule is skipped when it returns false */
 type When = (context: Readonly<Context>) => boolean
 
+/** Same as When, but can look at the disk */
+type AsyncWhen = (context: Readonly<Context>) => Promise<boolean> | boolean
+
 /** The options shared by the script rule factories */
 interface ScriptRuleOptions {
   id: string
@@ -92,9 +95,9 @@ export function forbidScript({ id, message, name, severity }: Readonly<ScriptRul
  * @param options.when only check when it returns true
  * @returns the rule
  */
-export function requireCommand({ id, message, pattern, severity, when }: Readonly<ScriptRuleOptions & { pattern: RegExp; when: When }>) {
+export function requireCommand({ id, message, pattern, severity, when }: Readonly<Omit<ScriptRuleOptions, 'when'> & { pattern: RegExp; when: AsyncWhen }>) {
   return defineRule({
-    appliesTo: context => context.pkg !== undefined && when(context),
+    appliesTo: async context => context.pkg !== undefined && (await when(context)),
     check({ pkg, report }) {
       if (scriptsMatching(pkg, pattern).length === 0) report({ messageId: 'missing' })
     },

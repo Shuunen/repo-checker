@@ -53,6 +53,7 @@ testRule(byId('scripts-unique-mark'), {
   invalid: [{ errors: ['missing'], name: 'shuutils and a build without mark', pkg: { dependencies: { shuutils: '^11.0.0' }, scripts: { build: 'vite build' } } }],
   valid: [
     { name: 'a mark task', pkg: { dependencies: { shuutils: '^11.0.0' }, scripts: { build: 'vite build', mark: 'unique-mark dist/index.js' } } },
+    { files: { 'vite.config.ts': "import uniqueMark from 'unique-mark/vite'" }, name: 'a vite config using unique-mark', pkg: { dependencies: { shuutils: '^11.0.0' }, scripts: { build: 'vite build' } } },
     { name: 'shuutils without build', pkg: { dependencies: { shuutils: '^11.0.0' }, scripts: {} } },
   ],
 })
