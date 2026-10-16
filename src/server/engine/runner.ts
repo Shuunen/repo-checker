@@ -12,6 +12,7 @@ import { type Finding, formatMessage, type Report, type Rule, type RuleMeta } fr
 import { type Edit, fixer } from './fixer.ts'
 import type { ProjectFlags } from './flags.ts'
 import { type FileReader, type Io, overlayIo } from './io.ts'
+import { sortJson } from './sort-json.ts'
 
 /** The planned change of one file, what the confirm dialog shows as a diff */
 export interface FilePlan {
@@ -147,7 +148,8 @@ function applyAll(text: string, edits: readonly Edit[]) {
  */
 async function planFile(files: Readonly<FileReader>, file: string, edits: readonly Edit[]): Promise<FilePlan> {
   const before = (await files.readText(file)) ?? ''
-  return { after: applyAll(before, edits), before, file }
+  const applied = applyAll(before, edits)
+  return { after: applied === before ? applied : sortJson(file, before, applied), before, file }
 }
 
 /**

@@ -16,7 +16,7 @@ const complete = {
 }
 
 const withoutVcsNorOverrides = omit(complete, ['overrides', 'vcs'])
-const sectionsAdded = Object.fromEntries([...Object.entries(withoutVcsNorOverrides), ['vcs', {}], ['overrides', []]])
+const sectionsAdded = Object.fromEntries([...Object.entries(withoutVcsNorOverrides), ['overrides', []], ['vcs', {}]])
 
 /**
  * Get a rule of the value table
@@ -80,8 +80,8 @@ testRule(byId('biome-linter'), {
             ...complete.linter,
             domains: Object.fromEntries([
               ['project', 'all'],
-              ['test', 'all'],
               ['react', 'all'],
+              ['test', 'all'],
             ]),
           },
         },
@@ -128,8 +128,8 @@ testRule(biomeSections, {
           ['javascript', {}],
           ['json', {}],
           ['linter', {}],
-          ['vcs', {}],
           ['overrides', []],
+          ['vcs', {}],
         ]),
         undefined,
         2,

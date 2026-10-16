@@ -5,8 +5,20 @@ const uvu = { devDependencies: { uvu: '^0.5.0' } }
 
 testRule(unitTestingDependency, {
   invalid: [
-    { errors: ['missing'], installs: ['vitest'], name: 'no testing tool, vitest is installed with a test script', output: { devDependencies: { typescript: '^6.0.0' }, scripts: { test: 'vitest --run && echo test success' } }, pkg: { devDependencies: { typescript: '^6.0.0' } } },
-    { errors: ['missing'], installs: ['vitest'], name: 'a placeholder test script is replaced', output: { devDependencies: { typescript: '^6.0.0' }, scripts: { test: 'vitest --run && echo test success' } }, pkg: { devDependencies: { typescript: '^6.0.0' }, scripts: { test: 'echo no tests yet' } } },
+    {
+      errors: ['missing'],
+      installs: ['vitest'],
+      name: 'no testing tool, vitest is installed with a test script',
+      output: { devDependencies: { typescript: '^6.0.0' }, scripts: { test: 'vitest --run && echo test success' } },
+      pkg: { devDependencies: { typescript: '^6.0.0' } },
+    },
+    {
+      errors: ['missing'],
+      installs: ['vitest'],
+      name: 'a placeholder test script is replaced',
+      output: { devDependencies: { typescript: '^6.0.0' }, scripts: { test: 'vitest --run && echo test success' } },
+      pkg: { devDependencies: { typescript: '^6.0.0' }, scripts: { test: 'echo no tests yet' } },
+    },
   ],
   valid: [
     { name: 'vitest', pkg: { devDependencies: { vitest: '^4.0.0' } } },
