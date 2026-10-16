@@ -23,6 +23,14 @@ function openBrowser(url: string) {
     .unref()
 }
 
+/**
+ * Stop the server. In `--watch` the process runs under the watcher, which would wait for changes after it ends, so it asks the dev launcher to stop everything instead
+ */
+function exit() {
+  if (process.env.REPO_CHECK_PARENT === undefined) process.exit(0)
+  else process.kill(Number(process.env.REPO_CHECK_PARENT), 'SIGTERM')
+}
+
 const argv = process.argv.slice(firstArgument)
 
 process.exitCode = argv.includes(watchFlag)
@@ -30,4 +38,4 @@ process.exitCode = argv.includes(watchFlag)
       import.meta.filename,
       argv.filter(argument => argument !== watchFlag),
     )
-  : await runCli(argv, { cwd: process.cwd(), gh: ghCli, hasColors: process.stdout.isTTY, openBrowser, print: text => process.stdout.write(`${text}\n`), printProgress: line => process.stderr.write(`› ${line}\n`), startServer })
+  : await runCli(argv, { cwd: process.cwd(), exit, gh: ghCli, hasColors: process.stdout.isTTY, openBrowser, print: text => process.stdout.write(`${text}\n`), printProgress: line => process.stderr.write(`› ${line}\n`), startServer })

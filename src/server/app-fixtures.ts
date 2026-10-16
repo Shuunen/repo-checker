@@ -29,5 +29,5 @@ export const worksFine: Actions = {
  * @returns the app
  */
 export function app(runScan: ScanRunner, webFolder = import.meta.dirname, actions = worksFine) {
-  return createApp(runScan, { actions, target: '/projects', webFolder })
+  return createApp(runScan, { actions, shutdown: () => undefined, target: '/projects', webFolder })
 }

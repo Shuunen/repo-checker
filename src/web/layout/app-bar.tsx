@@ -3,9 +3,10 @@ import { Link } from 'wouter'
 import { describeScan, type ScanState } from '../scan/scan-state.ts'
 import { CopyPathButton } from './copy-path-button.tsx'
 import { ScanProgress } from './scan-progress.tsx'
+import { ShutdownButton } from './shutdown-button.tsx'
 
 /**
- * The app bar on top of every page: the app name linking to the list, the line about the scan (folder, owner, checked count or duration), the Copy path and Rescan buttons, and the progress bar under it while the scan runs
+ * The app bar on top of every page: the app name linking to the list, the line about the scan (folder, owner, checked count or duration), the Copy path, Rescan and Shutdown buttons, and the progress bar under it while the scan runs
  * @param props the props
  * @param props.isScanning true while the scan streams
  * @param props.onRescan starts a new scan
@@ -27,6 +28,7 @@ export function AppBar({ isScanning, onRescan, state }: Readonly<{ isScanning: b
         <Button className="bg-zinc-800 text-white hover:bg-zinc-700" data-testid="rescan" isDisabled={isScanning} onPress={onRescan}>
           Rescan
         </Button>
+        <ShutdownButton />
       </div>
       {isScanning && <ScanProgress state={state} />}
     </header>

@@ -10,6 +10,20 @@ describe('cli ui', () => {
     expect(startServer).toHaveBeenCalledWith(expect.any(Function), 4747)
   })
 
+  it('stops the process when the page asks for a shutdown', async () => {
+    expect.hasAssertions()
+    vi.useFakeTimers()
+    onTestFinished(() => {
+      vi.useRealTimers()
+    })
+    const { exit, shutdown } = await ui()
+    const response = await shutdown()
+    await expect(response.json()).resolves.toStrictEqual({ ok: true })
+    expect(exit).not.toHaveBeenCalled()
+    await vi.runAllTimersAsync()
+    expect(exit).toHaveBeenCalledOnce()
+  })
+
   it('streams the scan of the target, with git fetch', async () => {
     expect.hasAssertions()
     const { scan } = await ui()

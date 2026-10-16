@@ -32,7 +32,7 @@ function portOf(argv: readonly string[]) {
  * @example process.exitCode = await watchUi(process.argv[1], ['ui', '--target=..'])
  */
 export async function watchUi(script: string, argv: readonly string[]) {
-  const api = spawn(process.execPath, ['--watch', path.resolve(script), ...argv, '--no-open'], { stdio: 'inherit' })
+  const api = spawn(process.execPath, ['--watch', path.resolve(script), ...argv, '--no-open'], { env: { ...process.env, REPO_CHECK_PARENT: String(process.pid) }, stdio: 'inherit' })
   process.env.REPO_CHECK_PORT = portOf(argv)
   const { createServer } = (await import(viteModule)) as { createServer: (config: object) => Promise<WebServer> }
   const web = await createServer({ server: { open: true } })

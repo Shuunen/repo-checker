@@ -85,15 +85,16 @@ const rulesFolder = path.join(import.meta.dirname, 'rules')
  * @param options the parsed options
  * @param environment the environment
  * @param environment.cwd the current folder
+ * @param environment.exit stops the process
  * @param environment.gh runs gh
  * @param environment.openBrowser open the dashboard in the browser
  * @param environment.print print a block of text
  * @param environment.startServer start the HTTP server
  * @returns 0, the server keeps the process alive
  */
-async function runUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, openBrowser, print, startServer }: Readonly<CliEnvironment>) {
+async function runUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, exit, gh, openBrowser, print, startServer }: Readonly<CliEnvironment>) {
   const target = await resolveTarget(cwd, options.target)
-  return startUi({ fetch: options.fetch, owner: options.owner, port: options.port, rules: await loadRules(rulesFolder), shouldOpen: options.open, target }, { gh, openBrowser, print, startServer })
+  return startUi({ fetch: options.fetch, owner: options.owner, port: options.port, rules: await loadRules(rulesFolder), shouldOpen: options.open, target }, { exit, gh, openBrowser, print, startServer })
 }
 
 /**

@@ -65,9 +65,26 @@ describe(createApp, () => {
   it('shows the home folder as ~ in the target it sends first', async () => {
     expect.hasAssertions()
     const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
-    const response = await createApp(runScan, { actions: worksFine, target: path.join(homedir(), 'Projects', 'github'), webFolder: import.meta.dirname }).request('http://127.0.0.1/api/scan')
+    const response = await createApp(runScan, { actions: worksFine, shutdown: vi.fn<() => void>(), target: path.join(homedir(), 'Projects', 'github'), webFolder: import.meta.dirname }).request('http://127.0.0.1/api/scan')
     const [started] = await readEvents(response)
     expect(started?.data).toStrictEqual({ target: '~/Projects/github', type: 'started' })
+  })
+
+  it('answers a shutdown request then stops, and refuses it without the header', async () => {
+    expect.hasAssertions()
+    vi.useFakeTimers()
+    onTestFinished(() => {
+      vi.useRealTimers()
+    })
+    const shutdown = vi.fn<() => void>()
+    const server = createApp(vi.fn<ScanRunner>(), { actions: worksFine, shutdown, target: '/projects', webFolder: import.meta.dirname })
+    const refused = await server.request('http://127.0.0.1/api/shutdown', { method: 'POST' })
+    expect(refused.status).toBe(403)
+    const response = await server.request('http://127.0.0.1/api/shutdown', { headers: { 'x-repo-check': '1' }, method: 'POST' })
+    await expect(response.json()).resolves.toStrictEqual({ ok: true })
+    expect(shutdown).not.toHaveBeenCalled()
+    await vi.runAllTimersAsync()
+    expect(shutdown).toHaveBeenCalledOnce()
   })
 
   it('answers with an event stream', async () => {
