@@ -78,10 +78,10 @@ describe('installs', () => {
     await expect(readFile(path.join(folder, 'a.txt'), 'utf8')).resolves.toBe('tooled a')
   })
 
-  it('offers nothing for a fix whose file has uncommitted changes', async () => {
+  it('still offers the installs of a fix whose file has uncommitted changes', async () => {
     expect.hasAssertions()
     const { options } = await makeWorkspace([' M a.txt'])
-    await expect(previewFixFiles(options)).resolves.toMatchObject({ ok: false })
+    await expect(previewFixFiles(options)).resolves.toMatchObject({ merged: ['a.txt'], ok: true })
   })
 
   it('refuses, and installs nothing, when the plan is not the one the dialog listed', async () => {

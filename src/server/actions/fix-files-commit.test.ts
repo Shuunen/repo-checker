@@ -22,9 +22,10 @@ const gh = vi.fn<GhRunner>()
 
 /**
  * Create a folder of projects with a clone `app` that is a real git repo, with one commit and an uncommitted `c.txt`
+ * @param changed the file that is uncommitted, `a.txt` makes the file the fix rewrites one of them
  * @returns what an action needs, with the fingerprint of the plan
  */
-async function makeRepo() {
+async function makeRepo(changed = 'c.txt') {
   const target = await mkdtemp(path.join(tmpdir(), 'repo-check-commit-'))
   onTestFinished(() => rm(target, { force: true, recursive: true }))
   const folder = path.join(target, 'app')
@@ -41,10 +42,10 @@ async function makeRepo() {
   await run('git', ['init', '-q', '--bare', remote])
   await run('git', ['remote', 'add', 'origin', remote], folder)
   await run('git', ['push', '-q', '-u', 'origin', 'HEAD'], folder)
-  await writeFile(path.join(folder, 'c.txt'), 'changed')
+  await writeFile(path.join(folder, changed), changed === 'a.txt' ? 'old a, edited' : 'changed')
   const clone: Awaited<ReturnType<GitReaders['readClone']>> = {
     branches: [],
-    changedFiles: [' M c.txt'],
+    changedFiles: [` M ${changed}`],
     currentBranch: 'master',
     fetchFailed: false,
     folderName: 'app',
@@ -64,6 +65,16 @@ async function makeRepo() {
 }
 
 describe('commit', () => {
+  it('merges the fix into a file that was already changed and keeps it out of the commit', async () => {
+    expect.hasAssertions()
+    const { folder, options } = await makeRepo('a.txt')
+    const result = await fixFiles(options)
+    expect(result).toMatchObject({ message: expect.stringContaining('a.txt left uncommitted since already changed before the fix'), ok: true })
+    await expect(readFile(path.join(folder, 'a.txt'), 'utf8')).resolves.toBe('new a, edited')
+    const log = await run('git', ['log', '--format=%s'], folder)
+    expect(log.stdout).toBe('init\n')
+  })
+
   it('commits what it wrote and nothing else when asked', async () => {
     expect.hasAssertions()
     const { folder, options } = await makeRepo()

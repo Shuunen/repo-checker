@@ -1,6 +1,7 @@
 import type { Context } from '../../engine/context.ts'
 import { fallbackNodeVersion } from '../../engine/flags.ts'
 import { requireFile, requireInFile } from '../../engine/file-rules.ts'
+import { isPublishable } from '../../engine/package-json.ts'
 
 /** npm lifecycle scripts that run without enable-pre-post-scripts, they do not need the option */
 const lifecycleScripts = new Set(['postinstall', 'postpack', 'postuninstall', 'preinstall', 'prepack', 'prepare', 'prepublish', 'prepublishOnly', 'preuninstall'])
@@ -29,7 +30,7 @@ export const nodeVersionRules = [
 ]
 
 export const npmrcRules = [
-  requireFile({ content: 'enable-pre-post-scripts=true\n', files: ['.npmrc'], id: 'npmrc-exists', message: 'no {{file}} file', severity: 'warning', when: isNode }),
+  requireFile({ content: 'enable-pre-post-scripts=true\n', files: ['.npmrc'], id: 'npmrc-exists', message: 'no {{file}} file', severity: 'warning', when: context => isNode(context) && isPublishable(context.pkg) }),
   requireInFile({
     files: ['.npmrc'],
     fix: text => `${text.trimEnd()}\nenable-pre-post-scripts=true\n`,

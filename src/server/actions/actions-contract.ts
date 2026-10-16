@@ -1,4 +1,4 @@
-import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, FixStage, ForkDeletePreview, MetadataPreview, MetadataValues, ProjectDeletePreview } from '../../shared/action.ts'
+import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, FixStage, GitFixPreview, ForkDeletePreview, MetadataPreview, MetadataValues, ProjectDeletePreview } from '../../shared/action.ts'
 import type { RescanResult } from '../../shared/scan-event.ts'
 
 /** How the file fixes run */
@@ -29,6 +29,10 @@ export interface Actions {
   previewDeleteProject: (name: string) => Promise<ProjectDeletePreview>
   /** Write the file fixes the checks plan, refused unless the plan is the one the fingerprint stands for, and never over a file with uncommitted changes. The written files are committed and pushed when asked */
   fixFiles: (name: string, fingerprint: string, run?: FixRun) => Promise<ActionResult>
+  /** Delete the local branches without upstream, drop the stashes and pull the default branch when it is behind, refused unless the plan is the one the fingerprint stands for */
+  fixGit: (name: string, fingerprint: string) => Promise<ActionResult>
+  /** Say what the git fixes would do, with the fingerprint of that plan */
+  previewFixGit: (name: string) => Promise<GitFixPreview>
   /** Throw away the unsaved work of an archived repo's clone, refused unless it is exactly the work the fingerprint stands for */
   discard: (name: string, fingerprint: string) => Promise<ActionResult>
   /** Say what deleting the fork would remove, after proving it is pristine */

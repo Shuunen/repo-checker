@@ -28,6 +28,14 @@ const wantPublic = defineRule({
 })
 const publicRules = splitRules([wantPublic])
 
+/** Reports a fix that never settles, the file says the same after it */
+const stubborn = defineRule({
+  check({ report }) {
+    report({ fix: fixer => fixer.text('stubborn.txt', () => 'same\n'), messageId: 'again' })
+  },
+  meta: { fixable: true, id: 'stubborn', messages: { again: 'stubborn.txt again' }, severity: 'warning' },
+})
+
 /** A project folder with the two files, and fake git readers that list it as the clone of `owner/app` */
 interface Workspace {
   /** The clone folder */
@@ -102,7 +110,7 @@ describe(previewFixFiles, () => {
     expect.hasAssertions()
     const workspace = await makeWorkspace()
     const preview = await okPreview(workspace)
-    expect(preview).toMatchObject({ blocked: [], path: workspace.folder })
+    expect(preview).toMatchObject({ merged: [], path: workspace.folder })
     expect(preview.plans.toSorted((first, second) => first.file.localeCompare(second.file))).toStrictEqual([
       { after: 'new a', before: 'old a', file: 'a.txt' },
       { after: 'new b', before: 'old b', file: 'b.txt' },
@@ -111,26 +119,19 @@ describe(previewFixFiles, () => {
     await expect(fingerprintOf(workspace)).resolves.toBe(preview.fingerprint)
   })
 
-  it('lists a file with uncommitted changes as blocked, the others stay fixable', async () => {
+  it('plans every file, and lists the ones with uncommitted changes as merged', async () => {
     expect.hasAssertions()
     const workspace = await makeWorkspace({ changedFiles: [' M a.txt', '?? other.txt'] })
     const preview = await okPreview(workspace)
-    expect(preview.blocked).toMatchObject([{ file: 'a.txt', reason: expect.stringContaining('it has uncommitted changes') }])
-    expect(preview.plans.map(plan => plan.file).toSorted()).toStrictEqual(['b.txt', 'docs/new.md'])
+    expect(preview.merged).toStrictEqual(['a.txt'])
+    expect(preview.plans.map(plan => plan.file).toSorted()).toStrictEqual(['a.txt', 'b.txt', 'docs/new.md'])
   })
 
   it('understands a renamed file and a quoted path in the git status', async () => {
     expect.hasAssertions()
     const workspace = await makeWorkspace({ changedFiles: ['R  c.txt -> a.txt', ' M "b.txt"'] })
     const preview = await previewFixFiles({ gh, git: workspace.git, name: 'app', owner: 'Owner', rules, target: workspace.target })
-    expect(preview).toMatchObject({ blocked: [{ file: 'a.txt' }, { file: 'b.txt' }], ok: true })
-  })
-
-  it('refuses when every file with a fix has uncommitted changes', async () => {
-    expect.hasAssertions()
-    const workspace = await makeWorkspace({ changedFiles: [' M a.txt', ' M b.txt', '?? docs/new.md'] })
-    const preview = await previewFixFiles({ gh, git: workspace.git, name: 'app', owner: 'Owner', rules, target: workspace.target })
-    expect(preview).toMatchObject({ ok: false, reason: expect.stringContaining('every file with a fix has uncommitted changes (a.txt, b.txt, docs/new.md)') })
+    expect(preview).toMatchObject({ merged: ['a.txt', 'b.txt'], ok: true })
   })
 
   it('refuses a project with nothing to fix', async () => {
@@ -195,12 +196,21 @@ describe(fixFiles, () => {
     await expect(readFile(path.join(workspace.folder, 'docs', 'new.md'), 'utf8')).resolves.toBe('# new\n')
   })
 
-  it('never writes a file with uncommitted changes, and says what is left', async () => {
+  it('says how many findings still have a fix after the files are written', async () => {
+    expect.hasAssertions()
+    const workspace = await makeWorkspace()
+    const options = { gh, git: workspace.git, name: 'app', owner: 'Owner', rules: splitRules([stubborn]), target: workspace.target }
+    const preview = await previewFixFiles(options)
+    const { fingerprint } = preview as { fingerprint: string }
+    await expect(fixFiles({ ...options, fingerprint })).resolves.toMatchObject({ message: expect.stringContaining('1 finding left with a fix') as string, ok: true })
+  })
+
+  it('merges the fix into a file with uncommitted changes', async () => {
     expect.hasAssertions()
     const workspace = await makeWorkspace({ changedFiles: [' M a.txt'] })
     const result = await fixFiles({ fingerprint: await fingerprintOf(workspace), gh, git: workspace.git, name: 'app', owner: 'Owner', rules, target: workspace.target })
-    expect(result).toMatchObject({ message: expect.stringContaining('fixed 2 files (b.txt, docs/new.md), 1 finding left with a fix'), ok: true })
-    await expect(readFile(path.join(workspace.folder, 'a.txt'), 'utf8')).resolves.toBe('old a')
+    expect(result).toMatchObject({ message: expect.stringContaining('fixed 3 files (a.txt, b.txt, docs/new.md), no fix left'), ok: true })
+    await expect(readFile(path.join(workspace.folder, 'a.txt'), 'utf8')).resolves.toBe('new a')
   })
 
   it.each([

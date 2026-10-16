@@ -18,14 +18,16 @@ describe(createPreviewedActions, () => {
       actions.deleteProject(badName),
       actions.discard(badName, 'f'),
       actions.fixFiles(badName, 'f'),
+      actions.fixGit(badName, 'f'),
       actions.previewDeleteClone(badName),
       actions.previewDeleteFork(badName),
       actions.previewDeleteProject(badName),
       actions.previewDiscard(badName),
       actions.previewFixFiles(badName),
+      actions.previewFixGit(badName),
     ])
     expect(results.every(result => !result.ok)).toBe(true)
-    expect(options).toHaveBeenCalledTimes(10)
+    expect(options).toHaveBeenCalledTimes(12)
   })
 })
 

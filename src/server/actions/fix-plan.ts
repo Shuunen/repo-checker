@@ -24,24 +24,21 @@ export interface ApplyOptions extends FixOptions {
   onStage?: ((stage: FixStage) => void) | undefined
 }
 
-/** The plan of a project: what can be written, what is blocked, and where */
+/** The plan of a project: what can be written, which files already have uncommitted changes, and where */
 export interface Plan {
-  /** The files that have uncommitted changes, never rewritten */
-  blocked: { file: string; reason: string }[]
   /** The clone */
   clone: LocalClone
-  /** The files the fixes change and that can be written */
+  /** The files the fixes change */
   fixable: FixPlan[]
-  /** The dev dependencies to install once the files are written, only those of fixes whose files can all be written */
+  /** The dev dependencies to install once the files are written */
   installs: string[]
   /** The files of the clone */
   io: Io
+  /** The files of the fixes that have uncommitted changes: the fix is made on the file as it is now, so it is merged into those changes */
+  merged: string[]
   /** The flags that do not come from the files: the git user, the Node LTS and what GitHub says of the repo */
   flags: Awaited<ReturnType<typeof repoFlags>>
 }
-
-/** Why a file with uncommitted changes is not rewritten */
-export const blockedReason = 'it has uncommitted changes: commit or discard them first, so that git diff shows exactly what the fix changed and git can undo it'
 
 /** What git writes between the old and the new name of a renamed file */
 const renameArrow = ' -> '
@@ -81,7 +78,7 @@ async function findClone({ git, name, owner, target }: Readonly<ActionOptions>):
 }
 
 /**
- * Plan the fixes of a project from scratch: the file checks run on the files as they are now, and what they would change is split into what can be written and what has uncommitted changes
+ * Plan the fixes of a project from scratch: the file checks run on the files as they are now, and what they would change is planned on them, files with uncommitted changes included, which are listed as merged
  * @param options what to fix
  * @returns the plan, or the reason there is nothing to do
  */
@@ -94,8 +91,8 @@ export async function planOf(options: Readonly<FixOptions>): Promise<Plan | { re
   const { findings, plans } = await planAllFixes(options.rules.fileRules, io, flags)
   if (plans.length === 0) return { reason: `no file of ${options.owner}/${options.name} has a fix to apply` }
   const changed = changedPaths(found.clone.changedFiles)
-  const installs = findings.filter(finding => finding.edits.every(edit => !changed.has(edit.file))).flatMap(finding => finding.installs)
-  return { blocked: plans.filter(plan => changed.has(plan.file)).map(plan => ({ file: plan.file, reason: blockedReason })), clone: found.clone, fixable: plans.filter(plan => !changed.has(plan.file)), flags, installs: [...new Set(installs)].toSorted(), io }
+  const installs = findings.flatMap(finding => finding.installs)
+  return { clone: found.clone, fixable: plans, flags, installs: [...new Set(installs)].toSorted(), io, merged: plans.filter(plan => changed.has(plan.file)).map(plan => plan.file) }
 }
 
 /**

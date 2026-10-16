@@ -6,9 +6,10 @@ import { deleteFork, previewDeleteFork } from './delete-fork.ts'
 import { deleteProject, previewDeleteProject } from './delete-project.ts'
 import { discardClone, previewDiscard } from './discard.ts'
 import { fixFiles, previewFixFiles } from './fix-files.ts'
+import { fixGit, previewFixGit } from './fix-git.ts'
 
-/** The actions that show what they would do before they are confirmed: the delete of a clone, the delete of a fork, the delete of a whole project, the discard and the file fixes */
-export type PreviewedActions = Pick<Actions, 'deleteClone' | 'deleteFork' | 'deleteProject' | 'discard' | 'fixFiles' | 'previewDeleteClone' | 'previewDeleteFork' | 'previewDeleteProject' | 'previewDiscard' | 'previewFixFiles'>
+/** The actions that show what they would do before they are confirmed: the delete of a clone, the delete of a fork, the delete of a whole project, the discard, the file fixes and the git fixes */
+export type PreviewedActions = Pick<Actions, 'deleteClone' | 'deleteFork' | 'deleteProject' | 'discard' | 'fixFiles' | 'fixGit' | 'previewDeleteClone' | 'previewDeleteFork' | 'previewDeleteProject' | 'previewDiscard' | 'previewFixFiles' | 'previewFixGit'>
 
 /**
  * Build the actions that show what they would do first, each one proves again before it acts
@@ -24,10 +25,12 @@ export function createPreviewedActions(options: (name: string) => Promise<Action
     deleteProject: async name => deleteProject(await options(name)),
     discard: async (name, fingerprint) => discardClone({ ...(await options(name)), fingerprint }),
     fixFiles: async (name, fingerprint, run = {}) => fixFiles({ ...(await options(name)), ...run, fingerprint, rules }),
+    fixGit: async (name, fingerprint) => fixGit({ ...(await options(name)), fingerprint }),
     previewDeleteClone: async name => previewDeleteClone(await options(name)),
     previewDeleteFork: async name => previewDeleteFork(await options(name)),
     previewDeleteProject: async name => previewDeleteProject(await options(name)),
     previewDiscard: async name => previewDiscard(await options(name)),
     previewFixFiles: async name => previewFixFiles({ ...(await options(name)), rules }),
+    previewFixGit: async name => previewFixGit(await options(name)),
   }
 }

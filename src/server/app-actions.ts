@@ -37,6 +37,23 @@ function stream(run: (onStage: (stage: FixStage) => void) => Promise<ActionResul
 }
 
 /**
+ * The routes of the fixes: the files, then the git issues
+ * @param actions the actions
+ * @returns the routes
+ */
+function fixRoutes(actions: Actions) {
+  return new Hono()
+    .get('/api/projects/:name/fix-files', async context => reply(context, await actions.previewFixFiles(context.req.param('name'))))
+    .post('/api/projects/:name/fix-files', async context => {
+      const [name, fingerprint] = [context.req.param('name'), context.req.query('fingerprint') ?? '']
+      if (context.req.query('commit') !== 'true') return reply(context, await actions.fixFiles(name, fingerprint))
+      return stream(onStage => actions.fixFiles(name, fingerprint, { commit: true, onStage }))
+    })
+    .get('/api/projects/:name/fix-git', async context => reply(context, await actions.previewFixGit(context.req.param('name'))))
+    .post('/api/projects/:name/fix-git', async context => reply(context, await actions.fixGit(context.req.param('name'), context.req.query('fingerprint') ?? '')))
+}
+
+/**
  * The routes of the actions: each one asks the action to prove everything again before it acts, whatever the page sent
  * @param actions the actions
  * @returns the routes, to mount on the app after its guards
@@ -63,12 +80,7 @@ export function actionRoutes(actions: Actions) {
     .get('/api/projects/:name/delete-project', async context => reply(context, await actions.previewDeleteProject(context.req.param('name'))))
     .post('/api/projects/:name/delete-project', async context => reply(context, await actions.deleteProject(context.req.param('name'))))
     .get('/api/projects/:name/rescan', async context => reply(context, await actions.rescan(context.req.param('name'))))
-    .get('/api/projects/:name/fix-files', async context => reply(context, await actions.previewFixFiles(context.req.param('name'))))
-    .post('/api/projects/:name/fix-files', async context => {
-      const [name, fingerprint] = [context.req.param('name'), context.req.query('fingerprint') ?? '']
-      if (context.req.query('commit') !== 'true') return reply(context, await actions.fixFiles(name, fingerprint))
-      return stream(onStage => actions.fixFiles(name, fingerprint, { commit: true, onStage }))
-    })
     .get('/api/projects/:name/discard', async context => reply(context, await actions.previewDiscard(context.req.param('name'))))
     .post('/api/projects/:name/discard', async context => reply(context, await actions.discard(context.req.param('name'), context.req.query('fingerprint') ?? '')))
+    .route('/', fixRoutes(actions))
 }

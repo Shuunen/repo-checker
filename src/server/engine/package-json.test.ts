@@ -1,4 +1,4 @@
-import { dependencyVersion, hasDependency, scriptsMatching } from './package-json.ts'
+import { dependencyVersion, hasDependency, isPublishable, scriptsMatching } from './package-json.ts'
 import { requireProperty } from './require-property.ts'
 import { testRule } from './rule-tester.ts'
 
@@ -33,4 +33,16 @@ testRule(requireProperty({ expected: 'x', id: 'test-schema', isFirst: true, key:
     { errors: ['wrong'], name: 'wrong, replaced in place', output: { $schema: 'x', name: 'foo' }, pkg: { $schema: 'y', name: 'foo' } },
   ],
   valid: [{ name: 'expected value', pkg: { $schema: 'x' } }],
+})
+
+describe(isPublishable, () => {
+  it.each([
+    { expected: true, pkg: { name: 'foo' }, title: 'a public package' },
+    { expected: true, pkg: { private: false }, title: 'a package that says it is not private' },
+    { expected: false, pkg: { private: true }, title: 'a private package' },
+    { expected: false, pkg: undefined, title: 'no package.json' },
+  ])('says $expected for $title', ({ expected, pkg }) => {
+    expect.hasAssertions()
+    expect(isPublishable(pkg)).toBe(expected)
+  })
 })

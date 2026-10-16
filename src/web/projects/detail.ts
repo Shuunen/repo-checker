@@ -211,6 +211,31 @@ export function offeredActions(findings: readonly ScanFinding[]): ActionKind[] {
   return [...new Set(findings.flatMap(finding => finding.actions))]
 }
 
+/** The rules whose findings the git fixes settle: branches without upstream, forgotten stashes and a clone behind its remote */
+const gitFixRules = new Set(['behind-remote', 'branch-without-upstream', 'forgotten-stash'])
+
+/**
+ * Tell if a finding is one the git fixes can settle
+ * @param finding the finding
+ * @param finding.ruleId the id of the rule that reported it
+ * @returns true for a git issue
+ */
+export function isGitIssue({ ruleId }: Readonly<ScanFinding>) {
+  return gitFixRules.has(ruleId)
+}
+
+/**
+ * Say what the fixes can do
+ * @param fixable the findings that have a file fix
+ * @param gitIssues the git issues
+ * @returns the sentence
+ */
+export function summaryOf(fixable: readonly ScanFinding[], gitIssues: readonly ScanFinding[]) {
+  const files = fixable.length > 0 && `${plural(fixable.length, 'finding')} can be fixed by rewriting ${plural(new Set(fixable.flatMap(finding => finding.fixFiles)).size, 'file')}.`
+  const git = gitIssues.length > 0 && `${plural(gitIssues.length, 'git issue')} can be fixed in the clone.`
+  return [files, git].filter(Boolean).join(' ')
+}
+
 /**
  * Describe what a finding would change when it has a fix
  * @param finding the finding

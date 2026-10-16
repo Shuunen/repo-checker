@@ -9,7 +9,7 @@ describe('fix files', () => {
     expect.hasAssertions()
     const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/app/fix-files')
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toStrictEqual({ blocked: [], fingerprint: 'abc', installs: [], ok: true, path: '/projects/app', plans: [{ after: 'b', before: 'a', file: 'package.json' }] })
+    await expect(response.json()).resolves.toStrictEqual({ fingerprint: 'abc', installs: [], merged: [], ok: true, path: '/projects/app', plans: [{ after: 'b', before: 'a', file: 'package.json' }] })
   })
 
   it('answers 409 with the reason when there is nothing to fix', async () => {
@@ -50,5 +50,27 @@ describe('fix files', () => {
     const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, fixFiles }).request('http://127.0.0.1/api/projects/app/fix-files?fingerprint=abc', { method: 'POST' })
     expect(response.status).toBe(403)
     expect(fixFiles).not.toHaveBeenCalled()
+  })
+})
+
+describe('fix git', () => {
+  const post = { headers: { 'x-repo-check': '1' }, method: 'POST' }
+
+  it('says what the git fixes would do, with the fingerprint of the plan', async () => {
+    expect.hasAssertions()
+    const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/app/fix-git')
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toStrictEqual({ branches: ['old'], fingerprint: 'def', ok: true, path: '/projects/app', pull: 'master', stashes: ['stash@{0}: WIP'] })
+  })
+
+  it.each([
+    ['?fingerprint=def', 'def'],
+    ['', ''],
+  ])('fixes with the fingerprint of the query %s', async (query, fingerprint) => {
+    expect.hasAssertions()
+    const fixGit = vi.fn<Actions['fixGit']>(() => Promise.resolve({ message: 'fixed', ok: true }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, fixGit }).request(`http://127.0.0.1/api/projects/app/fix-git${query}`, post)
+    expect(response.status).toBe(200)
+    expect(fixGit).toHaveBeenCalledWith('app', fingerprint)
   })
 })

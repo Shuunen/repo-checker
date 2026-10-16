@@ -21,6 +21,8 @@ interface RequirePropertyOptions {
   value?: (context: Readonly<Context>) => unknown
   /** The severity of the rule */
   severity: Severity
+  /** Only check when it returns true */
+  when?: (context: Readonly<Context>) => boolean
 }
 
 /**
@@ -32,12 +34,13 @@ interface RequirePropertyOptions {
  * @param options.key the property name
  * @param options.value get the value to set when the property is missing
  * @param options.severity the severity
+ * @param options.when only check when it returns true
  * @returns the rule
  * @example export const packageName = requireProperty({ id: 'package-name', key: 'name', severity: 'error' })
  */
-export function requireProperty({ expected, id, isFirst = false, key, severity, value: getValue }: Readonly<RequirePropertyOptions>) {
+export function requireProperty({ expected, id, isFirst = false, key, severity, value: getValue, when = () => true }: Readonly<RequirePropertyOptions>) {
   return defineRule({
-    appliesTo: ({ pkg }) => pkg !== undefined,
+    appliesTo: context => context.pkg !== undefined && when(context),
     check(context) {
       const value = context.pkg?.[key]
       if (value !== undefined && (expected === undefined || value === expected)) return

@@ -1,7 +1,7 @@
 import type { ActionResult, FixStage } from '../../shared/action.ts'
 
 /** The actions that change something, a route of the server each */
-type PostedAction = 'archive' | 'checkout-default' | 'clone' | 'delete-clone' | 'delete-fork' | 'delete-project' | 'discard' | 'fix-files' | 'sync-github-metadata' | 'unarchive' | 'unarchive-push'
+type PostedAction = 'archive' | 'checkout-default' | 'clone' | 'delete-clone' | 'delete-fork' | 'delete-project' | 'discard' | 'fix-files' | 'fix-git' | 'sync-github-metadata' | 'unarchive' | 'unarchive-push'
 
 /** What the page can give to `postAction` */
 interface PostOptions {
@@ -87,6 +87,7 @@ export const doneMessages: Record<PostedAction, string> = {
   'delete-project': 'Deleted {name}, its GitHub repo and its clone',
   discard: 'Discarded the unsaved work of {name}',
   'fix-files': 'Fixed the files of {name}',
+  'fix-git': 'Fixed the git issues of {name}',
   'sync-github-metadata': 'Synced the description and homepage of {name} between the project and GitHub',
   unarchive: 'Unarchived {name} on GitHub',
   'unarchive-push': 'Unarchived and pushed {name}',

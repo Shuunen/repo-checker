@@ -16,7 +16,13 @@ function byId(id: string) {
 }
 
 // the factory is tested in the engine, these cases check the table wiring
-testRule(byId('package-files'), { invalid: [{ errors: ['missing'], name: 'no files', pkg: { name: 'foo' } }], valid: [{ name: 'files', pkg: { files: ['dist'] } }] })
+testRule(byId('package-files'), {
+  invalid: [{ errors: ['missing'], name: 'no files', pkg: { name: 'foo' } }],
+  valid: [
+    { name: 'files', pkg: { files: ['dist'] } },
+    { name: 'a private package', pkg: { private: true } },
+  ],
+})
 testRule(byId('package-name'), { invalid: [{ errors: ['missing'], name: 'no name', pkg: { version: '1.0.0' } }], valid: [{ name: 'a name', pkg: { name: 'foo' } }, { name: 'no package.json at all' }] })
 testRule(byId('package-private'), { invalid: [{ errors: ['missing'], name: 'no private', pkg: { name: 'foo' } }], valid: [{ name: 'private false', pkg: { private: false } }] })
 testRule(byId('package-version'), { invalid: [{ errors: ['missing'], name: 'no version', pkg: { name: 'foo' } }], valid: [{ name: 'a version', pkg: { version: '1.0.0' } }] })

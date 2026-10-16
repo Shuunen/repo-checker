@@ -48,6 +48,7 @@ export function usePreviewedDialog<Preview extends { ok: boolean }>(name: string
     },
   })
   return {
+    confirm: () => run.mutateAsync().then(() => setIsOpen(false)),
     error: run.error?.message,
     handleClose: () => setIsOpen(false),
     handleConfirm: () => run.mutate(undefined, { onSuccess: () => setIsOpen(false) }),

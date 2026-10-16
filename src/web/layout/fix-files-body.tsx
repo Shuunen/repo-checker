@@ -47,8 +47,8 @@ export function FixFilesBody({ error, isLoading, preview, previewError, stage }:
         <FileDiff after={plan.after} before={plan.before} file={plan.file} key={plan.file} />
       ))}
       {preview.installs.length > 0 && <p data-testid="fix-installs">{`Then installs ${preview.installs.join(', ')} with the package manager of the project.`}</p>}
-      {preview.blocked.map(item => (
-        <p data-testid={`fix-blocked-${item.file}`} key={item.file}>{`${item.file} is left alone, ${item.reason}.`}</p>
+      {preview.merged.map(file => (
+        <p data-testid={`fix-merged-${file}`} key={file}>{`${file} has uncommitted changes, the fix is merged into them and it stays out of the commit.`}</p>
       ))}
       {error !== undefined && <p data-testid="fix-error">{error}</p>}
     </div>

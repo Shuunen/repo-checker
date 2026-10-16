@@ -95,3 +95,13 @@ export function hasDependency(pkg: Readonly<PackageJson> | undefined, name: stri
 export function scriptsMatching(pkg: Readonly<PackageJson> | undefined, pattern: Readonly<RegExp>) {
   return Object.entries(pkg?.scripts ?? {}).filter(([, command]) => pattern.test(command))
 }
+
+/**
+ * Tell if the package can be published: it has a package.json that is not private
+ * @param pkg the package.json, undefined when the project has none
+ * @returns true when it is publishable
+ * @example isPublishable({ name: 'zod' }) // true
+ */
+export function isPublishable(pkg: Readonly<PackageJson> | undefined) {
+  return pkg !== undefined && pkg.private !== true
+}

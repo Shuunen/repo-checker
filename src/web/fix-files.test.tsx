@@ -13,9 +13,9 @@ const events = (findings = [noLicense, noBadge, noFix]): ScanEvent[] => [
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]
 const preview: FixPreview = {
-  blocked: [{ file: 'README.md', reason: 'it has uncommitted changes' }],
   fingerprint: 'abc123',
   installs: ['knip', 'vitest'],
+  merged: ['README.md'],
   ok: true,
   path: '/projects/app',
   plans: [
@@ -62,7 +62,7 @@ describe('fix files', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/projects/app/fix-files')
     expect(within(screen.getByTestId('diff-package.json')).getByText('+ "license": "MIT",')).toBeDefined()
     expect(screen.getByTestId('diff-docs/new.md').textContent).toContain('docs/new.md (new file)+ # new')
-    expect(screen.getByTestId('fix-blocked-README.md').textContent).toBe('README.md is left alone, it has uncommitted changes.')
+    expect(screen.getByTestId('fix-merged-README.md').textContent).toBe('README.md has uncommitted changes, the fix is merged into them and it stays out of the commit.')
     expect((screen.getByTestId('fix-confirm') as HTMLButtonElement).disabled).toBe(false)
   })
 

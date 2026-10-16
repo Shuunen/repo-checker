@@ -18,7 +18,11 @@ export function useFixFiles(name: string) {
     setStage('writing')
     dialog.handleConfirm()
   }
+  const confirm = () => {
+    setStage('writing')
+    return dialog.confirm()
+  }
   const { error, isLoading, isOpen, isPending, preview, previewError } = dialog
   const dialogState: FixFilesDialogState = { error, isCommit, isLoading, isOpen, isPending, onCancel: dialog.handleClose, onCommitChange: setIsCommit, onConfirm: handleConfirm, onOpenChange: dialog.handleOpenChange, preview, previewError, stage: isPending ? stage : undefined }
-  return { commitBlocked, dialogState, handleCommitBlockedClose: () => setCommitBlocked(undefined), handleOpen: dialog.handleOpen }
+  return { commitBlocked, confirm, dialogState, handleClose: dialog.handleClose, handleCommitBlockedClose: () => setCommitBlocked(undefined), handleOpen: dialog.handleOpen }
 }
