@@ -117,6 +117,14 @@ describe(syncGithubMetadata, () => {
     expect(JSON.parse(config)).toStrictEqual({ maxSizeKo: 80, webUrl: 'https://finga.app' })
   })
 
+  it('keeps the keys of the package.json sorted once the description is added', async () => {
+    expect.hasAssertions()
+    const { clone, target } = await makeWorkspace('{\n  "name": "finga",\n  "version": "1.0.0"\n}\n')
+    await syncGithubMetadata({ gh: fakeGh(apiRepo(), apiRepo(both)), git: readers([clone]), name: 'finga', owner: 'Owner', target }, both)
+    const pkg = await readFile(path.join(clone.path, 'package.json'), 'utf8')
+    expect(Object.keys(JSON.parse(pkg) as object)).toStrictEqual(['description', 'name', 'version'])
+  })
+
   it('creates the config when the project has none', async () => {
     expect.hasAssertions()
     const { clone, target } = await makeWorkspace(pkgText)

@@ -4,6 +4,7 @@ import { applyEdits, modify, parse } from 'jsonc-parser'
 import type { ActionResult, MetadataPreview, MetadataValues } from '../../shared/action.ts'
 import type { GithubRepo } from '../../shared/project.ts'
 import type { PackageJson } from '../engine/package-json.ts'
+import { sortJson } from '../engine/sort-json.ts'
 import { type GhRunner, getRepo } from '../inventory/github.ts'
 import type { ActionOptions } from './action-options.ts'
 import { checkFolderOfProjects, isRepoName } from './guards.ts'
@@ -113,7 +114,7 @@ async function updateJson(file: string, edits: readonly (readonly [key: string, 
   const changed = edits.filter(([key, value]) => (usable(current[key]) ?? '') !== value)
   let updated = text
   for (const [key, value] of changed) updated = applyEdits(updated, modify(updated, [key], value === '' ? undefined : value, { formattingOptions: { insertSpaces: true, tabSize: 2 } }))
-  if (changed.length > 0) await writeFile(file, updated)
+  if (changed.length > 0) await writeFile(file, sortJson(file, text, updated))
   return changed.map(([key]) => key)
 }
 
