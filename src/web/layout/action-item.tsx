@@ -11,12 +11,10 @@ import { actionMeta } from './action-meta.ts'
  * @returns the item
  */
 export function ActionItem({ action, project }: Readonly<{ action: ProjectAction; project: Project }>) {
-  const { icon, label } = actionMeta(action, project)
+  const { icon: Icon, label } = actionMeta(action, project)
   return (
     <Dropdown.Item className="data-[focused=true]:bg-background/50! data-[hovered=true]:bg-background/50!" data-testid={`menu-${action}`} id={action} textValue={label} variant={action === 'delete-project' ? 'danger' : 'default'}>
-      <svg aria-hidden="true" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16">
-        <path d={icon} />
-      </svg>
+      <Icon aria-hidden="true" size={16} />
       {label}
     </Dropdown.Item>
   )

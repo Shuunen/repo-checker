@@ -1,4 +1,5 @@
 import { Button, Dropdown } from '@heroui/react'
+import { ArrowRight, ExternalLink } from 'lucide-react'
 import type { ActionKind } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
 import { ActionItem } from './action-item.tsx'
@@ -26,8 +27,8 @@ export function ActionsMenu({ actions, project, target }: Readonly<{ actions: re
         <Dropdown.Popover className="border border-foreground/20 bg-surface-tertiary!" placement="bottom end">
           <Dropdown.Menu onAction={handleChoice}>
             <Dropdown.Section>
-              <LinkItem icon="M5 12h14M13 6l6 6-6 6" id="open-project" label="Open project" />
-              {project.github !== undefined && <LinkItem icon="M14 4h6v6M20 4l-9 9M10 6H5v13h13v-5" id="open-github" label="Open on GitHub" />}
+              <LinkItem icon={ArrowRight} id="open-project" label="Open project" />
+              {project.github !== undefined && <LinkItem icon={ExternalLink} id="open-github" label="Open on GitHub" />}
               {actions.map(action => (
                 <ActionItem action={action} key={action} project={project} />
               ))}

@@ -10,6 +10,7 @@
     "es-toolkit": "~1.52.0",
     "hono": "~4.13.13",
     "jsonc-parser": "~3.3.1",
+    "lucide-react": "^1.57.0",
     "magicast": "~0.5.5"
   },
   "description": "Repo maintenance made easy",

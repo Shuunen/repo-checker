@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react'
 import { Button } from '@heroui/react'
 import { useLocation } from 'wouter'
 import type { ProjectDeletePreview } from '../../shared/action.ts'
@@ -19,9 +20,7 @@ export function DeleteProjectButton({ isLabelled = false, project }: Readonly<{ 
   return (
     <>
       <Button aria-label={`Delete ${project.name}`} data-testid="action-delete-project" isIconOnly={!isLabelled} onPress={dialog.handleOpen} size="sm" variant={isLabelled ? 'danger-soft' : 'ghost'}>
-        <svg aria-hidden="true" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16">
-          <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6" />
-        </svg>
+        <Trash2 aria-hidden="true" size={16} />
         {isLabelled && 'Delete project'}
       </Button>
       <DeleteProjectDialog
