@@ -20,8 +20,6 @@ export interface ProjectFlags {
   gitAuthor?: { email?: string | undefined; name: string } | undefined
   /** The description of the GitHub repo, given by the scan */
   githubDescription?: string | undefined
-  /** The homepage of the GitHub repo, given by the scan */
-  githubHomepage?: string | undefined
   /** The GitHub repo is private, given by the scan, never detected from the files */
   isPrivate?: boolean
   /** Published to npm, its scripts run `npm publish` */
@@ -52,7 +50,7 @@ export interface ProjectFlags {
   repoId?: string
   /** Report sass dependencies, true unless `.repo-checker.json` says false */
   shouldAvoidSass?: boolean
-  /** The url of the published website, only from `.repo-checker.json` */
+  /** The url of the deployed website or web app, only from `.repo-checker.json`. Not the `homepage` of the package.json, which is the homepage of the source code (the repo) */
   webUrl?: string
 }
 

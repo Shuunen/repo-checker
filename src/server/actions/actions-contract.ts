@@ -1,4 +1,4 @@
-import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, FixStage, ForkDeletePreview, ProjectDeletePreview } from '../../shared/action.ts'
+import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, FixStage, ForkDeletePreview, MetadataPreview, MetadataValues, ProjectDeletePreview } from '../../shared/action.ts'
 import type { RescanResult } from '../../shared/scan-event.ts'
 
 /** How the file fixes run */
@@ -37,8 +37,10 @@ export interface Actions {
   previewFixFiles: (name: string) => Promise<FixPreview>
   /** Say what discarding would throw away, with the fingerprint of that list */
   previewDiscard: (name: string) => Promise<DiscardPreview>
-  /** Copy the description and the homepage of package.json to the repo on GitHub, only for what GitHub has none */
-  syncGithubMetadata: (name: string) => Promise<ActionResult>
+  /** Say what copying the infos of package.json to GitHub would set: what GitHub has now and the proposed values */
+  previewSyncGithubMetadata: (name: string) => Promise<MetadataPreview>
+  /** Set the description and the homepage the user confirmed on the repo on GitHub, only the ones that changed */
+  syncGithubMetadata: (name: string, values: MetadataValues) => Promise<ActionResult>
   /** Scan one project again, after an action changed it, so the page does not scan everything again */
   rescan: (name: string) => Promise<RescanResult>
   /** Unarchive the repo on GitHub, after proving again that it is there and archived */

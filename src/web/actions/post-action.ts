@@ -5,6 +5,8 @@ type PostedAction = 'archive' | 'checkout-default' | 'clone' | 'delete-clone' | 
 
 /** What the page can give to `postAction` */
 interface PostOptions {
+  /** What the server needs to run the action, sent as JSON, for the actions the user edits before confirming */
+  body?: object | undefined
   /** The fingerprint of the list the user confirmed, for the actions that throw something away */
   fingerprint?: string | undefined
   /** True to ask the server to commit what the action wrote */
@@ -56,6 +58,7 @@ async function readResult(response: Response, onStage: ((stage: FixStage) => voi
  * @param name the repo name
  * @param action the action
  * @param options the optional parts
+ * @param options.body what the server needs to run the action, sent as JSON
  * @param options.fingerprint the fingerprint of the list the user confirmed, for the actions that throw something away
  * @param options.isCommit true to ask the server to commit what the action wrote
  * @param options.onStage called with each step the server enters
@@ -63,12 +66,12 @@ async function readResult(response: Response, onStage: ((stage: FixStage) => voi
  * @throws {Error} with the reason when the server refused it or it failed
  * @example await postAction('finga', 'clone')
  */
-export async function postAction(name: string, action: PostedAction, { fingerprint, isCommit = false, onStage }: Readonly<PostOptions> = {}) {
+export async function postAction(name: string, action: PostedAction, { body, fingerprint, isCommit = false, onStage }: Readonly<PostOptions> = {}) {
   const params = new URLSearchParams()
   if (fingerprint !== undefined) params.set('fingerprint', fingerprint)
   if (isCommit) params.set('commit', 'true')
   const query = params.size === 0 ? '' : `?${params}`
-  const response = await fetch(`/api/projects/${encodeURIComponent(name)}/${action}${query}`, { headers: { 'x-repo-check': '1' }, method: 'POST' })
+  const response = await fetch(`/api/projects/${encodeURIComponent(name)}/${action}${query}`, { headers: { 'x-repo-check': '1' }, method: 'POST', ...(body !== undefined && { body: JSON.stringify(body) }) })
   const result = await readResult(response, onStage)
   if (!result.ok) throw new Error(result.reason)
   return result.commitBlocked
@@ -84,7 +87,7 @@ export const doneMessages: Record<PostedAction, string> = {
   'delete-project': 'Deleted {name}, its GitHub repo and its clone',
   discard: 'Discarded the unsaved work of {name}',
   'fix-files': 'Fixed the files of {name}',
-  'sync-github-metadata': 'Copied the description and homepage of {name} to GitHub',
+  'sync-github-metadata': 'Synced the description and homepage of {name} between the project and GitHub',
   unarchive: 'Unarchived {name} on GitHub',
   'unarchive-push': 'Unarchived and pushed {name}',
 }

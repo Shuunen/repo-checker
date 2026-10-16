@@ -63,6 +63,8 @@ A `.repo-checker.json` file in a project tells repo-check what it cannot detect,
 }
 ```
 
+`webUrl` is the url of the **deployed website or web app**. It is not the `homepage` of the `package.json`: that one is the homepage of the **source code**, so it must be the url of the GitHub repo (the `package-homepage` check fills it that way). The homepage shown on the GitHub repo is the deployed website, and the "Sync infos" action of the UI keeps it in line with `webUrl`: it shows what the project and GitHub say side by side, lets you edit the description and the homepage, then writes the description in the `package.json` (and on GitHub) and the homepage as `webUrl` (and on GitHub). The `homepage` of the `package.json` is never changed by it.
+
 For autocompletion in your editor, point it to the schema shipped with the package:
 
 ```json

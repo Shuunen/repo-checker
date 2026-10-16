@@ -7,7 +7,7 @@ export const presentationPropertyRules = [
   requireProperty({ id: 'package-author', key: 'author', severity: 'error', value: ({ flags }) => (flags.gitAuthor === undefined ? undefined : `${flags.gitAuthor.name}${flags.gitAuthor.email === undefined ? '' : ` <${flags.gitAuthor.email}>`}`) }),
   requireProperty({ id: 'package-bugs', key: 'bugs', severity: 'warning', value: ({ flags }) => (repoUrl(flags) === undefined ? undefined : `${repoUrl(flags)}/issues`) }),
   requireProperty({ id: 'package-description', key: 'description', severity: 'warning', value: ({ flags }) => flags.githubDescription }),
-  requireProperty({ id: 'package-homepage', key: 'homepage', severity: 'warning', value: ({ flags }) => flags.githubHomepage ?? repoUrl(flags) }),
+  requireProperty({ id: 'package-homepage', key: 'homepage', severity: 'warning', value: ({ flags }) => repoUrl(flags) }),
   requireProperty({ id: 'package-keywords', key: 'keywords', severity: 'warning' }),
 ]
 

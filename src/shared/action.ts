@@ -14,7 +14,7 @@ export type ActionKind =
   | 'delete-clone'
   /** Delete a pristine fork on GitHub, and its clean local clone if any */
   | 'delete-fork'
-  /** Copy the description and the homepage of package.json to the repo on GitHub, for the fields it has none */
+  /** Sync the description (package.json) and the homepage of the deployed website (`webUrl` of `.repo-checker.json`) with the repo on GitHub, after a review */
   | 'sync-github-metadata'
   /** Reset an archived repo's clone to the remote state, dropping every unsaved item */
   | 'discard'
@@ -32,6 +32,17 @@ export type FixStage = 'checking' | 'committing' | 'installing' | 'pushing' | 'w
 
 /** What running an action gives: it worked, or it was refused or failed with the reason to show. `commitBlocked` is set when the files were fixed but the automatic commit was prevented, with the output of the failing check */
 export type ActionResult = { commitBlocked?: string; message: string; ok: true } | { ok: false; reason: string }
+
+/** The description and the homepage of a repo on GitHub, empty text when there is none */
+export interface MetadataValues {
+  /** The description */
+  description: string
+  /** The homepage */
+  homepage: string
+}
+
+/** What syncing the infos would set, read fresh when the dialog opens: what the project says (`local`: the description of its package.json and the `webUrl` of its `.repo-checker.json`) and GitHub have now, and the values `proposed`, which the user can edit before confirming. The confirmed values are written in both */
+export type MetadataPreview = { github: MetadataValues; local: MetadataValues; ok: true; proposed: MetadataValues } | { ok: false; reason: string }
 
 /** What a delete of a local clone would remove, shown before it is confirmed: the files git ignores are lost for good, everything else is on GitHub */
 export type DeletePreview = { ignoredFiles: string[]; ok: true; path: string } | { ok: false; reason: string }

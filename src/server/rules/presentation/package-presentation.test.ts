@@ -21,7 +21,7 @@ function byId(id: string) {
   return rule as Rule
 }
 
-const known = { gitAuthor: { email: 'me@mail.com', name: 'Me' }, githubDescription: 'A tool', githubHomepage: 'https://tool.app', owner: 'me', repoId: 'tool' }
+const known = { gitAuthor: { email: 'me@mail.com', name: 'Me' }, githubDescription: 'A tool', owner: 'me', repoId: 'tool' }
 
 testRule(byId('package-author'), {
   invalid: [
@@ -47,8 +47,7 @@ testRule(byId('package-description'), {
 })
 testRule(byId('package-homepage'), {
   invalid: [
-    { errors: ['missing'], flags: known, name: 'no homepage, the GitHub one', output: { homepage: 'https://tool.app' }, pkg: {} },
-    { errors: ['missing'], flags: { owner: 'me', repoId: 'tool' }, name: 'no homepage, the repo url', output: { homepage: 'https://github.com/me/tool' }, pkg: {} },
+    { errors: ['missing'], flags: known, name: 'no homepage, the repo url, never the deployed website', output: { homepage: 'https://github.com/me/tool' }, pkg: {} },
     { errors: ['missing'], name: 'no homepage, nothing known', pkg: {} },
   ],
   valid: [{ name: 'a homepage', pkg: { homepage: 'https://x.y' } }],

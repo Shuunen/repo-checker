@@ -219,15 +219,15 @@ For projects that are deployed as a website.
 How the project introduces itself, on GitHub and in the repo.
 
 - 🚀 🟡 `missing-license`: the repo has no license on GitHub. Skipped for private repos.
-- 🚀 🟡 `missing-description`: the repo has no description.
+- 🚀 🟡 `missing-description`: the repo has no description. Fixed by the "Sync infos" action, which shares the description of the `package.json` with GitHub.
 - 🚀 🔵 `missing-topics`: the repo has no topics. Skipped for private repos.
-- 🚀 🔵 `missing-homepage`: the repo has no homepage. Skipped for private repos.
+- 🚀 🔵 `missing-homepage`: the repo has no homepage on GitHub, which is the url of the deployed website (`webUrl` of `.repo-checker.json`), not the source code. Fixed by the "Sync infos" action. Skipped for private repos.
 - ✅ 🔴 `license-file-exists`: a `LICENSE` file exists. Skipped for private repos (`license.ts`).
 - ✅ 🔴 `license-file-content`: the `LICENSE` file matches the declared license: GPL-3.0 has the "GNU GENERAL PUBLIC LICENSE" title and the "Version 3, 29 June 2007" subtitle, MIT has the "MIT License" title (`license.ts`).
 - ✅ 🔴 `package-license`: a `license` property, with the expected license value (`package.file.ts`).
 - ✅ 🔴 `package-author`: an `author` property (`package.file.ts`).
 - ✅ 🟡 `package-description`: a `description` property (`package.file.ts`).
-- ✅ 🟡 `package-homepage`: a `homepage` property (`package.file.ts`).
+- ✅ 🟡 `package-homepage`: a `homepage` property, filled with the url of the GitHub repo (`package.file.ts`). In a `package.json` the homepage is the one of the source code, never the url of the deployed website, that one is the `webUrl` of `.repo-checker.json` and the homepage of the repo on GitHub.
 - ✅ 🟡 `package-bugs`: a `bugs` property (`package.file.ts`).
 - ✅ 🟡 `package-keywords`: a `keywords` property (`package.file.ts`).
 - ✅ 🟡 `package-repository`: a `repository` property, whose url starts with `git+https` (`package.file.ts`).

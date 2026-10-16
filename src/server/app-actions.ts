@@ -1,5 +1,5 @@
 import { type Context, Hono } from 'hono'
-import type { ActionResult, FixStage } from '../shared/action.ts'
+import type { ActionResult, FixStage, MetadataValues } from '../shared/action.ts'
 import type { Actions } from './actions/actions-contract.ts'
 
 /** The HTTP status of an action that worked */
@@ -15,7 +15,7 @@ const conflict = 409
  * @param result.ok true when the action worked
  * @returns the JSON response
  */
-function reply(context: Context, result: Readonly<{ ok: boolean }>) {
+function reply(context: Context, result: Readonly<{ ok: boolean; reason?: string }>) {
   return context.json(result, result.ok ? succeeded : conflict)
 }
 
@@ -45,7 +45,13 @@ function stream(run: (onStage: (stage: FixStage) => void) => Promise<ActionResul
 export function actionRoutes(actions: Actions) {
   return new Hono()
     .post('/api/projects/:name/archive', async context => reply(context, await actions.archive(context.req.param('name'))))
-    .post('/api/projects/:name/sync-github-metadata', async context => reply(context, await actions.syncGithubMetadata(context.req.param('name'))))
+    .get('/api/projects/:name/sync-github-metadata', async context => reply(context, await actions.previewSyncGithubMetadata(context.req.param('name'))))
+    .post('/api/projects/:name/sync-github-metadata', async context => {
+      const body = (await context.req.json().catch(() => undefined)) as Partial<MetadataValues> | undefined
+      if (typeof body?.description !== 'string' || typeof body.homepage !== 'string') return reply(context, { ok: false, reason: 'the description and the homepage to set are missing' })
+      const values = { description: body.description, homepage: body.homepage }
+      return reply(context, await actions.syncGithubMetadata(context.req.param('name'), values))
+    })
     .post('/api/projects/:name/unarchive', async context => reply(context, await actions.unarchive(context.req.param('name'))))
     .post('/api/projects/:name/clone', async context => reply(context, await actions.clone(context.req.param('name'))))
     .post('/api/projects/:name/checkout-default', async context => reply(context, await actions.checkoutDefault(context.req.param('name'))))

@@ -34,7 +34,16 @@ describe(createActions, () => {
     expect.hasAssertions()
     const gh = vi.fn<GhRunner>(() => Promise.resolve({ ok: false, stderr: 'no', stdout: '' }))
     const actions = createActions({ gh, owner: 'Owner', rules, target: '/nowhere' })
-    const results = await Promise.all([actions.archive(badName), actions.checkoutDefault(badName), actions.clone(badName), actions.rescan(badName), actions.syncGithubMetadata(badName), actions.unarchive(badName), actions.unarchivePush(badName)])
+    const results = await Promise.all([
+      actions.archive(badName),
+      actions.checkoutDefault(badName),
+      actions.clone(badName),
+      actions.rescan(badName),
+      actions.syncGithubMetadata(badName, { description: '', homepage: '' }),
+      actions.previewSyncGithubMetadata(badName),
+      actions.unarchive(badName),
+      actions.unarchivePush(badName),
+    ])
     expect(results.every(result => !result.ok)).toBe(true)
   })
 })

@@ -80,7 +80,7 @@ const { globalFacts } = createFacts(realDeps)
  * @returns the flags
  */
 export function githubFlags(repo: Readonly<GithubRepo> | undefined): ProjectFlags {
-  return { githubDescription: repo?.description, githubHomepage: repo?.homepage, isPrivate: repo?.isPrivate === true }
+  return { githubDescription: repo?.description, isPrivate: repo?.isPrivate === true }
 }
 
 /**

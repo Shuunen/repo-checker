@@ -18,7 +18,7 @@
     "license": { "description": "The license the project must declare, like MIT or GPL-3.0", "type": "string" },
     "maxSizeKo": { "description": "The maximum size of the main file of the package, in Ko", "minimum": 1, "type": "number" },
     "shouldAvoidSass": { "default": true, "description": "Report the sass dependencies", "type": "boolean" },
-    "webUrl": { "description": "The url of the published website", "format": "uri", "type": "string" }
+    "webUrl": { "description": "The url of the deployed website or web app, shown in the README \"Website up\" badge and synced with the homepage of the GitHub repo. Not the homepage property of package.json, which is the homepage of the source code (the repo)", "format": "uri", "type": "string" }
   },
   "title": "repo-check project config",
   "type": "object"

@@ -228,12 +228,28 @@ describe('checkout default', () => {
 })
 
 describe('sync github metadata', () => {
-  it('copies the description and the homepage and answers the result', async () => {
+  it('says what would be set on GitHub', async () => {
+    expect.hasAssertions()
+    const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/lib/sync-github-metadata')
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toMatchObject({ ok: true, proposed: { description: 'A game' } })
+  })
+
+  it('sets the description and the homepage the page sends and answers the result', async () => {
     expect.hasAssertions()
     const syncGithubMetadata = vi.fn<Actions['syncGithubMetadata']>(() => Promise.resolve({ message: 'set the description of owner/lib on GitHub', ok: true }))
-    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, syncGithubMetadata }).request('http://127.0.0.1/api/projects/lib/sync-github-metadata', { headers: { 'x-repo-check': '1' }, method: 'POST' })
+    const body = JSON.stringify({ description: 'A game', homepage: 'https://lib.app' })
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, syncGithubMetadata }).request('http://127.0.0.1/api/projects/lib/sync-github-metadata', { body, headers: { 'x-repo-check': '1' }, method: 'POST' })
     expect(response.status).toBe(200)
-    expect(syncGithubMetadata).toHaveBeenCalledWith('lib')
+    expect(syncGithubMetadata).toHaveBeenCalledWith('lib', { description: 'A game', homepage: 'https://lib.app' })
+  })
+
+  it.each(['', '{', JSON.stringify({ description: 'A game' }), JSON.stringify({ description: 1, homepage: '' })])('refuses a body without both texts: %s', async body => {
+    expect.hasAssertions()
+    const syncGithubMetadata = vi.fn<Actions['syncGithubMetadata']>()
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, syncGithubMetadata }).request('http://127.0.0.1/api/projects/lib/sync-github-metadata', { body, headers: { 'x-repo-check': '1' }, method: 'POST' })
+    expect(response.status).toBe(409)
+    expect(syncGithubMetadata).not.toHaveBeenCalled()
   })
 })
 
