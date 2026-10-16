@@ -36,9 +36,9 @@ Run it in a folder of projects to check them all against your GitHub account, or
 npx repo-check
 ```
 
-From a clone of this repository: `bun install` then `bun scan --target=~/Projects`. To look at the dashboard without your own repos, `bun run build` then `bun demo` starts it on a fake account (see [demo/README.md](demo/README.md)).
+From a clone of this repository: `pnpm install` then `pnpm scan --target=~/Projects`. To look at the dashboard without your own repos, `pnpm run build` then `pnpm demo` starts it on a fake account (see [demo/README.md](demo/README.md)).
 
-`npx repo-check ui` (or `bun ui` from a clone) starts a local server on `127.0.0.1:4747` instead. Open the printed URL: the project list fills in as the scan streams, with filters, summary tiles and a Rescan button, and a click on a project opens its findings and git state. Run inside one project, it opens straight on that project. It can clone a repo you do not have yet, and delete the local clone of an archived repo that holds nothing that is not on GitHub, each after a confirmation. It can fix the files the checks complain about (a diff per file to confirm, never over a file you have changed). It can also save the unpushed work of an archived repo (unarchive, push, archive again), always after a confirmation that lists what is pushed. It can discard the unsaved work of an archived clone, after a dialog that lists every item, and delete a fork that is provably pristine (it needs the `delete_repo` scope: `gh auth refresh -s delete_repo`).
+`npx repo-check ui` (or `pnpm ui` from a clone) starts a local server on `127.0.0.1:4747` instead. Open the printed URL: the project list fills in as the scan streams, with filters, summary tiles and a Rescan button, and a click on a project opens its findings and git state. Run inside one project, it opens straight on that project. It can clone a repo you do not have yet, and delete the local clone of an archived repo that holds nothing that is not on GitHub, each after a confirmation. It can fix the files the checks complain about (a diff per file to confirm, never over a file you have changed). It can also save the unpushed work of an archived repo (unarchive, push, archive again), always after a confirmation that lists what is pushed. It can discard the unsaved work of an archived clone, after a dialog that lists every item, and delete a fork that is provably pristine (it needs the `delete_repo` scope: `gh auth refresh -s delete_repo`).
 
 The report groups the findings by severity (errors, warnings, info) and ends with a summary line. It exits with an error code when a finding is an error. Every check is listed in [docs/checks.md](docs/checks.md).
 
@@ -83,7 +83,7 @@ For autocompletion in your editor, point it to the schema shipped with the packa
 ## Thanks
 
 - [Boxy Svg](https://boxy-svg.com) : simple & effective svg editor
-- [Bun](https://bun.sh) : super fast runtime for JavaScript and TypeScript
+- [pnpm](https://pnpm.io) : fast, disk space efficient package manager
 - [Dependency-cruiser](https://github.com/sverweij/dependency-cruiser) : handy tool to validate and visualize dependencies
 - [Github](https://github.com) : for all their great work year after year, pushing OSS forward
 - [Knip](https://github.com/webpro/knip) : super tool to find & fix problems

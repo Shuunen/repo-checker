@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// the web app lives in src/web and is built next to the server, which serves it: `bun dev` and `bun ui --watch` proxy the api to `bun ui`
+// the web app lives in src/web and is built next to the server, which serves it: `pnpm dev` and `pnpm ui --watch` proxy the api to `pnpm ui`
 export default defineConfig({
   build: { emptyOutDir: true, outDir: '../../dist/web', reportCompressedSize: false },
   plugins: [react(), tailwindcss()],

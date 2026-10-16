@@ -4,11 +4,11 @@ The rewrite follows the same tooling and rules as the `snippets` repo, so the re
 
 ## Tooling
 
-- bun for development: it is the package manager and runs the TypeScript sources directly (`bun scan`, `bun ui`, `bun check`).
-- Node 24 (`.nvmrc`) for users: the published package is plain JavaScript built by `tsdown`, so `npx repo-check` only needs Node, not bun.
+- pnpm for development: it is the package manager, and Node 24 runs the TypeScript sources directly (`pnpm scan`, `pnpm ui`, `pnpm check`).
+- Node 24 (`.nvmrc`) for users: the published package is plain JavaScript built by `tsdown`, so `npx repo-check` only needs Node, not pnpm.
 - oxlint to lint, oxfmt to format (`.oxfmtrc.json`, migrated from the old biome config: 300 columns, single quotes, no semicolons). Biome is gone. Long tables stay one item per line without any ignore comment.
 - vitest for tests, Testing Library for the web.
-- Vite builds `src/web`, `bun dev` serves it with `/api` proxied to `bun ui`. Its packages are devDependencies, since Vite bundles them.
+- Vite builds `src/web`, `pnpm dev` serves it with `/api` proxied to `pnpm ui`. Its packages are devDependencies, since Vite bundles them.
 - The `react` lint plugin is on for the page. Decided rule by rule: `react/jsx-max-depth` is 5 (a HeroUI table is 5 deep), `react/jsx-no-literals` and `react/forbid-component-props` are off (plain text in the markup, `className` on HeroUI components). `react/react-in-jsx-scope` is off and `.tsx` is the JSX extension, as the new JSX transform needs. The `vitest` plugin only runs on test files, and the test helpers (`rule-tester.ts`, `fixtures.ts`, `render-app.tsx`) only get the vitest globals. `react/jsx-props-no-spreading` stays on, so components take explicit props.
 - Never disable a lint rule without asking. Try to fix the code first.
 
@@ -33,4 +33,4 @@ The rewrite follows the same tooling and rules as the `snippets` repo, so the re
 
 ## Checks
 
-`bun check` runs types, formatting, lint, build and tests. Run it after every change and fix all failures before calling work done.
+`pnpm check` runs types, formatting, lint, build and tests. Run it after every change and fix all failures before calling work done.
