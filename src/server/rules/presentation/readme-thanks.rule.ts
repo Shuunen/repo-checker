@@ -1,6 +1,6 @@
 import { invariant } from 'es-toolkit'
 import { defineRule } from '../../engine/define-rule.ts'
-import { hasReadme, hasThanks, requireInReadme, thanksLine, thanksList } from './readme.utils.ts'
+import { addThanksLine, hasReadme, hasThanks, requireInReadme, thanksList } from './readme.utils.ts'
 
 export const readmeThanksSection = requireInReadme({ fix: text => `${text.trimEnd()}\n\n## Thanks\n`, id: 'readme-thanks-section', message: 'the README has no "## Thanks" section', pattern: /## Thanks/u, severity: 'warning' })
 
@@ -12,7 +12,7 @@ export const readmeThanksEntries = defineRule({
     const { text } = readme
     for (const thanks of thanksList) {
       const isUsed = thanks.isUsed(context)
-      if (isUsed && !hasThanks(text, thanks)) report({ data: { label: thanks.label }, fix: fixer => fixer.text(readme.file, current => current.replace(/(?<heading>## Thank.*)\n+/u, `$<heading>\n\n${thanksLine(thanks)}\n`)), messageId: 'missing' })
+      if (isUsed && !hasThanks(text, thanks)) report({ data: { label: thanks.label }, fix: fixer => fixer.text(readme.file, current => addThanksLine(current, thanks)), messageId: 'missing' })
       if (!isUsed && hasThanks(text, thanks)) report({ data: { label: thanks.label }, messageId: 'unused' })
     }
   },

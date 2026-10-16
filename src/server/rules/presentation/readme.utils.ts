@@ -261,3 +261,30 @@ export function thanksLine({ description, label, link }: Readonly<Thanks>) {
 export function hasThanks(text: string, thanks: Readonly<Thanks>) {
   return new RegExp(`\\[${escapeRegExp(thanks.label)}\\]`, 'iu').test(text)
 }
+
+const headingAndBlankLine = 2
+
+/**
+ * Get the lowercase text of a thanks entry line, starting at its label
+ * @param line like `- [Vitest](https://...) : ...`
+ * @returns the text without the list marker and the link bracket
+ */
+function labelOf(line: string) {
+  return line.replace(/^- \[?/u, '').toLowerCase()
+}
+
+/**
+ * Add a thanks entry to the Thanks section, keeping its list sorted alphabetically by label, ignoring the case
+ * @param text the README text, with a Thanks section
+ * @param thanks the tool to thank
+ * @returns the README text with the new entry
+ */
+export function addThanksLine(text: string, thanks: Readonly<Thanks>) {
+  const lines = text.replace(/(?<heading>## Thank.*)\n+/u, '$<heading>\n\n').split('\n')
+  const start = lines.findIndex(line => line.startsWith('## Thank')) + headingAndBlankLine
+  const end = start + [...lines.slice(start), ''].findIndex(line => !line.startsWith('- '))
+  const label = thanks.label.toLowerCase()
+  const before = lines.slice(start, end).findIndex(line => labelOf(line) > label)
+  lines.splice(before === -1 ? end : start + before, 0, thanksLine(thanks))
+  return lines.join('\n')
+}

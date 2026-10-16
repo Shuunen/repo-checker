@@ -12,8 +12,29 @@ testRule(readmeThanksSection, {
 
 testRule(readmeThanksEntries, {
   invalid: [
-    { errors: ['missing'], files: { 'README.md': `# app\n\n## Thanks\n\n${github}\n` }, name: 'a used tool not thanked, added first', output: `# app\n\n## Thanks\n\n${vitest === undefined ? '' : thanksLine(vitest)}\n${github}\n`, pkg: { devDependencies: { vitest: '^4.0.0' } } },
-    { errors: ['missing'], files: { 'README.md': `# app\n\n## Thanks\n${github}\n` }, name: 'no blank line after the title, one is added', output: `# app\n\n## Thanks\n\n${vitest === undefined ? '' : thanksLine(vitest)}\n${github}\n`, pkg: { devDependencies: { vitest: '^4.0.0' } } },
+    {
+      errors: ['missing'],
+      files: { 'README.md': `# app\n\n## Thanks\n\n${github}\n` },
+      name: 'a used tool not thanked, added after the entries sorting before it',
+      output: `# app\n\n## Thanks\n\n${github}\n${vitest === undefined ? '' : thanksLine(vitest)}\n`,
+      pkg: { devDependencies: { vitest: '^4.0.0' } },
+    },
+    { errors: ['missing'], files: { 'README.md': `# app\n\n## Thanks\n${github}\n` }, name: 'no blank line after the title, one is added', output: `# app\n\n## Thanks\n\n${github}\n${vitest === undefined ? '' : thanksLine(vitest)}\n`, pkg: { devDependencies: { vitest: '^4.0.0' } } },
+    {
+      errors: ['missing'],
+      files: { 'README.md': `# app\n\n## Thanks\n\n- [Boxy](https://boxy-svg.com) : svg\n${github}\n- [Zzz](https://z.dev) : z\n` },
+      name: 'added in the middle of the list, sorted',
+      output: `# app\n\n## Thanks\n\n- [Boxy](https://boxy-svg.com) : svg\n${github}\n${vitest === undefined ? '' : thanksLine(vitest)}\n- [Zzz](https://z.dev) : z\n`,
+      pkg: { devDependencies: { vitest: '^4.0.0' } },
+    },
+    {
+      errors: ['missing'],
+      files: { 'README.md': `# app\n\n## Thanks\n\n- a plain item\n${github}\n` },
+      name: 'an item without a link is sorted as empty',
+      output: `# app\n\n## Thanks\n\n- a plain item\n${github}\n${vitest === undefined ? '' : thanksLine(vitest)}\n`,
+      pkg: { devDependencies: { vitest: '^4.0.0' } },
+    },
+    { errors: ['missing'], files: { 'README.md': `# app\n\n## Thanks\n\n${github}` }, name: 'a list ending the file without a newline', output: `# app\n\n## Thanks\n\n${github}\n${vitest === undefined ? '' : thanksLine(vitest)}`, pkg: { devDependencies: { vitest: '^4.0.0' } } },
     { errors: ['unused'], files: { 'README.md': '# app\n\n## Thanks\n\n- [Zod](https://zod.dev) : validation\n' }, name: 'a thanked tool no longer used', pkg: { name: 'app' } },
   ],
   valid: [
