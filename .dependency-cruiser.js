@@ -3,6 +3,13 @@
 /** @type {import('dependency-cruiser').IConfiguration} */
 export default {
   forbidden: [
+    {
+      comment: 'The engine runs rules and knows no rule, rules import from the engine, never the reverse (see docs/architecture.md)',
+      from: { path: '^src/server/engine' },
+      name: 'engine-knows-no-rule',
+      severity: 'error',
+      to: { path: '^src/server/rules' },
+    },
     /* rules from the 'recommended' preset: */
     {
       comment: 'This dependency is part of a circular relationship. You might want to revise your solution (i.e. use dependency inversion, make sure the modules have a single responsibility) ',
@@ -27,8 +34,8 @@ export default {
           String.raw`(^|/)\.[^/]+\.(js|cjs|mjs|ts|json)$`, // dot files
           String.raw`\.d\.ts$`, // TypeScript declaration files
           String.raw`(^|/)tsconfig\.json$`, // TypeScript config
+          String.raw`(^|/)vitest\.setup\.ts$`, // test setup
           String.raw`(^|/)(babel|webpack)\.config\.(js|cjs|mjs|ts|json)$`, // other configs
-          String.raw`src/mocks/vueProject/tailwind.config.js`,
         ],
       },
       name: 'no-orphans',
@@ -143,7 +150,8 @@ export default {
         'from.pathNot re of the not-to-dev-dep rule in the dependency-cruiser configuration',
       from: {
         path: '^(src|tests)',
-        pathNot: String.raw`\.(spec|test)\.(js|mjs|cjs|ts|ls|coffee|litcoffee|coffee\.md)$`,
+        // src/web is bundled by Vite into dist/web, so its packages are devDependencies on purpose: users never install them
+        pathNot: String.raw`(^src/web/|^src/server/vitest\.setup\.ts$|\.(spec|test)\.(js|mjs|cjs|ts|ls|coffee|litcoffee|coffee\.md)$)`,
       },
       name: 'not-to-dev-dep',
       severity: 'error',
