@@ -14,7 +14,7 @@ interface FixGitOptions extends ActionOptions {
 
 /** What the git fixes would do */
 interface GitPlan {
-  /** The local branches to delete, the ones whose upstream is gone are deleted even when not merged, the ones that never had an upstream only when merged */
+  /** The local branches to delete, all deleted even when not merged */
   branches: string[]
   /** The default branch to pull, undefined when there is nothing to pull */
   pull: string | undefined
@@ -88,15 +88,14 @@ export async function previewFixGit(options: Readonly<ActionOptions>): Promise<G
 }
 
 /**
- * Delete one local branch: the ones whose upstream was deleted are forced, since their work was merged on GitHub in most cases, the ones that never had an upstream only when git finds them merged
+ * Delete one local branch, forced even when git finds work in it that is not merged: the user confirmed the list
  * @param clone the clone
  * @param branch the branch
  * @param runGit runs git
  * @returns the failure, undefined when it worked
  */
 async function deleteBranch(clone: Readonly<LocalClone>, branch: string, runGit: NonNullable<FixGitOptions['runGit']>) {
-  const isGone = clone.branches.some(item => item.name === branch && item.isGone)
-  const { ok, stderr } = await runGit(['branch', isGone ? '-D' : '-d', '--', branch], clone.path)
+  const { ok, stderr } = await runGit(['branch', '-D', '--', branch], clone.path)
   return ok ? undefined : `${branch}: ${stderr.trim()}`
 }
 
@@ -129,11 +128,11 @@ async function applyPlan(clone: Readonly<LocalClone>, plan: Readonly<GitPlan>, r
   const cleared = plan.stashes.length > 0 && (await runGit(['stash', 'clear'], clone.path))
   if (cleared !== false && !cleared.ok) return `git stash clear failed: ${cleared.stderr.trim()}`
   const failures = await deleteBranches(clone, plan.branches, runGit)
-  return failures.length > 0 ? `the rest was fixed but these branches were kept, git found work in them that is not merged: ${failures.join(' | ')}` : undefined
+  return failures.length > 0 ? `these branches could not be deleted: ${failures.join(' | ')}` : undefined
 }
 
 /**
- * Apply the git fixes of a clone, after proving everything again from scratch: it is refused unless the plan is exactly the one the user saw. The stashes are dropped, the branches deleted (the ones that hold unmerged work and never had an upstream are kept and reported), then the default branch is pulled fast forward only
+ * Apply the git fixes of a clone, after proving everything again from scratch: it is refused unless the plan is exactly the one the user saw. The stashes are dropped, the branches deleted (forced, even the ones that hold unmerged work), then the default branch is pulled fast forward only
  * @param options what to fix, with the fingerprint of the plan the user confirmed
  * @param options.fingerprint the fingerprint of the plan the user confirmed
  * @param options.runGit runs git in a folder, the real git by default

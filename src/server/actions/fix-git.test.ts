@@ -125,7 +125,7 @@ describe(fixGit, () => {
     expect.hasAssertions()
     const runGit = fakeGit()
     await expect(fixOf(messy, runGit)).resolves.toStrictEqual({ message: 'fixed the git issues of /projects/finga', ok: true })
-    expect(runGit.mock.calls.map(([args]) => args.join(' '))).toStrictEqual(['pull --ff-only', 'stash clear', 'branch -D -- merged', 'branch -d -- wip'])
+    expect(runGit.mock.calls.map(([args]) => args.join(' '))).toStrictEqual(['pull --ff-only', 'stash clear', 'branch -D -- merged', 'branch -D -- wip'])
   })
 
   it('does nothing it was not asked', async () => {
@@ -160,9 +160,9 @@ describe(fixGit, () => {
     await expect(fixOf(messy, fakeGit('stash'))).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('git stash clear failed') as string })
   })
 
-  it('keeps the branches git refuses to delete and says so', async () => {
+  it('reports the branches git fails to delete', async () => {
     expect.hasAssertions()
-    const runGit = fakeGit('-d')
+    const runGit = fakeGit('wip')
     await expect(fixOf(messy, runGit)).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('wip: boom') as string })
   })
 
