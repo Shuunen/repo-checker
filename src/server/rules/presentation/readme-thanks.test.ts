@@ -35,7 +35,7 @@ testRule(readmeThanksEntries, {
       pkg: { devDependencies: { vitest: '^4.0.0' } },
     },
     { errors: ['missing'], files: { 'README.md': `# app\n\n## Thanks\n\n${github}` }, name: 'a list ending the file without a newline', output: `# app\n\n## Thanks\n\n${github}\n${vitest === undefined ? '' : thanksLine(vitest)}`, pkg: { devDependencies: { vitest: '^4.0.0' } } },
-    { errors: ['unused'], files: { 'README.md': '# app\n\n## Thanks\n\n- [Zod](https://zod.dev) : validation\n' }, name: 'a thanked tool no longer used', pkg: { name: 'app' } },
+    { errors: ['unused'], files: { 'README.md': '# app\n\n## Thanks\n\n- [Zod](https://zod.dev) : validation\n' }, name: 'a thanked tool no longer used, removed', output: '# app\n\n## Thanks\n\n', pkg: { name: 'app' } },
   ],
   valid: [
     { files: { 'README.md': '# app\n\n## Thanks\n\n- [vitest](https://vitest.dev) : tests\n' }, name: 'a used tool thanked, any case', pkg: { devDependencies: { vitest: '^4.0.0' } } },

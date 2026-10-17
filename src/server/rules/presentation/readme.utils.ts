@@ -288,3 +288,13 @@ export function addThanksLine(text: string, thanks: Readonly<Thanks>) {
   lines.splice(before === -1 ? end : start + before, 0, thanksLine(thanks))
   return lines.join('\n')
 }
+
+/**
+ * Remove the entry of a tool from the README, matching its linked label, ignoring the case
+ * @param text the README text
+ * @param thanks the tool to stop thanking
+ * @returns the README text without the entry line
+ */
+export function removeThanksLine(text: string, thanks: Readonly<Thanks>) {
+  return text.replace(new RegExp(`^- \\[${escapeRegExp(thanks.label)}\\].*\\n?`, 'imu'), '')
+}
