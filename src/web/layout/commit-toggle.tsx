@@ -10,10 +10,12 @@ import { Switch } from '@heroui/react'
 export function CommitToggle({ isCommit, onChange }: Readonly<{ isCommit: boolean; onChange: (isCommit: boolean) => void }>) {
   return (
     <Switch className="flex flex-row gap-2" data-testid="fix-commit" isSelected={isCommit} onChange={onChange}>
-      <Switch.Control>
-        <Switch.Thumb />
-      </Switch.Control>
-      <Switch.Content>Auto commit fixes</Switch.Content>
+      <Switch.Content className="flex flex-row gap-2">
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+        Auto commit fixes
+      </Switch.Content>
     </Switch>
   )
 }
