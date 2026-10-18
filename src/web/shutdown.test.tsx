@@ -8,7 +8,7 @@ describe('shutdown', () => {
     const fetchMock = stubApi()
     renderApp(
       scanRequest([
-        { target: '/projects', type: 'started' },
+        { isNitpick: false, target: '/projects', type: 'started' },
         { result: aProject('finga'), type: 'project' },
         { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
       ]),
@@ -26,7 +26,7 @@ describe('shutdown', () => {
     onTestFinished(() => {
       vi.unstubAllGlobals()
     })
-    renderApp(scanRequest([{ target: '/projects', type: 'started' }]))
+    renderApp(scanRequest([{ isNitpick: false, target: '/projects', type: 'started' }]))
     fireEvent.click(await screen.findByTestId('header-actions'))
     fireEvent.click(await screen.findByTestId('menu-shutdown'))
     await waitFor(() => expect(screen.getByTestId('header-actions').textContent).toBe('Stopped'))

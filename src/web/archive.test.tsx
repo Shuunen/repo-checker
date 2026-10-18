@@ -11,7 +11,7 @@ import { renderApp } from './render-app.tsx'
  */
 function eventsOf(project: Parameters<typeof aProject>[2] = {}, findings: Parameters<typeof aProject>[1] = []): ScanEvent[] {
   return [
-    { target: '/projects', type: 'started' },
+    { isNitpick: false, target: '/projects', type: 'started' },
     { result: aProject('finga', findings, project), type: 'project' },
     { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
   ]

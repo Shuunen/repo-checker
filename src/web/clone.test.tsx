@@ -5,7 +5,7 @@ import { renderApp } from './render-app.tsx'
 
 const notCloned = aFinding({ actions: ['clone'], message: 'on GitHub but not cloned in this folder', messageId: 'missing', ruleId: 'not-cloned', scope: 'project', severity: 'info' })
 const events: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('finga', [notCloned], { local: undefined }), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]

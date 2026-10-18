@@ -1,26 +1,32 @@
 import { testRule } from '../../engine/rule-tester.ts'
-import { deprecatedDependency, outdatedDependency, securityAdvisory } from './registry.rule.ts'
+import { deprecatedDependency, outdatedMajorDependency, outdatedMinorDependency, securityAdvisory } from './registry.rule.ts'
 import { versionDrift } from './version-drift.rule.ts'
 
 const registry = (packages: Record<string, { deprecated?: string; latest: string }>, advisories?: Record<string, { severity: string; title: string; url: string }[]>) => ({ registry: { ...(advisories === undefined ? {} : { advisories }), packages } })
 
-testRule(outdatedDependency, {
+const outdatedValid = [
+  { flags: registry({ knip: { latest: '6.0.0' } }), name: 'up to date', pkg: { devDependencies: { knip: '~6.0.0' } } },
+  { flags: registry({ knip: { latest: '6.0.4' } }), name: 'a newer patch the tilde admits', pkg: { devDependencies: { knip: '~6.0.0' } } },
+  { flags: registry({ knip: { latest: '6.4.0' } }), name: 'a newer minor the caret admits', pkg: { devDependencies: { knip: '^6.0.0' } } },
+  { flags: registry({ knip: { latest: '5.0.0' } }), name: 'ahead of the registry', pkg: { devDependencies: { knip: '~6.0.0' } } },
+  { flags: registry({}), name: 'a package the registry did not give', pkg: { devDependencies: { knip: '~6.0.0' } } },
+  { name: 'the registry could not be reached', pkg: { devDependencies: { knip: '~6.0.0' } } },
+  { flags: registry({ knip: { latest: '6.1.0' } }), name: 'no package.json' },
+  { flags: registry({ knip: { latest: '6.1.0' } }), name: 'a version that is not a plain one', pkg: { devDependencies: { knip: 'workspace:*' } } },
+]
+
+testRule(outdatedMinorDependency, {
   invalid: [
     { errors: ['behind'], flags: registry({ knip: { latest: '6.1.0' } }), name: 'a minor update is fixed, the prefix is kept', output: { devDependencies: { knip: '~6.1.0' } }, pkg: { devDependencies: { knip: '~6.0.0' } } },
     { errors: ['behind'], flags: registry({ knip: { latest: '6.0.4' } }), name: 'a patch update in dependencies', output: { dependencies: { knip: '6.0.4' } }, pkg: { dependencies: { knip: '6.0.0' } } },
-    { errors: ['behind'], flags: registry({ alpha: { latest: '2.0.0' } }), name: 'a major update is reported and left alone', pkg: { dependencies: { alpha: '^1.0.0' } } },
     { errors: ['behind', 'behind'], flags: registry({ alpha: { latest: '1.1.0' }, beta: { latest: '2.1.0' } }), name: 'two updates, one per dependency', output: { dependencies: { alpha: '~1.1.0', beta: '~2.1.0' } }, pkg: { dependencies: { alpha: '~1.0.0', beta: '~2.0.0' } } },
   ],
-  valid: [
-    { flags: registry({ knip: { latest: '6.0.0' } }), name: 'up to date', pkg: { devDependencies: { knip: '~6.0.0' } } },
-    { flags: registry({ knip: { latest: '6.0.4' } }), name: 'a newer patch the tilde admits', pkg: { devDependencies: { knip: '~6.0.0' } } },
-    { flags: registry({ knip: { latest: '6.4.0' } }), name: 'a newer minor the caret admits', pkg: { devDependencies: { knip: '^6.0.0' } } },
-    { flags: registry({ knip: { latest: '5.0.0' } }), name: 'ahead of the registry', pkg: { devDependencies: { knip: '~6.0.0' } } },
-    { flags: registry({}), name: 'a package the registry did not give', pkg: { devDependencies: { knip: '~6.0.0' } } },
-    { name: 'the registry could not be reached', pkg: { devDependencies: { knip: '~6.0.0' } } },
-    { flags: registry({ knip: { latest: '6.1.0' } }), name: 'no package.json' },
-    { flags: registry({ knip: { latest: '6.1.0' } }), name: 'a version that is not a plain one', pkg: { devDependencies: { knip: 'workspace:*' } } },
-  ],
+  valid: [...outdatedValid, { flags: registry({ alpha: { latest: '2.0.0' } }), name: 'a major update is another check', pkg: { dependencies: { alpha: '^1.0.0' } } }],
+})
+
+testRule(outdatedMajorDependency, {
+  invalid: [{ errors: ['behind'], flags: registry({ alpha: { latest: '2.0.0' } }), name: 'a major update is reported and left alone', pkg: { dependencies: { alpha: '^1.0.0' } } }],
+  valid: [...outdatedValid, { flags: registry({ knip: { latest: '6.1.0' } }), name: 'a minor update is another check', pkg: { devDependencies: { knip: '~6.0.0' } } }],
 })
 
 testRule(deprecatedDependency, {

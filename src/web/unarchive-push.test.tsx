@@ -15,7 +15,7 @@ const base = aProject('old').project
 function eventsWith(local: Readonly<Partial<LocalClone>>): ScanEvent[] {
   const result = aProject('old', [unsaved], { github: { ...base.github, isArchived: true } as never, local: { ...base.local, localOnlyBranches: ['wip'], unpushed: [{ branch: 'master', subjects: ['one more'] }], ...local } as never })
   return [
-    { target: '/projects', type: 'started' },
+    { isNitpick: false, target: '/projects', type: 'started' },
     { result, type: 'project' },
     { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
   ]

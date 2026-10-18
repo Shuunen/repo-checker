@@ -13,6 +13,7 @@ Options:
 
 - `--target=path` folder to scan, defaults to the current folder.
 - `--owner=name` GitHub account to compare with, defaults to the `gh` login. In single-project mode the owner comes from the repo's `origin` remote.
+- `--nitpick` also runs the nitpick checks, the ones marked `nitpick: true` in their meta. The ui starts in that mode too, and its Actions menu has a `Nitpick mode` toggle that scans every project again in the other mode.
 - `--no-fetch` skips `git fetch`: faster and changes nothing on disk, but unpushed work is measured against remote refs that may be stale.
 - `--verbose` also lists every passed and skipped check, per project.
 - `ui` (a command, not an option) starts the dashboard on `127.0.0.1` instead of printing the report. `--port=number` sets its port (4747 by default), `--no-open` keeps the browser closed.

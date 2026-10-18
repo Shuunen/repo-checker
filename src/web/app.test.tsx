@@ -8,7 +8,7 @@ import type { FetchScan } from './scan/scan-query.ts'
 const jozzo = aProject('jozzo', [aFinding({ actions: ['unarchive-push-rearchive'], messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })])
 const finga = aProject('finga', [aFinding({ actions: ['clone'], messageId: 'missing', ruleId: 'not-cloned', scope: 'project', severity: 'info' })], { local: undefined })
 const scanEvents: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { line: 'checking 2 projects', type: 'progress' },
   { result: finga, type: 'project' },
   { result: jozzo, type: 'project' },
@@ -51,7 +51,7 @@ describe(App, () => {
     const old = aProject('old', [], { github: { ...aProject('old').project.github, isArchived: true } as never })
     renderApp(
       scanRequest([
-        { target: '/projects', type: 'started' },
+        { isNitpick: false, target: '/projects', type: 'started' },
         { result: jozzo, type: 'project' },
         { result: old, type: 'project' },
         { durationMs: 10, isSingle: false, owner: 'owner', type: 'done' },
@@ -81,7 +81,7 @@ describe(App, () => {
     const secret = aProject('secret', [aFinding()], { github: { ...aProject('secret').project.github, isArchived: true, isPrivate: true } as never })
     renderApp(
       scanRequest([
-        { target: '/projects', type: 'started' },
+        { isNitpick: false, target: '/projects', type: 'started' },
         { result: jozzo, type: 'project' },
         { result: secret, type: 'project' },
         { durationMs: 10, isSingle: false, owner: 'owner', type: 'done' },
@@ -106,7 +106,7 @@ describe(App, () => {
     const open = vi.spyOn(globalThis, 'open').mockReturnValue(undefined as never)
     renderApp(
       scanRequest([
-        { target: '/projects', type: 'started' },
+        { isNitpick: false, target: '/projects', type: 'started' },
         { result: jozzo, type: 'project' },
         { result: aProject('bare', [], { github: undefined }), type: 'project' },
         { durationMs: 10, isSingle: false, owner: 'owner', type: 'done' },
@@ -145,6 +145,27 @@ describe(App, () => {
     expect(request).toHaveBeenCalledTimes(2)
   })
 
+  it('switches the nitpick mode from the menu, with a new scan', async () => {
+    expect.hasAssertions()
+    const request = renderApp(scanRequest([{ isNitpick: false, target: '/projects', type: 'started' }, ...scanEvents.slice(1)]))
+    await screen.findByTestId('row-jozzo')
+    fireEvent.click(screen.getByTestId('header-actions'))
+    const item = await screen.findByTestId('menu-nitpick')
+    expect(item.textContent).toContain('Nitpick mode: off')
+    fireEvent.click(item)
+    await screen.findByTestId('row-jozzo')
+    expect(request).toHaveBeenCalledTimes(2)
+  })
+
+  it('shows the nitpick mode is on when the server says so', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest([{ isNitpick: true, target: '/projects', type: 'started' }, ...scanEvents.slice(1)]))
+    await screen.findByTestId('row-jozzo')
+    fireEvent.click(screen.getByTestId('header-actions'))
+    const item = await screen.findByTestId('menu-nitpick')
+    expect(item.textContent).toContain('Nitpick mode: on')
+  })
+
   it('shows why the scan failed', async () => {
     expect.hasAssertions()
     renderApp(vi.fn<FetchScan>(() => Promise.resolve(sseResponse([{ message: 'gh api user failed', type: 'failed' }]))))
@@ -162,7 +183,7 @@ describe(App, () => {
   it('shows how many projects are checked while the scan runs', async () => {
     expect.hasAssertions()
     const progress: ScanEvent[] = [
-      { target: '/projects', type: 'started' },
+      { isNitpick: false, target: '/projects', type: 'started' },
       { line: 'checking 2 projects', type: 'progress' },
       { result: finga, type: 'project' },
     ]

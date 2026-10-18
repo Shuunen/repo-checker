@@ -3,7 +3,7 @@ import { sseResponse } from '../fixtures.ts'
 import { readScanEvents } from './read-events.ts'
 
 const events: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { line: 'checking 1 project — ünïcode', type: 'progress' },
   { durationMs: 1200, isSingle: false, owner: 'owner', type: 'done' },
 ]

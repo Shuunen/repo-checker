@@ -17,7 +17,7 @@ describe('restart', () => {
     onTestFinished(() => {
       vi.unstubAllGlobals()
     })
-    renderApp(scanRequest([{ target: '/projects', type: 'started' }]))
+    renderApp(scanRequest([{ isNitpick: false, target: '/projects', type: 'started' }]))
     fireEvent.click(await screen.findByTestId('header-actions'))
     fireEvent.click(await screen.findByTestId('menu-restart'))
     await waitFor(() => expect(screen.getByTestId('header-actions').textContent).toBe('Restarting…'))
@@ -34,7 +34,7 @@ describe('restart', () => {
     onTestFinished(() => {
       vi.unstubAllGlobals()
     })
-    renderApp(scanRequest([{ target: '/projects', type: 'started' }]))
+    renderApp(scanRequest([{ isNitpick: false, target: '/projects', type: 'started' }]))
     fireEvent.click(await screen.findByTestId('header-actions'))
     fireEvent.click(await screen.findByTestId('menu-restart'))
     await waitFor(() => expect(reload).toHaveBeenCalledOnce(), { timeout: 3000 })

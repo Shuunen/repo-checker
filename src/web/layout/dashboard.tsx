@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { initialListView } from '../projects/list-view.ts'
-import { askFreshScan, type FetchScan } from '../scan/scan-query.ts'
+import { askFreshScan, askNitpickScan, type FetchScan } from '../scan/scan-query.ts'
 import { AppBar } from './app-bar.tsx'
 import { FilterTabs } from './filter-tabs.tsx'
 import { Routes } from './routes.tsx'
@@ -23,6 +23,10 @@ export function Dashboard({ request }: Readonly<{ request: FetchScan | undefined
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <AppBar
         isScanning={isScanning}
+        onNitpick={() => {
+          askNitpickScan(!state.isNitpick)
+          void query.refetch()
+        }}
         onRescan={() => {
           askFreshScan()
           void query.refetch()

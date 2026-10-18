@@ -56,6 +56,24 @@ describe('cli ui', () => {
   })
 
   it.each([
+    [[], '?fetch=false', '"isNitpick":false'],
+    [['--nitpick'], '?fetch=false', '"isNitpick":true'],
+    [[], '?nitpick=true&fetch=false', '"isNitpick":true'],
+    [['--nitpick'], '?nitpick=false&fetch=false', '"isNitpick":false'],
+  ])('starts the ui with %j, the page asks %s: %s', async (argv, query, expected) => {
+    expect.hasAssertions()
+    const { scan } = await ui(argv)
+    await expect(scan(query)).resolves.toContain(expected)
+  })
+
+  it('keeps the nitpick mode of the last scan when the page does not ask', async () => {
+    expect.hasAssertions()
+    const { scan } = await ui()
+    await scan('?nitpick=true&fetch=false')
+    await expect(scan('?fetch=false')).resolves.toContain('"isNitpick":true')
+  })
+
+  it.each([
     ['the gh login', [], 'owner/finga'],
     ['the --owner option', ['--owner=someone'], 'someone/finga'],
   ])('asks GitHub about a repo of %s, then clones it over SSH', async (_name, argv, slug) => {

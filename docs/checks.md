@@ -51,9 +51,10 @@ State of each clone and of its git history.
 
 What the project depends on, and how current and safe that is.
 
-- ✅ 🟡 `outdated-dependency`: the version a dependency declares is behind the latest on the npm registry, one finding per dependency. Fixed by bumping a patch or a minor update, keeping the range prefix, a major update is reported and left to you and to Renovate (`registry.rule.ts`).
+- ✅ 🟡 `outdated-major-dependency`: the version a dependency declares is a major update behind the latest on the npm registry, one finding per dependency. No fix, a major update can break the code and is left to you and to Renovate (`registry.rule.ts`).
+- ✅ 🔵 `outdated-minor-dependency`: the version a dependency declares is a patch or a minor update behind the latest on the npm registry, one finding per dependency. Fixed by bumping it, keeping the range prefix (`registry.rule.ts`). A nitpick check.
 - ✅ 🟡 `deprecated-dependency`: a dependency whose latest version is marked deprecated on the npm registry. No fix, what replaces it is for you to say (`registry.rule.ts`).
-- ✅ 🔴 `security-advisory`: the declared version of a dependency has a known vulnerability, from the advisory endpoint of the npm registry, asked once per project with the declared versions (the lowest version of a range, so `~` and exact versions are exact). No fix, `outdated-dependency` fixes most of them (`registry.rule.ts`).
+- ✅ 🔴 `security-advisory`: the declared version of a dependency has a known vulnerability, from the advisory endpoint of the npm registry, asked once per project with the declared versions (the lowest version of a range, so `~` and exact versions are exact). No fix, `outdated-minor-dependency` fixes most of them (`registry.rule.ts`).
 - ✅ 🔵 `version-drift`: a dependency used by at least 3 projects of the scan, at a version older than the most common one, for example one lint tool in 4 projects at one version and in 9 at another. Fixed by setting the most common version. A project that is ahead is not reported (`version-drift.rule.ts`).
 - ✅ 🟡 `open-renovate-pr`: a Renovate pull request waiting to be merged.
 - ✅ 🔴 `no-sass-dependency`: no `sass` dependency, it is fat and useless. Only when the project data says to avoid it (`package.file.ts`).
@@ -212,7 +213,7 @@ For projects that are deployed as a website.
 - ✅ 🟡 `external-link-rel`: external `<a>` links, in `.html`, `.vue`, `.svelte`, `.astro`, `.jsx` and `.tsx` files, should carry `rel="noopener"` or `rel="noreferrer"`. Fixed by adding `rel="noopener noreferrer"`. From the old README todo list (`website-html.rule.ts`).
 - ✅ 🟡 `media-dimensions`: `<img>` and `<video>` should have `width` and `height`. No fix, the real size is for you to say. From the old README todo list (`website-html.rule.ts`).
 - ✅ 🟡 `build-size`: the build output (`dist`, `build`, `out` or `.output/public`) is no bigger than `maxBuildSizeKo` of `.repo-checker.json`, skipped without it or when the site is not built. No fix, what to remove is for you to say. From the old README todo list (`build-size.rule.ts`).
-- ✅ 🔵 `lighthouse-budget`: a website should declare a Lighthouse budget, `budget.json` or a `lighthouserc`. Fixed by creating a first `budget.json` to tune. From the old README todo list (`website-files.rule.ts`).
+- ✅ 🔵 `lighthouse-budget`: a website should declare a Lighthouse budget, `budget.json` or a `lighthouserc`. Fixed by creating a first `budget.json` to tune. From the old README todo list (`website-files.rule.ts`). A nitpick check.
 
 ## Presentation
 

@@ -6,7 +6,7 @@ import { renderApp } from './render-app.tsx'
 
 const pristine = aFinding({ actions: ['delete-fork'], message: 'a pristine fork of them/qbt', messageId: 'pristine', ruleId: 'pristine-fork', scope: 'project', severity: 'info' })
 const events: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('qbt', [pristine], { local: undefined }), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]

@@ -6,7 +6,7 @@ import { renderApp } from './render-app.tsx'
 
 const safe = aFinding({ actions: ['delete-clone'], message: 'archived on GitHub, and the clone holds nothing that is not on GitHub', messageId: 'safe', ruleId: 'archived-clone', scope: 'project', severity: 'info' })
 const events: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('old', [safe]), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]

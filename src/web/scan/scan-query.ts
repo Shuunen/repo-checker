@@ -16,15 +16,30 @@ export function askFreshScan() {
   isFreshAsked = true
 }
 
+/** The nitpick mode the next scan asks the server for, undefined to leave it as it is */
+let nitpickAsked: boolean | undefined = undefined
+
+/**
+ * Make the next scan switch the nitpick mode on or off, and check every project again
+ * @param isNitpick true to run the nitpick checks
+ */
+export function askNitpickScan(isNitpick: boolean) {
+  nitpickAsked = isNitpick
+  isFreshAsked = true
+}
+
 /**
  * Request the scan stream from the server
  * @param signal aborts the request when the query is cancelled
  * @returns the response
  */
 const fetchScan: FetchScan = signal => {
-  const address = isFreshAsked ? '/api/scan?fresh=true' : '/api/scan'
+  const query = new URLSearchParams()
+  if (isFreshAsked) query.set('fresh', 'true')
+  if (nitpickAsked !== undefined) query.set('nitpick', String(nitpickAsked))
   isFreshAsked = false
-  return fetch(address, { signal })
+  nitpickAsked = undefined
+  return fetch(query.size === 0 ? '/api/scan' : `/api/scan?${query}`, { signal })
 }
 
 /**

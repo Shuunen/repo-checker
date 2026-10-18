@@ -40,6 +40,8 @@ export interface RuleMeta<MessageId extends string> {
   fixable?: boolean
   /** The check id from docs/checks.md, kebab-case, unique */
   id: string
+  /** True for a nitpick check: it only runs in nitpick mode (`--nitpick`, or the toggle of the page), because it is a detail more than a problem */
+  nitpick?: boolean
   /** The messages the rule can report, by message id, with optional `{{placeholders}}` filled from `Report.data` */
   messages: Record<MessageId, string>
   /** The severity of every finding of this rule */

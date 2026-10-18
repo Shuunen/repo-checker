@@ -19,6 +19,7 @@ Options:
   --target=path   folder to scan, the current one by default
   --owner=name    GitHub account to compare with, the gh login by default (in a single project, the owner of its origin)
   --no-fetch      skip git fetch, faster but unpushed work is measured against stale remote refs
+  --nitpick       also run the nitpick checks, the small details (the ui has a toggle for it)
   --verbose       also list every passed and skipped check, per project
   --port=number   port of the ui server, ${defaultPort} by default
   --no-open       do not open the browser (ui only)
@@ -45,7 +46,7 @@ function parseOptions(argv: readonly string[]) {
     allowNegative: true,
     allowPositionals: true,
     args: [...argv],
-    options: { fetch: { default: true, type: 'boolean' }, help: { short: 'h', type: 'boolean' }, open: { default: true, type: 'boolean' }, owner: { type: 'string' }, port: { type: 'string' }, target: { type: 'string' }, verbose: { type: 'boolean' } },
+    options: { fetch: { default: true, type: 'boolean' }, help: { short: 'h', type: 'boolean' }, nitpick: { type: 'boolean' }, open: { default: true, type: 'boolean' }, owner: { type: 'string' }, port: { type: 'string' }, target: { type: 'string' }, verbose: { type: 'boolean' } },
   })
   const command = positionals.join(' ')
   if (command !== '' && command !== 'ui') throw new TypeError(`Unknown command '${command}'`)
@@ -95,7 +96,7 @@ const rulesFolder = path.join(import.meta.dirname, 'rules')
  */
 async function runUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, exit, gh, openBrowser, print, restart, startServer }: Readonly<CliEnvironment>) {
   const target = await resolveTarget(cwd, options.target)
-  return startUi({ fetch: options.fetch, owner: options.owner, port: options.port, rules: await loadRules(rulesFolder), shouldOpen: options.open, target }, { exit, gh, openBrowser, print, restart, startServer })
+  return startUi({ fetch: options.fetch, isNitpick: options.nitpick === true, owner: options.owner, port: options.port, rules: await loadRules(rulesFolder), shouldOpen: options.open, target }, { exit, gh, openBrowser, print, restart, startServer })
 }
 
 /**
@@ -113,7 +114,7 @@ async function scanAndReport(options: Readonly<ReturnType<typeof parseOptions>>,
   const started = Date.now()
   const target = await resolveTarget(cwd, options.target)
   const rules = await loadRules(rulesFolder)
-  const { owner, projects } = await scan({ gh, owner: options.owner, rules, shouldFetch: options.fetch, target }, { onProgress: printProgress })
+  const { owner, projects } = await scan({ gh, isNitpick: options.nitpick === true, owner: options.owner, rules, shouldFetch: options.fetch, target }, { onProgress: printProgress })
   const { hasErrors, text } = formatReport(projects, { durationMs: Date.now() - started, hasColors, isVerbose: options.verbose === true, owner, target })
   print(text)
   return hasErrors ? 1 : 0

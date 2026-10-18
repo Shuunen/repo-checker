@@ -6,7 +6,7 @@ import { renderApp } from './render-app.tsx'
 const notCloned = aFinding({ actions: ['clone'], message: 'on GitHub but not cloned', messageId: 'missing', ruleId: 'not-cloned', scope: 'project', severity: 'info' })
 const pristine = aFinding({ actions: ['delete-fork'], ruleId: 'pristine-fork', scope: 'project', severity: 'info' })
 const events: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('finga', [notCloned], { local: undefined }), type: 'project' },
   { result: aProject('qbt', [pristine]), type: 'project' },
   { result: aProject('other'), type: 'project' },

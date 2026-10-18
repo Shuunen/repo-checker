@@ -99,12 +99,13 @@ async function readChecked(context: Readonly<Context>, files: Candidates): Promi
  * @param options.files the candidates, any of them is enough
  * @param options.id the check id
  * @param options.message the message when none exists, `{{file}}` is the first candidate
+ * @param options.nitpick true for a nitpick check, only run in nitpick mode
  * @param options.severity the severity
  * @param options.when only check when it returns true
  * @returns the rule
  * @example requireFile({ files: ['.nvmrc'], id: 'nvmrc-exists', message: 'no {{file}} file', severity: 'error' })
  */
-export function requireFile({ content, files, id, message, severity, when = () => true }: Readonly<FileRuleOptions & { content?: ((context: Readonly<Context>) => string | undefined) | string }>) {
+export function requireFile({ content, files, id, message, nitpick = false, severity, when = () => true }: Readonly<FileRuleOptions & { content?: ((context: Readonly<Context>) => string | undefined) | string; nitpick?: boolean }>) {
   return defineRule({
     appliesTo: when,
     async check(context) {
@@ -114,7 +115,7 @@ export function requireFile({ content, files, id, message, severity, when = () =
       const text = typeof content === 'function' ? content(context) : content
       context.report(text === undefined ? { data: { file }, messageId: 'missing' } : { data: { file }, fix: fixer => fixer.text(file, () => text), messageId: 'missing' })
     },
-    meta: { fixable: content !== undefined, id, messages: { missing: message }, severity },
+    meta: { fixable: content !== undefined, id, messages: { missing: message }, nitpick, severity },
   })
 }
 

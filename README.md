@@ -46,6 +46,7 @@ The report groups the findings by severity (errors, warnings, info) and ends wit
 
 - `--target=path` folder to scan, the current one by default
 - `--owner=name` GitHub account to compare with, the `gh` login by default
+- `--nitpick` also run the nitpick checks (small details like `outdated-minor-dependency` and `lighthouse-budget`), the ui has a `Nitpick mode` toggle in its Actions menu
 - `--no-fetch` skip `git fetch`, faster but unpushed work is measured against stale remote refs
 - `--verbose` also list every passed and skipped check, per project
 - `--port=number` port of the `ui` server, 4747 by default

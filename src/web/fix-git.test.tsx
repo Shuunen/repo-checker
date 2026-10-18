@@ -7,7 +7,7 @@ import { renderApp } from './render-app.tsx'
 const noLicense = aFinding({ fixFiles: ['package.json'], message: 'package.json has no license', ruleId: 'package-license' })
 const stash = aFinding({ message: '1 stash never reapplied or dropped', ruleId: 'forgotten-stash', scope: 'project' })
 const events = (findings = [stash]): ScanEvent[] => [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('app', findings), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]

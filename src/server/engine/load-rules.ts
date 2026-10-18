@@ -52,3 +52,46 @@ export function splitRules(rules: readonly AnyRule[]) {
     else fileRules.push(rule)
   return { fileRules, projectRules }
 }
+
+/**
+ * Keep the rules that run: the nitpick rules only run in nitpick mode
+ * @param rules the rules of both flavors
+ * @param isNitpick true in nitpick mode
+ * @returns the rules to run
+ * @example const active = activeRules(rules, process.argv.includes('--nitpick'))
+ */
+export function activeRules(rules: readonly AnyRule[], isNitpick: boolean) {
+  return isNitpick ? rules : rules.filter(rule => rule.meta.nitpick !== true)
+}
+
+/** The rules split by flavor, whose lists follow the nitpick mode: the actions of the ui server hold one, so the page can switch the mode without restarting */
+export interface RuleSet {
+  /** The file rules that run now */
+  readonly fileRules: readonly Rule[]
+  /** True when the nitpick rules run too, set it to change the mode */
+  isNitpick: boolean
+  /** The project rules that run now */
+  readonly projectRules: readonly ProjectRule[]
+}
+
+/**
+ * Split rules by flavor, with lists that follow the nitpick mode
+ * @param rules the rules of both flavors
+ * @param isNitpick true to start with the nitpick rules
+ * @returns the rule set
+ * @example const set = createRuleSet(rules, false)
+ */
+export function createRuleSet(rules: readonly AnyRule[], isNitpick: boolean): RuleSet {
+  const quiet = splitRules(activeRules(rules, false))
+  const all = splitRules(rules)
+  const set: RuleSet = {
+    get fileRules() {
+      return (set.isNitpick ? all : quiet).fileRules
+    },
+    isNitpick,
+    get projectRules() {
+      return (set.isNitpick ? all : quiet).projectRules
+    },
+  }
+  return set
+}

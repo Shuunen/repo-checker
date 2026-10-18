@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { loadRules, splitRules } from './load-rules.ts'
+import { activeRules, createRuleSet, loadRules, splitRules } from './load-rules.ts'
 
 const fileRule = (id: string) => ({ check: () => undefined, meta: { id, messages: {}, severity: 'info' as const } })
 const projectRule = (id: string) => ({ check: () => undefined, meta: { id, messages: {}, scope: 'project' as const, severity: 'info' as const } })
@@ -34,5 +34,26 @@ describe('rules loader', () => {
     const { fileRules, projectRules } = splitRules([fileRule('a'), projectRule('b'), fileRule('c'), projectRule('d')])
     expect(fileRules.map(item => item.meta.id)).toStrictEqual(['a', 'c'])
     expect(projectRules.map(item => item.meta.id)).toStrictEqual(['b', 'd'])
+  })
+})
+
+describe('nitpick rules', () => {
+  const nitpick = { ...fileRule('nit'), meta: { ...fileRule('nit').meta, nitpick: true } }
+  const rules = [fileRule('plain'), nitpick, projectRule('sync')]
+
+  it('keeps the nitpick rules only in nitpick mode', () => {
+    expect.hasAssertions()
+    expect(activeRules(rules, false).map(rule => rule.meta.id)).toStrictEqual(['plain', 'sync'])
+    expect(activeRules(rules, true).map(rule => rule.meta.id)).toStrictEqual(['plain', 'nit', 'sync'])
+  })
+
+  it('gives a rule set whose lists follow the mode', () => {
+    expect.hasAssertions()
+    const set = createRuleSet(rules, false)
+    expect(set.fileRules.map(rule => rule.meta.id)).toStrictEqual(['plain'])
+    expect(set.projectRules).toHaveLength(1)
+    set.isNitpick = true
+    expect(set.fileRules.map(rule => rule.meta.id)).toStrictEqual(['plain', 'nit'])
+    expect(set.projectRules).toHaveLength(1)
   })
 })

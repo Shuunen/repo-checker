@@ -15,17 +15,20 @@ function triggerLabel(isRestarting: boolean, isStopped: boolean) {
 }
 
 /**
- * The Actions menu of the app bar: Rescan and Restart, then Shutdown apart in its own section. Restart and Shutdown ask the server to start again or to stop, so the trigger says Restarting… or Stopped while the page cannot work
+ * The Actions menu of the app bar: Rescan, the Nitpick mode toggle and Restart, then Shutdown apart in its own section. Restart and Shutdown ask the server to start again or to stop, so the trigger says Restarting… or Stopped while the page cannot work
  * @param props the props
+ * @param props.isNitpick true when the nitpick checks run
  * @param props.isScanning true while the scan streams, Rescan waits for it
+ * @param props.onNitpick starts a new scan with the nitpick mode switched
  * @param props.onRescan starts a new scan
  * @returns the trigger and the menu
  */
-export function HeaderMenu({ isScanning, onRescan }: Readonly<{ isScanning: boolean; onRescan: () => void }>) {
+export function HeaderMenu({ isNitpick, isScanning, onNitpick, onRescan }: Readonly<{ isNitpick: boolean; isScanning: boolean; onNitpick: () => void; onRescan: () => void }>) {
   const { isRestarting, restart } = useRestart()
   const { isStopped, shutdown } = useShutdown()
   const handleChoice = (key: unknown) => {
     if (key === 'rescan') onRescan()
+    else if (key === 'nitpick') onNitpick()
     else if (key === 'restart') void restart()
     else void shutdown()
   }
@@ -36,7 +39,7 @@ export function HeaderMenu({ isScanning, onRescan }: Readonly<{ isScanning: bool
       </Button>
       <Dropdown.Popover className="border border-foreground/20 bg-surface-tertiary!" placement="bottom end">
         <Dropdown.Menu onAction={handleChoice}>
-          <HeaderItems isScanning={isScanning} />
+          <HeaderItems isNitpick={isNitpick} isScanning={isScanning} />
         </Dropdown.Menu>
       </Dropdown.Popover>
     </Dropdown>

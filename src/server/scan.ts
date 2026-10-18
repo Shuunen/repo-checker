@@ -2,7 +2,7 @@ import type { LocalClone } from '../shared/project.ts'
 import { checkProjects, type ProjectResult } from './check-projects.ts'
 import { readFleet, rememberFleet } from './fleet.ts'
 import type { AnyRule } from './engine/define-project-rule.ts'
-import { splitRules } from './engine/load-rules.ts'
+import { activeRules, splitRules } from './engine/load-rules.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { readClone } from './inventory/git.ts'
 import { matchProjects } from './inventory/match.ts'
@@ -15,6 +15,8 @@ export interface ScanOptions {
   gh: GhRunner
   /** Remembers the results between scans, undefined to remember nothing */
   memory?: ProjectMemory | undefined
+  /** True to run the nitpick rules too */
+  isNitpick?: boolean | undefined
   /** The GitHub owner to compare with, detected when undefined */
   owner: string | undefined
   /** The rules of both flavors */
@@ -51,6 +53,6 @@ export async function scan(options: Readonly<ScanOptions>, { onProject = () => u
   const matched = matchProjects(clones, repos, owner)
   const fleet = await readFleet(matched)
   rememberFleet(fleet)
-  const projects = await checkProjects(matched, { fleet, gh: options.gh, memory: options.memory, onProgress, onProject, refresh, rules: splitRules(options.rules), shouldReuse: options.shouldReuse })
+  const projects = await checkProjects(matched, { fleet, gh: options.gh, memory: options.memory, onProgress, onProject, refresh, rules: splitRules(activeRules(options.rules, options.isNitpick === true)), shouldReuse: options.shouldReuse })
   return { isSingle, owner, projects }
 }

@@ -5,7 +5,7 @@ import { aProject, scanRequest, sseResponse, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 
 const events = (project: Parameters<typeof aProject>[2] = {}): ScanEvent[] => [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('finga', [], project), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]

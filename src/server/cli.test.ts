@@ -69,6 +69,17 @@ describe(cli, () => {
     expect(output).toMatch(/– skipped \(\d+\)\n {2}app {2}/u)
   })
 
+  it('runs one more check with --nitpick', async () => {
+    expect.hasAssertions()
+    const folder = await makeEmptyFolder()
+    await run('git', ['init', '--quiet', 'app'], folder)
+    await run('git', ['remote', 'add', 'origin', 'git@github.com:owner/app.git'], path.join(folder, 'app'))
+    const quiet = await cli(['--no-fetch', '--verbose'], { cwd: folder, gh: fakeAccount([apiRepo('app', false)]) })
+    const nitpicky = await cli(['--no-fetch', '--verbose', '--nitpick'], { cwd: folder, gh: fakeAccount([apiRepo('app', false)]) })
+    expect(quiet.output).not.toContain('outdated-minor-dependency')
+    expect(nitpicky.output).toContain('outdated-minor-dependency')
+  })
+
   it('refuses a target that is not a folder', async () => {
     expect.hasAssertions()
     const { code, output } = await cli(['--target=/missing/projects'])

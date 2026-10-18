@@ -5,7 +5,7 @@ import { renderApp } from './render-app.tsx'
 
 const offPath = aFinding({ actions: ['checkout-default'], message: 'checked out on feat, the default branch is master', messageId: 'found', ruleId: 'not-on-default-branch', scope: 'project', severity: 'info' })
 const events: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('finga', [offPath]), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]

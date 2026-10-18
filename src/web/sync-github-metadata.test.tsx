@@ -6,7 +6,7 @@ import { renderApp } from './render-app.tsx'
 
 const noDescription = aFinding({ actions: ['sync-github-metadata'], message: 'the repo has no description on GitHub', messageId: 'missing', ruleId: 'missing-description', scope: 'project', severity: 'warning' })
 const events: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('finga', [noDescription]), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]

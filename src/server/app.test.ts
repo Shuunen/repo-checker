@@ -46,7 +46,7 @@ async function readEvents(response: Readonly<Response>) {
 describe(createApp, () => {
   it('streams started, the progress, each project, then done', async () => {
     expect.hasAssertions()
-    const runScan = vi.fn<ScanRunner>((_shouldFetch, { onProgress, onProject }) => {
+    const runScan = vi.fn<ScanRunner>((_request, { onProgress, onProject }) => {
       onProgress('checking 1 project')
       onProject(result)
       return Promise.resolve({ isSingle: false, owner: 'owner' })
@@ -54,7 +54,7 @@ describe(createApp, () => {
     const events = await readEvents(await app(runScan).request('http://127.0.0.1/api/scan'))
     expect(events.map(({ event }) => event)).toStrictEqual(['started', 'progress', 'project', 'done'])
     expect(events.slice(0, 2).map(({ data }) => data)).toStrictEqual([
-      { target: '/projects', type: 'started' },
+      { isNitpick: false, target: '/projects', type: 'started' },
       { line: 'checking 1 project', type: 'progress' },
     ])
     // JSON drops the undefined fields, like `github` of a project without repo, so the page reads them as missing
@@ -65,9 +65,9 @@ describe(createApp, () => {
   it('shows the home folder as ~ in the target it sends first', async () => {
     expect.hasAssertions()
     const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
-    const response = await createApp(runScan, { actions: worksFine, restart: vi.fn<() => void>(), shutdown: vi.fn<() => void>(), target: path.join(homedir(), 'Projects', 'github'), webFolder: import.meta.dirname }).request('http://127.0.0.1/api/scan')
+    const response = await createApp(runScan, { actions: worksFine, isNitpick: () => false, restart: vi.fn<() => void>(), shutdown: vi.fn<() => void>(), target: path.join(homedir(), 'Projects', 'github'), webFolder: import.meta.dirname }).request('http://127.0.0.1/api/scan')
     const [started] = await readEvents(response)
-    expect(started?.data).toStrictEqual({ target: '~/Projects/github', type: 'started' })
+    expect(started?.data).toStrictEqual({ isNitpick: false, target: '~/Projects/github', type: 'started' })
   })
 
   it('answers a shutdown request then stops, and refuses it without the header', async () => {
@@ -77,7 +77,7 @@ describe(createApp, () => {
       vi.useRealTimers()
     })
     const shutdown = vi.fn<() => void>()
-    const server = createApp(vi.fn<ScanRunner>(), { actions: worksFine, restart: vi.fn<() => void>(), shutdown, target: '/projects', webFolder: import.meta.dirname })
+    const server = createApp(vi.fn<ScanRunner>(), { actions: worksFine, isNitpick: () => false, restart: vi.fn<() => void>(), shutdown, target: '/projects', webFolder: import.meta.dirname })
     const refused = await server.request('http://127.0.0.1/api/shutdown', { method: 'POST' })
     expect(refused.status).toBe(403)
     const response = await server.request('http://127.0.0.1/api/shutdown', { headers: { 'x-repo-check': '1' }, method: 'POST' })
@@ -94,7 +94,7 @@ describe(createApp, () => {
       vi.useRealTimers()
     })
     const restart = vi.fn<() => void>()
-    const server = createApp(vi.fn<ScanRunner>(), { actions: worksFine, restart, shutdown: vi.fn<() => void>(), target: '/projects', webFolder: import.meta.dirname })
+    const server = createApp(vi.fn<ScanRunner>(), { actions: worksFine, isNitpick: () => false, restart, shutdown: vi.fn<() => void>(), target: '/projects', webFolder: import.meta.dirname })
     const refused = await server.request('http://127.0.0.1/api/restart', { method: 'POST' })
     expect(refused.status).toBe(403)
     const response = await server.request('http://127.0.0.1/api/restart', { headers: { 'x-repo-check': '1' }, method: 'POST' })
@@ -115,7 +115,7 @@ describe(createApp, () => {
     const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
     const response = await app(runScan).request('http://localhost/api/scan?fetch=false')
     await response.text()
-    expect(runScan).toHaveBeenCalledWith(false, expect.any(Object), true)
+    expect(runScan).toHaveBeenCalledWith({ isNitpick: undefined, shouldFetch: false, shouldReuse: true }, expect.any(Object))
   })
 
   it('fetches by default', async () => {
@@ -123,7 +123,7 @@ describe(createApp, () => {
     const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
     const response = await app(runScan).request('http://localhost/api/scan')
     await response.text()
-    expect(runScan).toHaveBeenCalledWith(true, expect.any(Object), true)
+    expect(runScan).toHaveBeenCalledWith({ isNitpick: undefined, shouldFetch: true, shouldReuse: true }, expect.any(Object))
   })
 
   it('checks every project again when asked for a fresh scan', async () => {
@@ -131,7 +131,25 @@ describe(createApp, () => {
     const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
     const response = await app(runScan).request('http://localhost/api/scan?fresh=true')
     await response.text()
-    expect(runScan).toHaveBeenCalledWith(true, expect.any(Object), false)
+    expect(runScan).toHaveBeenCalledWith({ isNitpick: undefined, shouldFetch: true, shouldReuse: false }, expect.any(Object))
+  })
+
+  it.each([
+    ['true', true],
+    ['false', false],
+  ])('passes ?nitpick=%s to the scan', async (value, expected) => {
+    expect.hasAssertions()
+    const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
+    const response = await app(runScan).request(`http://localhost/api/scan?nitpick=${value}`)
+    await readEvents(response)
+    expect(runScan).toHaveBeenCalledWith({ isNitpick: expected, shouldFetch: true, shouldReuse: true }, expect.any(Object))
+  })
+
+  it('tells the page the nitpick mode in the started event', async () => {
+    expect.hasAssertions()
+    const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
+    const [started] = await readEvents(await createApp(runScan, { actions: worksFine, isNitpick: () => true, restart: vi.fn<() => void>(), shutdown: vi.fn<() => void>(), target: '/projects', webFolder: import.meta.dirname }).request('http://localhost/api/scan'))
+    expect(started?.data).toStrictEqual({ isNitpick: true, target: '/projects', type: 'started' })
   })
 
   it('serves the web app', async () => {
@@ -166,7 +184,7 @@ describe(createApp, () => {
     const runScan = vi.fn<ScanRunner>(() => Promise.reject(error))
     const events = await readEvents(await app(runScan).request('http://127.0.0.1/api/scan'))
     expect(events.map(({ data }) => data)).toStrictEqual([
-      { target: '/projects', type: 'started' },
+      { isNitpick: false, target: '/projects', type: 'started' },
       { message: 'gh api user failed', type: 'failed' },
     ])
   })

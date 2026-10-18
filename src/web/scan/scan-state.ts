@@ -9,6 +9,8 @@ export interface ScanState {
   done: ScanDone | undefined
   /** The error message when the scan stopped */
   failure: string | undefined
+  /** True when the nitpick checks run, told by the server when the scan starts */
+  isNitpick: boolean
   /** The last progress line */
   progress: string
   /** The projects checked so far, in the order they came */
@@ -20,7 +22,7 @@ export interface ScanState {
 }
 
 /** The state before the first event */
-export const initialScanState: ScanState = { done: undefined, failure: undefined, progress: '', projects: [], target: '', total: undefined }
+export const initialScanState: ScanState = { done: undefined, failure: undefined, isNitpick: false, progress: '', projects: [], target: '', total: undefined }
 
 /** The progress line that tells how many projects the scan checks */
 const totalPattern = /^checking (?<count>\d+) projects?/u
@@ -43,7 +45,7 @@ export function readTotal(line: string) {
  * @returns the new state
  */
 export function reduceScan(state: Readonly<ScanState>, event: Readonly<ScanEvent>): ScanState {
-  if (event.type === 'started') return { ...state, target: event.target }
+  if (event.type === 'started') return { ...state, isNitpick: event.isNitpick, target: event.target }
   if (event.type === 'progress') return { ...state, progress: event.line, total: readTotal(event.line) ?? state.total }
   if (event.type === 'project') return { ...state, projects: [...state.projects, event.result] }
   if (event.type === 'failed') return { ...state, failure: event.message }

@@ -7,7 +7,7 @@ vi.mock(import('./scan/live-project.ts'), async importOriginal => ({ ...(await i
 
 const notCloned = aFinding({ actions: ['clone'], message: 'on GitHub but not cloned', messageId: 'missing', ruleId: 'not-cloned', scope: 'project', severity: 'info' })
 const events: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('finga', [notCloned], { local: undefined }), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]

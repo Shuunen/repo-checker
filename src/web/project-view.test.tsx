@@ -13,13 +13,13 @@ const jozzo = aProject('jozzo', [noLicense, unsaved], {
 })
 const lib = aProject('lib', [], { github: { ...base.project.github, forkStatus: { branches: [{ aheadBy: 2, name: 'patch-1' }], failures: [], openPullRequests: 0, parent: 'them/lib' }, isFork: true } as never, local: undefined })
 const listEvents: ScanEvent[] = [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: jozzo, type: 'project' },
   { result: lib, type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]
 const singleEvents: ScanEvent[] = [
-  { target: '/projects/jozzo', type: 'started' },
+  { isNitpick: false, target: '/projects/jozzo', type: 'started' },
   { result: jozzo, type: 'project' },
   { durationMs: 1000, isSingle: true, owner: 'owner', type: 'done' },
 ]

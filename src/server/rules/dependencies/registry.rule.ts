@@ -33,21 +33,36 @@ function registryOf({ flags }: Readonly<Context>): RegistryFacts {
   return flags.registry
 }
 
-export const outdatedDependency = defineRule({
+/**
+ * Find the dependencies behind the registry by a kind of update
+ * @param context the project context, with the registry facts
+ * @param major true to find the major updates, false for the minor and patch ones
+ * @yields {{ data: Record<string, string>, latest: string, name: string, section: string }} each outdated dependency
+ */
+function* outdated(context: Readonly<Context>, major: boolean) {
+  const { packages } = registryOf(context)
+  for (const { name, prefix, section, version } of declaredDependencies(context.pkg)) {
+    const latest = packages[name]?.latest
+    const kind = latest === undefined ? undefined : updateKind(version, latest, prefix)
+    if (latest !== undefined && kind !== undefined && (kind === 'major') === major) yield { data: { kind, latest, mine: `${prefix}${version}`, name }, latest, name, section }
+  }
+}
+
+export const outdatedMajorDependency = defineRule({
   appliesTo: hasRegistry,
   check(context) {
-    const { packages } = registryOf(context)
-    for (const { name, prefix, section, version } of declaredDependencies(context.pkg)) {
-      const latest = packages[name]?.latest
-      const kind = latest === undefined ? undefined : updateKind(version, latest, prefix)
-      if (latest === undefined || kind === undefined) continue
-      const data = { kind, latest, mine: `${prefix}${version}`, name }
-      // a major update can break the code, it is left to you and to Renovate
-      if (kind === 'major') context.report({ data, messageId: 'behind' })
-      else context.report({ data, fix: fixer => fixer.json('package.json').update([section, name], current => withVersion(String(current), latest)), messageId: 'behind' })
-    }
+    // a major update can break the code, it is left to you and to Renovate
+    for (const { data } of outdated(context, true)) context.report({ data, messageId: 'behind' })
   },
-  meta: { fixable: true, id: 'outdated-dependency', messages: { behind: '{{name}} {{mine}} is behind the latest {{latest}}, a {{kind}} update' }, severity: 'warning' },
+  meta: { id: 'outdated-major-dependency', messages: { behind: '{{name}} {{mine}} is behind the latest {{latest}}, a major update' }, severity: 'warning' },
+})
+
+export const outdatedMinorDependency = defineRule({
+  appliesTo: hasRegistry,
+  check(context) {
+    for (const { data, latest, name, section } of outdated(context, false)) context.report({ data, fix: fixer => fixer.json('package.json').update([section, name], current => withVersion(String(current), latest)), messageId: 'behind' })
+  },
+  meta: { fixable: true, id: 'outdated-minor-dependency', messages: { behind: '{{name}} {{mine}} is behind the latest {{latest}}, a {{kind}} update' }, nitpick: true, severity: 'info' },
 })
 
 export const deprecatedDependency = defineRule({

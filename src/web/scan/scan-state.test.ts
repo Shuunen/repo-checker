@@ -6,10 +6,10 @@ describe(reduceScan, () => {
     expect.hasAssertions()
     const app = aProject('app')
     const done = { durationMs: 8300, isSingle: false, owner: 'owner', type: 'done' } as const
-    const events = [{ target: '/projects', type: 'started' } as const, { line: 'checking 1 project', type: 'progress' } as const, { result: app, type: 'project' } as const, done]
+    const events = [{ isNitpick: true, target: '/projects', type: 'started' } as const, { line: 'checking 1 project', type: 'progress' } as const, { result: app, type: 'project' } as const, done]
     let state = initialScanState
     for (const event of events) state = reduceScan(state, event)
-    expect(state).toStrictEqual({ done, failure: undefined, progress: 'checking 1 project', projects: [app], target: '/projects', total: 1 })
+    expect(state).toStrictEqual({ done, failure: undefined, isNitpick: true, progress: 'checking 1 project', projects: [app], target: '/projects', total: 1 })
   })
 
   it('keeps the known total when a progress line does not give one', () => {

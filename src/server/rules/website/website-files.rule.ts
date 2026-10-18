@@ -75,4 +75,4 @@ const budget = [
   },
 ]
 
-export const lighthouseBudget = requireFile({ content: `${JSON.stringify(budget, undefined, indent)}\n`, files: budgetFiles, id: 'lighthouse-budget', message: 'no Lighthouse budget, like a {{file}}', severity: 'info', when: isWebsite })
+export const lighthouseBudget = requireFile({ content: `${JSON.stringify(budget, undefined, indent)}\n`, files: budgetFiles, id: 'lighthouse-budget', message: 'no Lighthouse budget, like a {{file}}', nitpick: true, severity: 'info', when: isWebsite })

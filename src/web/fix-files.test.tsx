@@ -8,7 +8,7 @@ const noLicense = aFinding({ fixFiles: ['package.json'], message: 'package.json 
 const noBadge = aFinding({ fixFiles: ['README.md', 'package.json'], message: 'the README has no badge', ruleId: 'readme-badges' })
 const noFix = aFinding({ message: 'no .nvmrc', ruleId: 'nvmrc-exists' })
 const events = (findings = [noLicense, noBadge, noFix]): ScanEvent[] => [
-  { target: '/projects', type: 'started' },
+  { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('app', findings), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]
