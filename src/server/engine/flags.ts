@@ -42,6 +42,8 @@ export interface ProjectFlags {
   isWebPublished?: boolean
   /** The license the project must declare, only from `.repo-checker.json` */
   license?: string
+  /** The maximum size of the build output of a website in Ko, only from `.repo-checker.json` */
+  maxBuildSizeKo?: number
   /** The maximum size of the main file in Ko, only from `.repo-checker.json` */
   maxSizeKo?: number
   /** The latest Node LTS, given by the scan, like `24.11.0` */

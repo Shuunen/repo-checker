@@ -16,6 +16,7 @@
     "isUsingTypescript": { "description": "The project uses TypeScript", "type": "boolean" },
     "isWebPublished": { "description": "The project is published as a website or web app, so its README shows a \"Website up\" badge", "type": "boolean" },
     "license": { "description": "The license the project must declare, like MIT or GPL-3.0", "type": "string" },
+    "maxBuildSizeKo": { "description": "The maximum size of the build output of the website (dist, build, out or .output/public), in Ko", "minimum": 1, "type": "number" },
     "maxSizeKo": { "description": "The maximum size of the main file of the package, in Ko", "minimum": 1, "type": "number" },
     "shouldAvoidSass": { "default": true, "description": "Report the sass dependencies", "type": "boolean" },
     "webUrl": { "description": "The url of the deployed website or web app, shown in the README \"Website up\" badge and synced with the homepage of the GitHub repo. Not the homepage property of package.json, which is the homepage of the source code (the repo)", "format": "uri", "type": "string" }

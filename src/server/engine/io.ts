@@ -19,7 +19,7 @@ export interface FileReader {
   readText: (file: string) => Promise<string | undefined>
   /** Find the files whose text matches a pattern, under a folder (the whole project when omitted), skipping `ignoredFolders`. Returns sorted paths */
   search: (pattern: Readonly<RegExp>, folder?: string) => Promise<string[]>
-  /** Get the size of a file in Ko, rounded, undefined when it does not exist */
+  /** Get the size of a file in Ko, rounded, or the total size of a folder, undefined when it does not exist */
   sizeKo: (file: string) => Promise<number | undefined>
 }
 
@@ -61,13 +61,26 @@ async function searchIn(files: readonly string[], read: FileReader['readText'], 
 }
 
 /**
- * Get the size of a file on disk
- * @param file the absolute path of the file
- * @returns the size in Ko, undefined when the file does not exist
+ * Add up the sizes of every file under a folder on disk, nothing is skipped: a build output is measured as it is
+ * @param folder the absolute path of the folder
+ * @returns the size in bytes
+ */
+async function folderBytes(folder: string) {
+  const entries = await Array.fromAsync(glob('**/*', { cwd: folder, withFileTypes: true }))
+  const stats = await Promise.all(entries.filter(entry => entry.isFile()).map(entry => stat(path.join(entry.parentPath, entry.name))))
+  const sizes = stats.map(item => item.size)
+  return sizes.reduce((total, size) => total + size, 0)
+}
+
+/**
+ * Get the size of a file or of a whole folder on disk
+ * @param file the absolute path of the file or folder
+ * @returns the size in Ko, undefined when it does not exist
  */
 async function sizeOnDisk(file: string) {
   const stats = await stat(file).catch(() => undefined)
-  return stats === undefined ? undefined : toKo(stats.size)
+  if (stats === undefined) return undefined
+  return toKo(stats.isDirectory() ? await folderBytes(file) : stats.size)
 }
 
 /**
@@ -191,7 +204,11 @@ export function memoryIo(files: Record<string, string> = {}): Io {
   return {
     readText,
     search: (pattern, folder = '') => searchIn(filesUnder(files, folder), readText, pattern),
-    sizeKo: file => Promise.resolve(files[file] === undefined ? undefined : toKo(Buffer.byteLength(files[file]))),
+    sizeKo(file) {
+      const inFolder = Object.entries(files).filter(([name]) => name.startsWith(`${file}/`))
+      if (files[file] === undefined && inFolder.length === 0) return Promise.resolve(undefined)
+      return Promise.resolve(toKo(Buffer.byteLength(files[file] ?? '') + inFolder.reduce((total, [, text]) => total + Buffer.byteLength(text), 0)))
+    },
     writeText(file, text) {
       files[file] = text
       return Promise.resolve()

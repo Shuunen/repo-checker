@@ -31,6 +31,15 @@ describe('disk io', () => {
     await expect(diskIo(await makeFolder()).sizeKo('big.txt')).resolves.toBe(3)
   })
 
+  it('gives the total size of a folder, nothing skipped', async () => {
+    expect.hasAssertions()
+    const folder = await makeFolder()
+    await mkdir(path.join(folder, 'dist/deep'), { recursive: true })
+    await writeFile(path.join(folder, 'dist/a.js'), 'x'.repeat(2000))
+    await writeFile(path.join(folder, 'dist/deep/b.js'), 'x'.repeat(2000))
+    await expect(diskIo(folder).sizeKo('dist')).resolves.toBe(4)
+  })
+
   it('gives no size for a missing file', async () => {
     expect.hasAssertions()
     await expect(diskIo(await makeFolder()).sizeKo('nope.txt')).resolves.toBeUndefined()
