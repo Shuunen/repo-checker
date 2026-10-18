@@ -31,7 +31,7 @@ export function FixGitBody({ error, isLoading, preview, previewError }: Readonly
     <div className="flex flex-col gap-3" data-testid="fix-git-preview">
       {preview.pull !== undefined && <p data-testid="fix-git-pull">{`Pull ${preview.pull}, fast forward only.`}</p>}
       <GitList items={preview.stashes} testId="fix-git-stashes" title={`Drop ${plural(preview.stashes.length, 'stash')}, for good:`} />
-      <GitList items={preview.branches} testId="fix-git-branches" title={`Delete ${plural(preview.branches.length, 'local branch')} without upstream, even the ones with work that is not merged:`} />
+      <GitList items={preview.branches} testId="fix-git-branches" title={`Delete ${plural(preview.branches.length, 'local branch')}, already merged or without upstream, even the ones with work that is not merged:`} />
       {error !== undefined && <p data-testid="fix-git-error">{error}</p>}
     </div>
   )

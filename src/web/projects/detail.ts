@@ -215,14 +215,18 @@ export function offeredActions(findings: readonly ScanFinding[]): ActionKind[] {
 /** The rules whose findings the git fixes settle: branches without upstream, forgotten stashes and a clone behind its remote */
 const gitFixRules = new Set(['behind-remote', 'branch-without-upstream', 'forgotten-stash'])
 
+/** The message of `stale-local-branch` the git fixes settle: the merged branches are deleted, the untouched ones that are not merged are left to you */
+const mergedBranchesMessage = 'merged'
+
 /**
  * Tell if a finding is one the git fixes can settle
  * @param finding the finding
+ * @param finding.messageId the message id the rule reported
  * @param finding.ruleId the id of the rule that reported it
  * @returns true for a git issue
  */
-export function isGitIssue({ ruleId }: Readonly<ScanFinding>) {
-  return gitFixRules.has(ruleId)
+export function isGitIssue({ messageId, ruleId }: Readonly<ScanFinding>) {
+  return gitFixRules.has(ruleId) || (ruleId === 'stale-local-branch' && messageId === mergedBranchesMessage)
 }
 
 /**

@@ -64,6 +64,12 @@ describe(previewFixGit, () => {
     expect(preview).toMatchObject({ branches: ['merged', 'wip'], ok: true, path: '/projects/finga', pull: 'master', stashes: ['stash@{0}: WIP'] })
   })
 
+  it('plans the merged branches too, but never the default branch nor the checked out one', async () => {
+    expect.hasAssertions()
+    const clone = aClone({ branches: [aBranch({ isMerged: true }), aBranch({ isMerged: true, name: 'done' }), aBranch({ isMerged: true, name: 'current' }), aBranch({ isMerged: false, name: 'open' })], currentBranch: 'current', localOnlyBranches: ['done'] })
+    await expect(previewOf(clone)).resolves.toMatchObject({ branches: ['done'], ok: true })
+  })
+
   it('does not pull a branch with uncommitted files, nor when not on the default branch', async () => {
     expect.hasAssertions()
     const dirty = aClone({ branches: [aBranch({ behind: 1 })], changedFiles: ['?? a'], stashes: ['s'] })

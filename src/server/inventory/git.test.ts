@@ -44,7 +44,42 @@ describe('git inventory', () => {
     const { app, workspace } = await makeWorkspace()
     const clone = await readClone(app, fetch)
     expect(clone).toMatchObject({ changedFiles: [], currentBranch: 'main', fetchFailed: false, folderName: 'app', localOnlyBranches: [], origin: path.join(workspace, 'origin.git'), problem: undefined, slug: undefined, stashes: [], unpushed: [] })
-    expect(clone.branches).toStrictEqual([{ ahead: 0, behind: 0, isGone: false, name: 'main', upstream: 'origin/main' }])
+    expect(clone.branches).toStrictEqual([{ ahead: 0, behind: 0, isGone: false, isMerged: true, lastCommitAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/u) as string, name: 'main', upstream: 'origin/main' }])
+  })
+
+  it('tells which branches are merged and how old their last commit is, locally and on the remote', async () => {
+    expect.hasAssertions()
+    const { app, seed } = await makeWorkspace()
+    await git(app, 'switch', '--quiet', '-c', 'done')
+    await git(app, 'push', '--quiet', '-u', 'origin', 'done')
+    await git(app, 'switch', '--quiet', '-c', 'open')
+    await git(app, 'commit', '--quiet', '--allow-empty', '-m', 'wip')
+    await git(app, 'push', '--quiet', '-u', 'origin', 'open')
+    await git(seed, 'commit', '--quiet', '--allow-empty', '-m', 'more')
+    const clone = await readClone(app, fetch)
+    expect(clone.branches.map(branch => [branch.name, branch.isMerged])).toStrictEqual([
+      ['done', true],
+      ['main', true],
+      ['open', false],
+    ])
+    expect(clone.remoteBranches?.map(branch => [branch.name, branch.isMerged])).toStrictEqual([
+      ['done', true],
+      ['main', true],
+      ['open', false],
+    ])
+    expect(clone.remoteBranches?.[0]?.lastCommitAt).toMatch(/^\d{4}-\d{2}-\d{2}T/u)
+  })
+
+  it('reads the last tag and the commits since', async () => {
+    expect.hasAssertions()
+    const { app, seed } = await makeWorkspace()
+    await expect(readClone(app, fetch)).resolves.toMatchObject({ lastTag: undefined })
+    await git(seed, 'tag', 'v1.0.0')
+    await git(seed, 'push', '--quiet', 'origin', 'v1.0.0')
+    await git(app, 'fetch', '--quiet', '--tags')
+    await git(app, 'commit', '--quiet', '--allow-empty', '-m', 'after the tag')
+    const clone = await readClone(app, fetch)
+    expect(clone.lastTag).toStrictEqual({ at: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/u) as string, commitsSince: 1, name: 'v1.0.0' })
   })
 
   it('lists uncommitted and untracked files', async () => {

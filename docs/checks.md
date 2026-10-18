@@ -40,9 +40,9 @@ State of each clone and of its git history.
 - 🚀 🔵 `forgotten-stash`: a stash that was never reapplied or dropped.
 - 🚀 🔵 `branch-without-upstream`: a local branch with no upstream.
 - 🚀 🔵 `not-on-default-branch`: the clone is checked out on another branch than the default one, it offers to check the default branch out.
-- 📋 🔵 `stale-local-branch`: a local branch that is already merged, deleted on GitHub, or untouched for N months.
-- 📋 🔵 `stale-remote-branch`: the same, for branches on GitHub.
-- 📋 🔵 `stale-last-tag`: the last git tag is old, suggest tagging. From the old README todo list.
+- ✅ 🔵 `stale-local-branch`: a local branch that is already merged into the default branch, or untouched for 6 months and not merged. The git fix deletes the merged ones, with the others it deletes after confirmation, the untouched ones are left to you (`stale.rule.ts`).
+- ✅ 🔵 `stale-remote-branch`: the same, for the branches on GitHub as the last fetch saw them, the branches of Renovate and Dependabot wait for their pull request. No fix, deleting a branch on GitHub is `git push origin --delete` and is not offered yet (`stale.rule.ts`).
+- ✅ 🔵 `stale-last-tag`: the last git tag is 12 months old or more and commits came since, suggest tagging a release. No fix, a release is for you to cut. From the old README todo list (`stale.rule.ts`).
 - ✅ 🟡 `avoid-main-branch`: avoid the `main` branch name, use `master` (`git.ts`).
 - ✅ 🔴 `gitignore-exists`: a `.gitignore` file exists (`git.ts`).
 - ✅ 🟡 `gitignore-node-modules`: `.gitignore` lists `node_modules` (`git.ts`).

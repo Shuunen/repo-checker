@@ -14,7 +14,7 @@ interface FixGitOptions extends ActionOptions {
 
 /** What the git fixes would do */
 interface GitPlan {
-  /** The local branches to delete, all deleted even when not merged */
+  /** The local branches to delete: the ones without upstream and the merged ones, all deleted even when git finds work in them that is not merged */
   branches: string[]
   /** The default branch to pull, undefined when there is nothing to pull */
   pull: string | undefined
@@ -50,14 +50,16 @@ async function proveClone({ gh, git, name, owner, target }: Readonly<ActionOptio
 }
 
 /**
- * Plan the git fixes: the local branches without upstream (never the checked out one), the stashes, and a pull of the default branch when it is checked out, behind its remote, and has no uncommitted file
+ * Plan the git fixes: the local branches without upstream or already merged into the default branch (never the checked out one nor the default one), the stashes, and a pull of the default branch when it is checked out, behind its remote, and has no uncommitted file
  * @param clone the clone
  * @param repo the repo
  * @returns the plan
  */
 function planOf(clone: Readonly<LocalClone>, repo: Readonly<GithubRepo>): GitPlan {
   const isPullable = clone.currentBranch === repo.defaultBranch && clone.changedFiles.length === 0 && clone.branches.some(branch => branch.name === clone.currentBranch && branch.behind > 0 && !branch.isGone)
-  return { branches: clone.localOnlyBranches.filter(branch => branch !== clone.currentBranch), pull: isPullable ? repo.defaultBranch : undefined, stashes: clone.stashes }
+  const merged = clone.branches.filter(branch => branch.isMerged === true && branch.name !== repo.defaultBranch).map(branch => branch.name)
+  const branches = [...new Set([...clone.localOnlyBranches, ...merged])].filter(branch => branch !== clone.currentBranch)
+  return { branches, pull: isPullable ? repo.defaultBranch : undefined, stashes: clone.stashes }
 }
 
 /**

@@ -1,6 +1,6 @@
 import type { ForkStatus, LocalClone } from '../../shared/project.ts'
 import { aFinding, aProject } from '../fixtures.ts'
-import { describePush, factGroups, findingCounts, findingGroups, fixText, dropQuietFacts, forkFacts, githubUrl, identityBadges, localFacts, offeredActions, slugOf, unarchiveBlocker } from './detail.ts'
+import { describePush, factGroups, findingCounts, findingGroups, fixText, dropQuietFacts, forkFacts, githubUrl, identityBadges, isGitIssue, localFacts, offeredActions, slugOf, unarchiveBlocker } from './detail.ts'
 
 const clone = aProject('app').project.local as LocalClone
 const dirty: LocalClone = {
@@ -149,6 +149,18 @@ describe(offeredActions, () => {
   it('lists each action once', () => {
     expect.hasAssertions()
     expect(offeredActions([aFinding({ actions: ['unarchive-push-rearchive', 'discard'] }), aFinding({ actions: ['discard'] }), aFinding()])).toStrictEqual(['unarchive-push-rearchive', 'discard'])
+  })
+})
+
+describe(isGitIssue, () => {
+  it.each([
+    ['forgotten-stash', 'found', true],
+    ['stale-local-branch', 'merged', true],
+    ['stale-local-branch', 'untouched', false],
+    ['uncommitted-files', 'found', false],
+  ])('%s %s is a git issue: %s', (ruleId, messageId, expected) => {
+    expect.hasAssertions()
+    expect(isGitIssue(aFinding({ messageId, ruleId }))).toBe(expected)
   })
 })
 

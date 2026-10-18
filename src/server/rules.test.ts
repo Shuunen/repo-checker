@@ -59,6 +59,9 @@ describe('rules folder', () => {
       'open-pull-requests',
       'open-renovate-pr',
       'pristine-fork',
+      'stale-last-tag',
+      'stale-local-branch',
+      'stale-remote-branch',
       'uncommitted-files',
       'unpushed-commits',
     ])

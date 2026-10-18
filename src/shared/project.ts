@@ -11,10 +11,34 @@ export interface BranchState {
   behind: number
   /** True when the upstream was deleted on the remote */
   isGone: boolean
+  /** True when the branch is merged into the default branch of the remote (`origin/HEAD`), undefined when it was not read */
+  isMerged?: boolean
+  /** When the last commit of the branch was made, ISO 8601, undefined when it was not read */
+  lastCommitAt?: string
   /** The branch name, like `master` */
   name: string
   /** The upstream, like `origin/master`, undefined when the branch has none */
   upstream: string | undefined
+}
+
+/** One branch of the remote, as the last fetch saw it */
+export interface RemoteBranch {
+  /** True when the branch is merged into the default branch of the remote (`origin/HEAD`) */
+  isMerged: boolean
+  /** When the last commit of the branch was made, ISO 8601 */
+  lastCommitAt: string
+  /** The branch name without the remote, like `feature/login` */
+  name: string
+}
+
+/** The most recent tag of a clone */
+export interface LastTag {
+  /** When the tag was made, ISO 8601 */
+  at: string
+  /** How many commits the checked out branch holds since the tag */
+  commitsSince: number
+  /** The tag name, like `v1.2.0` */
+  name: string
 }
 
 /** Commits of one branch that are not on its upstream */
@@ -40,6 +64,8 @@ export interface LocalClone {
   fetchFailed: boolean
   /** The folder name */
   folderName: string
+  /** The most recent tag, undefined when the clone has none or when it was not read */
+  lastTag?: LastTag | undefined
   /** Local branches that have no upstream, or whose upstream was deleted */
   localOnlyBranches: string[]
   /** The `origin` url, undefined when there is none */
@@ -48,6 +74,8 @@ export interface LocalClone {
   path: string
   /** Why the folder cannot be compared, undefined for a usable clone */
   problem: CloneProblem | undefined
+  /** The branches of the remote as the last fetch saw them, the default branch included, undefined when they were not read */
+  remoteBranches?: RemoteBranch[]
   /** `owner/name` of the GitHub repo the origin points to, lowercase, undefined when it is not a GitHub url */
   slug: string | undefined
   /** The stash entries, newest first */
