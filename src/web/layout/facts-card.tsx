@@ -2,6 +2,7 @@ import { Card } from '@heroui/react'
 import { kebabCase } from 'es-toolkit'
 import { Fragment } from 'react'
 import { dropQuietFacts } from '../projects/detail.ts'
+import { CopyPathIcon } from './copy-path-icon.tsx'
 
 /**
  * A titled card of facts, like the git state of the local clone. The empty facts (`none`) are left out, there is nothing to warn about. The path comes with an icon that copies it
@@ -20,6 +21,7 @@ export function FactsCard({ facts, title }: Readonly<{ facts: readonly { label: 
             <dt className="-mb-1 text-xs text-muted">{fact.label}</dt>
             <dd className="break-all" data-testid={`fact-${kebabCase(fact.label)}`}>
               {fact.value}
+              {fact.label === 'Path' && <CopyPathIcon path={fact.value} />}
             </dd>
           </Fragment>
         ))}

@@ -2,11 +2,10 @@ import { Chip } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
 import type { ScanFinding } from '../../shared/scan-event.ts'
 import { describePush, githubUrl, identityBadges } from '../projects/detail.ts'
-import { CopyPathButton } from './copy-path-button.tsx'
 import { FindingCounts } from './finding-counts.tsx'
 
 /**
- * Who a project is: its name and badges, the owner, the GitHub link and the last push, how many findings of each severity it has, and the button that copies its folder
+ * Who a project is: its name and badges, the owner, the GitHub link and the last push, and how many findings of each severity it has
  * @param props the props
  * @param props.findings the findings of the project
  * @param props.project the project
@@ -38,7 +37,6 @@ export function ProjectIdentity({ findings, project }: Readonly<{ findings: read
         </p>
         <FindingCounts findings={findings} />
       </div>
-      {project.local && <CopyPathButton path={project.local.path} />}
     </header>
   )
 }
