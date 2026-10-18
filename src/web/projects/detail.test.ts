@@ -1,6 +1,6 @@
 import type { ForkStatus, LocalClone } from '../../shared/project.ts'
 import { aFinding, aProject } from '../fixtures.ts'
-import { describePush, factGroups, findingCounts, findingGroups, fixText, foldQuietFacts, forkFacts, githubUrl, identityBadges, localFacts, offeredActions, slugOf, unarchiveBlocker } from './detail.ts'
+import { describePush, factGroups, findingCounts, findingGroups, fixText, dropQuietFacts, forkFacts, githubUrl, identityBadges, localFacts, offeredActions, slugOf, unarchiveBlocker } from './detail.ts'
 
 const clone = aProject('app').project.local as LocalClone
 const dirty: LocalClone = {
@@ -77,6 +77,7 @@ describe(localFacts, () => {
   })
 
   it.each([
+    ['master', 'none', { ahead: 0, behind: 0, isGone: false, name: 'master', upstream: 'origin/master' }],
     ['master', 'no upstream', { ahead: 0, behind: 0, isGone: false, name: 'master', upstream: undefined }],
     ['master', '0 ahead, 3 behind origin/master (deleted on GitHub)', { ahead: 0, behind: 3, isGone: true, name: 'master', upstream: 'origin/master' }],
   ])('compares the %s branch: %s', (_name, text, branch) => {
@@ -183,15 +184,15 @@ describe(findingCounts, () => {
   })
 })
 
-describe(foldQuietFacts, () => {
-  it('moves the empty facts into a list of lowercase labels', () => {
+describe(dropQuietFacts, () => {
+  it('leaves the empty facts out', () => {
     expect.hasAssertions()
     const facts = [
       { label: 'Branch', value: 'master' },
       { label: 'Stashes', value: 'none' },
       { label: 'Local-only branches', value: 'none' },
     ]
-    expect(foldQuietFacts(facts)).toStrictEqual({ quiet: ['stashes', 'local-only branches'], shown: [{ label: 'Branch', value: 'master' }] })
+    expect(dropQuietFacts(facts)).toStrictEqual([{ label: 'Branch', value: 'master' }])
   })
 })
 

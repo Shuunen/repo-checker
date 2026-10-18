@@ -14,7 +14,15 @@ export function FindingsCard({ findings }: Readonly<{ findings: readonly ScanFin
   return (
     <Card data-testid="findings">
       <Card.Title>Findings</Card.Title>
-      {groups.length === 0 && <Card.Description>Nothing to report</Card.Description>}
+      {groups.length === 0 && (
+        <div className="flex flex-col items-center gap-2 py-10 text-center" data-testid="all-clear">
+          <span aria-hidden="true" className="flex size-14 items-center justify-center rounded-full bg-success/15 text-3xl text-success">
+            ✓
+          </span>
+          <p className="text-lg font-medium">All good</p>
+          <Card.Description>Every rule passes. Nothing to fix, nothing to report.</Card.Description>
+        </div>
+      )}
       {groups.map(group => (
         <section key={group.title}>
           <h2 className="mb-2 font-medium">{group.title}</h2>

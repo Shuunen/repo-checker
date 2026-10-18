@@ -126,12 +126,13 @@ function listOrNone(items: readonly string[], separator = ', ') {
  * @param local the clone
  * @param local.branches the local branches
  * @param local.currentBranch the checked out branch
- * @returns like `2 ahead, 0 behind origin/master`
+ * @returns like `2 ahead, 0 behind origin/master`, `none` when it is in sync
  */
 function upstreamText({ branches, currentBranch }: Readonly<LocalClone>) {
   const branch = branches.find(item => item.name === currentBranch)
   if (branch === undefined) return '—'
   if (branch.upstream === undefined) return 'no upstream'
+  if (branch.ahead === 0 && branch.behind === 0 && !branch.isGone) return 'none'
   return `${branch.ahead} ahead, ${branch.behind} behind ${branch.upstream}${branch.isGone ? ' (deleted on GitHub)' : ''}`
 }
 
@@ -270,13 +271,13 @@ export function findingCounts(findings: readonly ScanFinding[]): FindingCount[] 
 }
 
 /**
- * Split facts into the ones worth reading and the names of the ones that are empty (`none`), so that an all clear clone does not list four empty rows
+ * Keep the facts that say something: the empty ones (`none`) are left out, there is nothing to warn about
  * @param facts the facts
- * @returns the facts that say something, and the lowercase labels of the empty ones
- * @example foldQuietFacts([{ label: 'Stashes', value: 'none' }]) // { quiet: ['stashes'], shown: [] }
+ * @returns the facts that are not empty
+ * @example dropQuietFacts([{ label: 'Stashes', value: 'none' }]) // []
  */
-export function foldQuietFacts(facts: readonly Fact[]) {
-  return { quiet: facts.filter(fact => fact.value === 'none').map(fact => fact.label.toLowerCase()), shown: facts.filter(fact => fact.value !== 'none') }
+export function dropQuietFacts(facts: readonly Fact[]) {
+  return facts.filter(fact => fact.value !== 'none')
 }
 
 /**

@@ -68,7 +68,7 @@ describe('project view', () => {
     expect.hasAssertions()
     renderApp(scanRequest([...listEvents, { result: aProject('quiet'), type: 'project' }]), '/project/quiet')
     await screen.findByTestId('findings')
-    expect(textOf('findings')).toContain('Nothing to report')
+    expect(textOf('all-clear')).toContain('All good')
   })
 
   it('counts the findings in the header and folds the empty facts of a clean clone', async () => {
@@ -76,7 +76,7 @@ describe('project view', () => {
     renderApp(scanRequest([...listEvents, { result: aProject('quiet'), type: 'project' }]), '/project/quiet')
     await screen.findByTestId('facts-on-disk')
     expect(textOf('finding-counts')).toBe('')
-    expect(textOf('quiet-on-disk')).toBe('cleanno unpushed commits, uncommitted files, stashes, local-only branches')
+    expect(screen.queryByTestId('quiet-on-disk')).toBeNull()
     expect(screen.queryByTestId('fact-stashes')).toBeNull()
   })
 
