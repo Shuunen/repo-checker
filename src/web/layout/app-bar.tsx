@@ -1,12 +1,11 @@
-import { Button } from '@heroui/react'
 import { Link } from 'wouter'
 import { describeScan, type ScanState } from '../scan/scan-state.ts'
 import { CopyPathIcon } from './copy-path-icon.tsx'
+import { HeaderMenu } from './header-menu.tsx'
 import { ScanProgress } from './scan-progress.tsx'
-import { ShutdownButton } from './shutdown-button.tsx'
 
 /**
- * The app bar on top of every page: the app name linking to the list, the line about the scan (folder, owner, checked count or duration), a copy icon next to it, the Rescan and Shutdown buttons, and the progress bar under it while the scan runs
+ * The app bar on top of every page: the app name linking to the list, the line about the scan (folder, owner, checked count or duration), a copy icon next to it, the Actions menu with Rescan and Shutdown, and the progress bar under it while the scan runs
  * @param props the props
  * @param props.isScanning true while the scan streams
  * @param props.onRescan starts a new scan
@@ -27,10 +26,7 @@ export function AppBar({ isScanning, onRescan, state }: Readonly<{ isScanning: b
           </p>
           <CopyPathIcon path={state.target} testId="copy-scan-path" />
         </div>
-        <Button className="bg-zinc-800 text-white hover:bg-zinc-700" data-testid="rescan" isDisabled={isScanning} onPress={onRescan}>
-          Rescan
-        </Button>
-        <ShutdownButton />
+        <HeaderMenu isScanning={isScanning} onRescan={onRescan} />
       </div>
       {isScanning && <ScanProgress state={state} />}
     </header>

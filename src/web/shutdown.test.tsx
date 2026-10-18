@@ -13,10 +13,11 @@ describe('shutdown', () => {
         { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
       ]),
     )
-    fireEvent.click(await screen.findByTestId('shutdown'))
-    await waitFor(() => expect(screen.getByTestId('shutdown').textContent).toBe('Stopped'))
+    fireEvent.click(await screen.findByTestId('header-actions'))
+    fireEvent.click(await screen.findByTestId('menu-shutdown'))
+    await waitFor(() => expect(screen.getByTestId('header-actions').textContent).toBe('Stopped'))
     expect(fetchMock).toHaveBeenCalledWith('/api/shutdown', { headers: { 'x-repo-check': '1' }, method: 'POST' })
-    expect((screen.getByTestId('shutdown') as HTMLButtonElement).disabled).toBe(true)
+    expect((screen.getByTestId('header-actions') as HTMLButtonElement).disabled).toBe(true)
   })
 
   it('still says Stopped when the server is already gone', async () => {
@@ -26,7 +27,8 @@ describe('shutdown', () => {
       vi.unstubAllGlobals()
     })
     renderApp(scanRequest([{ target: '/projects', type: 'started' }]))
-    fireEvent.click(await screen.findByTestId('shutdown'))
-    await waitFor(() => expect(screen.getByTestId('shutdown').textContent).toBe('Stopped'))
+    fireEvent.click(await screen.findByTestId('header-actions'))
+    fireEvent.click(await screen.findByTestId('menu-shutdown'))
+    await waitFor(() => expect(screen.getByTestId('header-actions').textContent).toBe('Stopped'))
   })
 })

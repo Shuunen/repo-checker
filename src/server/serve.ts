@@ -1,3 +1,4 @@
+import type { Server } from 'node:http'
 import { serve } from '@hono/node-server'
 
 /** A running server */
@@ -12,13 +13,14 @@ interface RunningServer {
 export type StartServer = (fetch: (request: Request) => Promise<Response> | Response, port: number) => Promise<RunningServer>
 
 /**
- * Close a server, waiting for its open connections to end
+ * Close a server, ending its open connections such as the scan stream
  * @param server the node server
  * @returns resolves once closed
  */
 function closeServer(server: Readonly<ReturnType<typeof serve>>) {
   return new Promise<void>(resolve => {
     server.close(() => resolve())
+    ;(server as Server).closeAllConnections()
   })
 }
 

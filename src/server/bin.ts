@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process'
+import { utimesSync } from 'node:fs'
 import { runCli } from './cli.ts'
 import { ghCli } from './inventory/github.ts'
 import { browserCommand } from './open-browser.ts'
@@ -31,6 +32,16 @@ function exit() {
   else process.kill(Number(process.env.REPO_CHECK_PARENT), 'SIGTERM')
 }
 
+/**
+ * Start a new server in place of this one, once this one stopped listening. In `--watch` the watcher restarts the process when its script changes, so touching the script is enough. Otherwise a copy is started with the same arguments, detached from this process, which then ends
+ */
+function restart() {
+  if (process.env.REPO_CHECK_PARENT === undefined) {
+    spawn(process.execPath, [...process.execArgv, ...process.argv.slice(1), '--no-open'], { detached: true, stdio: 'inherit' }).unref()
+    process.exit(0)
+  } else utimesSync(import.meta.filename, new Date(), new Date())
+}
+
 const argv = process.argv.slice(firstArgument)
 
 process.exitCode = argv.includes(watchFlag)
@@ -38,4 +49,4 @@ process.exitCode = argv.includes(watchFlag)
       import.meta.filename,
       argv.filter(argument => argument !== watchFlag),
     )
-  : await runCli(argv, { cwd: process.cwd(), exit, gh: ghCli, hasColors: process.stdout.isTTY, openBrowser, print: text => process.stdout.write(`${text}\n`), printProgress: line => process.stderr.write(`› ${line}\n`), startServer })
+  : await runCli(argv, { cwd: process.cwd(), exit, gh: ghCli, hasColors: process.stdout.isTTY, openBrowser, print: text => process.stdout.write(`${text}\n`), printProgress: line => process.stderr.write(`› ${line}\n`), restart, startServer })

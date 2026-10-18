@@ -24,6 +24,20 @@ describe('cli ui', () => {
     expect(exit).toHaveBeenCalledOnce()
   })
 
+  it('closes the server then starts a new one when the page asks for a restart', async () => {
+    expect.hasAssertions()
+    vi.useFakeTimers()
+    onTestFinished(() => {
+      vi.useRealTimers()
+    })
+    const { restart, restartServer } = await ui()
+    const response = await restartServer()
+    await expect(response.json()).resolves.toStrictEqual({ ok: true })
+    expect(restart).not.toHaveBeenCalled()
+    await vi.runAllTimersAsync()
+    expect(restart).toHaveBeenCalledOnce()
+  })
+
   it('streams the scan of the target, with git fetch', async () => {
     expect.hasAssertions()
     const { scan } = await ui()

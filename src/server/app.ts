@@ -25,6 +25,8 @@ export type ScanRunner = (shouldFetch: boolean, hooks: Readonly<Required<ScanHoo
 interface AppOptions {
   /** The actions the page can ask for */
   actions: Actions
+  /** Stops this server and starts a new one in its place, called once the restart request is answered */
+  restart: () => void
   /** Stops the server and everything started with it, called once the shutdown request is answered */
   shutdown: () => void
   /** The folder scanned, sent first so the page can show it while the scan runs, with the home folder as `~` */
@@ -33,7 +35,7 @@ interface AppOptions {
   webFolder: string
 }
 
-/** How long the server waits before it stops, in milliseconds, so the answer to the shutdown request reaches the page */
+/** How long the server waits before it stops or restarts, in milliseconds, so the answer to the shutdown or restart request reaches the page */
 const shutdownDelay = 100
 
 /** Send one scan event, after the ones sent before it */
@@ -97,23 +99,28 @@ async function streamScan(runScan: ScanRunner, { send, shouldFetch, shouldReuse,
 }
 
 /**
- * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch and `?fresh=true` checks every project even when the server remembers its result. `GET /api/projects/:name/live?since=` watches a project, see `liveProject`. `POST /api/shutdown` answers then stops the server. `POST /api/projects/:name/clone` clones a repo, `GET /api/projects/:name/delete-clone` says what deleting its clone would remove and `POST` deletes it, `POST /api/projects/:name/unarchive-push` pushes the unsaved branches of an archived repo through an unarchive, `GET /api/projects/:name/discard` lists what a discard would throw away with a fingerprint of that list, and `POST` discards it only when `?fingerprint=` still matches. A POST needs the `x-repo-check: 1` header, and every action answers its result as JSON, with status 409 when refused. Every other path serves the built web app, and `/project/*` serves its page too, so a reload on a project address works
+ * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch and `?fresh=true` checks every project even when the server remembers its result. `GET /api/projects/:name/live?since=` watches a project, see `liveProject`. `POST /api/shutdown` answers then stops the server, `POST /api/restart` answers then replaces it with a new one. `POST /api/projects/:name/clone` clones a repo, `GET /api/projects/:name/delete-clone` says what deleting its clone would remove and `POST` deletes it, `POST /api/projects/:name/unarchive-push` pushes the unsaved branches of an archived repo through an unarchive, `GET /api/projects/:name/discard` lists what a discard would throw away with a fingerprint of that list, and `POST` discards it only when `?fingerprint=` still matches. A POST needs the `x-repo-check: 1` header, and every action answers its result as JSON, with status 409 when refused. Every other path serves the built web app, and `/project/*` serves its page too, so a reload on a project address works
  * @param runScan runs a scan of the target
  * @param options where the server runs
  * @param options.actions the actions the page can ask for
+ * @param options.restart stops this server and starts a new one
  * @param options.shutdown stops the server
  * @param options.target the folder scanned
  * @param options.webFolder the built web app
  * @returns the Hono app
- * @example serve({ fetch: createApp(runScan, { actions, shutdown, target, webFolder }).fetch, hostname: '127.0.0.1' })
+ * @example serve({ fetch: createApp(runScan, { actions, restart, shutdown, target, webFolder }).fetch, hostname: '127.0.0.1' })
  */
-export function createApp(runScan: ScanRunner, { actions, shutdown, target, webFolder }: Readonly<AppOptions>) {
+export function createApp(runScan: ScanRunner, { actions, restart, shutdown, target, webFolder }: Readonly<AppOptions>) {
   return new Hono()
     .use(refuseOtherHosts)
     .use(requireActionHeader)
     .route('/', actionRoutes(actions))
     .post('/api/shutdown', context => {
       setTimeout(shutdown, shutdownDelay)
+      return context.json({ ok: true })
+    })
+    .post('/api/restart', context => {
+      setTimeout(restart, shutdownDelay)
       return context.json({ ok: true })
     })
     .get('/api/scan', context => streamSSE(context, stream => streamScan(runScan, { send: eventSender(stream), shouldFetch: context.req.query('fetch') !== 'false', shouldReuse: context.req.query('fresh') !== 'true', target })))

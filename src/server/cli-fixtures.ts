@@ -35,7 +35,7 @@ export async function cli(argv: readonly string[], environment: Partial<CliEnvir
   const printed: string[] = []
   const progress: string[] = []
   const startServer = vi.fn<StartServer>(() => Promise.resolve({ close: () => Promise.resolve(), url: 'http://127.0.0.1:4747' }))
-  const code = await runCli(argv, { cwd: tmpdir(), exit: vi.fn<() => void>(), gh: fakeAccount(), hasColors: false, openBrowser: vi.fn<OpenBrowser>(), print: text => printed.push(text), printProgress: line => progress.push(line), startServer, ...environment })
+  const code = await runCli(argv, { cwd: tmpdir(), exit: vi.fn<() => void>(), gh: fakeAccount(), hasColors: false, openBrowser: vi.fn<OpenBrowser>(), print: text => printed.push(text), printProgress: line => progress.push(line), restart: vi.fn<() => void>(), startServer, ...environment })
   return { code, output: printed.join('\n'), progress }
 }
 
@@ -72,7 +72,8 @@ export async function ui(argv: readonly string[] = [], gh = fakeAccount()) {
   })
   const openBrowser = vi.fn<OpenBrowser>()
   const exit = vi.fn<() => void>()
-  const { code, output } = await cli(['ui', ...argv], { cwd: folder, exit, gh, openBrowser, startServer })
+  const restart = vi.fn<() => void>()
+  const { code, output } = await cli(['ui', ...argv], { cwd: folder, exit, gh, openBrowser, restart, startServer })
   const scan = async (query = '') => {
     const response = await fetchApp(new Request(`http://127.0.0.1:4747/api/scan${query}`))
     return response.text()
@@ -82,8 +83,9 @@ export async function ui(argv: readonly string[] = [], gh = fakeAccount()) {
     return response.json()
   }
   const clone = (name: string) => call(`${name}/clone`, 'POST')
+  const restartServer = () => fetchApp(new Request('http://127.0.0.1:4747/api/restart', { headers: { 'x-repo-check': '1' }, method: 'POST' }))
   const shutdown = () => fetchApp(new Request('http://127.0.0.1:4747/api/shutdown', { headers: { 'x-repo-check': '1' }, method: 'POST' }))
-  return { call, clone, code, exit, folder, openBrowser, output, scan, shutdown, startServer }
+  return { call, clone, code, exit, folder, openBrowser, output, restart, restartServer, scan, shutdown, startServer }
 }
 
 /**

@@ -44,6 +44,8 @@ export interface UiEnvironment {
   openBrowser: OpenBrowser
   /** Print a block of text */
   print: (text: string) => void
+  /** Start a new server in place of this one, called when the page asks for a restart once this server stopped listening */
+  restart: () => void
   /** Start the HTTP server */
   startServer: StartServer
 }
@@ -74,16 +76,26 @@ function parsePort(value = String(defaultPort)) {
  * @param environment.gh runs gh
  * @param environment.openBrowser open the dashboard in the browser
  * @param environment.print print a block of text
+ * @param environment.restart start a new server in place of this one
  * @param environment.startServer start the HTTP server
  * @returns 0, the server keeps the process alive
  * @throws {TypeError} when the port is wrong
- * @example await startUi({ fetch: true, owner: undefined, port: undefined, rules, shouldOpen: true, target }, { exit, gh: ghCli, openBrowser, print: console.log, startServer })
+ * @example await startUi({ fetch: true, owner: undefined, port: undefined, rules, shouldOpen: true, target }, { exit, gh: ghCli, openBrowser, print: console.log, restart, startServer })
  */
-export async function startUi({ fetch, owner, port, rules, shouldOpen, target }: Readonly<UiOptions>, { exit, gh, openBrowser, print, startServer }: Readonly<UiEnvironment>) {
+export async function startUi({ fetch, owner, port, rules, shouldOpen, target }: Readonly<UiOptions>, { exit, gh, openBrowser, print, restart, startServer }: Readonly<UiEnvironment>) {
   const listenOn = parsePort(port)
   const memory = createProjectMemory()
-  const app = createApp((shouldFetch, hooks, shouldReuse) => scan({ gh, memory, owner, rules, shouldFetch: fetch !== false && shouldFetch, shouldReuse, target }, hooks), { actions: createActions({ gh, memory, owner, rules: splitRules(rules), target }), shutdown: exit, target, webFolder })
-  const { url } = await startServer(app.fetch, listenOn)
+  const started = Promise.withResolvers<Awaited<ReturnType<StartServer>>>()
+  const app = createApp((shouldFetch, hooks, shouldReuse) => scan({ gh, memory, owner, rules, shouldFetch: fetch !== false && shouldFetch, shouldReuse, target }, hooks), {
+    actions: createActions({ gh, memory, owner, rules: splitRules(rules), target }),
+    restart: () => void started.promise.then(server => server.close()).then(restart),
+    shutdown: exit,
+    target,
+    webFolder,
+  })
+  const server = await startServer(app.fetch, listenOn)
+  started.resolve(server)
+  const { url } = server
   print(`repo-check ui · ${target}\nopen ${url} in your browser\npress Ctrl+C to stop`)
   if (shouldOpen !== false) openBrowser(url)
   return 0
