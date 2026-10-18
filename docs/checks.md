@@ -1,11 +1,10 @@
 # Checks
 
-Every check `repo-checker` handles or is meant to handle. This file is the single source of truth for checks: the ids below are the ids used in the code and tests. The exact behavior and safety rules of the 🚀 checks are in [features.md](features.md), work that is not a check is in [../TODOS.md](../TODOS.md). Each level 2 title is a group, the list below it holds the checks attached to that group.
+Every check `repo-checker` handles or is meant to handle. This file is the single source of truth for checks: the ids below are the ids used in the code and tests. The exact behavior and safety rules of the Sync checks are in [features.md](features.md), work that is not a check is in [../TODOS.md](../TODOS.md). Each level 2 title is a group, the list below it holds the checks attached to that group.
 
 Format: an emoji for the status, an emoji for the severity, then `` `check-id` ``, then what it detects.
 
-- 🚀 built: a check written for the rewrite (the Sync checks, the git state of a clone, the GitHub presentation).
-- ✅ ported: built in the new engine, next to the Sync checks. Most come from the old tool, the file in parentheses says which.
+- ✅ built: a check of the new engine. Many come from the old tool, the file in parentheses says which.
 - 📋 todo: wanted, not built yet. The file in parentheses of a ✅ check is where it lived in the old code (`src/files/`, removed, see git history).
 
 Severity, one scale for every check:
@@ -24,22 +23,22 @@ The old tool also knew whether `--fix` could repair a rule. That is not repeated
 
 Comparison between your repos on GitHub and your clones on disk.
 
-- 🚀 🔵 `not-cloned`: a repo on GitHub, not archived, not a fork, with no clone in the folder. Fix: clone it.
-- 🚀 🟡 `broken-clone`: a local folder that is not a git repo, has no `origin`, or whose `origin` returns 404 on GitHub. Reported with the reason and the path, no fix.
-- 🚀 🔴 `archived-with-unsaved-work`: the repo is archived on GitHub and its clone holds unpushed commits, uncommitted files, a stash or local-only branches. Fixes: unarchive, push, re-archive; or discard.
-- 🚀 🔵 `archived-clone`: the repo is archived on GitHub and its clone is provably safe to delete. Fix: delete the clone.
-- 🚀 🔵 `pristine-fork`: a fork where every branch has zero commits ahead of its parent, there is no open PR, and any local clone is clean. Fix: delete the fork repo and its local clone. Forks that cannot be verified are listed and never offered.
+- ✅ 🔵 `not-cloned`: a repo on GitHub, not archived, not a fork, with no clone in the folder. Fix: clone it.
+- ✅ 🟡 `broken-clone`: a local folder that is not a git repo, has no `origin`, or whose `origin` returns 404 on GitHub. Reported with the reason and the path, no fix.
+- ✅ 🔴 `archived-with-unsaved-work`: the repo is archived on GitHub and its clone holds unpushed commits, uncommitted files, a stash or local-only branches. Fixes: unarchive, push, re-archive; or discard.
+- ✅ 🔵 `archived-clone`: the repo is archived on GitHub and its clone is provably safe to delete. Fix: delete the clone.
+- ✅ 🔵 `pristine-fork`: a fork where every branch has zero commits ahead of its parent, there is no open PR, and any local clone is clean. Fix: delete the fork repo and its local clone. Forks that cannot be verified are listed and never offered.
 
 ## Git hygiene
 
 State of each clone and of its git history.
 
-- 🚀 🟡 `behind-remote`: the clone is behind its remote and needs a pull. Needs a `git fetch`.
-- 🚀 🟡 `uncommitted-files`: uncommitted or untracked files.
-- 🚀 🟡 `unpushed-commits`: commits that are not on the remote.
-- 🚀 🔵 `forgotten-stash`: a stash that was never reapplied or dropped.
-- 🚀 🔵 `branch-without-upstream`: a local branch with no upstream.
-- 🚀 🔵 `not-on-default-branch`: the clone is checked out on another branch than the default one, it offers to check the default branch out.
+- ✅ 🟡 `behind-remote`: the clone is behind its remote and needs a pull. Needs a `git fetch`.
+- ✅ 🟡 `uncommitted-files`: uncommitted or untracked files.
+- ✅ 🟡 `unpushed-commits`: commits that are not on the remote.
+- ✅ 🔵 `forgotten-stash`: a stash that was never reapplied or dropped.
+- ✅ 🔵 `branch-without-upstream`: a local branch with no upstream.
+- ✅ 🔵 `not-on-default-branch`: the clone is checked out on another branch than the default one, it offers to check the default branch out.
 - ✅ 🔵 `stale-local-branch`: a local branch that is already merged into the default branch, or untouched for 6 months and not merged. The git fix deletes the merged ones, with the others it deletes after confirmation, the untouched ones are left to you (`stale.rule.ts`).
 - ✅ 🔵 `stale-remote-branch`: the same, for the branches on GitHub as the last fetch saw them, the branches of Renovate and Dependabot wait for their pull request. No fix, deleting a branch on GitHub is `git push origin --delete` and is not offered yet (`stale.rule.ts`).
 - ✅ 🔵 `stale-last-tag`: the last git tag is 12 months old or more and commits came since, suggest tagging a release. No fix, a release is for you to cut. From the old README todo list (`stale.rule.ts`).
@@ -56,7 +55,7 @@ What the project depends on, and how current and safe that is.
 - ✅ 🟡 `deprecated-dependency`: a dependency whose latest version is marked deprecated on the npm registry. No fix, what replaces it is for you to say (`registry.rule.ts`).
 - ✅ 🔴 `security-advisory`: the declared version of a dependency has a known vulnerability, from the advisory endpoint of the npm registry, asked once per project with the declared versions (the lowest version of a range, so `~` and exact versions are exact). No fix, `outdated-dependency` fixes most of them (`registry.rule.ts`).
 - ✅ 🔵 `version-drift`: a dependency used by at least 3 projects of the scan, at a version older than the most common one, for example one lint tool in 4 projects at one version and in 9 at another. Fixed by setting the most common version. A project that is ahead is not reported (`version-drift.rule.ts`).
-- 🚀 🟡 `open-renovate-pr`: a Renovate pull request waiting to be merged.
+- ✅ 🟡 `open-renovate-pr`: a Renovate pull request waiting to be merged.
 - ✅ 🔴 `no-sass-dependency`: no `sass` dependency, it is fat and useless. Only when the project data says to avoid it (`package.file.ts`).
 - ✅ 🔴 `no-cross-var-dependency`: no `cross-var` dependency, it is old and deprecated (`package.file.ts`).
 - ✅ 🔴 `no-tslint-dependency`: no `tslint` dependency, it is deprecated (`package.file.ts`).
@@ -219,10 +218,10 @@ For projects that are deployed as a website.
 
 How the project introduces itself, on GitHub and in the repo.
 
-- 🚀 🟡 `missing-license`: the repo has no license on GitHub. Skipped for private repos.
-- 🚀 🟡 `missing-description`: the repo has no description. Fixed by the "Sync infos" action, which shares the description of the `package.json` with GitHub.
-- 🚀 🔵 `missing-topics`: the repo has no topics. Skipped for private repos.
-- 🚀 🔵 `missing-homepage`: the repo has no homepage on GitHub, which is the url of the deployed website (`webUrl` of `.repo-checker.json`), not the source code. Fixed by the "Sync infos" action. Skipped for private repos.
+- ✅ 🟡 `missing-license`: the repo has no license on GitHub. Skipped for private repos.
+- ✅ 🟡 `missing-description`: the repo has no description. Fixed by the "Sync infos" action, which shares the description of the `package.json` with GitHub.
+- ✅ 🔵 `missing-topics`: the repo has no topics. Skipped for private repos.
+- ✅ 🔵 `missing-homepage`: the repo has no homepage on GitHub, which is the url of the deployed website (`webUrl` of `.repo-checker.json`), not the source code. Fixed by the "Sync infos" action. Skipped for private repos.
 - ✅ 🔴 `license-file-exists`: a `LICENSE` file exists. Skipped for private repos (`license.ts`).
 - ✅ 🔴 `license-file-content`: the `LICENSE` file matches the declared license: GPL-3.0 has the "GNU GENERAL PUBLIC LICENSE" title and the "Version 3, 29 June 2007" subtitle, MIT has the "MIT License" title (`license.ts`).
 - ✅ 🔴 `package-license`: a `license` property, with the expected license value (`package.file.ts`).
@@ -251,8 +250,8 @@ How the project introduces itself, on GitHub and in the repo.
 
 Activity on GitHub and the life cycle of the repo.
 
-- 🚀 🔵 `open-pull-requests`: pull requests waiting for review.
-- 🚀 🔵 `open-issues`: open issues.
+- ✅ 🔵 `open-pull-requests`: pull requests waiting for review.
+- ✅ 🔵 `open-issues`: open issues.
 - ✅ 🔵 `archive-candidate`: a cloned repo with no commit from you (bots excluded) for 12 months, no star, no homepage, no GitHub Pages, and no Renovate pull request open. Fix: archive the repo (`archive.rule.ts`).
 - ✅ 🔵 `renovate-only-zombie`: a repo with Renovate pull requests open and no commit from you for 6 months, it is only kept alive by the bot. Fix: archive the repo, which also stops the bot noise (`archive.rule.ts`).
 - ✅ 🔵 `stale-uncloned-repo`: a repo with no clone and no commit from you for 12 months, that would show up as `not-cloned`. Fix: archive it instead of cloning it, `not-cloned` leaves such a repo alone (`archive.rule.ts`).

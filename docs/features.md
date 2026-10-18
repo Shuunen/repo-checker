@@ -1,6 +1,6 @@
 # Features
 
-This file holds the exact behavior of the **Sync** checks (local vs GitHub), the 🚀 entries of the Sync group in [checks.md](checks.md), the actions that fix them, and the safety rules. The other checks, the ported file checks and the new ones, are described in [checks.md](checks.md). Checks for later are in [checks.md](checks.md), other future work is in [../TODOS.md](../TODOS.md).
+This file holds the exact behavior of the **Sync** checks (local vs GitHub), the entries of the Sync group in [checks.md](checks.md), the actions that fix them, and the safety rules. The other checks, the ported file checks and the new ones, are described in [checks.md](checks.md). Checks for later are in [checks.md](checks.md), other future work is in [../TODOS.md](../TODOS.md).
 
 ## Modes
 
@@ -79,4 +79,4 @@ These are requirements, each one gets a test.
 
 ## Everything else
 
-Every check of [checks.md](checks.md) is ported or built into the same engine, the old file checks included (README, biome, workflows, tsconfig, license...): they run in the same scan and the same report as the Sync checks. The 🚀 marker tells the checks written for the rewrite apart from the ported ones (✅), it is not a release gate. The old snapshot tests in git history are the spec of the old checks. Bulk actions and other non-check work are in `../TODOS.md`.
+Every check of [checks.md](checks.md) is ported or built into the same engine, the old file checks included (README, biome, workflows, tsconfig, license...): they run in the same scan and the same report as the Sync checks. Every built check is marked ✅. The old snapshot tests in git history are the spec of the old checks. Bulk actions and other non-check work are in `../TODOS.md`.

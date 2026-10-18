@@ -74,7 +74,7 @@ export const scriptsNoNpmRun = defineRule({
 })
 ```
 
-- `meta.id` is the check id from [checks.md](checks.md). `src/server/rules.test.ts` fails when a rule is not marked 🚀 or ✅ there, or when a check marked 🚀 or ✅ has no rule, so the doc always says what is built.
+- `meta.id` is the check id from [checks.md](checks.md). `src/server/rules.test.ts` fails when a rule is not marked ✅ there, or when a check marked ✅ has no rule, so the doc always says what is built.
 - `meta.severity` is the only severity, no "just warn" flag at the call site.
 - `meta.fixable` must be true for a rule to report a fix, and a `messageId` must exist in `meta.messages`. The runner throws otherwise.
 - `context` is built once per project: parsed files (`pkg`, `readme`), project flags, cached file readers (`files.readText`, `files.sizeKo`, `files.search` to find text across the project, skipping `node_modules`, `.git`, `dist` and `coverage`). Git state and GitHub data are not in it: project rules receive the whole `Project` instead. Flags (`engine/flags.ts`) are detected from `package.json` and the `origin` of the git config (owner, repo), then overridden by the project's `.repo-checker.json` (`license`, `maxSizeKo`, `webUrl`...). `webUrl` is the url of the deployed website, not the `homepage` of the `package.json`, which is the repo. Rules never touch the disk, run commands or log.
