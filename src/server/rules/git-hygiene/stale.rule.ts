@@ -85,5 +85,5 @@ export const staleLastTag = defineProjectRule({
     if (lastTag === undefined || lastTag.commitsSince === 0 || !isOlderThan(lastTag.at, staleTagMonths)) return
     context.report({ data: { commits: plural(lastTag.commitsSince, 'commit'), months: monthsAgo(lastTag.at), tag: lastTag.name }, messageId: 'old' })
   },
-  meta: { id: 'stale-last-tag', messages: { old: 'the last tag {{tag}} is {{months}} months old and {{commits}} came since, time to tag a release' }, severity: 'info' },
+  meta: { id: 'stale-last-tag', messages: { old: 'the last tag {{tag}} is {{months}} months old and {{commits}} came since, time to tag a release' }, nitpick: true, severity: 'info' },
 })
