@@ -1,3 +1,4 @@
+import type { ChatEvent } from '../shared/claude.ts'
 import type { ScanEvent, ScanFinding, ScanProject } from '../shared/scan-event.ts'
 import type { FetchScan } from './scan/scan-query.ts'
 
@@ -56,7 +57,7 @@ function cut(text: string, size: number) {
  * @param chunkSize how many characters per chunk
  * @returns the response
  */
-export function sseResponse(events: readonly ScanEvent[], chunkSize = Number.POSITIVE_INFINITY) {
+export function sseResponse(events: readonly (ChatEvent | ScanEvent)[], chunkSize = Number.POSITIVE_INFINITY) {
   const encoder = new TextEncoder()
   const chunks = cut(events.map(event => `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`).join(''), chunkSize)
   return new Response(

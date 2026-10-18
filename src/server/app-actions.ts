@@ -1,5 +1,7 @@
 import { type Context, Hono } from 'hono'
+import { streamSSE } from 'hono/streaming'
 import type { ActionResult, FixStage, MetadataValues } from '../shared/action.ts'
+import type { ChatEvent } from '../shared/claude.ts'
 import type { Actions } from './actions/actions-contract.ts'
 
 /** The HTTP status of an action that worked */
@@ -54,6 +56,37 @@ function fixRoutes(actions: Actions) {
 }
 
 /**
+ * The routes of the update with Claude: start the session, follow it as server-sent events, send it a message, close it
+ * @param actions the actions
+ * @returns the routes
+ */
+function updateRoutes(actions: Actions) {
+  return new Hono()
+    .post('/api/projects/:name/update-project', async context => reply(context, await actions.startUpdateProject(context.req.param('name'))))
+    .get('/api/projects/:name/update-project/events', context =>
+      streamSSE(context, async sse => {
+        const ended = Promise.withResolvers<undefined>()
+        let queue = Promise.resolve()
+        const send = (event: ChatEvent) => {
+          queue = queue.then(() => sse.writeSSE({ data: JSON.stringify(event), event: event.type }))
+          if (event.type === 'exit') void queue.then(() => ended.resolve(undefined))
+        }
+        const unwatch = actions.watchUpdateProject(context.req.param('name'), send)
+        if (unwatch === undefined) send({ message: 'there is no Claude session for this project', type: 'exit' })
+        sse.onAbort(() => ended.resolve(undefined))
+        await ended.promise
+        unwatch?.()
+      }),
+    )
+    .post('/api/projects/:name/update-project/message', async context => {
+      const body = (await context.req.json().catch(() => undefined)) as { text?: unknown } | undefined
+      if (typeof body?.text !== 'string') return reply(context, { ok: false, reason: 'the message is missing' })
+      return reply(context, await actions.sendUpdateMessage(context.req.param('name'), body.text))
+    })
+    .post('/api/projects/:name/update-project/close', async context => reply(context, await actions.closeUpdateProject(context.req.param('name'))))
+}
+
+/**
  * The routes of the actions: each one asks the action to prove everything again before it acts, whatever the page sent
  * @param actions the actions
  * @returns the routes, to mount on the app after its guards
@@ -84,4 +117,5 @@ export function actionRoutes(actions: Actions) {
     .get('/api/projects/:name/discard', async context => reply(context, await actions.previewDiscard(context.req.param('name'))))
     .post('/api/projects/:name/discard', async context => reply(context, await actions.discard(context.req.param('name'), context.req.query('fingerprint') ?? '')))
     .route('/', fixRoutes(actions))
+    .route('/', updateRoutes(actions))
 }

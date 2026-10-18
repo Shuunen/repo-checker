@@ -29,7 +29,7 @@ Hono server (127.0.0.1)  <----  React app (static files)
 ## Rules
 
 - `shared/` imports nothing from `server/` or `web/`. `web/` never imports from `server/`: it reads the events through the types of `shared/scan-event.ts`.
-- The server is the only place that runs `git` and `gh`. The browser never talks to GitHub.
+- The server is the only place that runs `git` and `gh`. The browser never talks to GitHub. The one other program it starts is `claude`, for the Update project action (`actions/claude-process.ts`, a fixed binary and an argument array, `--permission-prompts none`), always in the clone of a project, and every session is stopped when the server stops or restarts.
 - All shell calls go through one small wrapper (fixed binary, argument array, never a shell string), so user data can never become shell syntax.
 - The scan engine has no HTTP in it. The CLI and the server are two thin callers of the same functions.
 

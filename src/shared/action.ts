@@ -24,7 +24,7 @@ export type ActionKind =
   | 'unarchive-push-rearchive'
 
 /** An action every project can offer, whatever the findings say: it is not tied to a Sync finding */
-type StandaloneAction = 'delete-project' | 'unarchive'
+type StandaloneAction = 'delete-project' | 'unarchive' | 'update-project'
 
 /** Everything the Actions menu of a project can hold */
 export type ProjectAction = ActionKind | StandaloneAction

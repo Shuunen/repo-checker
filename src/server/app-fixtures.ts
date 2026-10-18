@@ -5,6 +5,7 @@ export const worksFine: Actions = {
   archive: () => Promise.resolve({ message: 'archived', ok: true }),
   checkoutDefault: () => Promise.resolve({ message: 'checked out', ok: true }),
   clone: () => Promise.resolve({ message: 'cloned', ok: true }),
+  closeUpdateProject: () => Promise.resolve({ message: 'closed', ok: true }),
   deleteClone: () => Promise.resolve({ message: 'deleted', ok: true }),
   deleteFork: () => Promise.resolve({ message: 'deleted the fork', ok: true }),
   deleteProject: () => Promise.resolve({ message: 'deleted the project', ok: true }),
@@ -20,9 +21,13 @@ export const worksFine: Actions = {
   previewFixGit: () => Promise.resolve({ branches: ['old'], fingerprint: 'def', ok: true, path: '/projects/app', pull: 'master', stashes: ['stash@{0}: WIP'] }),
   previewSyncGithubMetadata: () => Promise.resolve({ github: { description: '', homepage: '' }, local: { description: 'A game', homepage: '' }, ok: true, proposed: { description: 'A game', homepage: '' } }),
   rescan: () => Promise.resolve({ ok: true, project: undefined, target: '/projects' }),
+  sendUpdateMessage: () => Promise.resolve({ message: 'sent', ok: true }),
+  startUpdateProject: () => Promise.resolve({ message: 'started', ok: true }),
+  stopSessions: () => undefined,
   syncGithubMetadata: () => Promise.resolve({ message: 'synced', ok: true }),
   unarchive: () => Promise.resolve({ message: 'unarchived', ok: true }),
   unarchivePush: () => Promise.resolve({ message: 'pushed', ok: true }),
+  watchUpdateProject: () => undefined,
 }
 
 /**

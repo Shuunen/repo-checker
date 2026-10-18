@@ -80,3 +80,12 @@ These are requirements, each one gets a test.
 ## Everything else
 
 Every check of [checks.md](checks.md) is ported or built into the same engine, the old file checks included (README, biome, workflows, tsconfig, license...): they run in the same scan and the same report as the Sync checks. Every built check is marked ✅. The old snapshot tests in git history are the spec of the old checks. Bulk actions and other non-check work are in `../TODOS.md`.
+
+## Update project
+
+An action of the Actions menu of every project that has a usable clone of the owner. It opens a modal where Claude runs the `/update-project` skill in the clone and you answer its questions.
+
+- **How it runs.** The server starts `claude --print --input-format stream-json --output-format stream-json --verbose --permission-prompts none` in the clone and sends it `/update-project`. The process stays alive between messages. The server turns its output into a few events (what you said, what Claude says, the tools it runs, the end of a turn, the end of the session), streams them to the modal as server-sent events and keeps them, so a page that connects late sees the whole conversation. `GET /api/projects/:name/update-project/events`, and `POST` on `/update-project` (start), `/message` and `/close`.
+- **Permissions.** Nothing is asked in the modal: whatever would prompt is refused. The skill brings the tools it needs (`allowed-tools` of its frontmatter), so it works as it does in a terminal, minus the permission prompts.
+- **Closing.** Only the Close session button ends the session, a click beside the modal or Escape does not. It stops Claude, then the project is scanned again since its files changed. The skill never commits or pushes without your green light in the chat. One session per project, and every session is stopped when the server stops.
+- **Not done.** No terminal emulation, no screen of the CLI: a skill that needs the real interface of Claude Code (a menu of the CLI) does not show it here.

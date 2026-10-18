@@ -70,7 +70,7 @@ export function changedPaths(lines: readonly string[]) {
  * @param options.target the folder of projects, or the project itself
  * @returns the clone, or the reason there is none
  */
-async function findClone({ git, name, owner, target }: Readonly<ActionOptions>): Promise<{ clone: LocalClone } | { reason: string }> {
+export async function findClone({ git, name, owner, target }: Readonly<ActionOptions>): Promise<{ clone: LocalClone } | { reason: string }> {
   const clones = (await exists(path.join(target, '.git'))) ? [await git.readClone(target, { shouldFetch: false })] : await git.readClones(target, { shouldFetch: false })
   const prefix = `${owner.toLowerCase()}/`
   const clone = clones.find(item => item.problem === undefined && (item.slug === `${prefix}${name}`.toLowerCase() || (item.folderName === name && item.slug?.startsWith(prefix) === true)))

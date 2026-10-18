@@ -3,6 +3,7 @@ import { checkoutDefault } from './checkout-default.ts'
 import { createGithubActions } from './github-actions.ts'
 import { cloneRepo } from './clone.ts'
 import { realGit, realRunGit } from './action-options.ts'
+import { createUpdateActions } from './update-project.ts'
 import type { Actions } from './actions-contract.ts'
 import { createPreviewedActions } from './previewed-actions.ts'
 import { unarchivePush } from './unarchive-push.ts'
@@ -44,6 +45,7 @@ export function createActions({ gh, memory, owner, rules, target }: Readonly<Act
     ...createPreviewedActions(options, rules),
     ...createGithubActions(options),
     ...createWatchActions(options, { memory, rules }),
+    ...createUpdateActions(options),
     checkoutDefault: async name => checkoutDefault(await options(name)),
     clone: async name => cloneRepo({ ...(await options(name)), runGit: realRunGit }),
     unarchivePush: async name => unarchivePush(await options(name)),

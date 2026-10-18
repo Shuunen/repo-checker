@@ -86,10 +86,17 @@ export async function startUi({ fetch, owner, port, rules, shouldOpen, target }:
   const listenOn = parsePort(port)
   const memory = createProjectMemory()
   const started = Promise.withResolvers<Awaited<ReturnType<StartServer>>>()
+  const actions = createActions({ gh, memory, owner, rules: splitRules(rules), target })
   const app = createApp((shouldFetch, hooks, shouldReuse) => scan({ gh, memory, owner, rules, shouldFetch: fetch !== false && shouldFetch, shouldReuse, target }, hooks), {
-    actions: createActions({ gh, memory, owner, rules: splitRules(rules), target }),
-    restart: () => void started.promise.then(server => server.close()).then(restart),
-    shutdown: exit,
+    actions,
+    restart: () => {
+      actions.stopSessions()
+      void started.promise.then(server => server.close()).then(restart)
+    },
+    shutdown: () => {
+      actions.stopSessions()
+      exit()
+    },
     target,
     webFolder,
   })

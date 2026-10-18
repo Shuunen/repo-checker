@@ -1,4 +1,4 @@
-import { Archive, ArchiveRestore, ArrowRightToLine, ArrowUpToLine, Download, FolderMinus, GitBranch, GitFork, Trash2, Undo2, type LucideIcon } from 'lucide-react'
+import { Archive, ArchiveRestore, ArrowRightToLine, ArrowUpToLine, Download, FolderMinus, GitBranch, GitFork, PackageCheck, Trash2, Undo2, type LucideIcon } from 'lucide-react'
 import type { ProjectAction } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
 
@@ -29,6 +29,7 @@ export function actionMeta(action: ProjectAction, project: Readonly<Project>): A
     'sync-github-metadata': { icon: ArrowRightToLine, label: 'Sync infos' },
     unarchive: { icon: ArchiveRestore, label: 'Unarchive on GitHub' },
     'unarchive-push-rearchive': { icon: ArrowUpToLine, label: 'Unarchive, push and archive again' },
+    'update-project': { icon: PackageCheck, label: 'Update project' },
   }
   return metas[action]
 }

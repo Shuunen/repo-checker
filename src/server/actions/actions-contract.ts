@@ -1,4 +1,5 @@
 import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, FixStage, GitFixPreview, ForkDeletePreview, MetadataPreview, MetadataValues, ProjectDeletePreview } from '../../shared/action.ts'
+import type { ChatEvent } from '../../shared/claude.ts'
 import type { LiveResult, RescanResult } from '../../shared/scan-event.ts'
 
 /** How the file fixes run */
@@ -13,6 +14,8 @@ interface FixRun {
 export interface Actions {
   /** Archive the repo on GitHub, after proving again that it is there and not archived yet */
   archive: (name: string) => Promise<ActionResult>
+  /** Close the Claude session of the project, which stops Claude, it works whether it still ran or not */
+  closeUpdateProject: (name: string) => Promise<ActionResult>
   /** Check out the default branch of the repo in its clone, refused when the clone has uncommitted files */
   checkoutDefault: (name: string) => Promise<ActionResult>
   /** Clone a repo of the owner into the folder of projects */
@@ -41,6 +44,14 @@ export interface Actions {
   previewDeleteFork: (name: string) => Promise<ForkDeletePreview>
   /** Say what the file fixes would change: a before and after per file, with the fingerprint of that plan */
   previewFixFiles: (name: string) => Promise<FixPreview>
+  /** Send a message of the user to the Claude session of the project */
+  sendUpdateMessage: (name: string, text: string) => Promise<ActionResult>
+  /** Start Claude on the update skill in the clone of the project, refused when it has no usable clone or already has a session that runs */
+  startUpdateProject: (name: string) => Promise<ActionResult>
+  /** Close every Claude session, when the server stops */
+  stopSessions: () => void
+  /** Follow the Claude session of the project: the conversation so far, then each new event. Gives a function that stops following, undefined when the project has no session */
+  watchUpdateProject: (name: string, listener: (event: ChatEvent) => void) => (() => void) | undefined
   /** Say what discarding would throw away, with the fingerprint of that list */
   previewDiscard: (name: string) => Promise<DiscardPreview>
   /** Say what copying the infos of package.json to GitHub would set: what GitHub has now and the proposed values */
