@@ -27,7 +27,12 @@ testRule(websiteStaticFiles, {
     { errors: ['headers'], files: { 'favicon.ico': '', 'manifest.json': '{}', 'static/robots.txt': '' }, flags: web, name: 'static is used when it is the only folder', output: headers },
     { errors: ['favicon'], files: { _headers: '', 'manifest.json': '{}' }, flags: web, name: 'a favicon cannot be created' },
   ],
-  valid: [{ files: { 'favicon.ico': '', 'public/_headers': '', 'public/manifest.json': '{}' }, flags: web, name: 'every file in public' }, { files: { _headers: '', 'favicon.ico': '', 'static/manifest.json': '{}' }, flags: web, name: 'files in the root and in static' }, { name: 'not a website' }],
+  valid: [
+    { files: { 'favicon.ico': '', 'public/_headers': '', 'public/manifest.json': '{}' }, flags: web, name: 'every file in public' },
+    { files: { _headers: '', 'favicon.ico': '', 'static/manifest.json': '{}' }, flags: web, name: 'files in the root and in static' },
+    { files: { _headers: '', 'favicon.ico': '', 'public/app.webmanifest': '{}' }, flags: web, name: 'an app.webmanifest is a manifest' },
+    { name: 'not a website' },
+  ],
 })
 
 testRule(lighthouseBudget, {

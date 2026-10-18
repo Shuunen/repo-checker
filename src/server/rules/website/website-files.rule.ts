@@ -20,11 +20,15 @@ const indent = 2
 /** The folders where a website keeps the files it serves as they are, the root of the project itself for a plain site */
 const staticPlaces = ['', 'public/', 'static/']
 
-/** What each static file the website needs is, its content when it can be created */
+/** What each static file the website needs is, the names accepted (the first one is created) and its content when it can be created */
 const staticFiles = [
-  { content: () => '/*\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n', id: 'headers', name: '_headers' },
-  { content: () => undefined, id: 'favicon', name: 'favicon.ico' },
-  { content: (pkg: Readonly<PackageJson> | undefined) => `${JSON.stringify({ background_color: '#ffffff', display: 'standalone', name: pkg?.name ?? 'app', short_name: pkg?.name ?? 'app', start_url: '/', theme_color: '#ffffff' }, undefined, indent)}\n`, id: 'manifest', name: 'manifest.json' },
+  { content: () => '/*\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n', id: 'headers', names: ['_headers'] },
+  { content: () => undefined, id: 'favicon', names: ['favicon.ico'] },
+  {
+    content: (pkg: Readonly<PackageJson> | undefined) => `${JSON.stringify({ background_color: '#ffffff', display: 'standalone', name: pkg?.name ?? 'app', short_name: pkg?.name ?? 'app', start_url: '/', theme_color: '#ffffff' }, undefined, indent)}\n`,
+    id: 'manifest',
+    names: ['manifest.json', 'manifest.webmanifest', 'app.webmanifest', 'site.webmanifest'],
+  },
 ] as const
 
 /**
@@ -43,10 +47,10 @@ export const websiteStaticFiles = defineRule({
   appliesTo: isWebsite,
   async check({ files, pkg, report }) {
     const folder = await staticFolder(files)
-    const texts = await Promise.all(staticFiles.map(({ name }) => Promise.all(staticPlaces.map(place => files.readText(`${place}${name}`)))))
+    const texts = await Promise.all(staticFiles.map(({ names }) => Promise.all(names.flatMap(name => staticPlaces.map(place => files.readText(`${place}${name}`))))))
     const present = texts.map(found => found.some(text => text !== undefined))
     for (const [index, item] of staticFiles.entries()) {
-      const file = `${folder}${item.name}`
+      const file = `${folder}${item.names[0]}`
       const content = item.content(pkg)
       if (present[index] === true) continue
       report(content === undefined ? { data: { file }, messageId: item.id } : { data: { file }, fix: fixer => fixer.text(file, () => content), messageId: item.id })
@@ -55,7 +59,7 @@ export const websiteStaticFiles = defineRule({
   meta: {
     fixable: true,
     id: 'website-static-files',
-    messages: { favicon: 'a website should have a {{file}}, it cannot be created for you', headers: 'a website should have a {{file}} to set its security headers', manifest: 'a website should have a {{file}}' },
+    messages: { favicon: 'a website should have a {{file}}, it cannot be created for you', headers: 'a website should have a {{file}} to set its security headers', manifest: 'a website should have a {{file}}, or another web manifest like an app.webmanifest' },
     severity: 'warning',
   },
 })
