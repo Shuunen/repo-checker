@@ -32,22 +32,12 @@ export interface WebStatus {
   url: string
 }
 
-/** The same dependency at another version in other projects of the scan: the most common version and how many projects use it */
-export interface Drift {
-  /** The most common version, like `1.4.0` */
-  common: string
-  /** How many projects use it */
-  projects: number
-}
-
 /** What the project declares in `.repo-checker.json` or what was detected about it, the successor of the old ProjectData */
 export interface ProjectFlags {
   /** Renovate may merge dependency updates on its own, true unless `.repo-checker.json` says false */
   canAutoMergeDeps?: boolean
   /** The git config has a `main` branch */
   hasMainBranch?: boolean
-  /** The dependencies that are at another version than most of the other projects, by package, given by the scan */
-  drift?: Record<string, Drift>
   /** A CLI, meant to be run in a terminal */
   isCli?: boolean
   /** An ESM package, `"type": "module"` */

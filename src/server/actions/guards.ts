@@ -2,7 +2,6 @@ import { stat } from 'node:fs/promises'
 import path from 'node:path'
 import type { FileReader } from '../engine/io.ts'
 import { externalFlags } from '../facts.ts'
-import { knownFleet } from '../fleet.ts'
 import { getRepo, type GhRunner } from '../inventory/github.ts'
 
 /** A repo name: letters, digits, dots, dashes and underscores, never a path */
@@ -44,5 +43,5 @@ export async function checkFolderOfProjects(target: string) {
  * @returns the flags
  */
 export async function repoFlags(gh: GhRunner, slug: string, files?: Readonly<FileReader>) {
-  return externalFlags(await getRepo(gh, slug).catch(() => undefined), files === undefined ? undefined : { files, fleet: knownFleet() })
+  return externalFlags(await getRepo(gh, slug).catch(() => undefined), files === undefined ? undefined : { files })
 }

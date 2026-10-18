@@ -13,7 +13,7 @@ Every check, built or wanted, lives in `docs/checks.md`. This file holds the res
 Every check of `docs/checks.md` is built. What is left on them:
 
 - **Fixes that are not offered yet**: `stale-remote-branch` (`git push origin --delete`), `ci-failing` (re-run the workflow), `multiple-lockfiles` and `old-lockfile-format` (delete or migrate a lockfile), `deprecated-dependency`, `security-advisory`, `deploy-down`, `media-dimensions`, `build-size`, `stale-last-tag`. They need an action with its own confirmation and proof, like the other actions, or a human decision.
-- **`outdated-minor-dependency`, `outdated-major-dependency` and `version-drift` are noisy** (about 100 and 150 findings on 59 projects), Renovate already opens the pull requests. A grouped view per package, or a filter in the UI, would help.
+- **`outdated-minor-dependency` and `outdated-major-dependency` are noisy** (about 100 findings on 59 projects), Renovate already opens the pull requests. A grouped view per package, or a filter in the UI, would help.
 - **`security-advisory` reads the lowest version of a range**, it does not read the lockfile. A `^` range can resolve to a newer, fixed version.
 - **A persistent cache of the npm registry answers** (they are kept for an hour in memory), to make a cold start after a restart cheaper.
 

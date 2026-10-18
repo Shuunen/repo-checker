@@ -1,7 +1,7 @@
 import { partition } from 'es-toolkit'
 import type { LocalClone, Project } from '../shared/project.ts'
 import { plural } from '../shared/text.ts'
-import { checkOne, type Fleet, type SplitRules } from './check-project.ts'
+import { checkOne, type SplitRules } from './check-project.ts'
 import type { CheckResult } from './engine/runner.ts'
 import { addForkStatus } from './inventory/forks.ts'
 import type { GhRunner } from './inventory/github.ts'
@@ -23,8 +23,6 @@ export interface ProjectResult extends CheckResult {
 
 /** What checking the projects needs */
 interface CheckProjectsOptions {
-  /** The dependencies of every project of the scan, to compare the versions with. Undefined for the fleet of the latest full scan, which is what the check of one project wants */
-  fleet?: Fleet | undefined
   /** Runs gh, to compare the forks with their parent */
   gh: GhRunner
   /** Remembers the results between scans: a project whose clone did not change and whose GitHub side is recent is not checked again. Undefined to remember nothing */
@@ -72,14 +70,13 @@ async function withFreshClone(project: Readonly<Project>, refresh: CheckProjects
  * @param project the project
  * @param prepare gets the project ready
  * @param setup what the checks need
- * @param setup.fleet the dependencies of every project of the scan, undefined for the fleet of the latest full scan
  * @param setup.rules the rules split by flavor
  * @returns the result
  */
-async function checkSafely(project: Readonly<Project>, prepare: Prepare, { fleet, rules }: Readonly<{ fleet: Fleet | undefined; rules: SplitRules }>): Promise<ProjectResult> {
+async function checkSafely(project: Readonly<Project>, prepare: Prepare, { rules }: Readonly<{ rules: SplitRules }>): Promise<ProjectResult> {
   try {
     const ready = await prepare(project)
-    return { ...(await checkOne(ready, rules, fleet)), project: ready }
+    return { ...(await checkOne(ready, rules)), project: ready }
   } catch (error) {
     return failedResult(project, error)
   }
@@ -89,7 +86,6 @@ async function checkSafely(project: Readonly<Project>, prepare: Prepare, { fleet
  * Check the matched projects. A fork is first compared with its parent, the slowest part of a scan, so the other projects are checked meanwhile and reach `onProject` within about a second
  * @param projects the matched projects
  * @param options what checking needs
- * @param options.fleet the dependencies of every project of the scan, undefined for the fleet of the latest full scan
  * @param options.gh runs gh
  * @param options.memory remembers the results between scans
  * @param options.onProject called as soon as each project is checked
@@ -100,13 +96,13 @@ async function checkSafely(project: Readonly<Project>, prepare: Prepare, { fleet
  * @returns one result per project, sorted by name. A project whose checks throw (a malformed file, a gh failure on one fork) gets a `checks-failed` error finding, it never fails the scan
  * @example const results = await checkProjects(matchProjects(clones, repos, owner), { gh: ghCli, onProject: console.log, onProgress: console.log, rules })
  */
-export async function checkProjects(projects: readonly Project[], { fleet, gh, memory, onProject, onProgress, refresh, rules, shouldReuse }: Readonly<CheckProjectsOptions>) {
+export async function checkProjects(projects: readonly Project[], { gh, memory, onProject, onProgress, refresh, rules, shouldReuse }: Readonly<CheckProjectsOptions>) {
   const [forks, others] = partition(projects, project => project.github?.isFork === true)
   onProgress(`checking ${plural(projects.length, 'project')}${refresh === undefined ? '' : ', each clone is fetched just before its check'}`)
   if (forks.length > 0) onProgress(`comparing ${plural(forks.length, 'fork')} with their parent`)
   const check = async (project: Readonly<Project>, prepare: Prepare) => {
     const recalled = (await memory?.recall(project, shouldReuse !== false)) ?? { fingerprint: '', hit: undefined }
-    const result = recalled.hit ?? (await checkSafely(project, prepare, { fleet, rules }))
+    const result = recalled.hit ?? (await checkSafely(project, prepare, { rules }))
     if (recalled.hit === undefined && !result.findings.some(finding => finding.ruleId === 'checks-failed')) memory?.remember(result, recalled.fingerprint)
     onProject(result)
     return result

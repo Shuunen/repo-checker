@@ -55,7 +55,6 @@ What the project depends on, and how current and safe that is.
 - ✅ 🔵 `outdated-minor-dependency`: the version a dependency declares is a patch or a minor update behind the latest on the npm registry, one finding per dependency. Fixed by bumping it, keeping the range prefix (`registry.rule.ts`). A nitpick check.
 - ✅ 🟡 `deprecated-dependency`: a dependency whose latest version is marked deprecated on the npm registry. No fix, what replaces it is for you to say (`registry.rule.ts`).
 - ✅ 🔴 `security-advisory`: the declared version of a dependency has a known vulnerability, from the advisory endpoint of the npm registry, asked once per project with the declared versions (the lowest version of a range, so `~` and exact versions are exact). No fix, `outdated-minor-dependency` fixes most of them (`registry.rule.ts`).
-- ✅ 🔵 `version-drift`: a dependency used by at least 3 projects of the scan, at a version older than the most common one, for example one lint tool in 4 projects at one version and in 9 at another. Fixed by setting the most common version. A project that is ahead is not reported (`version-drift.rule.ts`).
 - ✅ 🟡 `open-renovate-pr`: a Renovate pull request waiting to be merged.
 - ✅ 🔴 `no-sass-dependency`: no `sass` dependency, it is fat and useless. Only when the project data says to avoid it (`package.file.ts`).
 - ✅ 🔴 `no-cross-var-dependency`: no `cross-var` dependency, it is old and deprecated (`package.file.ts`).

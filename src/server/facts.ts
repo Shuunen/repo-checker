@@ -8,7 +8,6 @@ import type { GithubRepo } from '../shared/project.ts'
 import type { PackageJson } from './engine/package-json.ts'
 import { fallbackNodeVersion, type ProjectFlags } from './engine/flags.ts'
 import type { FileReader } from './engine/io.ts'
-import { driftOf, type Fleet } from './fleet.ts'
 import { run } from './inventory/shell.ts'
 import { createRegistry, realRegistryDeps } from './registry.ts'
 import { createSiteStatus, realSiteDeps } from './site-status.ts'
@@ -89,12 +88,10 @@ export function githubFlags(repo: Readonly<GithubRepo> | undefined): ProjectFlag
   return { githubDescription: repo?.description, githubTopics: repo?.topics, isPrivate: repo?.isPrivate === true }
 }
 
-/** What the facts about a project itself need: its files, and the fleet of the scan to compare its versions with */
+/** What the facts about a project itself need: its files */
 interface ProjectScope {
   /** The files of the project */
   files: FileReader
-  /** The dependencies of every project of the scan, undefined before the first full scan */
-  fleet?: Fleet | undefined
 }
 
 /** The registry of the real machine */
@@ -116,7 +113,7 @@ async function websiteOf(files: Readonly<FileReader>, repo: Readonly<GithubRepo>
 
 /**
  * The flags that come from what the outside says about the project itself: the npm registry for its dependencies, the web for its website, the other projects for its versions
- * @param scope the project files and the fleet
+ * @param scope the project files
  * @param repo the repo, undefined when GitHub could not say
  * @returns the flags, a fact the outside could not give is left out
  */
@@ -125,13 +122,13 @@ async function projectFlags(scope: Readonly<ProjectScope>, repo: Readonly<Github
   const pkg = text === undefined ? undefined : (parse(text) as PackageJson)
   const url = await websiteOf(scope.files, repo)
   const [registry, webStatus] = await Promise.all([factsFor(pkg), url === undefined ? undefined : statusOf(url)])
-  return { ...(registry === undefined ? {} : { registry }), ...(scope.fleet === undefined ? {} : { drift: driftOf(scope.fleet, pkg) }), ...(webStatus === undefined ? {} : { webStatus }) }
+  return { ...(registry === undefined ? {} : { registry }), ...(webStatus === undefined ? {} : { webStatus }) }
 }
 
 /**
  * Every flag that is not read from the project files: the global facts, what GitHub says, and, given the project files, what the npm registry and the web say
  * @param repo the repo, undefined when GitHub could not say
- * @param scope the project files and the fleet, leave it out for the facts that do not depend on the project
+ * @param scope the project files, leave it out for the facts that do not depend on the project
  * @returns the flags
  */
 export async function externalFlags(repo: Readonly<GithubRepo> | undefined, scope?: Readonly<ProjectScope>): Promise<ProjectFlags> {

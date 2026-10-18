@@ -1,6 +1,5 @@
 import type { LocalClone } from '../shared/project.ts'
 import { checkProjects, type ProjectResult } from './check-projects.ts'
-import { readFleet, rememberFleet } from './fleet.ts'
 import type { AnyRule } from './engine/define-project-rule.ts'
 import { activeRules, splitRules } from './engine/load-rules.ts'
 import type { GhRunner } from './inventory/github.ts'
@@ -51,8 +50,6 @@ export async function scan(options: Readonly<ScanOptions>, { onProject = () => u
   const { clones, isSingle, owner, repos } = await readInventory(options.gh, { ...options, onProgress })
   const refresh = options.shouldFetch ? (local: LocalClone) => readClone(local.path, { shouldFetch: true }) : undefined
   const matched = matchProjects(clones, repos, owner)
-  const fleet = await readFleet(matched)
-  rememberFleet(fleet)
-  const projects = await checkProjects(matched, { fleet, gh: options.gh, memory: options.memory, onProgress, onProject, refresh, rules: splitRules(activeRules(options.rules, options.isNitpick === true)), shouldReuse: options.shouldReuse })
+  const projects = await checkProjects(matched, { gh: options.gh, memory: options.memory, onProgress, onProject, refresh, rules: splitRules(activeRules(options.rules, options.isNitpick === true)), shouldReuse: options.shouldReuse })
   return { isSingle, owner, projects }
 }

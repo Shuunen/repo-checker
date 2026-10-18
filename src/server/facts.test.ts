@@ -75,14 +75,12 @@ function stubWeb(statuses: Readonly<Record<string, number>>) {
 describe('the facts about the project itself', () => {
   const files = { '.repo-checker.json': '{ "webUrl": "https://app.example.dev" }', 'package.json': '{ "devDependencies": { "facts-knip": "~6.0.0" } }' }
 
-  it('asks the npm registry and the website, and compares the versions with the fleet', async () => {
+  it('asks the npm registry and the website', async () => {
     expect.hasAssertions()
     stubWeb({ 'https://app.example.dev': 200, 'https://github.com': 200 })
-    const fleet = new Map([['facts-knip', new Map([['7.0.0', 3]])]])
-    const flags = await externalFlags(undefined, { files: memoryIo(files), fleet })
+    const flags = await externalFlags(undefined, { files: memoryIo(files) })
     expect(flags.registry?.packages).toStrictEqual({ 'facts-knip': { latest: '6.1.0' } })
     expect(flags.webStatus).toStrictEqual({ status: 200, url: 'https://app.example.dev' })
-    expect(flags.drift).toStrictEqual({ 'facts-knip': { common: '7.0.0', projects: 3 } })
   })
 
   it('asks the GitHub Pages of a repo that has some, when the project declares no website', async () => {
@@ -91,7 +89,6 @@ describe('the facts about the project itself', () => {
     const flags = await externalFlags({ hasPages: true, name: 'pages-app', owner: 'owner' } as never, { files: memoryIo({}) })
     expect(flags.webStatus).toStrictEqual({ status: 503, url: 'https://owner.github.io/pages-app/' })
     expect(flags.registry).toBeUndefined()
-    expect(flags.drift).toBeUndefined()
   })
 
   it('leaves out what the outside cannot say, and asks nothing for a project without website or dependencies', async () => {

@@ -1,6 +1,5 @@
 import { testRule } from '../../engine/rule-tester.ts'
 import { deprecatedDependency, outdatedMajorDependency, outdatedMinorDependency, securityAdvisory } from './registry.rule.ts'
-import { versionDrift } from './version-drift.rule.ts'
 
 const registry = (packages: Record<string, { deprecated?: string; latest: string }>, advisories?: Record<string, { severity: string; title: string; url: string }[]>) => ({ registry: { ...(advisories === undefined ? {} : { advisories }), packages } })
 
@@ -47,19 +46,5 @@ testRule(securityAdvisory, {
     { flags: registry({}, {}), name: 'no advisory', pkg: { dependencies: { lodash: '~4.17.0' } } },
     { flags: registry({}), name: 'the advisories could not be read', pkg: { dependencies: { lodash: '~4.17.0' } } },
     { name: 'no registry', pkg: { dependencies: { lodash: '~4.17.0' } } },
-  ],
-})
-
-testRule(versionDrift, {
-  invalid: [
-    { errors: ['behind'], flags: { drift: { knip: { common: '6.0.0', projects: 9 } } }, name: 'behind most of the other projects', output: { devDependencies: { knip: '~6.0.0' } }, pkg: { devDependencies: { knip: '~5.0.0' } } },
-    { errors: ['behind'], flags: { drift: { vite: { common: '8.0.0', projects: 3 } } }, name: 'in dependencies', output: { dependencies: { vite: '8.0.0' } }, pkg: { dependencies: { vite: '7.0.0' } } },
-  ],
-  valid: [
-    { flags: { drift: { knip: { common: '6.0.0', projects: 9 } } }, name: 'already fixed since the scan', pkg: { devDependencies: { knip: '~6.0.0' } } },
-    { flags: { drift: { knip: { common: '6.0.0', projects: 9 } } }, name: 'a package that does not drift', pkg: { devDependencies: { vite: '~5.0.0' } } },
-    { flags: { drift: {} }, name: 'no drift', pkg: { devDependencies: { knip: '~5.0.0' } } },
-    { name: 'no fleet', pkg: { devDependencies: { knip: '~5.0.0' } } },
-    { flags: { drift: { knip: { common: '6.0.0', projects: 9 } } }, name: 'no package.json' },
   ],
 })
