@@ -33,3 +33,12 @@ export function usesTailwind({ pkg }: Readonly<Context>) {
 export function usesKnip({ pkg }: Readonly<Context>) {
   return hasDependency(pkg, 'knip')
 }
+
+/**
+ * Tell if the project uses knip or will once the dependency-tool-choice fix is applied
+ * @param context the project context
+ * @returns true when it depends on knip or the fix will install it
+ */
+export function usesOrWillUseKnip(context: Readonly<Context>) {
+  return usesKnip(context) || (context.pkg !== undefined && context.flags.isUsingDependencyCruiser !== true)
+}
