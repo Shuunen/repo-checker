@@ -20,6 +20,8 @@ export interface ProjectFlags {
   gitAuthor?: { email?: string | undefined; name: string } | undefined
   /** The description of the GitHub repo, given by the scan */
   githubDescription?: string | undefined
+  /** The topics of the GitHub repo, given by the scan, empty when it has none */
+  githubTopics?: string[] | undefined
   /** The GitHub repo is private, given by the scan, never detected from the files */
   isPrivate?: boolean
   /** Published to npm, its scripts run `npm publish` */

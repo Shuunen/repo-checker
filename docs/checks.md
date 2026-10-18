@@ -230,7 +230,7 @@ How the project introduces itself, on GitHub and in the repo.
 - ✅ 🟡 `package-description`: a `description` property (`package.file.ts`).
 - ✅ 🟡 `package-homepage`: a `homepage` property, filled with the url of the GitHub repo (`package.file.ts`). In a `package.json` the homepage is the one of the source code, never the url of the deployed website, that one is the `webUrl` of `.repo-checker.json` and the homepage of the repo on GitHub.
 - ✅ 🟡 `package-bugs`: a `bugs` property (`package.file.ts`).
-- ✅ 🟡 `package-keywords`: a `keywords` property (`package.file.ts`).
+- ✅ 🟡 `package-keywords`: a `keywords` property, filled with the topics of the GitHub repo when it has some (`package.file.ts`).
 - ✅ 🟡 `package-repository`: a `repository` property, whose url starts with `git+https` (`package.file.ts`).
 - ✅ 🔴 `readme-exists`: a `README.md` or `readme.md` file exists (`readme.ts`).
 - ✅ 🔴 `readme-title`: the README starts with a title (`readme.ts`).

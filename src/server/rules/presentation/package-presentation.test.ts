@@ -21,7 +21,7 @@ function byId(id: string) {
   return rule as Rule
 }
 
-const known = { gitAuthor: { email: 'me@mail.com', name: 'Me' }, githubDescription: 'A tool', owner: 'me', repoId: 'tool' }
+const known = { gitAuthor: { email: 'me@mail.com', name: 'Me' }, githubDescription: 'A tool', githubTopics: ['cli', 'tool'], owner: 'me', repoId: 'tool' }
 
 testRule(byId('package-author'), {
   invalid: [
@@ -73,4 +73,13 @@ testRule(packageRepository, {
     { errors: ['noGitPlus'], name: 'a shorthand, not fixable', pkg: { repository: 'github:foo/bar' } },
   ],
   valid: [{ name: 'a git+https url', pkg: { repository: { type: 'git', url: 'git+https://github.com/foo/bar.git' } } }],
+})
+
+testRule(byId('package-keywords'), {
+  invalid: [
+    { errors: ['missing'], flags: known, name: 'no keywords, the topics of the GitHub repo', output: { keywords: ['cli', 'tool'] }, pkg: {} },
+    { errors: ['missing'], flags: { githubTopics: [] }, name: 'no keywords, the repo has no topics', pkg: {} },
+    { errors: ['missing'], name: 'no keywords, nothing known', pkg: {} },
+  ],
+  valid: [{ name: 'keywords', pkg: { keywords: ['a'] } }],
 })

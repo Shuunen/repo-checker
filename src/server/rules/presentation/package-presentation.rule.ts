@@ -8,7 +8,7 @@ export const presentationPropertyRules = [
   requireProperty({ id: 'package-bugs', key: 'bugs', severity: 'warning', value: ({ flags }) => (repoUrl(flags) === undefined ? undefined : `${repoUrl(flags)}/issues`) }),
   requireProperty({ id: 'package-description', key: 'description', severity: 'warning', value: ({ flags }) => flags.githubDescription }),
   requireProperty({ id: 'package-homepage', key: 'homepage', severity: 'warning', value: ({ flags }) => repoUrl(flags) }),
-  requireProperty({ id: 'package-keywords', key: 'keywords', severity: 'warning' }),
+  requireProperty({ id: 'package-keywords', key: 'keywords', severity: 'warning', value: ({ flags }) => (flags.githubTopics?.length ? flags.githubTopics : undefined) }),
 ]
 
 /** The license of a project that does not declare one */
