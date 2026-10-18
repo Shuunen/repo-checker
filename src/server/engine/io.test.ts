@@ -1,6 +1,7 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { run } from '../inventory/shell.ts'
 import { diskIo, memoryIo, overlayIo } from './io.ts'
 
 /**
@@ -70,6 +71,21 @@ describe('disk io', () => {
     await expect(io.search(/ts-node/u)).resolves.toStrictEqual([path.join('src', 'deep', 'a.ts')])
     await expect(io.search(/ts-node/u, 'node_modules')).resolves.toStrictEqual([])
     await expect(io.search(/x{3000}/u, 'missing')).resolves.toStrictEqual([])
+  })
+
+  it('searches the files git knows when the folder is a repo, the ignored ones are left out', async () => {
+    expect.hasAssertions()
+    const folder = await makeFolder()
+    await run('git', ['init', '--quiet'], folder)
+    await mkdir(path.join(folder, '.next'), { recursive: true })
+    await writeFile(path.join(folder, '.gitignore'), '.next\n')
+    await writeFile(path.join(folder, '.next', 'built.js'), 'ts-node')
+    await writeFile(path.join(folder, 'tracked.ts'), 'ts-node')
+    await mkdir(path.join(folder, 'src'), { recursive: true })
+    await writeFile(path.join(folder, 'src', 'new.ts'), 'ts-node')
+    const io = diskIo(folder)
+    await expect(io.search(/ts-node/u)).resolves.toStrictEqual([path.join('src', 'new.ts'), 'tracked.ts'])
+    await expect(io.search(/ts-node/u, 'src')).resolves.toStrictEqual([path.join('src', 'new.ts')])
   })
 
   it('skips the files it cannot read when searching', async () => {

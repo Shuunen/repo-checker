@@ -5,18 +5,23 @@ import { splitRules } from './engine/load-rules.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { readClone } from './inventory/git.ts'
 import { matchProjects } from './inventory/match.ts'
+import type { ProjectMemory } from './project-memory.ts'
 import { type Progress, readInventory } from './inventory/read-inventory.ts'
 
 /** What a scan needs */
 export interface ScanOptions {
   /** Runs gh, the real CLI or a fake */
   gh: GhRunner
+  /** Remembers the results between scans, undefined to remember nothing */
+  memory?: ProjectMemory | undefined
   /** The GitHub owner to compare with, detected when undefined */
   owner: string | undefined
   /** The rules of both flavors */
   rules: readonly AnyRule[]
   /** Run `git fetch --prune` in each clone right before its own check, so unpushed work is measured against the real remote and no project waits for another's fetch */
   shouldFetch: boolean
+  /** False to check every project even when the memory holds its result, a scan the user asked to be fresh */
+  shouldReuse?: boolean | undefined
   /** The folder to scan: a git repo (single project mode) or a folder of repos */
   target: string
 }
@@ -42,6 +47,6 @@ export interface ScanHooks {
 export async function scan(options: Readonly<ScanOptions>, { onProject = () => undefined, onProgress = () => undefined }: Readonly<ScanHooks> = {}) {
   const { clones, isSingle, owner, repos } = await readInventory(options.gh, { ...options, onProgress })
   const refresh = options.shouldFetch ? (local: LocalClone) => readClone(local.path, { shouldFetch: true }) : undefined
-  const projects = await checkProjects(matchProjects(clones, repos, owner), { gh: options.gh, onProgress, onProject, refresh, rules: splitRules(options.rules) })
+  const projects = await checkProjects(matchProjects(clones, repos, owner), { gh: options.gh, memory: options.memory, onProgress, onProject, refresh, rules: splitRules(options.rules), shouldReuse: options.shouldReuse })
   return { isSingle, owner, projects }
 }

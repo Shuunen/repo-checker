@@ -62,3 +62,9 @@ export type ScanEvent =
 
 /** What scanning one project again gives: the project as it is now, undefined when it is gone (a deleted fork, a deleted folder of a repo that does not exist), or the reason it could not be scanned */
 export type RescanResult = { ok: true; project: ScanProject | undefined; target: string } | { ok: false; reason: string }
+
+/** How recent the GitHub side of a project is: `fresh` while it is read again on time, `paused` when it is due but GitHub's rate limit is too low to spend calls on it */
+export type RemoteState = 'fresh' | 'paused'
+
+/** What watching a project gives: nothing changed, or the project as it is now with the fingerprint to send back next time (undefined project when it is gone), or the reason it could not be checked */
+export type LiveResult = { changed: false; fingerprint: string; ok: true; remote: RemoteState } | { changed: true; fingerprint: string; ok: true; project: ScanProject | undefined; remote: RemoteState; target: string } | { ok: false; reason: string }

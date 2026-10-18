@@ -11,6 +11,7 @@ export const worksFine: Actions = {
   discard: () => Promise.resolve({ message: 'discarded', ok: true }),
   fixFiles: () => Promise.resolve({ message: 'fixed', ok: true }),
   fixGit: () => Promise.resolve({ message: 'fixed', ok: true }),
+  live: () => Promise.resolve({ changed: false, fingerprint: 'abc', ok: true, remote: 'fresh' }),
   previewDeleteClone: () => Promise.resolve({ ignoredFiles: ['.env'], ok: true, path: '/projects/old' }),
   previewDeleteFork: () => Promise.resolve({ branches: 1, clone: undefined, ok: true, parent: 'them/lib' }),
   previewDeleteProject: () => Promise.resolve({ clone: { ignoredFiles: [], path: '/projects/old', unsaved: [] }, ok: true, repo: 'owner/old' }),

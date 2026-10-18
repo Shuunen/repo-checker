@@ -8,12 +8,24 @@ export type FetchScan = (signal: AbortSignal) => Promise<Response>
 /** The cache key of the scan, an action refetches it to show what it changed */
 export const scanQueryKey = ['scan']
 
+/** True when the next scan must check every project, even those the server remembers, because the user asked for it or an action left the page unsure */
+let isFreshAsked = false
+
+/** Make the next scan check every project again, instead of reusing what the server remembers */
+export function askFreshScan() {
+  isFreshAsked = true
+}
+
 /**
  * Request the scan stream from the server
  * @param signal aborts the request when the query is cancelled
  * @returns the response
  */
-const fetchScan: FetchScan = signal => fetch('/api/scan', { signal })
+const fetchScan: FetchScan = signal => {
+  const address = isFreshAsked ? '/api/scan?fresh=true' : '/api/scan'
+  isFreshAsked = false
+  return fetch(address, { signal })
+}
 
 /**
  * Open the scan stream, failing when the server does not answer with a body

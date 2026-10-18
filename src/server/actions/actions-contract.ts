@@ -1,5 +1,5 @@
 import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, FixStage, GitFixPreview, ForkDeletePreview, MetadataPreview, MetadataValues, ProjectDeletePreview } from '../../shared/action.ts'
-import type { RescanResult } from '../../shared/scan-event.ts'
+import type { LiveResult, RescanResult } from '../../shared/scan-event.ts'
 
 /** How the file fixes run */
 interface FixRun {
@@ -19,6 +19,8 @@ export interface Actions {
   clone: (name: string) => Promise<ActionResult>
   /** Delete the local clone of an archived repo, after proving again that it holds nothing that is not on GitHub */
   deleteClone: (name: string) => Promise<ActionResult>
+  /** Watch a project: say that nothing changed since the fingerprint the page holds, or give the project as it is now. A change of the clone is checked again at once, GitHub is read again only when its data is old */
+  live: (name: string, since: string) => Promise<LiveResult>
   /** Say what deleting that clone would remove, the files git ignores, or why it is refused */
   previewDeleteClone: (name: string) => Promise<DeletePreview>
   /** Delete a pristine fork on GitHub, and its clean local clone if it has one */

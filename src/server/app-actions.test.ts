@@ -271,3 +271,22 @@ describe('delete project', () => {
     expect(deleteProject).toHaveBeenCalledWith('old')
   })
 })
+
+describe('live', () => {
+  it('asks the action to watch the project since the fingerprint the page holds', async () => {
+    expect.hasAssertions()
+    const live = vi.fn<Actions['live']>(() => Promise.resolve({ changed: false, fingerprint: 'abc', ok: true, remote: 'fresh' }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, live }).request('http://127.0.0.1/api/projects/finga/live?since=abc')
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toStrictEqual({ changed: false, fingerprint: 'abc', ok: true, remote: 'fresh' })
+    expect(live).toHaveBeenCalledWith('finga', 'abc')
+  })
+
+  it('asks without fingerprint the first time, and answers 409 with the reason when refused', async () => {
+    expect.hasAssertions()
+    const live = vi.fn<Actions['live']>(() => Promise.resolve({ ok: false, reason: 'the target is a single project' }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, live }).request('http://127.0.0.1/api/projects/finga/live')
+    expect(response.status).toBe(409)
+    expect(live).toHaveBeenCalledWith('finga', '')
+  })
+})

@@ -19,7 +19,7 @@ const forbidden = 403
 const actionHeader = 'x-repo-check'
 
 /** Run a scan of the target the server was started on */
-export type ScanRunner = (shouldFetch: boolean, hooks: Readonly<Required<ScanHooks>>) => Promise<{ isSingle: boolean; owner: string }>
+export type ScanRunner = (shouldFetch: boolean, hooks: Readonly<Required<ScanHooks>>, shouldReuse: boolean) => Promise<{ isSingle: boolean; owner: string }>
 
 /** Where the server runs */
 interface AppOptions {
@@ -82,13 +82,14 @@ function eventSender(stream: Readonly<SSEStreamingApi>): SendEvent {
  * @param stream where the scan goes
  * @param stream.send sends one event
  * @param stream.shouldFetch run git fetch first
+ * @param stream.shouldReuse reuse the results the server remembers
  * @param stream.target the folder scanned
  */
-async function streamScan(runScan: ScanRunner, { send, shouldFetch, target }: Readonly<{ send: SendEvent; shouldFetch: boolean; target: string }>) {
+async function streamScan(runScan: ScanRunner, { send, shouldFetch, shouldReuse, target }: Readonly<{ send: SendEvent; shouldFetch: boolean; shouldReuse: boolean; target: string }>) {
   const started = Date.now()
   await send({ target: homePath(target, homedir()), type: 'started' })
   try {
-    const { isSingle, owner } = await runScan(shouldFetch, { onProgress: line => send({ line, type: 'progress' }), onProject: result => send({ result: toScanProject(result), type: 'project' }) })
+    const { isSingle, owner } = await runScan(shouldFetch, { onProgress: line => send({ line, type: 'progress' }), onProject: result => send({ result: toScanProject(result), type: 'project' }) }, shouldReuse)
     await send({ durationMs: Date.now() - started, isSingle, owner, type: 'done' })
   } catch (error) {
     await send({ message: error instanceof Error ? error.message : String(error), type: 'failed' })
@@ -96,7 +97,7 @@ async function streamScan(runScan: ScanRunner, { send, shouldFetch, target }: Re
 }
 
 /**
- * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch. `POST /api/shutdown` answers then stops the server. `POST /api/projects/:name/clone` clones a repo, `GET /api/projects/:name/delete-clone` says what deleting its clone would remove and `POST` deletes it, `POST /api/projects/:name/unarchive-push` pushes the unsaved branches of an archived repo through an unarchive, `GET /api/projects/:name/discard` lists what a discard would throw away with a fingerprint of that list, and `POST` discards it only when `?fingerprint=` still matches. A POST needs the `x-repo-check: 1` header, and every action answers its result as JSON, with status 409 when refused. Every other path serves the built web app, and `/project/*` serves its page too, so a reload on a project address works
+ * Create the HTTP app: `GET /api/scan` streams the scan as server-sent events, see `ScanEvent`, `?fetch=false` skips git fetch and `?fresh=true` checks every project even when the server remembers its result. `GET /api/projects/:name/live?since=` watches a project, see `liveProject`. `POST /api/shutdown` answers then stops the server. `POST /api/projects/:name/clone` clones a repo, `GET /api/projects/:name/delete-clone` says what deleting its clone would remove and `POST` deletes it, `POST /api/projects/:name/unarchive-push` pushes the unsaved branches of an archived repo through an unarchive, `GET /api/projects/:name/discard` lists what a discard would throw away with a fingerprint of that list, and `POST` discards it only when `?fingerprint=` still matches. A POST needs the `x-repo-check: 1` header, and every action answers its result as JSON, with status 409 when refused. Every other path serves the built web app, and `/project/*` serves its page too, so a reload on a project address works
  * @param runScan runs a scan of the target
  * @param options where the server runs
  * @param options.actions the actions the page can ask for
@@ -115,7 +116,7 @@ export function createApp(runScan: ScanRunner, { actions, shutdown, target, webF
       setTimeout(shutdown, shutdownDelay)
       return context.json({ ok: true })
     })
-    .get('/api/scan', context => streamSSE(context, stream => streamScan(runScan, { send: eventSender(stream), shouldFetch: context.req.query('fetch') !== 'false', target })))
+    .get('/api/scan', context => streamSSE(context, stream => streamScan(runScan, { send: eventSender(stream), shouldFetch: context.req.query('fetch') !== 'false', shouldReuse: context.req.query('fresh') !== 'true', target })))
     .use(serveStatic({ root: webFolder }))
     .get('/project/*', serveStatic({ path: 'index.html', root: webFolder }))
 }

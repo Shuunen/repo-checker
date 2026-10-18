@@ -106,6 +106,18 @@ export async function getRepo(gh: GhRunner, slug: string) {
   throw new Error(`gh api repos/${slug} failed: ${stderr.trim()}`)
 }
 
+/**
+ * Get how many calls GitHub still allows this hour. Asking for the rate limit is free, it does not count against it
+ * @param gh the gh runner
+ * @returns the remaining calls, undefined when GitHub could not say
+ * @example const remaining = await getRemainingCalls(ghCli)
+ */
+export async function getRemainingCalls(gh: GhRunner) {
+  const { ok, stdout } = await gh(['api', 'rate_limit', '--jq', '.resources.core.remaining'])
+  const remaining = Math.trunc(Number(stdout))
+  return ok && Number.isFinite(remaining) ? remaining : undefined
+}
+
 /** The fields of a result of the search API that the pull request counts read */
 interface ApiSearchItem {
   repository_url: string

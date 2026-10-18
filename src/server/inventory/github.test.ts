@@ -1,4 +1,4 @@
-import { type GhRunner, getLogin, getRepo, ghCli, listPullRequests, listRepos } from './github.ts'
+import { type GhRunner, getLogin, getRemainingCalls, getRepo, ghCli, listPullRequests, listRepos } from './github.ts'
 
 /**
  * A result of the search of open pull requests
@@ -94,5 +94,18 @@ describe('github inventory', () => {
   it('runs the real gh binary', async () => {
     expect.hasAssertions()
     await expect(ghCli(['--version'])).resolves.toMatchObject({ ok: true, stdout: expect.stringContaining('gh version') })
+  })
+})
+
+describe(getRemainingCalls, () => {
+  it.each([
+    ['the calls left', { ok: true, stderr: '', stdout: '4980\n' }, 4980],
+    ['nothing when gh fails', { ok: false, stderr: 'no network', stdout: '' }, undefined],
+    ['nothing when gh does not answer a number', { ok: true, stderr: '', stdout: 'null\n' }, undefined],
+  ])('gives %s', async (_name, answer, expected) => {
+    expect.hasAssertions()
+    const gh = vi.fn<GhRunner>(() => Promise.resolve(answer))
+    await expect(getRemainingCalls(gh)).resolves.toBe(expected)
+    expect(gh).toHaveBeenCalledWith(['api', 'rate_limit', '--jq', '.resources.core.remaining'])
   })
 })

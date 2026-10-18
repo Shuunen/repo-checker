@@ -31,7 +31,7 @@ The checks still marked 📋 in `docs/checks.md`, sorted by what they cost (2026
 
 - A health score per repo.
 - `--json` output for scripts and for Claude.
-- A cache, and an offline mode that skips GitHub too (`--no-fetch` already skips `git fetch`).
+- An offline mode that skips GitHub too (`--no-fetch` already skips `git fetch`). The results are cached in memory since the live watch, see docs/architecture.md, not on disk: a cold start after a restart scans everything.
 - Charts in the UI (commit activity, stale-branch histogram). Needs a small chart library, HeroUI has none.
 
 ## Ideas

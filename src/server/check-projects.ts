@@ -7,6 +7,7 @@ import { addForkStatus } from './inventory/forks.ts'
 import type { GhRunner } from './inventory/github.ts'
 import { mapLimit } from './inventory/map-limit.ts'
 import type { Progress } from './inventory/read-inventory.ts'
+import type { ProjectMemory } from './project-memory.ts'
 
 /** How many projects are checked at the same time */
 const parallelProjects = 8
@@ -24,6 +25,8 @@ export interface ProjectResult extends CheckResult {
 interface CheckProjectsOptions {
   /** Runs gh, to compare the forks with their parent */
   gh: GhRunner
+  /** Remembers the results between scans: a project whose clone did not change and whose GitHub side is recent is not checked again. Undefined to remember nothing */
+  memory?: ProjectMemory | undefined
   /** Called as soon as each project is checked */
   onProject: (result: ProjectResult) => void
   /** Receives a short line about what is done */
@@ -32,6 +35,8 @@ interface CheckProjectsOptions {
   refresh: ((local: LocalClone) => Promise<LocalClone>) | undefined
   /** The rules split by flavor */
   rules: SplitRules
+  /** False to check every project even when the memory holds its result, still remembering the new results */
+  shouldReuse?: boolean | undefined
 }
 
 /**
@@ -81,19 +86,23 @@ async function checkSafely(project: Readonly<Project>, prepare: Prepare, rules: 
  * @param projects the matched projects
  * @param options what checking needs
  * @param options.gh runs gh
+ * @param options.memory remembers the results between scans
  * @param options.onProject called as soon as each project is checked
  * @param options.onProgress receives a short line about what is done
  * @param options.refresh reads a clone again with a fetch right before its check, undefined without fetch
  * @param options.rules the rules split by flavor
+ * @param options.shouldReuse false to check every project even when the memory holds its result
  * @returns one result per project, sorted by name. A project whose checks throw (a malformed file, a gh failure on one fork) gets a `checks-failed` error finding, it never fails the scan
  * @example const results = await checkProjects(matchProjects(clones, repos, owner), { gh: ghCli, onProject: console.log, onProgress: console.log, rules })
  */
-export async function checkProjects(projects: readonly Project[], { gh, onProject, onProgress, refresh, rules }: Readonly<CheckProjectsOptions>) {
+export async function checkProjects(projects: readonly Project[], { gh, memory, onProject, onProgress, refresh, rules, shouldReuse }: Readonly<CheckProjectsOptions>) {
   const [forks, others] = partition(projects, project => project.github?.isFork === true)
   onProgress(`checking ${plural(projects.length, 'project')}${refresh === undefined ? '' : ', each clone is fetched just before its check'}`)
   if (forks.length > 0) onProgress(`comparing ${plural(forks.length, 'fork')} with their parent`)
   const check = async (project: Readonly<Project>, prepare: Prepare) => {
-    const result = await checkSafely(project, prepare, rules)
+    const recalled = (await memory?.recall(project, shouldReuse !== false)) ?? { fingerprint: '', hit: undefined }
+    const result = recalled.hit ?? (await checkSafely(project, prepare, rules))
+    if (recalled.hit === undefined && !result.findings.some(finding => finding.ruleId === 'checks-failed')) memory?.remember(result, recalled.fingerprint)
     onProject(result)
     return result
   }

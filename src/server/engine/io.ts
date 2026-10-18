@@ -5,6 +5,7 @@
 import { Buffer } from 'node:buffer'
 import { glob, mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { run } from '../inventory/shell.ts'
 
 /** The number of bytes in one Ko */
 const bytesPerKo = 1024
@@ -81,6 +82,17 @@ async function listFiles(root: string, folder: string) {
 }
 
 /**
+ * List the files git knows under a folder: the tracked ones and the untracked ones that are not ignored, so a search sees what the fingerprint of the folder sees
+ * @param root the absolute path of the project folder
+ * @param folder the folder to list, relative to the project folder
+ * @returns the file paths, relative to the project folder, undefined when the folder is not a git repo
+ */
+async function listGitFiles(root: string, folder: string) {
+  const { ok, stdout } = await run('git', ['--no-optional-locks', 'ls-files', '-z', '--cached', '--others', '--exclude-standard', '--', folder === '' ? '.' : folder], root)
+  return ok ? stdout.split('\0').filter(file => file !== '') : undefined
+}
+
+/**
  * Cache the reads of an io, so many rules can read the same file for the cost of one read. Writes update the cache
  * @param io the io to cache
  * @returns the cached io
@@ -150,7 +162,7 @@ export function diskIo(folder: string) {
   const readText = (file: string) => readFile(fullPath(file), 'utf8').catch(() => undefined)
   return withCache({
     readText,
-    search: async (pattern, subFolder = '') => searchIn(await listFiles(folder, subFolder), readText, pattern),
+    search: async (pattern, subFolder = '') => searchIn((await listGitFiles(folder, subFolder)) ?? (await listFiles(folder, subFolder)), readText, pattern),
     sizeKo: file => sizeOnDisk(fullPath(file)),
     writeText: (file, text) => writeInside(folder, file, text),
   })

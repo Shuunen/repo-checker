@@ -98,7 +98,7 @@ describe(createApp, () => {
     const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
     const response = await app(runScan).request('http://localhost/api/scan?fetch=false')
     await response.text()
-    expect(runScan).toHaveBeenCalledWith(false, expect.any(Object))
+    expect(runScan).toHaveBeenCalledWith(false, expect.any(Object), true)
   })
 
   it('fetches by default', async () => {
@@ -106,7 +106,15 @@ describe(createApp, () => {
     const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
     const response = await app(runScan).request('http://localhost/api/scan')
     await response.text()
-    expect(runScan).toHaveBeenCalledWith(true, expect.any(Object))
+    expect(runScan).toHaveBeenCalledWith(true, expect.any(Object), true)
+  })
+
+  it('checks every project again when asked for a fresh scan', async () => {
+    expect.hasAssertions()
+    const runScan = vi.fn<ScanRunner>(() => Promise.resolve({ isSingle: true, owner: 'owner' }))
+    const response = await app(runScan).request('http://localhost/api/scan?fresh=true')
+    await response.text()
+    expect(runScan).toHaveBeenCalledWith(true, expect.any(Object), false)
   })
 
   it('serves the web app', async () => {

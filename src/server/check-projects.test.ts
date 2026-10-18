@@ -2,6 +2,7 @@ import type { LocalClone, Project } from '../shared/project.ts'
 import { checkProjects } from './check-projects.ts'
 import { defineProjectRule } from './engine/define-project-rule.ts'
 import type { GhRunner } from './inventory/github.ts'
+import { createProjectMemory } from './project-memory.ts'
 
 const repo = (name: string, isFork: boolean) => ({
   defaultBranch: 'main',
@@ -75,6 +76,21 @@ function freshExceptBad(local: LocalClone): Promise<LocalClone> {
   return local.folderName === 'bad' ? Promise.reject(new Error('git is gone')) : fresh(local)
 }
 
+/**
+ * A rule that counts how many times it runs
+ * @param calls the counter
+ * @returns the rules split by flavor
+ */
+function rulesCounting(calls: string[]) {
+  const rule = defineProjectRule({
+    check({ project: checked }) {
+      calls.push(checked.name)
+    },
+    meta: { id: 'counts-runs', messages: {}, severity: 'warning' },
+  })
+  return { fileRules: [], projectRules: [rule] }
+}
+
 describe(checkProjects, () => {
   it.each([
     ['an Error', new Error('boom'), 'the checks of this project failed: boom'],
@@ -129,6 +145,38 @@ describe(checkProjects, () => {
         ['bad', ['the checks of this project failed: git is gone']],
         ['good', []],
       ])
+    })
+  })
+
+  describe('with a memory of the results', () => {
+    it('does not check again a project whose clone did not change, but still reports it', async () => {
+      expect.hasAssertions()
+      const [calls, seen] = [new Array<string>(), new Array<string>()]
+      const memory = createProjectMemory()
+      const options = { gh: vi.fn<GhRunner>(), memory, onProgress: () => undefined, onProject: (result: { project: Project }) => seen.push(result.project.name), refresh: undefined, rules: rulesCounting(calls) }
+      await checkProjects([project('app')], options)
+      await checkProjects([project('app')], options)
+      expect(calls).toStrictEqual(['app'])
+      expect(seen).toStrictEqual(['app', 'app'])
+    })
+
+    it('checks every project again when the scan must be fresh, and remembers the new results', async () => {
+      expect.hasAssertions()
+      const calls: string[] = []
+      const memory = createProjectMemory()
+      const options = { gh: vi.fn<GhRunner>(), memory, onProgress: () => undefined, onProject: () => undefined, refresh: undefined, rules: rulesCounting(calls) }
+      await checkProjects([project('app')], options)
+      await checkProjects([project('app')], { ...options, shouldReuse: false })
+      expect(calls).toStrictEqual(['app', 'app'])
+      await checkProjects([project('app')], options)
+      expect(calls).toStrictEqual(['app', 'app'])
+    })
+
+    it('does not remember a project whose checks failed', async () => {
+      expect.hasAssertions()
+      const memory = createProjectMemory()
+      await checkProjects([project('bad')], { gh: vi.fn<GhRunner>(), memory, onProgress: () => undefined, onProject: () => undefined, refresh: undefined, rules: rulesThrowing('boom') })
+      expect(memory.entry('bad')).toBeUndefined()
     })
   })
 })
