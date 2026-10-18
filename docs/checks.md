@@ -208,6 +208,7 @@ Linting, formatting, typing and architecture config files.
 For projects that are deployed as a website.
 
 - 📋 🔴 `deploy-down`: GitHub Pages or the deployed site does not respond.
+- ✅ 🟡 `index-html-unique-mark`: `index.html` or `src/index.html` has a `<meta name="unique-mark" content="" />` tag, with its attributes in any order. Fixed by adding it before `</head>` (`index-html.rule.ts`).
 - 📋 🟡 `website-static-files`: a website should have `_headers`, `favicon.ico` and `manifest.json` in its static folder. From the old README todo list.
 - 📋 🟡 `external-link-rel`: external `<a>` links should carry `rel="noopener"` or `rel="noreferrer"`. From the old README todo list.
 - 📋 🟡 `media-dimensions`: `<img>` and `<video>` should have `width` and `height`. From the old README todo list.
