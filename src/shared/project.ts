@@ -112,12 +112,19 @@ export interface PullRequestCounts {
   other: number
 }
 
+/** How the last finished workflow run of the default branch ended: `failing`, `passing`, or `none` when the repo has no workflow run */
+export type CiStatus = 'failing' | 'none' | 'passing'
+
 /** What a scan knows about one GitHub repo */
 export interface GithubRepo {
+  /** The CI status of the default branch, undefined when it was not read (single project mode, a dead repo, or the call failed) */
+  ci?: CiStatus | undefined
   /** The default branch of the repo, like `master` */
   defaultBranch: string
   /** The description shown on GitHub, undefined when there is none */
   description: string | undefined
+  /** True when the repo publishes a GitHub Pages site, undefined when it was not read */
+  hasPages?: boolean
   /** True when GitHub detects a license for the repo */
   hasLicense: boolean
   /** The homepage shown on GitHub, undefined when there is none */
@@ -130,6 +137,8 @@ export interface GithubRepo {
   isFork: boolean
   /** True when the repo is private */
   isPrivate: boolean
+  /** When the account last committed to the repo, ISO 8601, bots excluded, or `never` when it never did. Undefined when it was not read (only the repos that could be archive candidates are read) */
+  lastOwnCommitAt?: string | undefined
   /** The repo name */
   name: string
   /** How many issues and pull requests are open, GitHub counts both together */
@@ -142,6 +151,8 @@ export interface GithubRepo {
   pushedAt: string
   /** `owner/name`, lowercase, the key used to match clones */
   slug: string
+  /** How many people starred the repo, undefined when it was not read */
+  stars?: number
   /** The topics of the repo on GitHub */
   topics: string[]
 }

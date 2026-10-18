@@ -32,7 +32,7 @@ export function ActionsMenu({ actions, project, target }: Readonly<{ actions: re
               {actions.map(action => (
                 <ActionItem action={action} key={action} project={project} />
               ))}
-              <ArchiveItem project={project} />
+              {!actions.includes('archive') && <ArchiveItem project={project} />}
             </Dropdown.Section>
             <Dropdown.Section className="mt-1 border-t border-foreground/20 pt-1">
               <ActionItem action="delete-project" project={project} />

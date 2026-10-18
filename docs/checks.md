@@ -188,7 +188,7 @@ Linting, formatting, typing and architecture config files.
 
 ## CI
 
-- 📋 🔴 `ci-failing`: the CI on the default branch is red.
+- ✅ 🔴 `ci-failing`: the last finished GitHub Actions run of the default branch failed, one GitHub call per live own repo. No fix, re-running or repairing a build is for you to do (`ci.rule.ts`).
 - ✅ 🔴 `ci-checkout-step`: `.github/workflows/ci.yml` has a checkout step (`gh-workflow.ts`).
 - ✅ 🔴 `ci-checkout-version`: the checkout action is a recent version, v5 to v7 (`gh-workflow.ts`).
 - ✅ 🔴 `ci-node-step`: a `setup-node` step (`gh-workflow.ts`).
@@ -253,9 +253,9 @@ Activity on GitHub and the life cycle of the repo.
 
 - 🚀 🔵 `open-pull-requests`: pull requests waiting for review.
 - 🚀 🔵 `open-issues`: open issues.
-- 📋 🔵 `archive-candidate`: no commit from you (bots excluded) for N months, no stars, nothing deployed. Fix: archive the repo.
-- 📋 🔵 `renovate-only-zombie`: a repo that is only kept alive by Renovate pull requests. Archiving it also stops the bot noise.
-- 📋 🔵 `stale-uncloned-repo`: an old repo that shows up as `not-cloned`. Offer to archive it instead of cloning it.
+- ✅ 🔵 `archive-candidate`: a cloned repo with no commit from you (bots excluded) for 12 months, no star, no homepage, no GitHub Pages, and no Renovate pull request open. Fix: archive the repo (`archive.rule.ts`).
+- ✅ 🔵 `renovate-only-zombie`: a repo with Renovate pull requests open and no commit from you for 6 months, it is only kept alive by the bot. Fix: archive the repo, which also stops the bot noise (`archive.rule.ts`).
+- ✅ 🔵 `stale-uncloned-repo`: a repo with no clone and no commit from you for 12 months, that would show up as `not-cloned`. Fix: archive it instead of cloning it, `not-cloned` leaves such a repo alone (`archive.rule.ts`).
 
 ## Behaviors of the old tool that are not checks
 

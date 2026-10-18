@@ -1,17 +1,18 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import type { ScanEvent } from '../shared/scan-event.ts'
-import { aProject, scanRequest, stubApi } from './fixtures.ts'
+import { aFinding, aProject, scanRequest, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 
 /**
  * The scan events of one project
  * @param project the project and what it overrides
+ * @param findings the findings of the project
  * @returns the events
  */
-function eventsOf(project: Parameters<typeof aProject>[2] = {}): ScanEvent[] {
+function eventsOf(project: Parameters<typeof aProject>[2] = {}, findings: Parameters<typeof aProject>[1] = []): ScanEvent[] {
   return [
     { target: '/projects', type: 'started' },
-    { result: aProject('finga', [], project), type: 'project' },
+    { result: aProject('finga', findings, project), type: 'project' },
     { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
   ]
 }
@@ -23,6 +24,25 @@ describe('archive', () => {
     fireEvent.click(await screen.findByTestId('actions-finga'))
     const item = await screen.findByTestId('menu-archive')
     expect(item.textContent).toBe('Archive on GitHub')
+  })
+
+  it('is offered once, not twice, when a finding offers it too', async () => {
+    expect.hasAssertions()
+    const idle = aFinding({ actions: ['archive'], message: 'no commit from you for 20 months', messageId: 'idle', ruleId: 'archive-candidate', scope: 'project', severity: 'info' })
+    renderApp(scanRequest(eventsOf({}, [idle])), '/')
+    fireEvent.click(await screen.findByTestId('actions-finga'))
+    await expect(screen.findAllByTestId('menu-archive')).resolves.toHaveLength(1)
+  })
+
+  it('is offered once on the project page when a finding offers it too, and runs when confirmed', async () => {
+    expect.hasAssertions()
+    const fetchMock = stubApi({ action: Response.json({ message: 'archived', ok: true }) })
+    const idle = aFinding({ actions: ['archive'], message: 'no commit from you for 20 months', messageId: 'idle', ruleId: 'archive-candidate', scope: 'project', severity: 'info' })
+    renderApp(scanRequest(eventsOf({}, [idle])), '/project/finga')
+    await expect(screen.findAllByTestId('action-archive')).resolves.toHaveLength(1)
+    fireEvent.click(await screen.findByTestId('action-archive'))
+    fireEvent.click(await screen.findByTestId('archive-confirm'))
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/projects/finga/archive', { headers: { 'x-repo-check': '1' }, method: 'POST' }))
   })
 
   it('archives from the menu of the list once confirmed, then scans only that project again', async () => {

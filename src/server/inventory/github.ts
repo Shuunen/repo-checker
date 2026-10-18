@@ -1,4 +1,4 @@
-import type { GithubRepo } from '../../shared/project.ts'
+import type { CiStatus, GithubRepo } from '../../shared/project.ts'
 import { run, type ShellResult } from './shell.ts'
 
 /** Runs `gh` with the given arguments, replaced by a fake in tests */
@@ -16,6 +16,7 @@ interface ApiRepo {
   archived: boolean
   default_branch: string
   description?: string | null
+  has_pages: boolean
   homepage?: string | null
   license?: object | null
   open_issues_count: number
@@ -25,6 +26,7 @@ interface ApiRepo {
   owner: { login: string }
   private: boolean
   pushed_at: string
+  stargazers_count: number
 }
 
 /**
@@ -62,6 +64,7 @@ function toRepo(repo: Readonly<ApiRepo>): GithubRepo {
     description: repo.description || undefined,
     forkStatus: undefined,
     hasLicense: Boolean(repo.license),
+    hasPages: repo.has_pages,
     homepage: repo.homepage || undefined,
     isArchived: repo.archived,
     isFork: repo.fork,
@@ -72,6 +75,7 @@ function toRepo(repo: Readonly<ApiRepo>): GithubRepo {
     pullRequests: undefined,
     pushedAt: repo.pushed_at,
     slug: `${repo.owner.login}/${repo.name}`.toLowerCase(),
+    stars: repo.stargazers_count,
     topics: repo.topics ?? [],
   }
 }
@@ -148,4 +152,44 @@ export async function listPullRequests(gh: GhRunner, owner: string) {
     item => item.repository_url.replace('https://api.github.com/repos/', '').toLowerCase(),
   )
   return new Map([...perRepo].map(([slug, items]) => [slug, { other: items.filter(item => !isRenovate(item)).length, renovate: items.filter(item => isRenovate(item)).length }]))
+}
+
+/** The conclusions of a finished workflow run that mean the CI is red */
+const failedConclusions = new Set(['failure', 'startup_failure', 'timed_out'])
+
+/**
+ * Read the CI status of the default branch: how the last finished workflow run ended
+ * @param gh the gh runner
+ * @param repo the repo
+ * @param repo.defaultBranch the default branch
+ * @param repo.name the repo name
+ * @param repo.owner the owner login
+ * @returns the status, undefined when GitHub could not say, for example on a repo with the actions off
+ * @example const ci = await readCi(ghCli, repo) // 'failing'
+ */
+export async function readCi(gh: GhRunner, { defaultBranch, name, owner }: Readonly<Pick<GithubRepo, 'defaultBranch' | 'name' | 'owner'>>): Promise<CiStatus | undefined> {
+  const { ok, stdout } = await gh(['api', `repos/${owner}/${name}/actions/runs?branch=${encodeURIComponent(defaultBranch)}&status=completed&exclude_pull_requests=true&per_page=1`])
+  const runs = (ok ? (JSON.parse(stdout) as { workflow_runs?: { conclusion: string | null }[] }) : undefined)?.workflow_runs
+  if (!Array.isArray(runs)) return undefined
+  const [latest] = runs
+  if (latest === undefined) return 'none'
+  return failedConclusions.has(String(latest.conclusion)) ? 'failing' : 'passing'
+}
+
+/**
+ * Read when the account last committed to a repo, the commits of bots like Renovate are not its own
+ * @param gh the gh runner
+ * @param repo the repo
+ * @param repo.name the repo name
+ * @param repo.owner the owner login
+ * @param login the login of the account
+ * @returns the date of the last commit, `never` when the account never committed, undefined when GitHub could not say, for example on an empty repo
+ * @example const date = await readLastOwnCommit(ghCli, repo, 'Shuunen') // '2024-03-02T10:00:00Z'
+ */
+export async function readLastOwnCommit(gh: GhRunner, { name, owner }: Readonly<Pick<GithubRepo, 'name' | 'owner'>>, login: string): Promise<string | undefined> {
+  const { ok, stdout } = await gh(['api', `repos/${owner}/${name}/commits?author=${login}&per_page=1`])
+  const commits = ok ? (JSON.parse(stdout) as unknown) : undefined
+  if (!Array.isArray(commits)) return undefined
+  const [commit] = commits as { commit: { committer: { date: string } } }[]
+  return commit?.commit.committer.date ?? 'never'
 }

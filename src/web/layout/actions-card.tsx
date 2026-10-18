@@ -23,7 +23,7 @@ export function ActionsCard({ findings, project, target }: Readonly<{ findings: 
         {actions.map(action => (
           <ActionButton action={action} key={action} project={project} target={target} />
         ))}
-        {canArchive(project) && <ArchiveButton action="archive" project={project} />}
+        {canArchive(project) && !actions.includes('archive') && <ArchiveButton action="archive" project={project} />}
         {canUnarchive(project) && <ArchiveButton action="unarchive" project={project} />}
         <DeleteProjectButton isLabelled project={project} />
       </span>

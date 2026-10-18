@@ -1,28 +1,15 @@
 import type { ReactNode } from 'react'
 import type { ActionKind } from '../../shared/action.ts'
-import type { Project } from '../../shared/project.ts'
-import { CheckoutDefaultButton } from './checkout-default-button.tsx'
-import { CloneButton } from './clone-button.tsx'
-import { DeleteCloneButton } from './delete-clone-button.tsx'
-import { DeleteForkButton } from './delete-fork-button.tsx'
+import { ArchiveButton } from './archive-button.tsx'
+import { type ButtonProps, cloneButtons } from './clone-buttons.tsx'
 import { DiscardButton } from './discard-button.tsx'
 import { SyncGithubMetadataButton } from './sync-github-metadata-button.tsx'
 import { UnarchivePushButton } from './unarchive-push-button.tsx'
 
-/** What every button needs to open its confirmation */
-interface ButtonProps {
-  /** The project */
-  project: Project
-  /** The folder of projects */
-  target: string
-}
-
 /** The button of each action, it opens the confirmation of that action */
 const buttons: Readonly<Record<ActionKind, (props: Readonly<ButtonProps>) => ReactNode>> = {
-  'checkout-default': ({ project }) => <CheckoutDefaultButton project={project} />,
-  clone: ({ project, target }) => <CloneButton project={project} target={target} />,
-  'delete-clone': ({ project }) => <DeleteCloneButton project={project} />,
-  'delete-fork': ({ project }) => <DeleteForkButton project={project} />,
+  archive: ({ project }) => <ArchiveButton action="archive" project={project} />,
+  ...cloneButtons,
   discard: ({ project }) => <DiscardButton project={project} />,
   'sync-github-metadata': ({ project }) => <SyncGithubMetadataButton project={project} />,
   'unarchive-push-rearchive': ({ project }) => <UnarchivePushButton project={project} />,

@@ -11,7 +11,7 @@ import { scan } from './scan.ts'
 
 const identity = ['-c', 'user.name=Test', '-c', 'user.email=test@example.com', '-c', 'commit.gpgsign=false']
 const rules = [notCloned, brokenClone, archivedWithUnsavedWork, packageJsonExists]
-const apiRepo = (name: string, fields: Readonly<Record<string, unknown>> = {}) => ({ archived: false, fork: false, name, owner: { login: 'owner' }, private: false, pushed_at: '2026-01-01T00:00:00Z', ...fields })
+const apiRepo = (name: string, fields: Readonly<Record<string, unknown>> = {}) => ({ archived: false, default_branch: 'master', fork: false, has_pages: false, name, owner: { login: 'owner' }, private: false, pushed_at: '2026-01-01T00:00:00Z', stargazers_count: 0, ...fields })
 
 /**
  * Run git in a fixture folder, failing the test when git fails
@@ -73,6 +73,8 @@ function fakeGh(answers: Readonly<Record<string, unknown>>) {
 }
 
 const user = { 'api user': { login: 'owner' } }
+const runs = (name: string) => `api repos/owner/${name}/actions/runs?branch=master&status=completed&exclude_pull_requests=true&per_page=1`
+const commits = (name: string) => `api repos/owner/${name}/commits?author=owner&per_page=1`
 
 /**
  * A fake gh that holds one call until released, then answers like `fakeGh`
@@ -106,7 +108,7 @@ describe(scan, () => {
       ['plain', ['broken-clone']],
     ])
     expect(seen.toSorted()).toStrictEqual(['app', 'finga', 'gone', 'lib', 'plain'])
-    expect(progress).toStrictEqual([`reading the local clones in ${target}`, 'listing the repos of owner on GitHub', 'checking 5 projects'])
+    expect(progress).toStrictEqual([`reading the local clones in ${target}`, 'listing the repos of owner on GitHub', 'reading the CI and the activity of the repos', 'checking 5 projects'])
     expect(projects.find(result => result.project.name === 'finga')?.outcomes).toStrictEqual([
       { ruleId: 'not-cloned', status: 'failed' },
       { ruleId: 'broken-clone', status: 'skipped' },
@@ -161,6 +163,23 @@ describe(scan, () => {
     const counts = new Map(projects.map(result => [result.project.name, result.project.github?.pullRequests]))
     expect(counts.get('app')).toStrictEqual({ other: 0, renovate: 1 })
     expect(counts.get('finga')).toStrictEqual({ other: 0, renovate: 0 })
+  })
+
+  it('reads the CI of the live repos, and the last own commit of those that could be archived', async () => {
+    expect.hasAssertions()
+    const gh = fakeGh({
+      ...user,
+      'api --paginate --slurp user/repos?affiliation=owner&per_page=100': [[apiRepo('app', { stargazers_count: 3 }), apiRepo('finga'), apiRepo('old', { archived: true }), apiRepo('forked', { fork: true })]],
+      [commits('finga')]: [{ commit: { committer: { date: '2024-01-01T00:00:00Z' } } }],
+      [runs('app')]: { workflow_runs: [{ conclusion: 'success' }] },
+      [runs('finga')]: { workflow_runs: [{ conclusion: 'failure' }] },
+    })
+    const { projects } = await scan({ gh, owner: undefined, rules, shouldFetch: false, target: await makeWorkspace() })
+    const repos = new Map(projects.map(result => [result.project.name, result.project.github]))
+    expect(repos.get('app')).toMatchObject({ ci: 'passing', lastOwnCommitAt: undefined })
+    expect(repos.get('finga')).toMatchObject({ ci: 'failing', lastOwnCommitAt: '2024-01-01T00:00:00Z' })
+    expect(repos.get('old')?.ci).toBeUndefined()
+    expect(gh.mock.calls.map(([args]) => args.join(' '))).not.toContain(commits('app'))
   })
 
   it('goes on without the pull requests when the search fails', async () => {

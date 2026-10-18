@@ -18,7 +18,7 @@ function fakeGh(isMissing = false) {
 }
 
 describe('rescan with a memory', () => {
-  it('remembers the project it scanned, and keeps the pull request counts the full scan found', async () => {
+  it('remembers the project it scanned, and keeps the pull request counts, the CI status and the last own commit the full scan found', async () => {
     expect.hasAssertions()
     const memory = createProjectMemory()
     const options = { gh: fakeGh(), git, memory, name: 'finga', owner: 'Owner', rules, target: '/nowhere' }
@@ -26,9 +26,9 @@ describe('rescan with a memory', () => {
     const known = memory.entry('finga')
     invariant(known?.result.project.github !== undefined, 'the repo was remembered')
     expect(known.fingerprint).toBe('')
-    memory.remember({ ...known.result, project: { ...known.result.project, github: { ...known.result.project.github, pullRequests: { other: 2, renovate: 1 } } } }, '')
+    memory.remember({ ...known.result, project: { ...known.result.project, github: { ...known.result.project.github, ci: 'failing', lastOwnCommitAt: '2024-01-01T00:00:00Z', pullRequests: { other: 2, renovate: 1 } } } }, '')
     await rescanProject(options)
-    expect(memory.entry('finga')?.result.project.github?.pullRequests).toStrictEqual({ other: 2, renovate: 1 })
+    expect(memory.entry('finga')?.result.project.github).toMatchObject({ ci: 'failing', lastOwnCommitAt: '2024-01-01T00:00:00Z', pullRequests: { other: 2, renovate: 1 } })
   })
 
   it('forgets the project when it is gone', async () => {

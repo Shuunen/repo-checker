@@ -43,11 +43,13 @@ describe('rules folder', () => {
     expect.hasAssertions()
     const { projectRules } = splitRules(rules)
     expect(projectRules.map(rule => rule.meta.id).toSorted()).toStrictEqual([
+      'archive-candidate',
       'archived-clone',
       'archived-with-unsaved-work',
       'behind-remote',
       'branch-without-upstream',
       'broken-clone',
+      'ci-failing',
       'forgotten-stash',
       'missing-description',
       'missing-homepage',
@@ -59,9 +61,11 @@ describe('rules folder', () => {
       'open-pull-requests',
       'open-renovate-pr',
       'pristine-fork',
+      'renovate-only-zombie',
       'stale-last-tag',
       'stale-local-branch',
       'stale-remote-branch',
+      'stale-uncloned-repo',
       'uncommitted-files',
       'unpushed-commits',
     ])

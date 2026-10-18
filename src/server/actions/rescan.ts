@@ -21,7 +21,7 @@ interface RescanOptions extends ActionOptions {
 export type RescanOutcome = { ok: true; result: ProjectResult | undefined; target: string } | { ok: false; reason: string }
 
 /**
- * Scan one project again and keep the result as it is checked: its repo from GitHub, its clone read with a fresh fetch, then the same checks as the scan. The pull request counts, which only the search of a full scan gives, are kept from what the memory holds
+ * Scan one project again and keep the result as it is checked: its repo from GitHub, its clone read with a fresh fetch, then the same checks as the scan. The pull request counts, the CI status and the date of the last own commit, which only a full scan reads, are kept from what the memory holds
  * @param options what to scan
  * @param options.gh runs gh
  * @param options.git how the clones are read
@@ -40,8 +40,8 @@ export async function rescanResult({ gh, git, memory, name, owner, rules, target
     if (single !== undefined) return { ok: false, reason: single }
     const slug = `${owner}/${name}`
     const found = await getRepo(gh, slug)
-    const pullRequests = memory?.entry(name)?.result.project.github?.pullRequests
-    const repo = found !== undefined && found.pullRequests === undefined && pullRequests !== undefined ? { ...found, pullRequests } : found
+    const kept = memory?.entry(name)?.result.project.github
+    const repo = found !== undefined && kept !== undefined ? { ...found, ci: kept.ci, lastOwnCommitAt: kept.lastOwnCommitAt, pullRequests: kept.pullRequests } : found
     const listed = await git.readClones(target, { shouldFetch: false })
     const listedClone = listed.find(clone => clone.slug === slug.toLowerCase() || clone.folderName === name)
     const fingerprint = await fingerprintClone(listedClone)

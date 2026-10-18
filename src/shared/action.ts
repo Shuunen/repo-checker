@@ -6,6 +6,8 @@ import type { UnsavedGroup } from './unsaved.ts'
 
 /** An action that changes something outside the project files, on disk or on GitHub */
 export type ActionKind =
+  /** Archive the repo on GitHub, read-only, it can be unarchived */
+  | 'archive'
   /** Check out the default branch of GitHub in the clone */
   | 'checkout-default'
   /** Clone a repo that has no local clone */
@@ -22,7 +24,7 @@ export type ActionKind =
   | 'unarchive-push-rearchive'
 
 /** An action every project can offer, whatever the findings say: it is not tied to a Sync finding */
-type StandaloneAction = 'archive' | 'delete-project' | 'unarchive'
+type StandaloneAction = 'delete-project' | 'unarchive'
 
 /** Everything the Actions menu of a project can hold */
 export type ProjectAction = ActionKind | StandaloneAction

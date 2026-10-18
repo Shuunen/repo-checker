@@ -27,7 +27,7 @@ describe(cli, () => {
     const { code, output, progress } = await cli([], { cwd: folder })
     expect(code).toBe(0)
     expect(output).toMatch(new RegExp(`^repo-check · ${folder} · owner · 0 projects in \\d+\\.\\ds\\n\\n0 checks run, 0 skipped · 0 errors · 0 warnings · 0 info\\n✔ all good$`, 'u'))
-    expect(progress).toStrictEqual([`reading the local clones in ${folder}`, 'listing the repos of owner on GitHub', 'checking 0 projects, each clone is fetched just before its check'])
+    expect(progress).toStrictEqual([`reading the local clones in ${folder}`, 'listing the repos of owner on GitHub', 'reading the CI and the activity of the repos', 'checking 0 projects, each clone is fetched just before its check'])
   })
 
   it('takes the target and the owner from the options', async () => {
