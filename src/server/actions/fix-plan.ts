@@ -87,7 +87,7 @@ export async function planOf(options: Readonly<FixOptions>): Promise<Plan | { re
   const found = await findClone(options)
   if ('reason' in found) return found
   const io = diskIo(found.clone.path)
-  const flags = await repoFlags(options.gh, `${options.owner}/${options.name}`)
+  const flags = await repoFlags(options.gh, `${options.owner}/${options.name}`, io)
   const { findings, plans } = await planAllFixes(options.rules.fileRules, io, flags)
   if (plans.length === 0) return { reason: `no file of ${options.owner}/${options.name} has a fix to apply` }
   const changed = changedPaths(found.clone.changedFiles)

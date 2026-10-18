@@ -6,12 +6,48 @@ import { isNil } from 'es-toolkit'
 import { parse } from 'jsonc-parser'
 import type { FileReader } from './io.ts'
 
+/** One security advisory of the npm registry that affects a version in use */
+export interface Advisory {
+  /** How bad it is, like `high` */
+  severity: string
+  /** What it is about */
+  title: string
+  /** Where to read about it */
+  url: string
+}
+
+/** What the npm registry says about the dependencies of a project, given by the scan: absent when the registry could not be reached */
+export interface RegistryFacts {
+  /** The advisories of the declared versions, by `name@version`, absent when the advisory call failed. A version without advisory is not in it */
+  advisories?: Record<string, Advisory[]>
+  /** The latest version of each package of the project, and why it is deprecated when it is. The package manager is in it too */
+  packages: Record<string, { deprecated?: string; latest: string }>
+}
+
+/** Whether the deployed website of a project answers, given by the scan */
+export interface WebStatus {
+  /** The HTTP status, or `unreachable` when the request failed */
+  status: number | 'unreachable'
+  /** The url that was asked */
+  url: string
+}
+
+/** The same dependency at another version in other projects of the scan: the most common version and how many projects use it */
+export interface Drift {
+  /** The most common version, like `1.4.0` */
+  common: string
+  /** How many projects use it */
+  projects: number
+}
+
 /** What the project declares in `.repo-checker.json` or what was detected about it, the successor of the old ProjectData */
 export interface ProjectFlags {
   /** Renovate may merge dependency updates on its own, true unless `.repo-checker.json` says false */
   canAutoMergeDeps?: boolean
   /** The git config has a `main` branch */
   hasMainBranch?: boolean
+  /** The dependencies that are at another version than most of the other projects, by package, given by the scan */
+  drift?: Record<string, Drift>
   /** A CLI, meant to be run in a terminal */
   isCli?: boolean
   /** An ESM package, `"type": "module"` */
@@ -50,10 +86,14 @@ export interface ProjectFlags {
   nodeVersion?: string
   /** The GitHub owner, from the `origin` url of the git config */
   owner?: string
+  /** What the npm registry says about the dependencies, given by the scan, absent when it could not be reached */
+  registry?: RegistryFacts
   /** The repository name, from the `origin` url of the git config */
   repoId?: string
   /** Report sass dependencies, true unless `.repo-checker.json` says false */
   shouldAvoidSass?: boolean
+  /** Whether the deployed website answers, given by the scan, absent when the project has no website, or when the machine is offline */
+  webStatus?: WebStatus
   /** The url of the deployed website or web app, only from `.repo-checker.json`. Not the `homepage` of the package.json, which is the homepage of the source code (the repo) */
   webUrl?: string
 }

@@ -28,15 +28,15 @@ const staticFiles = [
 ] as const
 
 /**
- * Find where a new static file goes: the root of a plain site, the `static` folder when it is the only one, `public` otherwise
+ * Find where a new static file goes: the `public` folder when it exists, else `static`, else the root of a plain site, else a new `public` folder
  * @param files the reader of the project files
  * @returns the folder with its trailing slash, empty for the root
  */
 async function staticFolder(files: Readonly<FileReader>) {
-  const index = await files.readText('index.html')
-  if (index !== undefined) return ''
-  const [inStatic, inPublic] = await Promise.all([files.search(/^/u, 'static'), files.search(/^/u, 'public')])
-  return inStatic.length > 0 && inPublic.length === 0 ? 'static/' : 'public/'
+  const [inPublic, inStatic, index] = await Promise.all([files.search(/^/u, 'public'), files.search(/^/u, 'static'), files.readText('index.html')])
+  if (inPublic.length > 0) return 'public/'
+  if (inStatic.length > 0) return 'static/'
+  return index === undefined ? 'public/' : ''
 }
 
 export const websiteStaticFiles = defineRule({

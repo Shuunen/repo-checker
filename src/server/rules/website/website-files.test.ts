@@ -22,6 +22,7 @@ const manifest = (name: string) => `${JSON.stringify({ background_color: '#fffff
 testRule(websiteStaticFiles, {
   invalid: [
     { errors: ['headers', 'manifest'], files: { 'favicon.ico': '', 'index.html': '<html></html>' }, flags: web, name: 'a plain site gets its files at the root', output: [headers, manifest('my-site')], pkg: { name: 'my-site' } },
+    { errors: ['headers', 'manifest'], files: { 'index.html': '<html></html>', 'public/favicon.ico': '' }, flags: web, name: 'a built site with an index.html at its root still gets its files in public', output: [headers, manifest('app')] },
     { errors: ['headers', 'manifest'], files: { 'favicon.ico': '' }, flags: web, name: 'a built site gets its files in public', output: [headers, manifest('app')] },
     { errors: ['headers'], files: { 'favicon.ico': '', 'manifest.json': '{}', 'static/robots.txt': '' }, flags: web, name: 'static is used when it is the only folder', output: headers },
     { errors: ['favicon'], files: { _headers: '', 'manifest.json': '{}' }, flags: web, name: 'a favicon cannot be created' },

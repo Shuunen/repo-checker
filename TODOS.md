@@ -10,14 +10,12 @@ Every check, built or wanted, lives in `docs/checks.md`. This file holds the res
 
 ## Next checks
 
-The checks still marked 📋 in `docs/checks.md`, sorted by what they cost (2026-10-13). The cheapest first.
+Every check of `docs/checks.md` is built. What is left on them:
 
-- **Cheap, local, no network**: `multiple-lockfiles` (🔴) and `old-lockfile-format` (🟡, like `bun.lockb`). They only look at the files of a clone, like the other file checks.
-- **One GitHub call per live repo** (about 30 for the own live repos): `ci-failing` (🔴), the CI status of the default branch.
-- **The npm registry, the most valuable and the most expensive** (a call per dependency of every project, so a cache first): `outdated-dependency`, `deprecated-dependency`, `security-advisory`, `outdated-package-manager`, and `version-drift` (the same tool at different versions across projects).
-- **Waiting on an "archive" action** (archive on GitHub, with its confirmation and its proof, like the other actions): `archive-candidate`, `renovate-only-zombie` and `stale-uncloned-repo`, which suggest archiving a repo.
-- **More data from git or GitHub**: `stale-local-branch`, `stale-remote-branch`, `stale-last-tag`, and `deploy-down` (a call per deployed site).
-- **From the old README todo list**, they read the project files and need a notion of "this is a website": `website-static-files`, `external-link-rel`, `media-dimensions`, `build-size`, `lighthouse-budget`.
+- **Fixes that are not offered yet**: `stale-remote-branch` (`git push origin --delete`), `ci-failing` (re-run the workflow), `multiple-lockfiles` and `old-lockfile-format` (delete or migrate a lockfile), `deprecated-dependency`, `security-advisory`, `deploy-down`, `media-dimensions`, `build-size`, `stale-last-tag`. They need an action with its own confirmation and proof, like the other actions, or a human decision.
+- **`outdated-dependency` and `version-drift` are noisy** (about 100 and 150 findings on 59 projects), Renovate already opens the pull requests. A grouped view per package, or a filter in the UI, would help.
+- **`security-advisory` reads the lowest version of a range**, it does not read the lockfile. A `^` range can resolve to a newer, fixed version.
+- **A persistent cache of the npm registry answers** (they are kept for an hour in memory), to make a cold start after a restart cheaper.
 
 ## Actions
 

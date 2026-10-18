@@ -1,5 +1,6 @@
-import { startServer } from './serve.ts'
+import { memoryIo } from './engine/io.ts'
 import { createFacts, realDeps, externalFlags, githubFlags } from './facts.ts'
+import { startServer } from './serve.ts'
 
 /**
  * Build fake dependencies
@@ -51,6 +52,54 @@ describe(externalFlags, () => {
     const flags = await externalFlags(undefined)
     expect(flags.nodeVersion).toBe('24.21.0')
     expect(flags.isPrivate).toBe(false)
+  })
+})
+
+/**
+ * Answer the registry and the sites like the web would, until the test ends
+ * @param statuses the status of each site, a missing one does not answer
+ */
+function stubWeb(statuses: Readonly<Record<string, number>>) {
+  const previous = globalThis.fetch
+  vi.stubGlobal('fetch', (input: Parameters<typeof fetch>[0]) => {
+    const url = String(input)
+    if (url.startsWith('https://registry.npmjs.org/')) return Promise.resolve(url.endsWith('/bulk') ? Response.json({}) : Response.json({ version: '6.1.0' }))
+    const status = statuses[url]
+    return status === undefined ? Promise.reject(new Error('offline')) : Promise.resolve(new Response('', { status }))
+  })
+  onTestFinished(() => {
+    vi.stubGlobal('fetch', previous)
+  })
+}
+
+describe('the facts about the project itself', () => {
+  const files = { '.repo-checker.json': '{ "webUrl": "https://app.example.dev" }', 'package.json': '{ "devDependencies": { "facts-knip": "~6.0.0" } }' }
+
+  it('asks the npm registry and the website, and compares the versions with the fleet', async () => {
+    expect.hasAssertions()
+    stubWeb({ 'https://app.example.dev': 200, 'https://github.com': 200 })
+    const fleet = new Map([['facts-knip', new Map([['7.0.0', 3]])]])
+    const flags = await externalFlags(undefined, { files: memoryIo(files), fleet })
+    expect(flags.registry?.packages).toStrictEqual({ 'facts-knip': { latest: '6.1.0' } })
+    expect(flags.webStatus).toStrictEqual({ status: 200, url: 'https://app.example.dev' })
+    expect(flags.drift).toStrictEqual({ 'facts-knip': { common: '7.0.0', projects: 3 } })
+  })
+
+  it('asks the GitHub Pages of a repo that has some, when the project declares no website', async () => {
+    expect.hasAssertions()
+    stubWeb({ 'https://github.com': 200, 'https://owner.github.io/pages-app/': 503 })
+    const flags = await externalFlags({ hasPages: true, name: 'pages-app', owner: 'owner' } as never, { files: memoryIo({}) })
+    expect(flags.webStatus).toStrictEqual({ status: 503, url: 'https://owner.github.io/pages-app/' })
+    expect(flags.registry).toBeUndefined()
+    expect(flags.drift).toBeUndefined()
+  })
+
+  it('leaves out what the outside cannot say, and asks nothing for a project without website or dependencies', async () => {
+    expect.hasAssertions()
+    stubWeb({})
+    const flags = await externalFlags({ hasPages: false } as never, { files: memoryIo({ 'package.json': '{}' }) })
+    expect(Object.keys(flags)).not.toContain('registry')
+    expect(Object.keys(flags)).not.toContain('webStatus')
   })
 })
 

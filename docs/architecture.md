@@ -1,6 +1,6 @@
 # Architecture
 
-Status: built, except the checks of [checks.md](checks.md) still marked 📋. The scan, the checks (the ported file checks, the Sync checks, the git state of each clone, the GitHub presentation), the CLI report, the HTTP server, the web app (list and project view), the five Sync actions (Clone, Delete clone, Unarchive and push, Discard, Delete fork) and the file fixes exist, and the old code is removed.
+Status: built, every check of [checks.md](checks.md) is built. The scan, the checks (the ported file checks, the Sync checks, the git state of each clone, the GitHub presentation and activity, the npm registry), the CLI report, the HTTP server, the web app (list and project view), the five Sync actions (Clone, Delete clone, Unarchive and push, Discard, Delete fork) and the file fixes exist, and the old code is removed.
 
 ## Shape
 
