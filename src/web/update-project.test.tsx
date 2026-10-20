@@ -129,6 +129,67 @@ describe('update project', () => {
     await waitFor(() => expect(callsTo(fetchMock, '/message')).toHaveLength(1))
   })
 
+  it('sends the number of a numbered line of Claude when it is clicked', async () => {
+    expect.hasAssertions()
+    const fetchMock = await openUpdate([
+      { text: 'How to proceed?\n\n1. **Stop here**\n2. Run with bun', type: 'text' },
+      { isError: false, type: 'done' },
+    ])
+    fireEvent.click(await screen.findByTestId('choice-2'))
+    await waitFor(() => expect(callsTo(fetchMock, '/message')).toHaveLength(1))
+    expect(callsTo(fetchMock, '/message')[0]?.[1]).toStrictEqual({ body: JSON.stringify({ text: '2' }), headers: { 'x-repo-check': '1' }, method: 'POST' })
+  })
+
+  it('does not offer the numbered lines once answered or while Claude is working', async () => {
+    expect.hasAssertions()
+    await openUpdate([
+      { text: '1. one', type: 'text' },
+      { text: '1', type: 'user' },
+      { isError: false, type: 'done' },
+    ])
+    await waitFor(() => expect(screen.getByTestId('update-transcript').textContent).toContain('one'))
+    expect(screen.queryByTestId('choice-1')).toBeNull()
+  })
+
+  it('renders the markdown of Claude', async () => {
+    expect.hasAssertions()
+    const text = '# Title\n\n## Sub\n\n### Subsub\n\n**bold** and `code` and [a link](https://example.com)\n\n- first\n- second\n\n```ts\nconst a = 1\n```\n\n3. third\n4. fourth'
+    await openUpdate([
+      { text, type: 'text' },
+      { text: 'ok', type: 'user' },
+      { isError: false, type: 'done' },
+    ])
+    const transcript = await screen.findByTestId('update-transcript')
+    await waitFor(() => expect(transcript.querySelector('strong')?.textContent).toBe('bold'))
+    expect(transcript.querySelector('h3')?.textContent).toBe('Title')
+    expect(transcript.querySelector('a')?.getAttribute('href')).toBe('https://example.com')
+    expect(transcript.querySelectorAll('li')).toHaveLength(4)
+    expect(transcript.querySelector('pre code')?.textContent).toContain('const a = 1')
+    expect(transcript.querySelector('p code')?.textContent).toBe('code')
+  })
+
+  it('gives a paragraph made of a single bold text the spacing of a title', async () => {
+    expect.hasAssertions()
+    await openUpdate([
+      { text: '**Question: which one?**\n\nSome *detail*', type: 'text' },
+      { text: 'ok', type: 'user' },
+      { isError: false, type: 'done' },
+    ])
+    const title = await screen.findByText('Question: which one?')
+    expect(title.closest('p')?.className).toContain('mt-5')
+    expect(screen.getByText('detail').closest('p')?.className).not.toContain('mt-5')
+  })
+
+  it('numbers the clickable items from the start of the list', async () => {
+    expect.hasAssertions()
+    await openUpdate([
+      { text: '3. third\n4. fourth', type: 'text' },
+      { isError: false, type: 'done' },
+    ])
+    const choice = await screen.findByTestId('choice-4')
+    expect(choice.textContent).toContain('fourth')
+  })
+
   it('shows why a message was refused', async () => {
     expect.hasAssertions()
     const fetchMock = await openUpdate()

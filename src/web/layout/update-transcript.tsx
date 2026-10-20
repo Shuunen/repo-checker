@@ -15,12 +15,14 @@ export function UpdateTranscript({ chat }: Readonly<{ chat: ReturnType<typeof us
     invariant(transcript.current !== null, 'the effect runs once the transcript is shown')
     transcript.current.scrollTop = transcript.current.scrollHeight
   })
+  const lastSaid = chat.events.findLastIndex(event => event.type === 'text' || event.type === 'user')
+  const isAnswerable = !chat.isWorking && !chat.isEnded && chat.events[lastSaid]?.type === 'text'
   return (
     <>
       <div className="flex max-h-[55vh] min-h-48 flex-col gap-2 overflow-y-auto" data-testid="update-transcript" ref={transcript}>
         {chat.events.map((event, index) => (
           // oxlint-disable-next-line react/no-array-index-key -- the conversation only grows, an event keeps its place
-          <ChatMessage event={event} key={index} />
+          <ChatMessage event={event} key={index} onChoose={isAnswerable && index === lastSaid ? choice => void chat.handleSend(choice) : undefined} />
         ))}
         {chat.events.length === 0 && chat.error === undefined && <p className="text-sm text-muted">Starting Claude…</p>}
         {chat.isWorking && (

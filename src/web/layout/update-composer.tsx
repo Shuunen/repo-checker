@@ -19,7 +19,7 @@ export function UpdateComposer({ chat }: Readonly<{ chat: ReturnType<typeof useU
     <div className="flex items-end gap-2">
       <TextArea
         aria-label="Message for Claude"
-        className="flex-1"
+        className="flex-1 border border-border bg-default"
         data-testid="update-input"
         disabled={chat.isEnded}
         onChange={event => setDraft(event.target.value)}
@@ -28,7 +28,7 @@ export function UpdateComposer({ chat }: Readonly<{ chat: ReturnType<typeof useU
           event.preventDefault()
           handleSend()
         }}
-        placeholder="Answer Claude… (Enter sends, Shift+Enter adds a line)"
+        placeholder="Answer Claude…"
         rows={2}
         value={draft}
       />
