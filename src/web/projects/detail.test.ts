@@ -211,6 +211,7 @@ describe(dropQuietFacts, () => {
 describe(describePush, () => {
   it('says the age and the date of the last push', () => {
     expect.hasAssertions()
-    expect(describePush('2026-09-14T10:00:00Z', new Date('2026-10-14T00:00:00Z'))).toBe('last push 1 month ago (2026-09-14)')
+    expect(describePush('2026-09-14T10:00:00Z', new Date('2026-10-14T00:00:00Z'))).toBe('last push 4 weeks ago (2026-09-14)')
+    expect(describePush('2026-10-20T08:00:00Z', new Date('2026-10-20T10:00:00Z'))).toBe('last push 2 hours ago (2026-10-20)')
   })
 })

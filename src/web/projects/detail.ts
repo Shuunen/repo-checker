@@ -1,8 +1,8 @@
 import type { ActionKind } from '../../shared/action.ts'
 import type { ForkStatus, LocalClone, Project } from '../../shared/project.ts'
 import type { ScanFinding, Severity } from '../../shared/scan-event.ts'
+import { readableTimeAgo } from 'shuutils'
 import { plural } from '../../shared/text.ts'
-import { describeAge } from './age.ts'
 import { type PillColor, severityColor, severityRank } from './rows.ts'
 
 /** A small label under the project name */
@@ -288,8 +288,8 @@ export function dropQuietFacts(facts: readonly Fact[]) {
  * Say when a project was last pushed, as an age and the date
  * @param pushedAt the ISO date of the last push
  * @param now the date to count from
- * @returns like `last push 1 month ago (2026-09-14)`
+ * @returns like `last push 4 weeks ago (2026-09-14)`
  */
 export function describePush(pushedAt: string, now = new Date()) {
-  return `last push ${describeAge(pushedAt, now).label} (${pushedAt.slice(0, 'yyyy-mm-dd'.length)})`
+  return `last push ${readableTimeAgo(now.getTime() - new Date(pushedAt).getTime())} (${pushedAt.slice(0, 'yyyy-mm-dd'.length)})`
 }
