@@ -2,6 +2,7 @@ import type { ActionKind, ProjectAction } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
 import { ActionButton } from './action-button.tsx'
 import { ArchiveButton } from './archive-button.tsx'
+import { DeleteBranchesButton } from './delete-branches-button.tsx'
 import { DeleteProjectButton } from './delete-project-button.tsx'
 import { UpdateProjectButton } from './update-project-button.tsx'
 
@@ -16,6 +17,7 @@ import { UpdateProjectButton } from './update-project-button.tsx'
  */
 export function ChosenButton({ actions, chosen, project, target }: Readonly<{ actions: readonly ActionKind[]; chosen: ProjectAction | undefined; project: Project; target: string }>) {
   if (chosen === 'archive' || chosen === 'unarchive') return <ArchiveButton action={chosen} project={project} />
+  if (chosen === 'delete-branches') return <DeleteBranchesButton project={project} />
   if (chosen === 'delete-project') return <DeleteProjectButton project={project} />
   if (chosen === 'update-project') return <UpdateProjectButton project={project} />
   return chosen !== undefined && actions.includes(chosen) ? <ActionButton action={chosen} project={project} target={target} /> : undefined

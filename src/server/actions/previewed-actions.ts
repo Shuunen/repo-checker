@@ -1,6 +1,7 @@
 import type { SplitRules } from '../check-project.ts'
 import type { ActionOptions } from './action-options.ts'
 import type { Actions } from './actions-contract.ts'
+import { deleteLocalBranches, previewDeleteBranches } from './delete-branches.ts'
 import { deleteClone, previewDeleteClone } from './delete-clone.ts'
 import { deleteFork, previewDeleteFork } from './delete-fork.ts'
 import { deleteProject, previewDeleteProject } from './delete-project.ts'
@@ -8,8 +9,8 @@ import { discardClone, previewDiscard } from './discard.ts'
 import { fixFiles, previewFixFiles } from './fix-files.ts'
 import { fixGit, previewFixGit } from './fix-git.ts'
 
-/** The actions that show what they would do before they are confirmed: the delete of a clone, the delete of a fork, the delete of a whole project, the discard, the file fixes and the git fixes */
-export type PreviewedActions = Pick<Actions, 'deleteClone' | 'deleteFork' | 'deleteProject' | 'discard' | 'fixFiles' | 'fixGit' | 'previewDeleteClone' | 'previewDeleteFork' | 'previewDeleteProject' | 'previewDiscard' | 'previewFixFiles' | 'previewFixGit'>
+/** The actions that show what they would do before they are confirmed: the delete of the local branches, the delete of a clone, the delete of a fork, the delete of a whole project, the discard, the file fixes and the git fixes */
+export type PreviewedActions = Pick<Actions, 'deleteBranches' | 'deleteClone' | 'deleteFork' | 'deleteProject' | 'discard' | 'fixFiles' | 'fixGit' | 'previewDeleteBranches' | 'previewDeleteClone' | 'previewDeleteFork' | 'previewDeleteProject' | 'previewDiscard' | 'previewFixFiles' | 'previewFixGit'>
 
 /**
  * Build the actions that show what they would do first, each one proves again before it acts
@@ -20,12 +21,14 @@ export type PreviewedActions = Pick<Actions, 'deleteClone' | 'deleteFork' | 'del
  */
 export function createPreviewedActions(options: (name: string) => Promise<ActionOptions>, rules: SplitRules): PreviewedActions {
   return {
+    deleteBranches: async (name, fingerprint) => deleteLocalBranches({ ...(await options(name)), fingerprint }),
     deleteClone: async name => deleteClone(await options(name)),
     deleteFork: async name => deleteFork(await options(name)),
     deleteProject: async name => deleteProject(await options(name)),
     discard: async (name, fingerprint) => discardClone({ ...(await options(name)), fingerprint }),
     fixFiles: async (name, fingerprint, run = {}) => fixFiles({ ...(await options(name)), ...run, fingerprint, rules }),
     fixGit: async (name, fingerprint) => fixGit({ ...(await options(name)), fingerprint }),
+    previewDeleteBranches: async name => previewDeleteBranches(await options(name)),
     previewDeleteClone: async name => previewDeleteClone(await options(name)),
     previewDeleteFork: async name => previewDeleteFork(await options(name)),
     previewDeleteProject: async name => previewDeleteProject(await options(name)),

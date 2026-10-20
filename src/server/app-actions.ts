@@ -39,7 +39,7 @@ function stream(run: (onStage: (stage: FixStage) => void) => Promise<ActionResul
 }
 
 /**
- * The routes of the fixes: the files, then the git issues
+ * The routes of the fixes: the files, the local branches to delete, then the git issues
  * @param actions the actions
  * @returns the routes
  */
@@ -51,6 +51,8 @@ function fixRoutes(actions: Actions) {
       if (context.req.query('commit') !== 'true') return reply(context, await actions.fixFiles(name, fingerprint))
       return stream(onStage => actions.fixFiles(name, fingerprint, { commit: true, onStage }))
     })
+    .get('/api/projects/:name/delete-branches', async context => reply(context, await actions.previewDeleteBranches(context.req.param('name'))))
+    .post('/api/projects/:name/delete-branches', async context => reply(context, await actions.deleteBranches(context.req.param('name'), context.req.query('fingerprint') ?? '')))
     .get('/api/projects/:name/fix-git', async context => reply(context, await actions.previewFixGit(context.req.param('name'))))
     .post('/api/projects/:name/fix-git', async context => reply(context, await actions.fixGit(context.req.param('name'), context.req.query('fingerprint') ?? '')))
 }

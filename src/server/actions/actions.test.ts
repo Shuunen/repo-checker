@@ -14,12 +14,14 @@ describe(createPreviewedActions, () => {
     const options = vi.fn<(name: string) => Promise<ActionOptions>>(name => Promise.resolve({ gh: vi.fn<GhRunner>(), git: { readClone: vi.fn<GitReaders['readClone']>(), readClones: vi.fn<GitReaders['readClones']>() }, name, owner: 'Owner', target: '/nowhere' }))
     const actions = createPreviewedActions(options, rules)
     const results = await Promise.all([
+      actions.deleteBranches(badName, 'f'),
       actions.deleteClone(badName),
       actions.deleteFork(badName),
       actions.deleteProject(badName),
       actions.discard(badName, 'f'),
       actions.fixFiles(badName, 'f'),
       actions.fixGit(badName, 'f'),
+      actions.previewDeleteBranches(badName),
       actions.previewDeleteClone(badName),
       actions.previewDeleteFork(badName),
       actions.previewDeleteProject(badName),
@@ -28,7 +30,7 @@ describe(createPreviewedActions, () => {
       actions.previewFixGit(badName),
     ])
     expect(results.every(result => !result.ok)).toBe(true)
-    expect(options).toHaveBeenCalledTimes(12)
+    expect(options).toHaveBeenCalledTimes(14)
   })
 })
 

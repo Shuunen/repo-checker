@@ -14,6 +14,8 @@ interface FixGitOptions extends ActionOptions {
 
 /** What the git fixes would do */
 interface GitPlan {
+  /** The local branches, not checked out, that are only behind their upstream: moved forward without checkout */
+  fastForward: string[]
   /** The local branches to delete: the ones without upstream and the merged ones, all deleted even when git finds work in them that is not merged */
   branches: string[]
   /** The default branch to pull, undefined when there is nothing to pull */
@@ -32,7 +34,7 @@ interface GitPlan {
  * @param options.target the folder of projects
  * @returns the repo and the clone, or the reason to refuse
  */
-async function proveClone({ gh, git, name, owner, target }: Readonly<ActionOptions>): Promise<{ clone: LocalClone; repo: GithubRepo } | { reason: string }> {
+export async function proveClone({ gh, git, name, owner, target }: Readonly<ActionOptions>): Promise<{ clone: LocalClone; repo: GithubRepo } | { reason: string }> {
   if (!isRepoName(name)) return { reason: `${name} is not a repo name` }
   const single = await checkFolderOfProjects(target)
   if (single !== undefined) return { reason: single }
@@ -50,7 +52,7 @@ async function proveClone({ gh, git, name, owner, target }: Readonly<ActionOptio
 }
 
 /**
- * Plan the git fixes: the local branches without upstream or already merged into the default branch (never the checked out one nor the default one), the stashes, and a pull of the default branch when it is checked out, behind its remote, and has no uncommitted file
+ * Plan the git fixes: the other branches only behind their upstream moved forward, the local branches without upstream or already merged into the default branch (never the checked out one nor the default one), the stashes, and a pull of the default branch when it is checked out, behind its remote, and has no uncommitted file
  * @param clone the clone
  * @param repo the repo
  * @returns the plan
@@ -59,7 +61,8 @@ function planOf(clone: Readonly<LocalClone>, repo: Readonly<GithubRepo>): GitPla
   const isPullable = clone.currentBranch === repo.defaultBranch && clone.changedFiles.length === 0 && clone.branches.some(branch => branch.name === clone.currentBranch && branch.behind > 0 && !branch.isGone)
   const merged = clone.branches.filter(branch => branch.isMerged === true && branch.name !== repo.defaultBranch).map(branch => branch.name)
   const branches = [...new Set([...clone.localOnlyBranches, ...merged])].filter(branch => branch !== clone.currentBranch)
-  return { branches, pull: isPullable ? repo.defaultBranch : undefined, stashes: clone.stashes }
+  const fastForward = clone.branches.filter(branch => branch.name !== clone.currentBranch && branch.upstream !== undefined && branch.behind > 0 && branch.ahead === 0 && !branch.isGone && !branches.includes(branch.name)).map(branch => branch.name)
+  return { branches, fastForward, pull: isPullable ? repo.defaultBranch : undefined, stashes: clone.stashes }
 }
 
 /**
@@ -82,7 +85,7 @@ export async function previewFixGit(options: Readonly<ActionOptions>): Promise<G
     const proof = await proveClone(options)
     if ('reason' in proof) return { ok: false, reason: proof.reason }
     const plan = planOf(proof.clone, proof.repo)
-    if (plan.branches.length === 0 && plan.pull === undefined && plan.stashes.length === 0) return { ok: false, reason: 'there is no git issue to fix in this clone' }
+    if (plan.branches.length === 0 && plan.fastForward.length === 0 && plan.pull === undefined && plan.stashes.length === 0) return { ok: false, reason: 'there is no git issue to fix in this clone' }
     return { ...plan, fingerprint: fingerprintOf(plan), ok: true, path: proof.clone.path }
   } catch (error) {
     return { ok: false, reason: error instanceof Error ? error.message : String(error) }
@@ -116,7 +119,23 @@ async function deleteBranches(clone: Readonly<LocalClone>, branches: readonly st
 }
 
 /**
- * Run the plan: pull first, so nothing is deleted when it fails, then drop the stashes, then delete the branches
+ * Move the branches that are not checked out forward to their upstream, git refuses it unless it is a fast forward
+ * @param clone the clone
+ * @param branches the branches
+ * @param runGit runs git
+ * @returns the failures
+ */
+async function fastForwardBranches(clone: Readonly<LocalClone>, branches: readonly string[], runGit: NonNullable<FixGitOptions['runGit']>): Promise<string[]> {
+  const [branch, ...rest] = clone.branches.filter(item => branches.includes(item.name))
+  if (branch === undefined) return []
+  const upstream = String(branch.upstream)
+  const slash = upstream.indexOf('/')
+  const { ok, stderr } = await runGit(['fetch', upstream.slice(0, slash), `${upstream.slice(slash + 1)}:${branch.name}`], clone.path)
+  return [...(ok ? [] : [`${branch.name}: ${stderr.trim()}`]), ...(await fastForwardBranches({ ...clone, branches: rest }, branches, runGit))]
+}
+
+/**
+ * Run the plan: pull first, so nothing is deleted when it fails, then move the other branches forward, drop the stashes, then delete the branches
  * @param clone the clone
  * @param plan the plan
  * @param runGit runs git
@@ -127,6 +146,8 @@ async function applyPlan(clone: Readonly<LocalClone>, plan: Readonly<GitPlan>, r
     const pulled = await runGit(['pull', '--ff-only'], clone.path)
     if (!pulled.ok) return `git pull failed: ${pulled.stderr.trim()}, nothing else was changed`
   }
+  const stuck = await fastForwardBranches(clone, plan.fastForward, runGit)
+  if (stuck.length > 0) return `these branches could not be moved forward: ${stuck.join(' | ')}, nothing else was changed`
   const cleared = plan.stashes.length > 0 && (await runGit(['stash', 'clear'], clone.path))
   if (cleared !== false && !cleared.ok) return `git stash clear failed: ${cleared.stderr.trim()}`
   const failures = await deleteBranches(clone, plan.branches, runGit)

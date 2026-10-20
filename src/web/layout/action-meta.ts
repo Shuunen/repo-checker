@@ -1,4 +1,4 @@
-import { Archive, ArchiveRestore, ArrowRightToLine, ArrowUpToLine, Download, FolderMinus, GitBranch, GitFork, PackageCheck, Trash2, Undo2, type LucideIcon } from 'lucide-react'
+import { Archive, ArchiveRestore, ArrowRightToLine, ArrowUpToLine, Download, FolderMinus, Eraser, GitBranch, GitFork, PackageCheck, Trash2, Undo2, type LucideIcon } from 'lucide-react'
 import type { ProjectAction } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
 
@@ -22,6 +22,7 @@ export function actionMeta(action: ProjectAction, project: Readonly<Project>): A
     archive: { icon: Archive, label: 'Archive on GitHub' },
     'checkout-default': { icon: GitBranch, label: `Checkout ${project.github?.defaultBranch ?? 'default'} branch` },
     clone: { icon: Download, label: 'Clone the repo' },
+    'delete-branches': { icon: Eraser, label: 'Delete local branches' },
     'delete-clone': { icon: FolderMinus, label: 'Delete the local clone' },
     'delete-fork': { icon: GitFork, label: 'Delete the fork on GitHub' },
     'delete-project': { icon: Trash2, label: 'Delete project' },

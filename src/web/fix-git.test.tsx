@@ -11,7 +11,7 @@ const events = (findings = [stash]): ScanEvent[] => [
   { result: aProject('app', findings), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]
-const gitPreview: GitFixPreview = { branches: ['old'], fingerprint: 'def', ok: true, path: '/projects/app', pull: 'master', stashes: ['stash@{0}: WIP'] }
+const gitPreview: GitFixPreview = { branches: ['old'], fastForward: [], fingerprint: 'def', ok: true, path: '/projects/app', pull: 'master', stashes: ['stash@{0}: WIP'] }
 const filesPreview: FixPreview = { fingerprint: 'abc', installs: [], merged: [], ok: true, path: '/projects/app', plans: [{ after: 'b', before: 'a', file: 'package.json' }] }
 
 /**
@@ -69,7 +69,7 @@ describe('fix git', () => {
 
   it('shows only what there is to do', async () => {
     expect.hasAssertions()
-    stubRoutes(undefined, Response.json({ ...gitPreview, branches: [], pull: undefined, stashes: [] }))
+    stubRoutes(undefined, Response.json({ ...gitPreview, branches: [], fastForward: [], pull: undefined, stashes: [] }))
     renderApp(scanRequest(events()), '/project/app')
     fireEvent.click(await screen.findByTestId('action-fix-git'))
     await screen.findByTestId('fix-git-preview')

@@ -60,7 +60,7 @@ describe('fix git', () => {
     expect.hasAssertions()
     const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/app/fix-git')
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toStrictEqual({ branches: ['old'], fingerprint: 'def', ok: true, path: '/projects/app', pull: 'master', stashes: ['stash@{0}: WIP'] })
+    await expect(response.json()).resolves.toStrictEqual({ branches: ['old'], fastForward: [], fingerprint: 'def', ok: true, path: '/projects/app', pull: 'master', stashes: ['stash@{0}: WIP'] })
   })
 
   it.each([
@@ -72,5 +72,27 @@ describe('fix git', () => {
     const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, fixGit }).request(`http://127.0.0.1/api/projects/app/fix-git${query}`, post)
     expect(response.status).toBe(200)
     expect(fixGit).toHaveBeenCalledWith('app', fingerprint)
+  })
+})
+
+describe('delete branches', () => {
+  const post = { headers: { 'x-repo-check': '1' }, method: 'POST' }
+
+  it('lists the local branches that would be deleted, with the fingerprint of the list', async () => {
+    expect.hasAssertions()
+    const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/app/delete-branches')
+    expect(response.status).toBe(200)
+    await expect(response.json()).resolves.toStrictEqual({ branches: ['old'], fingerprint: 'ghi', ok: true, path: '/projects/app' })
+  })
+
+  it.each([
+    ['?fingerprint=ghi', 'ghi'],
+    ['', ''],
+  ])('deletes with the fingerprint of the query %s', async (query, fingerprint) => {
+    expect.hasAssertions()
+    const deleteBranches = vi.fn<Actions['deleteBranches']>(() => Promise.resolve({ message: 'deleted', ok: true }))
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, deleteBranches }).request(`http://127.0.0.1/api/projects/app/delete-branches${query}`, post)
+    expect(response.status).toBe(200)
+    expect(deleteBranches).toHaveBeenCalledWith('app', fingerprint)
   })
 })

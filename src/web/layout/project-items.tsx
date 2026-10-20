@@ -1,13 +1,13 @@
 import { ArrowRight, ExternalLink } from 'lucide-react'
 import type { ActionKind } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
-import { canUpdate } from '../projects/can-update.ts'
+import { canDeleteBranches, canUpdate } from '../projects/can-update.ts'
 import { ActionItem } from './action-item.tsx'
 import { ArchiveItem } from './archive-item.tsx'
 import { LinkItem } from './link-item.tsx'
 
 /**
- * The first items of the menu: Open project, Open on GitHub, one item per action, Update project and Archive on GitHub or Unarchive on GitHub
+ * The first items of the menu: Open project, Open on GitHub, one item per action, Delete local branches, Update project and Archive on GitHub or Unarchive on GitHub
  * @param props the props
  * @param props.actions the actions the project offers
  * @param props.project the project
@@ -21,6 +21,7 @@ export function ProjectItems({ actions, project }: Readonly<{ actions: readonly 
       {actions.map(action => (
         <ActionItem action={action} key={action} project={project} />
       ))}
+      {canDeleteBranches(project) && <ActionItem action="delete-branches" project={project} />}
       {canUpdate(project) && <ActionItem action="update-project" project={project} />}
       {!actions.includes('archive') && <ArchiveItem project={project} />}
     </>

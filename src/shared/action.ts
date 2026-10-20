@@ -24,7 +24,7 @@ export type ActionKind =
   | 'unarchive-push-rearchive'
 
 /** An action every project can offer, whatever the findings say: it is not tied to a Sync finding */
-type StandaloneAction = 'delete-project' | 'unarchive' | 'update-project'
+type StandaloneAction = 'delete-branches' | 'delete-project' | 'unarchive' | 'update-project'
 
 /** Everything the Actions menu of a project can hold */
 export type ProjectAction = ActionKind | StandaloneAction
@@ -71,5 +71,8 @@ export interface FixPlan {
 /** What applying the file fixes of a project would change, read fresh when the dialog opens: the fingerprint of that plan is sent back with the confirmation, and the fix is refused when the plan is not the same any more. A file with uncommitted changes gets the fix merged into those changes, it is listed in `merged` and is not part of the automatic commit. `installs` are the dev dependencies installed with the package manager of the project once the files are written */
 export type FixPreview = { fingerprint: string; installs: string[]; merged: string[]; ok: true; path: string; plans: FixPlan[] } | { ok: false; reason: string }
 
+/** What deleting the local branches would do, read fresh from the clone when the dialog opens: the fingerprint of the list is sent back with the confirmation, and the delete is refused when the list is not the same any more */
+export type DeleteBranchesPreview = { branches: string[]; fingerprint: string; ok: true; path: string } | { ok: false; reason: string }
+
 /** What the git fixes of a project would do, read fresh from the clone when the dialog opens: the fingerprint of that plan is sent back with the confirmation, and the fix is refused when the plan is not the same any more */
-export type GitFixPreview = { branches: string[]; fingerprint: string; ok: true; path: string; pull: string | undefined; stashes: string[] } | { ok: false; reason: string }
+export type GitFixPreview = { branches: string[]; fastForward: string[]; fingerprint: string; ok: true; path: string; pull: string | undefined; stashes: string[] } | { ok: false; reason: string }

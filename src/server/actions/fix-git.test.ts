@@ -64,6 +64,12 @@ describe(previewFixGit, () => {
     expect(preview).toMatchObject({ branches: ['merged', 'wip'], ok: true, path: '/projects/finga', pull: 'master', stashes: ['stash@{0}: WIP'] })
   })
 
+  it('plans the other branches that are only behind their upstream', async () => {
+    expect.hasAssertions()
+    const clone = aClone({ branches: [aBranch(), aBranch({ behind: 3, name: 'savers', upstream: 'origin/savers' }), aBranch({ ahead: 1, behind: 1, name: 'diverged' }), aBranch({ behind: 1, isGone: true, name: 'gone' })] })
+    await expect(previewOf(clone)).resolves.toMatchObject({ fastForward: ['savers'], ok: true })
+  })
+
   it('plans the merged branches too, but never the default branch nor the checked out one', async () => {
     expect.hasAssertions()
     const clone = aClone({ branches: [aBranch({ isMerged: true }), aBranch({ isMerged: true, name: 'done' }), aBranch({ isMerged: true, name: 'current' }), aBranch({ isMerged: false, name: 'open' })], currentBranch: 'current', localOnlyBranches: ['done'] })
@@ -132,6 +138,16 @@ describe(fixGit, () => {
     const runGit = fakeGit()
     await expect(fixOf(messy, runGit)).resolves.toStrictEqual({ message: 'fixed the git issues of /projects/finga', ok: true })
     expect(runGit.mock.calls.map(([args]) => args.join(' '))).toStrictEqual(['pull --ff-only', 'stash clear', 'branch -D -- merged', 'branch -D -- wip'])
+  })
+
+  it('moves the other behind branches forward without checkout, and stops when git refuses', async () => {
+    expect.hasAssertions()
+    const clone = aClone({ branches: [aBranch(), aBranch({ behind: 3, name: 'savers', upstream: 'origin/team/savers' })] })
+    const runGit = fakeGit()
+    await expect(fixOf(clone, runGit)).resolves.toStrictEqual({ message: 'fixed the git issues of /projects/finga', ok: true })
+    expect(runGit.mock.calls.map(([args]) => args.join(' '))).toStrictEqual(['fetch origin team/savers:savers'])
+    const refused = await fixOf(clone, fakeGit('fetch'))
+    expect(refused).toMatchObject({ ok: false, reason: expect.stringContaining('could not be moved forward: savers: boom') as string })
   })
 
   it('does nothing it was not asked', async () => {

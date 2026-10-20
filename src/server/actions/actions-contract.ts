@@ -1,4 +1,4 @@
-import type { ActionResult, DeletePreview, DiscardPreview, FixPreview, FixStage, GitFixPreview, ForkDeletePreview, MetadataPreview, MetadataValues, ProjectDeletePreview } from '../../shared/action.ts'
+import type { ActionResult, DeleteBranchesPreview, DeletePreview, DiscardPreview, FixPreview, FixStage, GitFixPreview, ForkDeletePreview, MetadataPreview, MetadataValues, ProjectDeletePreview } from '../../shared/action.ts'
 import type { ChatEvent } from '../../shared/claude.ts'
 import type { LiveResult, RescanResult } from '../../shared/scan-event.ts'
 
@@ -26,6 +26,10 @@ export interface Actions {
   live: (name: string, since: string) => Promise<LiveResult>
   /** Say what deleting that clone would remove, the files git ignores, or why it is refused */
   previewDeleteClone: (name: string) => Promise<DeletePreview>
+  /** Delete the local branches but the default one and the checked out one, refused unless the list is the one the fingerprint stands for */
+  deleteBranches: (name: string, fingerprint: string) => Promise<ActionResult>
+  /** Say which local branches would be deleted, with the fingerprint of that list */
+  previewDeleteBranches: (name: string) => Promise<DeleteBranchesPreview>
   /** Delete a pristine fork on GitHub, and its clean local clone if it has one */
   deleteFork: (name: string) => Promise<ActionResult>
   /** Delete a project for good: its repo on GitHub and its local clone, whatever they hold */
