@@ -96,6 +96,65 @@ async function commitIfAsked(options: Readonly<ApplyOptions>, plan: Readonly<Pla
   return failure === undefined ? {} : { failure }
 }
 
+/** The most plans written after the confirmed one, a safety net against installs that keep making new fixes apply */
+const maxFollowUps = 3
+
+/**
+ * Write a plan then install its dev dependencies
+ * @param options what to fix
+ * @param plan the plan to write
+ * @param onStage called when the fix enters a step
+ * @returns the reason the install failed, undefined when it worked
+ */
+async function writePlan(options: Readonly<ApplyOptions>, plan: Readonly<Plan>, onStage: (stage: FixStage) => void) {
+  onStage('writing')
+  await Promise.all(plan.fixable.map(item => plan.io.writeText(item.file, item.after)))
+  if (plan.installs.length > 0) onStage('installing')
+  const installed = plan.installs.length === 0 ? undefined : await (options.install ?? realInstall)(plan.clone.path, plan.installs)
+  return installed?.ok === false ? `the files were written but installing ${plan.installs.join(', ')} failed: ${installed.stderr.trim()}` : undefined
+}
+
+/** What the rounds of `applyRounds` gathered */
+interface Applied {
+  /** The files written */
+  files: string[]
+  /** The dev dependencies installed */
+  installs: string[]
+}
+
+/** The options of `applyRounds` */
+interface RoundsOptions {
+  /** What the previous plans wrote and installed */
+  applied: Readonly<Applied>
+  /** The plans left to write after this one */
+  left: number
+  /** What to fix */
+  options: Readonly<ApplyOptions>
+  /** Called when the fix enters a step */
+  onStage: (stage: FixStage) => void
+  /** The plan to write */
+  plan: Readonly<Plan>
+}
+
+/**
+ * Write a plan, then keep fixing what the install made fixable: a new dev dependency lands in the files only once installed, so the rules that depend on it can only be planned after
+ * @param roundsOptions the options
+ * @param roundsOptions.applied what the previous plans wrote and installed
+ * @param roundsOptions.left the plans left to write after this one
+ * @param roundsOptions.options what to fix
+ * @param roundsOptions.onStage called when the fix enters a step
+ * @param roundsOptions.plan the plan to write
+ * @returns the files written and the dependencies installed by all the plans, or the reason one failed
+ */
+async function applyRounds({ applied, left, options, onStage, plan }: Readonly<RoundsOptions>): Promise<Applied | { reason: string }> {
+  const reason = await writePlan(options, plan, onStage)
+  if (reason !== undefined) return { reason }
+  const total = { files: [...new Set([...applied.files, ...plan.fixable.map(item => item.file)])], installs: [...new Set([...applied.installs, ...plan.installs])] }
+  if (plan.installs.length === 0 || left === 0) return total
+  const next = await planOf(options)
+  return 'reason' in next ? total : applyRounds({ applied: total, left: left - 1, onStage, options, plan: next })
+}
+
 /**
  * Apply the file fixes of a project: the plan is made again from the files as they are now and refused unless it is exactly the plan the user confirmed, then each file is written and the checks run again to say what is left. A file with uncommitted changes gets the fix merged into those changes, and is left out of the commit. Nothing is committed unless asked: git shows the change and can undo it
  * @param options what to fix, with the fingerprint of the confirmed plan
@@ -108,17 +167,15 @@ export async function fixFiles(options: Readonly<ApplyOptions>): Promise<ActionR
     const plan = await planOf(options)
     if ('reason' in plan) return { ok: false, reason: plan.reason }
     if (plan.fixable.length === 0 || fingerprintOf(plan.fixable, plan.installs) !== options.fingerprint) return { ok: false, reason: 'the fixes are not what the dialog listed any more, nothing was written, open the dialog again' }
-    onStage('writing')
-    await Promise.all(plan.fixable.map(item => plan.io.writeText(item.file, item.after)))
-    if (plan.installs.length > 0) onStage('installing')
-    const installed = plan.installs.length === 0 ? undefined : await (options.install ?? realInstall)(plan.clone.path, plan.installs)
-    if (installed?.ok === false) return { ok: false, reason: `the files were written but installing ${plan.installs.join(', ')} failed: ${installed.stderr.trim()}` }
+    const applied = await applyRounds({ applied: { files: [], installs: [] }, left: maxFollowUps, onStage, options, plan })
+    if ('reason' in applied) return { ok: false, reason: applied.reason }
+    const { files, installs } = applied
     const { blocked: commitBlocked, failure } = await commitIfAsked(options, plan, onStage)
     if (failure !== undefined) return { ok: false, reason: `the files were written but ${failure}` }
     const { findings } = await checkProject(options.rules.fileRules, await buildContext(diskIo(plan.clone.path), plan.flags))
     const left = findings.filter(finding => finding.edits.length > 0).length
     return {
-      message: `fixed ${plural(plan.fixable.length, 'file')} (${plan.fixable.map(item => item.file).join(', ')})${plan.installs.length === 0 ? '' : `, installed ${plan.installs.join(', ')}`}, ${left === 0 ? 'no fix left' : `${plural(left, 'finding')} left with a fix`}, ${commitSummary(options.commit === true, commitBlocked)}${mergedSummary(plan.merged, options.commit === true)}`,
+      message: `fixed ${plural(files.length, 'file')} (${files.join(', ')})${installs.length === 0 ? '' : `, installed ${installs.join(', ')}`}, ${left === 0 ? 'no fix left' : `${plural(left, 'finding')} left with a fix`}, ${commitSummary(options.commit === true, commitBlocked)}${mergedSummary(plan.merged, options.commit === true)}`,
       ok: true,
       ...(commitBlocked === undefined ? {} : { commitBlocked }),
     }

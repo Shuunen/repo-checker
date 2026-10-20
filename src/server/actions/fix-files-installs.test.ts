@@ -17,6 +17,15 @@ const wantTool = defineRule({
   },
   meta: { fixable: true, id: 'want-tool', messages: { missing: 'no tool' }, severity: 'warning' },
 })
+/** Thanks the tool once it is installed: a fix on `b.txt` that only applies when `installed.txt` exists */
+const thanksTool = defineRule({
+  async check({ files, report }) {
+    const installed = await files.readText('installed.txt')
+    const text = await files.readText('b.txt')
+    if (installed !== undefined && text === undefined) report({ fix: fixer => fixer.text('b.txt', () => 'thanks knip'), messageId: 'missing' })
+  },
+  meta: { fixable: true, id: 'thanks-tool', messages: { missing: 'no thanks' }, severity: 'warning' },
+})
 const rules = splitRules([wantTool])
 const gh = vi.fn<GhRunner>()
 const fine = { ok: true, stderr: '', stdout: '' }
@@ -76,6 +85,21 @@ describe('installs', () => {
     const result = await fixFiles({ ...options, fingerprint: preview.fingerprint, install })
     expect(result).toStrictEqual({ ok: false, reason: 'the files were written but installing knip failed: ERR_PNPM_FETCH_404' })
     await expect(readFile(path.join(folder, 'a.txt'), 'utf8')).resolves.toBe('tooled a')
+  })
+
+  it('fixes again what the install made fixable, like a rule that reads the installed dependency', async () => {
+    expect.hasAssertions()
+    const { folder, options } = await makeWorkspace()
+    const preview = await previewFixFiles({ ...options, rules: splitRules([wantTool, thanksTool]) })
+    invariant(preview.ok, 'the preview is fine')
+    expect(preview.plans.map(plan => plan.file)).toStrictEqual(['a.txt'])
+    const install = vi.fn<Installer>(async () => {
+      await writeFile(path.join(folder, 'installed.txt'), 'knip')
+      return fine
+    })
+    const result = await fixFiles({ ...options, fingerprint: preview.fingerprint, install, rules: splitRules([wantTool, thanksTool]) })
+    expect(result).toMatchObject({ message: expect.stringContaining('fixed 2 files (a.txt, b.txt), installed knip, no fix left'), ok: true })
+    await expect(readFile(path.join(folder, 'b.txt'), 'utf8')).resolves.toBe('thanks knip')
   })
 
   it('still offers the installs of a fix whose file has uncommitted changes', async () => {
