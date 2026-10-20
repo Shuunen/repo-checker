@@ -19,7 +19,7 @@ export const archivedWithUnsavedWork = defineProjectRule({
     const work = unsavedWork(local).join(', ')
     if (work === '') return
     if (local.fetchFailed) report({ data: { work }, messageId: 'unsavedNoFetch' })
-    else report({ actions: ['unarchive-push-rearchive', 'discard'], data: { work }, messageId: 'unsaved' })
+    else report({ actions: ['unarchive-push', 'discard'], data: { work }, messageId: 'unsaved' })
   },
   meta: {
     id: 'archived-with-unsaved-work',

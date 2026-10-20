@@ -1,12 +1,11 @@
-import { createHash } from 'node:crypto'
-import path from 'node:path'
+import { fingerprintOf } from './fingerprint.ts'
 import type { FixPlan, FixStage } from '../../shared/action.ts'
 import type { LocalClone } from '../../shared/project.ts'
 import type { SplitRules } from '../check-project.ts'
 import { diskIo, type Io } from '../engine/io.ts'
 import { planAllFixes } from '../engine/runner.ts'
 import type { ActionOptions } from './action-options.ts'
-import { exists, isRepoName, repoFlags } from './guards.ts'
+import { repoFlags } from './guards.ts'
 
 /** What fixing the files of a project needs */
 export interface FixOptions extends ActionOptions {
@@ -71,10 +70,10 @@ export function changedPaths(lines: readonly string[]) {
  * @returns the clone, or the reason there is none
  */
 export async function findClone({ git, name, owner, target }: Readonly<ActionOptions>): Promise<{ clone: LocalClone } | { reason: string }> {
-  const clones = (await exists(path.join(target, '.git'))) ? [await git.readClone(target, { shouldFetch: false })] : await git.readClones(target, { shouldFetch: false })
   const prefix = `${owner.toLowerCase()}/`
-  const clone = clones.find(item => item.problem === undefined && (item.slug === `${prefix}${name}`.toLowerCase() || (item.folderName === name && item.slug?.startsWith(prefix) === true)))
-  return clone === undefined ? { reason: `no clone of ${owner}/${name} that holds files to fix in ${target}` } : { clone }
+  const clones = await git.listClones(target)
+  const found = clones.find(item => item.problem === undefined && (item.slug === `${prefix}${name}`.toLowerCase() || (item.folderName === name && item.slug?.startsWith(prefix) === true)))
+  return found === undefined ? { reason: `no clone of ${owner}/${name} that holds files to fix in ${target}` } : { clone: await git.readClone(found.path, { shouldFetch: false }) }
 }
 
 /**
@@ -83,7 +82,6 @@ export async function findClone({ git, name, owner, target }: Readonly<ActionOpt
  * @returns the plan, or the reason there is nothing to do
  */
 export async function planOf(options: Readonly<FixOptions>): Promise<Plan | { reason: string }> {
-  if (!isRepoName(options.name)) return { reason: `${options.name} is not a repo name` }
   const found = await findClone(options)
   if ('reason' in found) return found
   const io = diskIo(found.clone.path)
@@ -101,8 +99,6 @@ export async function planOf(options: Readonly<FixOptions>): Promise<Plan | { re
  * @param installs the dev dependencies to install
  * @returns a hash of the plan
  */
-export function fingerprintOf(plans: readonly FixPlan[], installs: readonly string[]) {
-  return createHash('sha256')
-    .update(JSON.stringify([plans.map(plan => [plan.file, plan.before, plan.after]), installs]))
-    .digest('hex')
+export function planFingerprint(plans: readonly FixPlan[], installs: readonly string[]) {
+  return fingerprintOf([plans.map(plan => [plan.file, plan.before, plan.after]), installs])
 }

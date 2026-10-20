@@ -1,10 +1,9 @@
-import type { ActionResult } from '../../shared/action.ts'
+import { type ActionResult, attempt, refused } from '../../shared/action.ts'
 import { spawnClaude } from './claude-process.ts'
 import { type ChatListener, type ClaudeSessions, createClaudeSessions } from './claude-session.ts'
 import type { ActionOptions } from './action-options.ts'
 import type { Actions } from './actions-contract.ts'
 import { findClone } from './fix-plan.ts'
-import { isRepoName } from './guards.ts'
 
 /** The actions of the update with Claude, and the way to stop every session when the server stops */
 export type UpdateActions = Pick<Actions, 'closeUpdateProject' | 'sendUpdateMessage' | 'startUpdateProject' | 'stopSessions' | 'watchUpdateProject'>
@@ -16,14 +15,11 @@ export type UpdateActions = Pick<Actions, 'closeUpdateProject' | 'sendUpdateMess
  * @returns the result, refused with the reason when there is no usable clone or a session already runs
  * @example const result = await startUpdateProject({ gh: ghCli, git: realGit, name: 'finga', owner: 'Shuunen', target }, sessions)
  */
-export async function startUpdateProject(options: Readonly<ActionOptions>, sessions: ClaudeSessions): Promise<ActionResult> {
-  try {
-    if (!isRepoName(options.name)) return { ok: false, reason: `${options.name} is not a repo name` }
+export function startUpdateProject(options: Readonly<ActionOptions>, sessions: ClaudeSessions): Promise<ActionResult> {
+  return attempt(async () => {
     const found = await findClone(options)
-    return 'reason' in found ? { ok: false, reason: found.reason } : sessions.start(options.name, found.clone.path)
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+    return 'reason' in found ? refused(found.reason) : sessions.start(options.name, found.clone.path)
+  })
 }
 
 /**

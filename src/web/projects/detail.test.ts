@@ -148,7 +148,7 @@ describe(findingGroups, () => {
 describe(offeredActions, () => {
   it('lists each action once', () => {
     expect.hasAssertions()
-    expect(offeredActions([aFinding({ actions: ['unarchive-push-rearchive', 'discard'] }), aFinding({ actions: ['discard'] }), aFinding()])).toStrictEqual(['unarchive-push-rearchive', 'discard'])
+    expect(offeredActions([aFinding({ actions: ['unarchive-push', 'discard'] }), aFinding({ actions: ['discard'] }), aFinding()])).toStrictEqual(['unarchive-push', 'discard'])
   })
 })
 

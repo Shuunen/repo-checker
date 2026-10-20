@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process'
 import { createInterface } from 'node:readline'
+import { noop } from 'es-toolkit'
 import type { SpawnClaude } from './claude-session.ts'
 
 /** What `claude` is started with: no screen, the messages come as JSON lines on its input and everything it does goes out as JSON lines. What would ask a permission is refused, the update skill brings the tools it needs, and the question tool is off since its menu can not be shown here, Claude asks in plain text */
@@ -17,7 +18,7 @@ const args = ['--print', '--input-format', 'stream-json', '--output-format', 'st
 export const spawnClaude: SpawnClaude = (cwd, { onExit, onLine }) => {
   const child = spawn('claude', args, { cwd, stdio: ['pipe', 'pipe', 'ignore'] })
   createInterface({ input: child.stdout }).on('line', onLine)
-  child.stdin.on('error', () => undefined)
+  child.stdin.on('error', noop)
   child.on('error', error => onExit(`could not start claude: ${error.message}`))
   child.on('close', code => onExit(`claude stopped${code === null ? '' : ` with code ${code}`}`))
   return { kill: () => child.kill(), write: line => child.stdin.write(line) }

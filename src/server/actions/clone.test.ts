@@ -42,14 +42,7 @@ describe(cloneRepo, () => {
     const runGit = fakeGit()
     const result = await cloneRepo({ gh: fakeGh(apiRepo()), name: 'finga', owner: 'Owner', runGit, target })
     expect(result).toStrictEqual({ message: `cloned Owner/finga over SSH into ${path.join(target, 'finga')}`, ok: true })
-    expect(runGit).toHaveBeenCalledWith(['clone', 'git@github.com:Owner/finga.git', path.join(target, 'finga')])
-  })
-
-  it.each(['../finga', '.', '..', 'a b', 'a/b', ''])('refuses the name "%s", it is not a repo name', async name => {
-    expect.hasAssertions()
-    const gh = fakeGh(apiRepo())
-    await expect(cloneRepo({ gh, name, owner: 'Owner', runGit: fakeGit(), target: await makeTarget() })).resolves.toStrictEqual({ ok: false, reason: `${name} is not a repo name` })
-    expect(gh).not.toHaveBeenCalled()
+    expect(runGit).toHaveBeenCalledWith(['clone', 'git@github.com:Owner/finga.git', path.join(target, 'finga')], target)
   })
 
   it('refuses when the target is a single project', async () => {

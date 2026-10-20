@@ -1,6 +1,7 @@
 import type { ChatEvent } from '../shared/claude.ts'
 import type { ScanEvent, ScanFinding, ScanProject } from '../shared/scan-event.ts'
 import type { FetchScan } from './scan/scan-query.ts'
+import { refused } from '../shared/action.ts'
 
 /**
  * A finding, a file warning unless told otherwise
@@ -100,7 +101,7 @@ interface ApiAnswers {
  * @param answers.rescan the answer to the rescan of one project
  * @returns the fake fetch
  */
-export function stubApi({ action = Response.json({ message: 'done', ok: true }), live = Response.json({ changed: false, fingerprint: 'abc', ok: true, remote: 'fresh' }), preview = Response.json({ ok: false, reason: 'no preview' }), rescan = Response.json({ ok: true }) }: Readonly<ApiAnswers> = {}) {
+export function stubApi({ action = Response.json({ message: 'done', ok: true }), live = Response.json({ changed: false, fingerprint: 'abc', ok: true, remote: 'fresh' }), preview = Response.json(refused('no preview')), rescan = Response.json({ ok: true }) }: Readonly<ApiAnswers> = {}) {
   const fetchMock = vi.fn<typeof fetch>((url, init) => {
     if (init?.method === 'POST') return Promise.resolve(action.clone())
     if (String(url).includes('/live?')) return live instanceof Error ? Promise.reject(live) : Promise.resolve(live.clone())

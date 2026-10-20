@@ -1,6 +1,6 @@
 import type { Actions } from './actions/actions-contract.ts'
 import { app, worksFine } from './app-fixtures.ts'
-import type { ScanRunner } from './app.ts'
+import type { ScanRunner } from './stream-scan.ts'
 
 describe('fix files', () => {
   const post = { headers: { 'x-repo-check': '1' }, method: 'POST' }

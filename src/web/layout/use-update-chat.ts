@@ -1,7 +1,7 @@
 import { toast } from '@heroui/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
-import type { ActionResult } from '../../shared/action.ts'
+import { type ActionResult, refused } from '../../shared/action.ts'
 import type { ChatEvent } from '../../shared/claude.ts'
 import { refreshProject } from '../scan/refresh-project.ts'
 import { readEvents } from '../scan/read-events.ts'
@@ -14,7 +14,7 @@ import { readEvents } from '../scan/read-events.ts'
  */
 async function post(url: string, body?: object): Promise<ActionResult> {
   const response = await fetch(url, { headers: { 'x-repo-check': '1' }, method: 'POST', ...(body !== undefined && { body: JSON.stringify(body) }) })
-  return response.json().catch((): ActionResult => ({ ok: false, reason: `the server answered HTTP ${response.status}` })) as Promise<ActionResult>
+  return response.json().catch((): ActionResult => refused(`the server answered HTTP ${response.status}`)) as Promise<ActionResult>
 }
 
 /**

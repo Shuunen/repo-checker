@@ -73,7 +73,7 @@ export async function makeWorkspace(): Promise<Workspace> {
   await writeFile(path.join(dir, 'a.txt'), 'changed')
   await writeFile(path.join(dir, 'notes.txt'), 'untracked')
   await writeFile(path.join(dir, '.env'), 'SECRET=1')
-  const reader: GitReaders = { readClone: async (file, options) => withSlug(await readClone(file, options)), readClones: async () => [withSlug(await readClone(dir, { shouldFetch: false }))] }
+  const reader: GitReaders = { listClones: () => Promise.resolve([{ folderName: 'old', origin: bare, path: dir, problem: undefined, slug: 'owner/old' }]), readClone: async (file, options) => withSlug(await readClone(file, options)) }
   return { folder: dir, git: reader, target }
 }
 

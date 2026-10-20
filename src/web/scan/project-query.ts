@@ -1,5 +1,6 @@
 import { queryOptions } from '@tanstack/react-query'
 import type { RescanResult, ScanProject } from '../../shared/scan-event.ts'
+import { refused } from '../../shared/action.ts'
 
 /** One project scanned alone, with the folder it lives in */
 export interface SingleProject {
@@ -23,7 +24,7 @@ export const projectQueryKey = (name: string) => ['project', name]
  */
 export async function getRescan(name: string): Promise<RescanResult> {
   const response = await fetch(`/api/projects/${encodeURIComponent(name)}/rescan`)
-  return response.json().catch((): RescanResult => ({ ok: false, reason: `the server answered HTTP ${response.status}` }))
+  return response.json().catch((): RescanResult => refused(`the server answered HTTP ${response.status}`))
 }
 
 /**

@@ -17,3 +17,13 @@ export function plural(count: number, noun: string) {
   if (count === 1) return `${count} ${noun}`
   return `${count} ${noun}${esEndings.test(noun) ? 'es' : 's'}`
 }
+
+/**
+ * Read the message of anything thrown, an Error or not
+ * @param error what was thrown
+ * @returns the message
+ * @example errorMessage(new Error('boom')) // 'boom'
+ */
+export function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error)
+}

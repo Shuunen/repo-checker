@@ -1,7 +1,7 @@
-import { Button } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
 import { slugOf } from '../projects/detail.ts'
-import { CheckoutDefaultDialog } from './checkout-default-dialog.tsx'
+import { ActionTrigger } from './action-trigger.tsx'
+import { ConfirmDialog } from './confirm-dialog.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
 /**
@@ -13,12 +13,16 @@ import { useActionDialog } from './use-action-dialog.ts'
 export function CheckoutDefaultButton({ project }: Readonly<{ project: Project }>) {
   const dialog = useActionDialog(project.name, 'checkout-default')
   const branch = project.github?.defaultBranch ?? 'default'
+  const slug = slugOf(project)
   return (
     <>
-      <Button data-testid="action-checkout-default" onPress={dialog.handleOpen} size="sm" variant="outline">
+      <ActionTrigger onPress={dialog.handleOpen} testId="action-checkout-default">
         Checkout {branch} branch
-      </Button>
-      <CheckoutDefaultDialog branch={branch} error={dialog.error} isOpen={dialog.isOpen} isPending={dialog.isPending} onCancel={dialog.handleClose} onConfirm={dialog.handleConfirm} onOpenChange={dialog.handleOpenChange} slug={slugOf(project)} />
+      </ActionTrigger>
+      <ConfirmDialog confirmLabel="Checkout" dialog={dialog} heading={`Checkout ${branch} in ${slug}?`} prefix="checkout-default">
+        {`The clone of ${slug} switches to ${branch}. No branch is deleted and nothing is lost, and it is refused if the clone has uncommitted files.`}
+        {dialog.error !== undefined && <p data-testid="checkout-default-error">{dialog.error}</p>}
+      </ConfirmDialog>
     </>
   )
 }

@@ -1,7 +1,7 @@
 import type { ChatEvent } from '../shared/claude.ts'
 import type { Actions } from './actions/actions-contract.ts'
 import { app, worksFine } from './app-fixtures.ts'
-import type { ScanRunner } from './app.ts'
+import type { ScanRunner } from './stream-scan.ts'
 
 const post = { headers: { 'x-repo-check': '1' }, method: 'POST' }
 const url = 'http://127.0.0.1/api/projects/finga/update-project'

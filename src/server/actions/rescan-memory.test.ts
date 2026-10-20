@@ -2,11 +2,11 @@ import { invariant } from 'es-toolkit'
 import type { GhRunner } from '../inventory/github.ts'
 import { createProjectMemory } from '../project-memory.ts'
 import type { GitReaders } from './action-options.ts'
-import { rescanProject } from './rescan.ts'
+import { rescanProject } from './live.ts'
 
 const rules = { fileRules: [], projectRules: [] }
 const apiRepo = { archived: false, fork: false, name: 'finga', owner: { login: 'Owner' }, private: false, pushed_at: '2026-01-01T00:00:00Z' }
-const git: GitReaders = { readClone: vi.fn<GitReaders['readClone']>(), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve([])) }
+const git: GitReaders = { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve([])), readClone: vi.fn<GitReaders['readClone']>() }
 
 /**
  * A fake gh that answers the repo of the owner, or a 404

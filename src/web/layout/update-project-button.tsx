@@ -1,6 +1,6 @@
-import { Button } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
 import { slugOf } from '../projects/detail.ts'
+import { ActionTrigger } from './action-trigger.tsx'
 import { UpdateProjectDialog } from './update-project-dialog.tsx'
 import { useUpdateChat } from './use-update-chat.ts'
 
@@ -14,9 +14,9 @@ export function UpdateProjectButton({ project }: Readonly<{ project: Project }>)
   const chat = useUpdateChat(project.name)
   return (
     <>
-      <Button data-testid="action-update-project" onPress={() => void chat.handleOpen()} size="sm" variant="outline">
+      <ActionTrigger onPress={() => void chat.handleOpen()} testId="action-update-project">
         Update project
-      </Button>
+      </ActionTrigger>
       <UpdateProjectDialog chat={chat} slug={slugOf(project)} />
     </>
   )

@@ -1,12 +1,13 @@
-import type { ActionResult, FixPreview, FixStage } from '../../shared/action.ts'
+import { type ActionResult, attempt, type FixPreview, type FixStage, refused } from '../../shared/action.ts'
 import { plural } from '../../shared/text.ts'
 import { buildContext } from '../engine/context.ts'
 import { diskIo } from '../engine/io.ts'
 import { checkProject } from '../engine/runner.ts'
-import { run } from '../inventory/shell.ts'
+import { type GitRunner, realRunGit } from './action-options.ts'
 import { realCheck } from './check-script.ts'
 import { realInstall } from './install.ts'
-import { type ApplyOptions, changedPaths, fingerprintOf, type FixOptions, type Plan, planOf } from './fix-plan.ts'
+import { type ApplyOptions, changedPaths, type FixOptions, type Plan, planFingerprint, planOf } from './fix-plan.ts'
+import { staleReason } from './fingerprint.ts'
 
 /**
  * Say what applying the file fixes would change, read fresh: a before and after per file, the files whose uncommitted changes the fix is merged into, and the fingerprint of that plan
@@ -14,14 +15,12 @@ import { type ApplyOptions, changedPaths, fingerprintOf, type FixOptions, type P
  * @returns the plan, or the reason there is nothing to apply
  * @example const preview = await previewFixFiles({ gh: ghCli, git: realGit, name: 'app', owner: 'Shuunen', rules, target })
  */
-export async function previewFixFiles(options: Readonly<FixOptions>): Promise<FixPreview> {
-  try {
+export function previewFixFiles(options: Readonly<FixOptions>): Promise<FixPreview> {
+  return attempt(async () => {
     const plan = await planOf(options)
-    if ('reason' in plan) return { ok: false, reason: plan.reason }
-    return { fingerprint: fingerprintOf(plan.fixable, plan.installs), installs: plan.installs, merged: plan.merged, ok: true, path: plan.clone.path, plans: plan.fixable }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+    if ('reason' in plan) return refused(plan.reason)
+    return { fingerprint: planFingerprint(plan.fixable, plan.installs), installs: plan.installs, merged: plan.merged, ok: true, path: plan.clone.path, plans: plan.fixable }
+  })
 }
 
 /** The message of the commit of the fixes */
@@ -62,22 +61,25 @@ function mergedSummary(merged: readonly string[], wanted: boolean) {
 
 /**
  * Commit what the fixes changed, then push it: the files written and the ones the install touched, never the work that was already uncommitted
- * @param folder the clone
- * @param before the paths that were already changed before the fixes
+ * @param where the clone
+ * @param where.before the paths that were already changed before the fixes
+ * @param where.folder the clone
+ * @param where.runGit runs git
  * @param onStage called when the commit is prepared and when it is pushed
  * @returns the reason the commit or the push failed, undefined when it worked
  */
-async function commitFixes(folder: string, before: ReadonlySet<string>, onStage: (stage: FixStage) => void) {
+async function commitFixes(where: Readonly<{ before: ReadonlySet<string>; folder: string; runGit: GitRunner }>, onStage: (stage: FixStage) => void) {
+  const { before, folder, runGit } = where
   onStage('committing')
-  const status = await run('git', ['status', '--porcelain'], folder)
+  const status = await runGit(['status', '--porcelain'], folder)
   const files = [...changedPaths(status.stdout.split('\n').filter(Boolean))].filter(file => !before.has(file))
-  const added = await run('git', ['add', '--', ...files], folder)
+  const added = await runGit(['add', '--', ...files], folder)
   if (!added.ok) return `not committed, git add failed: ${added.stderr.trim()}`
   if (files.length === 0) return undefined
-  const committed = await run('git', ['commit', '-m', commitMessage, '--', ...files], folder)
+  const committed = await runGit(['commit', '-m', commitMessage, '--', ...files], folder)
   if (!committed.ok) return `not committed, git commit failed: ${committed.stderr.trim()}`
   onStage('pushing')
-  const pushed = await run('git', ['push'], folder)
+  const pushed = await runGit(['push'], folder)
   return pushed.ok ? undefined : `committed but not pushed, git push failed: ${pushed.stderr.trim()}`
 }
 
@@ -92,7 +94,7 @@ async function commitIfAsked(options: Readonly<ApplyOptions>, plan: Readonly<Pla
   if (options.commit !== true) return {}
   const checked = await (options.check ?? realCheck)(plan.clone.path, () => onStage('checking'))
   if (checked?.ok === false) return { blocked: tail(`${checked.stdout}\n${checked.stderr}`) }
-  const failure = await commitFixes(plan.clone.path, changedPaths(plan.clone.changedFiles), onStage)
+  const failure = await commitFixes({ before: changedPaths(plan.clone.changedFiles), folder: plan.clone.path, runGit: options.runGit ?? realRunGit }, onStage)
   return failure === undefined ? {} : { failure }
 }
 
@@ -161,17 +163,17 @@ async function applyRounds({ applied, left, options, onStage, plan }: Readonly<R
  * @returns the result, refused with the reason when the plan changed
  * @example const result = await fixFiles({ fingerprint: preview.fingerprint, gh: ghCli, git: realGit, name: 'app', owner: 'Shuunen', rules, target })
  */
-export async function fixFiles(options: Readonly<ApplyOptions>): Promise<ActionResult> {
+export function fixFiles(options: Readonly<ApplyOptions>): Promise<ActionResult> {
   const onStage = options.onStage ?? (() => undefined)
-  try {
+  return attempt(async () => {
     const plan = await planOf(options)
-    if ('reason' in plan) return { ok: false, reason: plan.reason }
-    if (plan.fixable.length === 0 || fingerprintOf(plan.fixable, plan.installs) !== options.fingerprint) return { ok: false, reason: 'the fixes are not what the dialog listed any more, nothing was written, open the dialog again' }
+    if ('reason' in plan) return refused(plan.reason)
+    if (plan.fixable.length === 0 || planFingerprint(plan.fixable, plan.installs) !== options.fingerprint) return refused(staleReason('the fixes are', 'written'))
     const applied = await applyRounds({ applied: { files: [], installs: [] }, left: maxFollowUps, onStage, options, plan })
-    if ('reason' in applied) return { ok: false, reason: applied.reason }
+    if ('reason' in applied) return refused(applied.reason)
     const { files, installs } = applied
     const { blocked: commitBlocked, failure } = await commitIfAsked(options, plan, onStage)
-    if (failure !== undefined) return { ok: false, reason: `the files were written but ${failure}` }
+    if (failure !== undefined) return refused(`the files were written but ${failure}`)
     const { findings } = await checkProject(options.rules.fileRules, await buildContext(diskIo(plan.clone.path), plan.flags))
     const left = findings.filter(finding => finding.edits.length > 0).length
     return {
@@ -179,7 +181,5 @@ export async function fixFiles(options: Readonly<ApplyOptions>): Promise<ActionR
       ok: true,
       ...(commitBlocked === undefined ? {} : { commitBlocked }),
     }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
 }

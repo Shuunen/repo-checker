@@ -30,7 +30,7 @@ export function ActionsCard({ findings, project, target }: Readonly<{ findings: 
         {canUpdate(project, hasMajorUpdate(findings)) && <UpdateProjectButton project={project} />}
         {canArchive(project) && !actions.includes('archive') && <ArchiveButton action="archive" project={project} />}
         {canUnarchive(project) && <ArchiveButton action="unarchive" project={project} />}
-        <DeleteProjectButton isLabelled project={project} />
+        <DeleteProjectButton project={project} />
       </span>
     </Card>
   )

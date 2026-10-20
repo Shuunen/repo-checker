@@ -4,7 +4,7 @@ import type { ScanEvent } from '../shared/scan-event.ts'
 import { aFinding, aProject, scanRequest, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 
-const unsaved = aFinding({ actions: ['unarchive-push-rearchive', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
+const unsaved = aFinding({ actions: ['unarchive-push', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
 const events: ScanEvent[] = [
   { isNitpick: false, target: '/projects', type: 'started' },
   { result: aProject('old', [unsaved]), type: 'project' },

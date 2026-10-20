@@ -2,7 +2,7 @@
  * What a scan gives, in a JSON-safe shape: the server streams it as events, one per project as soon as it is checked, so the page fills in live.
  * @module
  */
-import type { ActionKind } from './action.ts'
+import type { ActionKind, Refusable } from './action.ts'
 import type { Project } from './project.ts'
 
 /** How bad a finding is, one scale for every check: error means something is wrong or work could be lost, warning should be fixed, info is a suggestion */
@@ -61,10 +61,10 @@ export type ScanEvent =
   | { isNitpick: boolean; target: string; type: 'started' }
 
 /** What scanning one project again gives: the project as it is now, undefined when it is gone (a deleted fork, a deleted folder of a repo that does not exist), or the reason it could not be scanned */
-export type RescanResult = { ok: true; project: ScanProject | undefined; target: string } | { ok: false; reason: string }
+export type RescanResult = Refusable<{ project: ScanProject | undefined; target: string }>
 
 /** How recent the GitHub side of a project is: `fresh` while it is read again on time, `paused` when it is due but GitHub's rate limit is too low to spend calls on it */
 export type RemoteState = 'fresh' | 'paused'
 
 /** What watching a project gives: nothing changed, or the project as it is now with the fingerprint to send back next time (undefined project when it is gone), or the reason it could not be checked */
-export type LiveResult = { changed: false; fingerprint: string; ok: true; remote: RemoteState } | { changed: true; fingerprint: string; ok: true; project: ScanProject | undefined; remote: RemoteState; target: string } | { ok: false; reason: string }
+export type LiveResult = Refusable<{ changed: false; fingerprint: string; remote: RemoteState } | { changed: true; fingerprint: string; project: ScanProject | undefined; remote: RemoteState; target: string }>

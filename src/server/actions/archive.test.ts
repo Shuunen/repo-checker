@@ -57,13 +57,6 @@ describe(archiveRepo, () => {
     expect(gh).toHaveBeenCalledWith(['api', '--method', 'PATCH', 'repos/Owner/lib', '-F', 'archived=true'])
   })
 
-  it('refuses a name that is a path', async () => {
-    expect.hasAssertions()
-    const gh = fakeGh()
-    await expect(archive(gh, '../lib')).resolves.toStrictEqual({ ok: false, reason: '../lib is not a repo name' })
-    expect(gh).not.toHaveBeenCalled()
-  })
-
   it('refuses a repo that is not on GitHub any more', async () => {
     expect.hasAssertions()
     await expect(archive(fakeGh({ hasRepo: false }))).resolves.toStrictEqual({ ok: false, reason: 'Owner/lib does not exist on GitHub any more' })

@@ -1,62 +1,38 @@
+import type { GitFixPreview } from '../../shared/action.ts'
 import { CommitToggle } from './commit-toggle.tsx'
 import { ConfirmDialog } from './confirm-dialog.tsx'
-import type { FixFilesDialogState } from './fix-files-dialog.tsx'
 import { FixFilesBody } from './fix-files-body.tsx'
-import type { FixGitDialogState } from './fix-git-dialog.tsx'
 import { FixGitBody } from './fix-git-body.tsx'
+import type { ActionDialog, DialogControls } from './use-action-dialog.ts'
+import type { FixFilesDialog } from './use-fix-files.ts'
 
-/** What the dialog is given */
+/** What the dialog that fixes everything shows and does */
 interface FixAllDialogProps {
-  /** The state of the file fixes */
-  files: FixFilesDialogState
-  /** The state of the git fixes */
-  git: FixGitDialogState
-  /** True when the dialog is shown */
-  isOpen: boolean
-  /** Close the dialog without changing anything */
-  onCancel: () => void
-  /** Run the git fixes then the file fixes */
-  onConfirm: () => void
-  /** Called with the new state when the dialog opens or closes */
-  onOpenChange: (isOpen: boolean) => void
+  /** The controls of the dialog */
+  dialog: DialogControls
+  /** The dialog of the file fixes */
+  files: FixFilesDialog
+  /** The dialog of the git fixes */
+  git: ActionDialog<GitFixPreview>
   /** The `owner/name` of the repo */
   slug: string
 }
 
 /**
- * The confirmation before every fix: what the git fixes would do, then the diff of the file fixes. The git issues are fixed first, so the files are written on a clone that is up to date
+ * The confirmation before fixing everything: the plan of the git fixes, then the plan of the file fixes, with the auto commit toggle. Nothing changes until Fix all is pressed
  * @param props the props
- * @param props.files the state of the file fixes
- * @param props.git the state of the git fixes
- * @param props.isOpen true when the dialog is shown
- * @param props.onCancel closes the dialog
- * @param props.onConfirm runs the fixes
- * @param props.onOpenChange called when the dialog opens or closes
+ * @param props.dialog the controls of the dialog
+ * @param props.files the dialog of the file fixes
+ * @param props.git the dialog of the git fixes
  * @param props.slug the `owner/name` of the repo
  * @returns the dialog
  */
-export function FixAllDialog({ files, git, isOpen, onCancel, onConfirm, onOpenChange, slug }: Readonly<FixAllDialogProps>) {
-  const { onCommitChange } = files
-  const isLoading = files.isLoading || git.isLoading
-  const canConfirm = (files.preview?.ok === true || git.preview?.ok === true) && !isLoading
+export function FixAllDialog({ dialog, files, git, slug }: Readonly<FixAllDialogProps>) {
   return (
-    <ConfirmDialog
-      canConfirm={canConfirm}
-      confirmLabel="Fix all issues"
-      footerStart={files.stage === undefined ? <CommitToggle isCommit={files.isCommit} onChange={onCommitChange} /> : undefined}
-      heading={`Fix all the issues of ${slug}?`}
-      isDanger={false}
-      isOpen={isOpen}
-      isPending={files.isPending || git.isPending}
-      isWide
-      onCancel={onCancel}
-      onConfirm={onConfirm}
-      onOpenChange={onOpenChange}
-      prefix="fix-all"
-    >
+    <ConfirmDialog confirmLabel="Fix all issues" dialog={dialog} footerStart={files.stage === undefined ? <CommitToggle isCommit={files.isCommit} onChange={files.handleCommitChange} /> : undefined} heading={`Fix all the issues of ${slug}?`} isWide prefix="fix-all">
       <div className="flex flex-col gap-4">
-        <FixGitBody error={git.error} isLoading={git.isLoading} preview={git.preview} previewError={git.previewError} />
-        <FixFilesBody error={files.error} isLoading={files.isLoading} preview={files.preview} previewError={files.previewError} stage={files.stage} />
+        <FixGitBody dialog={git} />
+        <FixFilesBody dialog={files} />
       </div>
     </ConfirmDialog>
   )

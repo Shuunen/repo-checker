@@ -1,35 +1,31 @@
-import { Button } from '@heroui/react'
 import type { DeleteBranchesPreview } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
+import { plural } from '../../shared/text.ts'
 import { slugOf } from '../projects/detail.ts'
-import { DeleteBranchesDialog } from './delete-branches-dialog.tsx'
-import { usePreviewedDialog } from './use-previewed-dialog.ts'
+import { ActionTrigger } from './action-trigger.tsx'
+import { ConfirmDialog } from './confirm-dialog.tsx'
+import { GitList } from './git-list.tsx'
+import { PreviewBody } from './preview-body.tsx'
+import { useActionDialog } from './use-action-dialog.ts'
 
 /**
- * The Delete local branches action: the button opens a confirmation that first asks the server to list the branches again, and the delete only runs when it is confirmed. The scan runs again after it worked
+ * The Delete local branches action: the button opens a confirmation that lists, read fresh, the local branches but the default one and the checked out one, and the delete only runs when it is confirmed, and only if the list is still the same. The scan runs again after it worked
  * @param props the props
  * @param props.project the project whose local branches are deleted
  * @returns the button and its dialog
  */
 export function DeleteBranchesButton({ project }: Readonly<{ project: Project }>) {
-  const dialog = usePreviewedDialog<DeleteBranchesPreview>(project.name, 'delete-branches', { fingerprintOf: preview => preview.fingerprint })
+  const dialog = useActionDialog<DeleteBranchesPreview>(project.name, 'delete-branches')
   return (
     <>
-      <Button data-testid="action-delete-branches" onPress={dialog.handleOpen} size="sm" variant="outline">
+      <ActionTrigger onPress={dialog.handleOpen} testId="action-delete-branches">
         Delete local branches
-      </Button>
-      <DeleteBranchesDialog
-        error={dialog.error}
-        isLoading={dialog.isLoading}
-        isOpen={dialog.isOpen}
-        isPending={dialog.isPending}
-        onCancel={dialog.handleClose}
-        onConfirm={dialog.handleConfirm}
-        onOpenChange={dialog.handleOpenChange}
-        preview={dialog.preview}
-        previewError={dialog.previewError}
-        slug={slugOf(project)}
-      />
+      </ActionTrigger>
+      <ConfirmDialog confirmLabel="Delete branches" dialog={dialog} heading={`Delete the local branches of ${slugOf(project)}?`} isDanger prefix="delete-branches">
+        <PreviewBody checking="Listing the local branches on the clone as it is now…" className="flex flex-col gap-3" dialog={dialog} prefix="delete-branches">
+          {({ branches }) => <GitList items={branches} testId="delete-branches-list" title={`Delete ${plural(branches.length, 'local branch')}, even the ones with work that is not on GitHub:`} />}
+        </PreviewBody>
+      </ConfirmDialog>
     </>
   )
 }

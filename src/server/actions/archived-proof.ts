@@ -1,10 +1,10 @@
-import type { ActionKind } from '../../shared/action.ts'
+import { type ActionKind, refused } from '../../shared/action.ts'
 import type { GithubRepo, LocalClone } from '../../shared/project.ts'
 import { checkProjectRules } from '../engine/runner.ts'
 import { type GhRunner, getRepo } from '../inventory/github.ts'
 import { archivedClone, archivedWithUnsavedWork } from '../rules/sync/archived.rule.ts'
-import type { ActionOptions, GitReaders } from './action-options.ts'
-import { checkFolderOfProjects, isRepoName } from './guards.ts'
+import type { ActionOptions } from './action-options.ts'
+import { checkFolderOfProjects, requireCloneOf } from './guards.ts'
 
 /** The proof of an action: the clone to act on, or the reason to refuse */
 export type Proof = { clone: LocalClone; ok: true } | { ok: false; reason: string }
@@ -22,22 +22,6 @@ async function findRepo(gh: GhRunner, slug: string): Promise<{ repo: GithubRepo 
   if (repo.slug !== slug.toLowerCase()) return { reason: `${slug} was renamed or moved to ${repo.slug}, scan again` }
   if (!repo.isArchived) return { reason: `${slug} is not archived, this only applies to the clone of an archived repo` }
   return repo.isFork ? { reason: `${slug} is a fork, its delete is the fork delete` } : { repo }
-}
-
-/**
- * Find the one clone of the repo in the folder of projects, and read it again with a fresh `git fetch`, so what is unpushed is measured against the real remote
- * @param target the folder of projects
- * @param repo the repo
- * @param git how the clones are read
- * @returns the fresh clone, or the reason to refuse
- */
-async function findClone(target: string, repo: Readonly<GithubRepo>, git: GitReaders): Promise<{ clone: LocalClone } | { reason: string }> {
-  const clones = await git.readClones(target, { shouldFetch: false })
-  const matches = clones.filter(clone => clone.slug === repo.slug)
-  const [match] = matches
-  if (match === undefined) return { reason: `no clone of ${repo.slug} in ${target}` }
-  if (matches.length > 1) return { reason: `${matches.length} clones of ${repo.slug} in ${target}, delete the extra ones by hand` }
-  return { clone: await git.readClone(match.path, { shouldFetch: true }) }
 }
 
 /**
@@ -67,13 +51,12 @@ async function refusalOf(repo: Readonly<GithubRepo>, clone: Readonly<LocalClone>
  * @example const proof = await proveArchived({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target }, 'delete-clone')
  */
 export async function proveArchived({ gh, git, name, owner, target }: Readonly<ActionOptions>, action: ActionKind): Promise<Proof> {
-  if (!isRepoName(name)) return { ok: false, reason: `${name} is not a repo name` }
   const single = await checkFolderOfProjects(target)
-  if (single !== undefined) return { ok: false, reason: single }
+  if (single !== undefined) return refused(single)
   const found = await findRepo(gh, `${owner}/${name}`)
-  if ('reason' in found) return { ok: false, reason: found.reason }
-  const located = await findClone(target, found.repo, git)
-  if ('reason' in located) return { ok: false, reason: located.reason }
+  if ('reason' in found) return refused(found.reason)
+  const located = await requireCloneOf({ git, target }, found.repo.slug, { shouldFetch: true })
+  if ('reason' in located) return refused(located.reason)
   const reason = await refusalOf(found.repo, located.clone, action)
   return reason === undefined ? { clone: located.clone, ok: true } : { ok: false, reason }
 }

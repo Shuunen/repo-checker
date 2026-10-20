@@ -1,6 +1,6 @@
 import { partition } from 'es-toolkit'
 import type { LocalClone, Project } from '../shared/project.ts'
-import { plural } from '../shared/text.ts'
+import { errorMessage, plural } from '../shared/text.ts'
 import { checkOne, type SplitRules } from './check-project.ts'
 import type { CheckResult } from './engine/runner.ts'
 import { addForkStatus } from './inventory/forks.ts'
@@ -46,7 +46,7 @@ interface CheckProjectsOptions {
  * @returns the result
  */
 function failedResult(project: Readonly<Project>, error: unknown): ProjectResult {
-  const message = error instanceof Error ? error.message : String(error)
+  const message = errorMessage(error)
   return { findings: [{ actions: [], edits: [], installs: [], message: `the checks of this project failed: ${message}`, messageId: 'failed', ruleId: 'checks-failed', scope: 'project', severity: 'error' }], outcomes: [], project }
 }
 

@@ -100,7 +100,7 @@ async function makeWorkspace(clone: Readonly<Partial<LocalClone>> | 'none' = {},
   })
   const fresh = clone === 'none' ? {} : clone
   const clones = clone === 'none' ? [] : (listed ?? [{}]).map(fields => read(fields))
-  const git: GitReaders = { readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(read(fresh))), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve(clones)) }
+  const git: GitReaders = { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve(clones)), readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(read(fresh))) }
   return { folder, git, target }
 }
 
@@ -172,12 +172,6 @@ describe(deleteFork, () => {
     expect.hasAssertions()
     const { git, target } = await makeWorkspace({}, [{}, { folderName: 'lib-2' }])
     await expect(deleteFork({ gh: fakeGh(), git, name: 'lib', owner: 'Owner', target })).resolves.toStrictEqual({ ok: false, reason: `2 clones of owner/lib in ${target}, delete the extra ones by hand` })
-  })
-
-  it.each(['../lib', '.', '..', 'a/b', ''])('refuses the name "%s", it is not a repo name', async name => {
-    expect.hasAssertions()
-    const { git, target } = await makeWorkspace()
-    await expect(deleteFork({ gh: fakeGh(), git, name, owner: 'Owner', target })).resolves.toStrictEqual({ ok: false, reason: `${name} is not a repo name` })
   })
 
   it('refuses when the target is a single project', async () => {

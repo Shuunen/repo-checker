@@ -1,8 +1,10 @@
-import { type Context, Hono } from 'hono'
+import { type Context, Hono, type MiddlewareHandler } from 'hono'
 import { streamSSE } from 'hono/streaming'
-import type { ActionResult, FixStage, MetadataValues } from '../shared/action.ts'
+import { type ActionResult, type FingerprintedAction, type FixStage, type MetadataValues, type PostedAction, type PreviewedAction, refused } from '../shared/action.ts'
 import type { ChatEvent } from '../shared/claude.ts'
 import type { Actions } from './actions/actions-contract.ts'
+import { isRepoName } from './actions/guards.ts'
+import { eventSender } from './sse.ts'
 
 /** The HTTP status of an action that worked */
 const succeeded = 200
@@ -39,25 +41,6 @@ function stream(run: (onStage: (stage: FixStage) => void) => Promise<ActionResul
 }
 
 /**
- * The routes of the fixes: the files, the local branches to delete, then the git issues
- * @param actions the actions
- * @returns the routes
- */
-function fixRoutes(actions: Actions) {
-  return new Hono()
-    .get('/api/projects/:name/fix-files', async context => reply(context, await actions.previewFixFiles(context.req.param('name'))))
-    .post('/api/projects/:name/fix-files', async context => {
-      const [name, fingerprint] = [context.req.param('name'), context.req.query('fingerprint') ?? '']
-      if (context.req.query('commit') !== 'true') return reply(context, await actions.fixFiles(name, fingerprint))
-      return stream(onStage => actions.fixFiles(name, fingerprint, { commit: true, onStage }))
-    })
-    .get('/api/projects/:name/delete-branches', async context => reply(context, await actions.previewDeleteBranches(context.req.param('name'))))
-    .post('/api/projects/:name/delete-branches', async context => reply(context, await actions.deleteBranches(context.req.param('name'), context.req.query('fingerprint') ?? '')))
-    .get('/api/projects/:name/fix-git', async context => reply(context, await actions.previewFixGit(context.req.param('name'))))
-    .post('/api/projects/:name/fix-git', async context => reply(context, await actions.fixGit(context.req.param('name'), context.req.query('fingerprint') ?? '')))
-}
-
-/**
  * The routes of the update with Claude: start the session, follow it as server-sent events, send it a message, close it
  * @param actions the actions
  * @returns the routes
@@ -68,10 +51,10 @@ function updateRoutes(actions: Actions) {
     .get('/api/projects/:name/update-project/events', context =>
       streamSSE(context, async sse => {
         const ended = Promise.withResolvers<undefined>()
-        let queue = Promise.resolve()
+        const write = eventSender<ChatEvent>(sse)
         const send = (event: ChatEvent) => {
-          queue = queue.then(() => sse.writeSSE({ data: JSON.stringify(event), event: event.type }))
-          if (event.type === 'exit') void queue.then(() => ended.resolve(undefined))
+          const written = write(event)
+          if (event.type === 'exit') void written.then(() => ended.resolve(undefined))
         }
         const unwatch = actions.watchUpdateProject(context.req.param('name'), send)
         if (unwatch === undefined) send({ message: 'there is no Claude session for this project', type: 'exit' })
@@ -82,42 +65,88 @@ function updateRoutes(actions: Actions) {
     )
     .post('/api/projects/:name/update-project/message', async context => {
       const body = (await context.req.json().catch(() => undefined)) as { text?: unknown } | undefined
-      if (typeof body?.text !== 'string') return reply(context, { ok: false, reason: 'the message is missing' })
+      if (typeof body?.text !== 'string') return reply(context, refused('the message is missing'))
       return reply(context, await actions.sendUpdateMessage(context.req.param('name'), body.text))
     })
     .post('/api/projects/:name/update-project/close', async context => reply(context, await actions.closeUpdateProject(context.req.param('name'))))
 }
 
+/** Run an action that only needs the repo name */
+type ByName = (name: string) => Promise<ActionResult>
+
+/** Run an action with the fingerprint of the preview the user confirmed */
+type ByFingerprint = (name: string, fingerprint: string) => Promise<ActionResult>
+
+/** The actions with a route of their own: the file fixes stream their steps, the sync of the infos takes the values the user edited */
+type CustomAction = 'fix-files' | 'sync-github-metadata'
+
 /**
- * The routes of the actions: each one asks the action to prove everything again before it acts, whatever the page sent
+ * The actions by route, typed so a route can not be forgotten: the previews, the actions that check the fingerprint of the preview, and the ones that only need the name
+ * @param actions the actions
+ * @returns the actions of each kind, as route and function pairs
+ */
+function byRoute(actions: Actions) {
+  const previews: Record<PreviewedAction, (name: string) => Promise<{ ok: boolean }>> = {
+    'delete-branches': actions.previewDeleteBranches,
+    'delete-clone': actions.previewDeleteClone,
+    'delete-fork': actions.previewDeleteFork,
+    'delete-project': actions.previewDeleteProject,
+    discard: actions.previewDiscard,
+    'fix-files': actions.previewFixFiles,
+    'fix-git': actions.previewFixGit,
+    'sync-github-metadata': actions.previewSyncGithubMetadata,
+  }
+  const fingerprinted: Record<Exclude<FingerprintedAction, CustomAction>, ByFingerprint> = { 'delete-branches': actions.deleteBranches, discard: actions.discard, 'fix-git': actions.fixGit }
+  const named: Record<Exclude<PostedAction, CustomAction | FingerprintedAction>, ByName> = {
+    archive: actions.archive,
+    'checkout-default': actions.checkoutDefault,
+    clone: actions.clone,
+    'delete-clone': actions.deleteClone,
+    'delete-fork': actions.deleteFork,
+    'delete-project': actions.deleteProject,
+    unarchive: actions.unarchive,
+    'unarchive-push': actions.unarchivePush,
+  }
+  return { fingerprinted: Object.entries(fingerprinted), named: Object.entries(named), previews: Object.entries(previews) }
+}
+
+/**
+ * Refuse a name that is not a plain repo name, before any action sees it
+ * @param context the request context
+ * @param next the next handler
+ * @returns a 409 response with the reason for another name, nothing otherwise
+ */
+const refuseOtherNames: MiddlewareHandler<object, '/api/projects/:name/*'> = async (context, next) => {
+  const name = context.req.param('name')
+  if (!isRepoName(name)) return reply(context, refused(`${name} is not a repo name`))
+  await next()
+  return undefined
+}
+
+/**
+ * The routes of the actions: each one asks the action to prove everything again before it acts, whatever the page sent. `GET` says what an action would do, `POST` runs it
  * @param actions the actions
  * @returns the routes, to mount on the app after its guards
  * @example new Hono().use(guard).route('/', actionRoutes(actions))
  */
 export function actionRoutes(actions: Actions) {
-  return new Hono()
-    .post('/api/projects/:name/archive', async context => reply(context, await actions.archive(context.req.param('name'))))
-    .get('/api/projects/:name/sync-github-metadata', async context => reply(context, await actions.previewSyncGithubMetadata(context.req.param('name'))))
+  const app = new Hono().use('/api/projects/:name/*', refuseOtherNames)
+  const { fingerprinted, named, previews } = byRoute(actions)
+  for (const [route, preview] of previews) app.get(`/api/projects/:name/${route}`, async context => reply(context, await preview(context.req.param('name'))))
+  for (const [route, run] of fingerprinted) app.post(`/api/projects/:name/${route}`, async context => reply(context, await run(context.req.param('name'), context.req.query('fingerprint') ?? '')))
+  for (const [route, run] of named) app.post(`/api/projects/:name/${route}`, async context => reply(context, await run(context.req.param('name'))))
+  return app
+    .post('/api/projects/:name/fix-files', async context => {
+      const [name, fingerprint] = [context.req.param('name'), context.req.query('fingerprint') ?? '']
+      if (context.req.query('commit') !== 'true') return reply(context, await actions.fixFiles(name, fingerprint))
+      return stream(onStage => actions.fixFiles(name, fingerprint, { commit: true, onStage }))
+    })
     .post('/api/projects/:name/sync-github-metadata', async context => {
       const body = (await context.req.json().catch(() => undefined)) as Partial<MetadataValues> | undefined
-      if (typeof body?.description !== 'string' || typeof body.homepage !== 'string') return reply(context, { ok: false, reason: 'the description and the homepage to set are missing' })
-      const values = { description: body.description, homepage: body.homepage }
-      return reply(context, await actions.syncGithubMetadata(context.req.param('name'), values))
+      if (typeof body?.description !== 'string' || typeof body.homepage !== 'string') return reply(context, refused('the description and the homepage to set are missing'))
+      return reply(context, await actions.syncGithubMetadata(context.req.param('name'), { description: body.description, homepage: body.homepage }))
     })
-    .post('/api/projects/:name/unarchive', async context => reply(context, await actions.unarchive(context.req.param('name'))))
-    .post('/api/projects/:name/clone', async context => reply(context, await actions.clone(context.req.param('name'))))
-    .post('/api/projects/:name/checkout-default', async context => reply(context, await actions.checkoutDefault(context.req.param('name'))))
-    .get('/api/projects/:name/delete-clone', async context => reply(context, await actions.previewDeleteClone(context.req.param('name'))))
-    .post('/api/projects/:name/delete-clone', async context => reply(context, await actions.deleteClone(context.req.param('name'))))
-    .post('/api/projects/:name/unarchive-push', async context => reply(context, await actions.unarchivePush(context.req.param('name'))))
-    .get('/api/projects/:name/delete-fork', async context => reply(context, await actions.previewDeleteFork(context.req.param('name'))))
-    .post('/api/projects/:name/delete-fork', async context => reply(context, await actions.deleteFork(context.req.param('name'))))
-    .get('/api/projects/:name/delete-project', async context => reply(context, await actions.previewDeleteProject(context.req.param('name'))))
-    .post('/api/projects/:name/delete-project', async context => reply(context, await actions.deleteProject(context.req.param('name'))))
     .get('/api/projects/:name/live', async context => reply(context, await actions.live(context.req.param('name'), context.req.query('since') ?? '')))
     .get('/api/projects/:name/rescan', async context => reply(context, await actions.rescan(context.req.param('name'))))
-    .get('/api/projects/:name/discard', async context => reply(context, await actions.previewDiscard(context.req.param('name'))))
-    .post('/api/projects/:name/discard', async context => reply(context, await actions.discard(context.req.param('name'), context.req.query('fingerprint') ?? '')))
-    .route('/', fixRoutes(actions))
     .route('/', updateRoutes(actions))
 }

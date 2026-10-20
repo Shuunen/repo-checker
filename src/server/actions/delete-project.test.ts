@@ -54,7 +54,7 @@ async function makeWorkspace(fields: Readonly<Partial<LocalClone>> | 'none' = {}
     unpushed: [],
     ...(fields === 'none' ? {} : fields),
   }
-  const git: GitReaders = { readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve(fields === 'none' ? [] : [clone])) }
+  const git: GitReaders = { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve(fields === 'none' ? [] : [clone])), readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)) }
   return { folder, git, target }
 }
 
@@ -70,12 +70,6 @@ describe(previewDeleteProject, () => {
     expect.hasAssertions()
     const { git, target } = await makeWorkspace('none')
     await expect(previewDeleteProject({ gh: fakeGh({ hasRepo: false }), git, name: 'lib', owner: 'Owner', target })).resolves.toStrictEqual({ ok: false, reason: `Owner/lib is neither on GitHub nor in ${target}, nothing to delete` })
-  })
-
-  it('refuses a name that is a path', async () => {
-    expect.hasAssertions()
-    const { git, target } = await makeWorkspace()
-    await expect(previewDeleteProject({ gh: fakeGh(), git, name: '../x', owner: 'Owner', target })).resolves.toStrictEqual({ ok: false, reason: '../x is not a repo name' })
   })
 })
 
@@ -101,8 +95,8 @@ describe('refusals of both', () => {
   it.each([previewDeleteProject, deleteProject])('refuses two clones of the same repo', async action => {
     expect.hasAssertions()
     const { git, target } = await makeWorkspace()
-    const [clone] = await git.readClones(target, { shouldFetch: false })
-    git.readClones = () => Promise.resolve([clone, clone] as LocalClone[])
+    const [clone] = await git.listClones(target)
+    git.listClones = () => Promise.resolve([clone, clone] as LocalClone[])
     await expect(action({ gh: fakeGh(), git, name: 'lib', owner: 'Owner', target })).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('2 clones') as string })
   })
 

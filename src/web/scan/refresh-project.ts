@@ -3,6 +3,7 @@ import type { RescanResult } from '../../shared/scan-event.ts'
 import { getRescan, projectQueryKey, type SingleProject } from './project-query.ts'
 import { askFreshScan, scanQueryKey } from './scan-query.ts'
 import { replaceProject, type ScanState } from './scan-state.ts'
+import { refused } from '../../shared/action.ts'
 
 /**
  * Put a project, as the server has it now, in place of its old entry in the scan and in its own query, so the rest of the list stays and nothing blanks
@@ -24,7 +25,7 @@ export function putProject(client: QueryClient, name: string, single: SingleProj
  * @example await refreshProject(client, 'finga')
  */
 export async function refreshProject(client: QueryClient, name: string) {
-  const answer = await getRescan(name).catch((): RescanResult => ({ ok: false, reason: 'the server could not be asked' }))
+  const answer = await getRescan(name).catch((): RescanResult => refused('the server could not be asked'))
   if (!answer.ok) {
     askFreshScan()
     return Promise.all([client.invalidateQueries({ queryKey: scanQueryKey }), client.invalidateQueries({ queryKey: projectQueryKey(name) })])

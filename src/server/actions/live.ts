@@ -1,11 +1,12 @@
-import type { LiveResult } from '../../shared/scan-event.ts'
+import type { LiveResult, RescanResult } from '../../shared/scan-event.ts'
 import { checkOne, type SplitRules } from '../check-project.ts'
 import type { ProjectResult } from '../check-projects.ts'
 import { getRemainingCalls, type GhRunner } from '../inventory/github.ts'
 import { fingerprintClone, type MemoryEntry, type ProjectMemory } from '../project-memory.ts'
 import { toScanProject } from '../to-scan-project.ts'
 import type { ActionOptions } from './action-options.ts'
-import { rescanResult } from './rescan.ts'
+import { type RescanOptions, rescanResult } from './rescan.ts'
+import { attempt } from '../../shared/action.ts'
 
 /** Below this many calls left for the hour, GitHub is not read again on its own: a refresh of the project costs a few calls and the quota is shared with everything else the user runs */
 const minimumCalls = 300
@@ -76,11 +77,21 @@ export async function liveProject(options: Readonly<LiveOptions>): Promise<LiveR
   const remote = entry.isPaused ? 'paused' : 'fresh'
   const fingerprint = await fingerprintClone(entry.result.project.local)
   if (fingerprint === entry.fingerprint && (since === '' || since === fingerprint)) return { changed: false, fingerprint, ok: true, remote }
-  try {
+  return attempt(async () => {
     const result = await checkAgain(entry, options)
     memory.remember(result, fingerprint, entry)
     return { changed: true, fingerprint, ok: true, project: toScanProject(result), remote, target: options.target }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
+}
+
+/**
+ * Scan one project again, after an action changed it. The page puts the answer in place of the project, so the rest of the list stays and the scan of everything is not redone
+ * @param options what to scan, see `rescanResult`
+ * @returns the project as it is now, undefined when it is gone, or the reason it could not be scanned
+ * @example const result = await rescanProject({ gh: ghCli, git: realGit, name: 'finga', owner: 'Shuunen', rules, target })
+ */
+export async function rescanProject(options: Readonly<RescanOptions>): Promise<RescanResult> {
+  const outcome = await rescanResult(options)
+  if (!outcome.ok) return outcome
+  return { ok: true, project: outcome.result === undefined ? undefined : toScanProject(outcome.result), target: outcome.target }
 }

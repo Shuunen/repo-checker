@@ -1,5 +1,6 @@
 import type { Actions } from './actions/actions-contract.ts'
-import { createApp, type ScanRunner } from './app.ts'
+import { createApp } from './app.ts'
+import type { ScanRunner } from './stream-scan.ts'
 
 export const worksFine: Actions = {
   archive: () => Promise.resolve({ message: 'archived', ok: true }),

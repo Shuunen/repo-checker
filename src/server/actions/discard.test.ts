@@ -125,7 +125,7 @@ describe(discardClone, () => {
     expect.hasAssertions()
     const { target } = await makeWorkspace()
     const clone: LocalClone = { branches: [], changedFiles: ['?? x'], currentBranch: 'wip', fetchFailed: false, folderName: 'old', localOnlyBranches: ['wip'], origin: 'git@github.com:Owner/old.git', path: path.join(target, 'old'), problem: undefined, slug: 'owner/old', stashes: [], unpushed: [] }
-    const readers = { readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve([clone])) }
+    const readers = { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve([clone])), readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)) }
     const fingerprint = await fingerprintFor(readers, target)
     const result = await discardClone({ fingerprint, gh: fakeGh(), git: readers, name: 'old', owner: 'Owner', target })
     expect(result).toStrictEqual({ ok: false, reason: 'no branch of the clone exists on GitHub, so there is nowhere to go back to: delete the clone by hand if it is worthless' })
@@ -136,7 +136,7 @@ describe(discardClone, () => {
     const { folder, git: real, target } = await makeWorkspace()
     await git(folder, 'stash', 'clear')
     const lying = async (file: string, options: Readonly<{ shouldFetch: boolean }>) => ({ ...(await real.readClone(file, options)), localOnlyBranches: ['wip', 'ghost'] })
-    const readers = { readClone: vi.fn<GitReaders['readClone']>(lying), readClones: real.readClones }
+    const readers = { listClones: real.listClones, readClone: vi.fn<GitReaders['readClone']>(lying) }
     const fingerprint = await fingerprintFor(readers, target)
     const result = await discardClone({ fingerprint, gh: fakeGh(), git: readers, name: 'old', owner: 'Owner', target })
     expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('git branch -D ghost failed') })
@@ -148,12 +148,12 @@ describe(discardClone, () => {
     const { git: real, target } = await makeWorkspace()
     let reads = 0
     const readers = {
+      listClones: real.listClones,
       readClone: vi.fn<GitReaders['readClone']>(async (file, options) => {
         reads += 1
         const clone = await real.readClone(file, options)
         return leftBehindAfter(clone, reads)
       }),
-      readClones: real.readClones,
     }
     const fingerprint = await fingerprintFor(readers, target)
     reads = 1

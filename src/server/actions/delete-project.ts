@@ -1,12 +1,12 @@
 import { rm } from 'node:fs/promises'
 import path from 'node:path'
 import { invariant } from 'es-toolkit'
-import type { ActionResult, ProjectDeletePreview } from '../../shared/action.ts'
+import { type ActionResult, attempt, type ProjectDeletePreview, refused } from '../../shared/action.ts'
 import type { GithubRepo, LocalClone } from '../../shared/project.ts'
 import { getRepo } from '../inventory/github.ts'
 import type { ActionOptions } from './action-options.ts'
 import { missingDeleteScope, refreshCommand } from './delete-scope.ts'
-import { checkFolderOfProjects, isRepoName } from './guards.ts'
+import { checkFolderOfProjects } from './guards.ts'
 import { lostWith } from './unsaved-summary.ts'
 
 /** What a delete of a project would remove */
@@ -24,18 +24,17 @@ type Found = { clone: LocalClone | undefined; ok: true; repo: GithubRepo | undef
  * @throws {Error} when gh fails for a reason other than a 404
  */
 async function findProject({ gh, git, name, owner, target }: Readonly<ActionOptions>): Promise<Found> {
-  if (!isRepoName(name)) return { ok: false, reason: `${name} is not a repo name` }
   const single = await checkFolderOfProjects(target)
-  if (single !== undefined) return { ok: false, reason: single }
+  if (single !== undefined) return refused(single)
   const slug = `${owner}/${name}`
   const repo = await getRepo(gh, slug)
-  if (repo !== undefined && repo.slug !== slug.toLowerCase()) return { ok: false, reason: `${slug} was renamed or moved to ${repo.slug}, scan again` }
-  const clones = await git.readClones(target, { shouldFetch: false })
+  if (repo !== undefined && repo.slug !== slug.toLowerCase()) return refused(`${slug} was renamed or moved to ${repo.slug}, scan again`)
+  const clones = await git.listClones(target)
   const matches = clones.filter(clone => clone.slug === slug.toLowerCase() || (repo === undefined && clone.folderName === name))
-  if (matches.length > 1) return { ok: false, reason: `${matches.length} clones of ${slug} in ${target}, delete the extra ones by hand` }
-  const [clone] = matches
-  if (repo === undefined && clone === undefined) return { ok: false, reason: `${slug} is neither on GitHub nor in ${target}, nothing to delete` }
-  return { clone, ok: true, repo }
+  if (matches.length > 1) return refused(`${matches.length} clones of ${slug} in ${target}, delete the extra ones by hand`)
+  const [match] = matches
+  if (repo === undefined && match === undefined) return refused(`${slug} is neither on GitHub nor in ${target}, nothing to delete`)
+  return { clone: match && (await git.readClone(match.path, { shouldFetch: false })), ok: true, repo }
 }
 
 /**
@@ -49,10 +48,10 @@ async function findProject({ gh, git, name, owner, target }: Readonly<ActionOpti
  */
 async function deleteRepo({ gh, name, owner }: Readonly<ActionOptions>, slug: string): Promise<ActionResult | undefined> {
   const scope = await missingDeleteScope(gh)
-  if (scope !== undefined) return { ok: false, reason: scope }
+  if (scope !== undefined) return refused(scope)
   const deleted = await gh(['api', '--method', 'DELETE', `repos/${owner}/${name}`])
   if (deleted.ok) return undefined
-  return { ok: false, reason: `GitHub refused to delete ${slug}: ${deleted.stderr.trim()}${deleted.stderr.includes('403') ? `. If the token has no delete_repo scope, run: ${refreshCommand}` : ''}` }
+  return refused(`GitHub refused to delete ${slug}: ${deleted.stderr.trim()}${deleted.stderr.includes('403') ? `. If the token has no delete_repo scope, run: ${refreshCommand}` : ''}`)
 }
 
 /**
@@ -71,17 +70,15 @@ async function removeClone(folder: string, target: string) {
  * @returns the repo, the clone with what would be lost, or the reason the delete is refused
  * @example const preview = await previewDeleteProject({ gh: ghCli, git: realGit, name: 'old-thing', owner: 'Shuunen', target })
  */
-export async function previewDeleteProject(options: Readonly<ActionOptions>): Promise<ProjectDeletePreview> {
-  try {
+export function previewDeleteProject(options: Readonly<ActionOptions>): Promise<ProjectDeletePreview> {
+  return attempt(async () => {
     const found = await findProject(options)
     if (!found.ok) return found
     const { clone, repo } = found
     const scope = repo === undefined ? undefined : await missingDeleteScope(options.gh)
-    if (scope !== undefined) return { ok: false, reason: scope }
+    if (scope !== undefined) return refused(scope)
     return { clone: clone && (await lostWith(clone)), ok: true, repo: repo?.slug }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
 }
 
 /**
@@ -90,17 +87,15 @@ export async function previewDeleteProject(options: Readonly<ActionOptions>): Pr
  * @returns the result, refused with the reason when it cannot be done
  * @example const result = await deleteProject({ gh: ghCli, git: realGit, name: 'old-thing', owner: 'Shuunen', target })
  */
-export async function deleteProject(options: Readonly<ActionOptions>): Promise<ActionResult> {
-  try {
+export function deleteProject(options: Readonly<ActionOptions>): Promise<ActionResult> {
+  return attempt(async () => {
     const found = await findProject(options)
     if (!found.ok) return found
     const { clone, repo } = found
-    const refused = repo === undefined ? undefined : await deleteRepo(options, repo.slug)
-    if (refused !== undefined) return refused
+    const refusal = repo === undefined ? undefined : await deleteRepo(options, repo.slug)
+    if (refusal !== undefined) return refusal
     if (clone !== undefined) await removeClone(clone.path, options.target)
     const done = [repo && `the repo ${repo.slug} on GitHub`, clone && `the clone ${clone.path}`].filter(Boolean)
     return { message: `deleted ${done.join(' and ')}`, ok: true }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
 }

@@ -7,7 +7,7 @@ import type { GhRunner } from '../inventory/github.ts'
 import { brokenClone } from '../rules/sync/broken-clone.rule.ts'
 import { notCloned } from '../rules/sync/not-cloned.rule.ts'
 import type { GitReaders } from './action-options.ts'
-import { rescanProject } from './rescan.ts'
+import { rescanProject } from './live.ts'
 
 const rules = splitRules([notCloned, brokenClone])
 const apiRepo = { archived: false, fork: false, name: 'finga', owner: { login: 'Owner' }, private: false, pushed_at: '2026-01-01T00:00:00Z' }
@@ -37,7 +37,7 @@ function aClone(fields: Readonly<Partial<LocalClone>> = {}): LocalClone {
  * @returns the readers
  */
 function readers(listed: readonly LocalClone[], fresh = aClone()): GitReaders {
-  return { readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(fresh)), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve([...listed])) }
+  return { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve([...listed])), readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(fresh)) }
 }
 
 /**
@@ -68,9 +68,9 @@ describe(rescanProject, () => {
   it('does not fetch a folder that is not a usable clone, found by its folder name', async () => {
     expect.hasAssertions()
     const broken = aClone({ origin: undefined, problem: 'no-git', slug: undefined })
-    const git = readers([broken])
+    const git = readers([broken], broken)
     const result = await rescanProject({ gh: fakeGh('missing'), git, name: 'finga', owner: 'Owner', rules, target: await makeTarget() })
-    expect(git.readClone).not.toHaveBeenCalled()
+    expect(git.readClone).toHaveBeenCalledWith(broken.path, { shouldFetch: false })
     expect(result).toMatchObject({ ok: true, project: { findings: [{ ruleId: 'broken-clone' }], project: { name: 'finga' } } })
   })
 
@@ -78,11 +78,6 @@ describe(rescanProject, () => {
     expect.hasAssertions()
     const target = await makeTarget()
     await expect(rescanProject({ gh: fakeGh('missing'), git: readers([]), name: 'finga', owner: 'Owner', rules, target })).resolves.toStrictEqual({ ok: true, project: undefined, target })
-  })
-
-  it.each(['../finga', '.', '..', 'a/b', ''])('refuses the name "%s", it is not a repo name', async name => {
-    expect.hasAssertions()
-    await expect(rescanProject({ gh: fakeGh(), git: readers([]), name, owner: 'Owner', rules, target: await makeTarget() })).resolves.toStrictEqual({ ok: false, reason: `${name} is not a repo name` })
   })
 
   it('refuses when the target is a single project', async () => {

@@ -1,16 +1,15 @@
 import { invariant } from 'es-toolkit'
-import type { RescanResult } from '../../shared/scan-event.ts'
 import { checkProjects, type ProjectResult } from '../check-projects.ts'
 import type { SplitRules } from '../check-project.ts'
 import { getRepo } from '../inventory/github.ts'
 import { matchProjects } from '../inventory/match.ts'
 import { fingerprintClone, type ProjectMemory } from '../project-memory.ts'
-import { toScanProject } from '../to-scan-project.ts'
 import type { ActionOptions } from './action-options.ts'
-import { checkFolderOfProjects, isRepoName } from './guards.ts'
+import { checkFolderOfProjects } from './guards.ts'
+import { attempt, refused, type Refusable } from '../../shared/action.ts'
 
 /** What scanning one project again needs */
-interface RescanOptions extends ActionOptions {
+export interface RescanOptions extends ActionOptions {
   /** Remembers the result, so the watch of the project starts from it and a scan can reuse it */
   memory?: ProjectMemory
   /** The rules split by flavor */
@@ -18,7 +17,7 @@ interface RescanOptions extends ActionOptions {
 }
 
 /** What scanning one project again found: the checked project, undefined when it is gone, or the reason it could not be scanned */
-export type RescanOutcome = { ok: true; result: ProjectResult | undefined; target: string } | { ok: false; reason: string }
+export type RescanOutcome = Refusable<{ result: ProjectResult | undefined; target: string }>
 
 /**
  * Scan one project again and keep the result as it is checked: its repo from GitHub, its clone read with a fresh fetch, then the same checks as the scan. The pull request counts, the CI status and the date of the last own commit, which only a full scan reads, are kept from what the memory holds
@@ -33,19 +32,18 @@ export type RescanOutcome = { ok: true; result: ProjectResult | undefined; targe
  * @returns the checked project, undefined when it is gone, or the reason it could not be scanned
  * @example const outcome = await rescanResult({ gh: ghCli, git: realGit, name: 'finga', owner: 'Shuunen', rules, target })
  */
-export async function rescanResult({ gh, git, memory, name, owner, rules, target }: Readonly<RescanOptions>): Promise<RescanOutcome> {
-  try {
-    if (!isRepoName(name)) return { ok: false, reason: `${name} is not a repo name` }
+export function rescanResult({ gh, git, memory, name, owner, rules, target }: Readonly<RescanOptions>): Promise<RescanOutcome> {
+  return attempt(async () => {
     const single = await checkFolderOfProjects(target)
-    if (single !== undefined) return { ok: false, reason: single }
+    if (single !== undefined) return refused(single)
     const slug = `${owner}/${name}`
     const found = await getRepo(gh, slug)
     const kept = memory?.entry(name)?.result.project.github
     const repo = found !== undefined && kept !== undefined ? { ...found, ci: kept.ci, lastOwnCommitAt: kept.lastOwnCommitAt, pullRequests: kept.pullRequests } : found
-    const listed = await git.readClones(target, { shouldFetch: false })
+    const listed = await git.listClones(target)
     const listedClone = listed.find(clone => clone.slug === slug.toLowerCase() || clone.folderName === name)
     const fingerprint = await fingerprintClone(listedClone)
-    const clone = listedClone?.problem === undefined && listedClone !== undefined ? await git.readClone(listedClone.path, { shouldFetch: true }) : listedClone
+    const clone = listedClone && (await git.readClone(listedClone.path, { shouldFetch: listedClone.problem === undefined }))
     const [project] = matchProjects(clone === undefined ? [] : [clone], repo === undefined ? [] : [repo], owner)
     if (project === undefined) {
       memory?.forget(name)
@@ -55,19 +53,5 @@ export async function rescanResult({ gh, git, memory, name, owner, rules, target
     invariant(result !== undefined, 'one project gives one result')
     memory?.remember(result, fingerprint)
     return { ok: true, result, target }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
-}
-
-/**
- * Scan one project again, after an action changed it. The page puts the answer in place of the project, so the rest of the list stays and the scan of everything is not redone
- * @param options what to scan, see `rescanResult`
- * @returns the project as it is now, undefined when it is gone, or the reason it could not be scanned
- * @example const result = await rescanProject({ gh: ghCli, git: realGit, name: 'finga', owner: 'Shuunen', rules, target })
- */
-export async function rescanProject(options: Readonly<RescanOptions>): Promise<RescanResult> {
-  const outcome = await rescanResult(options)
-  if (!outcome.ok) return outcome
-  return { ok: true, project: outcome.result === undefined ? undefined : toScanProject(outcome.result), target: outcome.target }
+  })
 }

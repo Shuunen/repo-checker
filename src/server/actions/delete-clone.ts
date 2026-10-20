@@ -1,7 +1,7 @@
 import { rm } from 'node:fs/promises'
 import path from 'node:path'
 import { invariant } from 'es-toolkit'
-import type { ActionResult, DeletePreview } from '../../shared/action.ts'
+import { type ActionResult, attempt, type DeletePreview } from '../../shared/action.ts'
 import type { ActionOptions } from './action-options.ts'
 import { proveArchived } from './archived-proof.ts'
 import { listIgnoredFiles } from './ignored-files.ts'
@@ -12,13 +12,11 @@ import { listIgnoredFiles } from './ignored-files.ts'
  * @returns the path and the ignored files, or the reason the delete is refused
  * @example const preview = await previewDeleteClone({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target })
  */
-export async function previewDeleteClone(options: Readonly<ActionOptions>): Promise<DeletePreview> {
-  try {
+export function previewDeleteClone(options: Readonly<ActionOptions>): Promise<DeletePreview> {
+  return attempt(async () => {
     const proof = await proveArchived(options, 'delete-clone')
     return proof.ok ? { ignoredFiles: await listIgnoredFiles(proof.clone.path), ok: true, path: proof.clone.path } : proof
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
 }
 
 /**
@@ -27,14 +25,12 @@ export async function previewDeleteClone(options: Readonly<ActionOptions>): Prom
  * @returns the result, refused with the reason when the proof fails
  * @example const result = await deleteClone({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target })
  */
-export async function deleteClone(options: Readonly<ActionOptions>): Promise<ActionResult> {
-  try {
+export function deleteClone(options: Readonly<ActionOptions>): Promise<ActionResult> {
+  return attempt(async () => {
     const proof = await proveArchived(options, 'delete-clone')
     if (!proof.ok) return proof
     invariant(path.dirname(proof.clone.path) === options.target, 'a clone is a direct child of the folder of projects')
     await rm(proof.clone.path, { force: true, recursive: true })
     return { message: `deleted the clone ${proof.clone.path}`, ok: true }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
 }

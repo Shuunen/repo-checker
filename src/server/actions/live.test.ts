@@ -41,7 +41,7 @@ function aClone(folder: string, fields: Readonly<Partial<LocalClone>> = {}): Loc
  * @returns the readers
  */
 function readers(clone: LocalClone): GitReaders {
-  return { readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve([clone])) }
+  return { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve([clone])), readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)) }
 }
 
 /**
@@ -71,14 +71,15 @@ describe(liveProject, () => {
   it('says the project is gone when it has neither a repo nor a folder', async () => {
     expect.hasAssertions()
     const memory = createProjectMemory()
-    const answer = await liveProject({ gh: fakeGh(5000, 'missing'), git: { readClone: vi.fn<GitReaders['readClone']>(), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve([])) }, memory, name: 'finga', owner: 'Owner', rules, since: '', target })
+    const answer = await liveProject({ gh: fakeGh(5000, 'missing'), git: { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve([])), readClone: vi.fn<GitReaders['readClone']>() }, memory, name: 'finga', owner: 'Owner', rules, since: '', target })
     expect(answer).toStrictEqual({ changed: true, fingerprint: '', ok: true, project: undefined, remote: 'fresh', target })
   })
 
   it('reports why the project could not be scanned', async () => {
     expect.hasAssertions()
-    const answer = await liveProject({ gh: fakeGh(), git: readers(aClone('/nowhere')), memory: createProjectMemory(), name: '../x', owner: 'Owner', rules, since: '', target })
-    expect(answer).toStrictEqual({ ok: false, reason: '../x is not a repo name' })
+    const gh = vi.fn<GhRunner>(() => Promise.reject(new Error('gh is gone')))
+    const answer = await liveProject({ gh, git: readers(aClone('/nowhere')), memory: createProjectMemory(), name: 'finga', owner: 'Owner', rules, since: '', target })
+    expect(answer).toStrictEqual({ ok: false, reason: 'gh is gone' })
   })
 
   it('says nothing changed, without a call to GitHub or a read of the clone, when the page holds the fingerprint', async () => {
@@ -133,7 +134,7 @@ describe(liveProject, () => {
     expect.hasAssertions()
     const { folder, fingerprint, memory } = await setup({ now: 1_000_000 })
     await writeFile(path.join(folder, 'notes.txt'), 'hello')
-    const git: GitReaders = { readClone: vi.fn<GitReaders['readClone']>(() => Promise.reject(new Error('git is gone'))), readClones: vi.fn<GitReaders['readClones']>() }
+    const git: GitReaders = { listClones: vi.fn<GitReaders['listClones']>(), readClone: vi.fn<GitReaders['readClone']>(() => Promise.reject(new Error('git is gone'))) }
     await expect(liveProject({ gh: fakeGh(), git, memory, name: 'finga', owner: 'Owner', rules, since: fingerprint, target })).resolves.toStrictEqual({ ok: false, reason: 'git is gone' })
   })
 
@@ -141,7 +142,7 @@ describe(liveProject, () => {
     expect.hasAssertions()
     const { folder, fingerprint, memory } = await setup({ now: 1_000_000 })
     await writeFile(path.join(folder, 'notes.txt'), 'hello')
-    const git: GitReaders = { readClone: vi.fn<GitReaders['readClone']>(() => Promise.reject(new Error('boom').message)), readClones: vi.fn<GitReaders['readClones']>() }
+    const git: GitReaders = { listClones: vi.fn<GitReaders['listClones']>(), readClone: vi.fn<GitReaders['readClone']>(() => Promise.reject(new Error('boom').message)) }
     await expect(liveProject({ gh: fakeGh(), git, memory, name: 'finga', owner: 'Owner', rules, since: fingerprint, target })).resolves.toStrictEqual({ ok: false, reason: 'boom' })
   })
 

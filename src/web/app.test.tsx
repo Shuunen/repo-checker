@@ -5,7 +5,7 @@ import { aFinding, aProject, scanRequest, sseResponse } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 import type { FetchScan } from './scan/scan-query.ts'
 
-const jozzo = aProject('jozzo', [aFinding({ actions: ['unarchive-push-rearchive'], messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })])
+const jozzo = aProject('jozzo', [aFinding({ actions: ['unarchive-push'], messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })])
 const finga = aProject('finga', [aFinding({ actions: ['clone'], messageId: 'missing', ruleId: 'not-cloned', scope: 'project', severity: 'info' })], { local: undefined })
 const scanEvents: ScanEvent[] = [
   { isNitpick: false, target: '/projects', type: 'started' },

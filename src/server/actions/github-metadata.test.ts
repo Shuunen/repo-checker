@@ -8,7 +8,7 @@ import { previewSyncGithubMetadata, syncGithubMetadata } from './github-metadata
 
 const apiRepo = (fields: Readonly<Record<string, unknown>> = {}) => ({ archived: false, default_branch: 'master', fork: false, name: 'finga', owner: { login: 'Owner' }, private: false, pushed_at: '2026-01-01T00:00:00Z', ...fields })
 const aClone = (folder: string) => ({ branches: [], changedFiles: [], currentBranch: 'master', fetchFailed: false, folderName: 'finga', localOnlyBranches: [], origin: undefined, path: folder, problem: undefined, slug: 'owner/finga', stashes: [], unpushed: [] }) satisfies LocalClone
-const readers = (clones: LocalClone[]): GitReaders => ({ readClone: () => Promise.resolve(clones[0] as LocalClone), readClones: () => Promise.resolve(clones) })
+const readers = (clones: LocalClone[]): GitReaders => ({ listClones: () => Promise.resolve(clones), readClone: () => Promise.resolve(clones[0] as LocalClone) })
 
 /**
  * A GitHub that answers the first read with `before`, accepts or refuses the change, then answers the read back with `after`
@@ -201,11 +201,10 @@ describe(syncGithubMetadata, () => {
   })
 
   it.each([
-    { clones: 1, name: '../finga', pkg: pkgText, reason: 'is not a repo name', repo: apiRepo(), title: 'a name that is not a repo name' },
     { clones: 1, name: 'finga', pkg: pkgText, reason: 'does not exist on GitHub any more', repo: undefined, title: 'a repo gone from GitHub' },
     { clones: 1, name: 'finga', pkg: pkgText, reason: 'is archived now', repo: apiRepo({ archived: true }), title: 'an archived repo' },
-    { clones: 0, name: 'finga', pkg: pkgText, reason: 'found 0', repo: apiRepo(), title: 'no clone' },
-    { clones: 2, name: 'finga', pkg: pkgText, reason: 'found 2', repo: apiRepo(), title: 'two clones' },
+    { clones: 0, name: 'finga', pkg: pkgText, reason: 'no clone of', repo: apiRepo(), title: 'no clone' },
+    { clones: 2, name: 'finga', pkg: pkgText, reason: '2 clones of', repo: apiRepo(), title: 'two clones' },
     { clones: 1, name: 'finga', pkg: undefined, reason: 'has no package.json', repo: apiRepo(), title: 'a clone without package.json' },
   ])('refuses $title', async ({ clones, name, pkg, reason, repo }) => {
     expect.hasAssertions()

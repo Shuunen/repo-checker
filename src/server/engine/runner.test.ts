@@ -2,7 +2,8 @@ import { buildContext } from './context.ts'
 import { defineRule, formatMessage } from './define-rule.ts'
 import { memoryIo } from './io.ts'
 import { toJsonText } from './rule-tester.ts'
-import { checkProject, type FilePlan, fixProject, planAllFixes, planFixes } from './runner.ts'
+import type { FixPlan } from '../../shared/action.ts'
+import { checkProject, fixProject, planAllFixes, planFixes } from './runner.ts'
 
 const schema = 'https://json.schemastore.org/package'
 
@@ -43,8 +44,8 @@ const renovateRule = defineRule({
  * @returns the mock
  */
 function mockConfirm(answer: boolean) {
-  const calls: (readonly FilePlan[])[] = []
-  const confirm = (plans: readonly FilePlan[]) => {
+  const calls: (readonly FixPlan[])[] = []
+  const confirm = (plans: readonly FixPlan[]) => {
     calls.push(plans)
     return Promise.resolve(answer)
   }

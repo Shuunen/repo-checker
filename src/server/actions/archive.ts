@@ -1,7 +1,6 @@
-import type { ActionResult } from '../../shared/action.ts'
+import { type ActionResult, attempt, refused } from '../../shared/action.ts'
 import { getRepo } from '../inventory/github.ts'
 import type { ActionOptions } from './action-options.ts'
-import { isRepoName } from './guards.ts'
 
 /**
  * Set the archived flag of the repo on GitHub, after proving again that it is still there, still the same repo and not in that state already. Nothing is deleted. The repo is read back from GitHub to be sure a call that said ok did something
@@ -12,22 +11,19 @@ import { isRepoName } from './guards.ts'
  * @param isArchived the value to set
  * @returns the result, refused with the reason when the proof fails
  */
-async function setArchived({ gh, name, owner }: Readonly<ActionOptions>, isArchived: boolean): Promise<ActionResult> {
+function setArchived({ gh, name, owner }: Readonly<ActionOptions>, isArchived: boolean): Promise<ActionResult> {
   const verb = isArchived ? 'archive' : 'unarchive'
-  try {
-    if (!isRepoName(name)) return { ok: false, reason: `${name} is not a repo name` }
+  return attempt(async () => {
     const slug = `${owner}/${name}`
     const repo = await getRepo(gh, slug)
-    if (repo === undefined) return { ok: false, reason: `${slug} does not exist on GitHub any more` }
-    if (repo.slug !== slug.toLowerCase()) return { ok: false, reason: `${slug} was renamed or moved to ${repo.slug}, scan again` }
-    if (repo.isArchived === isArchived) return { ok: false, reason: `${slug} is already ${isArchived ? 'archived' : 'not archived'}` }
+    if (repo === undefined) return refused(`${slug} does not exist on GitHub any more`)
+    if (repo.slug !== slug.toLowerCase()) return refused(`${slug} was renamed or moved to ${repo.slug}, scan again`)
+    if (repo.isArchived === isArchived) return refused(`${slug} is already ${isArchived ? 'archived' : 'not archived'}`)
     const patched = await gh(['api', '--method', 'PATCH', `repos/${slug}`, '-F', `archived=${isArchived}`])
-    if (!patched.ok) return { ok: false, reason: `GitHub refused to ${verb} ${slug}: ${patched.stderr.trim()}` }
+    if (!patched.ok) return refused(`GitHub refused to ${verb} ${slug}: ${patched.stderr.trim()}`)
     const after = await getRepo(gh, slug)
-    return after?.isArchived === isArchived ? { message: `${verb}d ${slug} on GitHub`, ok: true } : { ok: false, reason: `GitHub said ok but ${slug} did not change, ${verb} it by hand: gh api --method PATCH repos/${slug} -F archived=${isArchived}` }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+    return after?.isArchived === isArchived ? { message: `${verb}d ${slug} on GitHub`, ok: true } : refused(`GitHub said ok but ${slug} did not change, ${verb} it by hand: gh api --method PATCH repos/${slug} -F archived=${isArchived}`)
+  })
 }
 
 /**

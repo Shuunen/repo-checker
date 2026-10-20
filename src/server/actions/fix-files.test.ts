@@ -75,7 +75,7 @@ async function makeWorkspace(fields: Readonly<Partial<LocalClone>> = {}, listed?
     ...fields,
     ...extra,
   })
-  const git: GitReaders = { readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(read({}))), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve((listed ?? [{}]).map(extra => read(extra)))) }
+  const git: GitReaders = { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve((listed ?? [{}]).map(extra => read(extra)))), readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(read({}))) }
   return { folder, git, target }
 }
 
@@ -169,19 +169,13 @@ describe(previewFixFiles, () => {
     expect(workspace.git.readClone).toHaveBeenCalledWith(workspace.folder, { shouldFetch: false })
   })
 
-  it.each(['../app', '.', '..', 'a/b', ''])('refuses the name "%s", it is not a repo name', async name => {
-    expect.hasAssertions()
-    const workspace = await makeWorkspace()
-    await expect(previewFixFiles({ gh, git: workspace.git, name, owner: 'Owner', rules, target: workspace.target })).resolves.toStrictEqual({ ok: false, reason: `${name} is not a repo name` })
-  })
-
   it.each([
     ['an Error', new Error('disk is gone'), 'disk is gone'],
     ['a string', 'disk is gone', 'disk is gone'],
   ])('reports %s thrown while reading', async (_name, thrown, reason) => {
     expect.hasAssertions()
     const workspace = await makeWorkspace()
-    vi.spyOn(workspace.git, 'readClones').mockRejectedValue(thrown)
+    vi.spyOn(workspace.git, 'listClones').mockRejectedValue(thrown)
     await expect(previewFixFiles({ gh, git: workspace.git, name: 'app', owner: 'Owner', rules, target: workspace.target })).resolves.toStrictEqual({ ok: false, reason })
   })
 })
@@ -255,7 +249,7 @@ describe(fixFiles, () => {
   ])('reports %s thrown while reading', async (_name, thrown, reason) => {
     expect.hasAssertions()
     const workspace = await makeWorkspace()
-    vi.spyOn(workspace.git, 'readClones').mockRejectedValue(thrown)
+    vi.spyOn(workspace.git, 'listClones').mockRejectedValue(thrown)
     await expect(fixFiles({ fingerprint: 'x', gh, git: workspace.git, name: 'app', owner: 'Owner', rules, target: workspace.target })).resolves.toStrictEqual({ ok: false, reason })
   })
 })

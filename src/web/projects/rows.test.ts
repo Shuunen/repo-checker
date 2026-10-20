@@ -3,14 +3,14 @@ import { toRows } from './rows.ts'
 
 const now = new Date('2026-10-14T12:00:00Z')
 
-const unsaved = aFinding({ actions: ['unarchive-push-rearchive', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
+const unsaved = aFinding({ actions: ['unarchive-push', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
 
 describe(toRows, () => {
   it('turns a project into a row', () => {
     expect.hasAssertions()
     const [row] = toRows([aProject('jozzo', [unsaved, aFinding({ severity: 'error' }), aFinding(), aFinding(), aFinding({ severity: 'info' })])], now)
     expect(row).toStrictEqual({
-      actions: ['unarchive-push-rearchive', 'discard'],
+      actions: ['unarchive-push', 'discard'],
       branch: 'master',
       branchPill: undefined,
       hasMajorUpdate: false,

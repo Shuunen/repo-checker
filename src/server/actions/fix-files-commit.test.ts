@@ -57,7 +57,7 @@ async function makeRepo(changed = 'c.txt') {
     stashes: [],
     unpushed: [],
   }
-  const git: GitReaders = { readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve([clone])) }
+  const git: GitReaders = { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve([clone])), readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)) }
   const options = { gh, git, name: 'app', owner: 'Owner', rules, target }
   const preview = await previewFixFiles(options)
   if (!preview.ok) throw new Error(preview.reason)

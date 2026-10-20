@@ -1,35 +1,35 @@
-import { Button } from '@heroui/react'
 import type { DeletePreview } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
 import { slugOf } from '../projects/detail.ts'
-import { DeleteCloneDialog } from './delete-clone-dialog.tsx'
-import { usePreviewedDialog } from './use-previewed-dialog.ts'
+import { ActionTrigger } from './action-trigger.tsx'
+import { ConfirmDialog } from './confirm-dialog.tsx'
+import { IgnoredFiles } from './ignored-files.tsx'
+import { PreviewBody } from './preview-body.tsx'
+import { useActionDialog } from './use-action-dialog.ts'
 
 /**
- * The Delete clone action: the button opens a confirmation that first asks the server to prove again that nothing would be lost, and the delete only runs when it is confirmed. The scan runs again after it worked
+ * The Delete clone action: the button opens a confirmation that first asks the server to prove again, with a fresh git fetch, that nothing would be lost, and lists the ignored files that would be. The delete only runs when it is confirmed. The scan runs again after it worked
  * @param props the props
  * @param props.project the project whose clone is deleted
  * @returns the button and its dialog
  */
 export function DeleteCloneButton({ project }: Readonly<{ project: Project }>) {
-  const dialog = usePreviewedDialog<DeletePreview>(project.name, 'delete-clone')
+  const dialog = useActionDialog<DeletePreview>(project.name, 'delete-clone')
   return (
     <>
-      <Button data-testid="action-delete-clone" onPress={dialog.handleOpen} size="sm" variant="outline">
+      <ActionTrigger onPress={dialog.handleOpen} testId="action-delete-clone">
         Delete clone
-      </Button>
-      <DeleteCloneDialog
-        error={dialog.error}
-        isLoading={dialog.isLoading}
-        isOpen={dialog.isOpen}
-        isPending={dialog.isPending}
-        onCancel={dialog.handleClose}
-        onConfirm={dialog.handleConfirm}
-        onOpenChange={dialog.handleOpenChange}
-        preview={dialog.preview}
-        previewError={dialog.previewError}
-        slug={slugOf(project)}
-      />
+      </ActionTrigger>
+      <ConfirmDialog confirmLabel="Delete clone" dialog={dialog} heading={`Delete the local clone of ${slugOf(project)}?`} isDanger prefix="delete">
+        <PreviewBody checking="Checking again, with a fresh git fetch, that nothing would be lost…" dialog={dialog} prefix="delete">
+          {preview => (
+            <>
+              <p>{`This deletes the folder ${preview.path} for good. Everything in it is on GitHub, except the files git ignores:`}</p>
+              <IgnoredFiles files={preview.ignoredFiles} />
+            </>
+          )}
+        </PreviewBody>
+      </ConfirmDialog>
     </>
   )
 }

@@ -4,7 +4,7 @@ import { createClaudeSessions, type SpawnClaude } from './claude-session.ts'
 import { createUpdateActions, startUpdateProject } from './update-project.ts'
 
 const clone = { branches: [], changedFiles: [], currentBranch: 'master', fetchFailed: false, folderName: 'finga', localOnlyBranches: [], origin: undefined, path: '/projects/finga', problem: undefined, slug: 'owner/finga', stashes: [], unpushed: [] } satisfies LocalClone
-const readers = (clones: LocalClone[]): GitReaders => ({ readClone: () => Promise.resolve(clone), readClones: () => Promise.resolve(clones) })
+const readers = (clones: LocalClone[]): GitReaders => ({ listClones: () => Promise.resolve(clones), readClone: () => Promise.resolve(clone) })
 const options = (name: string, clones = [clone]) => ({ gh: vi.fn<() => never>(), git: readers(clones), name, owner: 'Owner', target: '/nowhere' })
 
 /**
@@ -28,10 +28,7 @@ describe(startUpdateProject, () => {
     expect(folders).toStrictEqual(['/projects/finga'])
   })
 
-  it.each([
-    ['a name that is a path', options('../finga'), 'is not a repo name'],
-    ['a project without usable clone', options('finga', []), 'no clone of Owner/finga'],
-  ])('refuses %s', async (_name, given, reason) => {
+  it.each([['a project without usable clone', options('finga', []), 'no clone of Owner/finga']])('refuses %s', async (_name, given, reason) => {
     expect.hasAssertions()
     const { folders, sessions } = sessionsOnFakeClaude()
     await expect(startUpdateProject(given, sessions)).resolves.toMatchObject({ ok: false, reason: expect.stringContaining(reason) as string })
@@ -43,10 +40,10 @@ describe(startUpdateProject, () => {
     const { sessions } = sessionsOnFakeClaude()
     await startUpdateProject(options('finga'), sessions)
     await expect(startUpdateProject(options('finga'), sessions)).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('already updating') as string })
-    const failing = { ...options('finga'), git: { readClone: () => Promise.reject(new Error('boom')), readClones: () => Promise.reject(new Error('boom')) } }
+    const failing = { ...options('finga'), git: { listClones: () => Promise.reject(new Error('boom')), readClone: () => Promise.reject(new Error('boom')) } }
     await expect(startUpdateProject(failing, sessions)).resolves.toStrictEqual({ ok: false, reason: 'boom' })
     // oxlint-disable-next-line prefer-promise-reject-errors
-    const odd = { ...options('finga'), git: { readClone: () => Promise.reject(new TypeError('odd')), readClones: () => Promise.reject('plain text') } }
+    const odd = { ...options('finga'), git: { listClones: () => Promise.reject('plain text'), readClone: () => Promise.reject(new TypeError('odd')) } }
     await expect(startUpdateProject(odd, sessions)).resolves.toStrictEqual({ ok: false, reason: 'plain text' })
   })
 })

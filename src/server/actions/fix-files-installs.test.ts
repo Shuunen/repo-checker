@@ -42,7 +42,7 @@ async function makeWorkspace(changedFiles: string[] = []) {
   await mkdir(folder)
   await writeFile(path.join(folder, 'a.txt'), 'old a')
   const clone: Awaited<ReturnType<GitReaders['readClone']>> = { branches: [], changedFiles, currentBranch: 'master', fetchFailed: false, folderName: 'app', localOnlyBranches: [], origin: 'git@github.com:Owner/app.git', path: folder, problem: undefined, slug: 'owner/app', stashes: [], unpushed: [] }
-  const git: GitReaders = { readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve([clone])) }
+  const git: GitReaders = { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve([clone])), readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)) }
   return { folder, options: { gh, git, name: 'app', owner: 'Owner', rules, target } }
 }
 

@@ -4,7 +4,7 @@ import type { ScanEvent } from '../shared/scan-event.ts'
 import { aFinding, aProject, scanRequest, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 
-const unsaved = aFinding({ actions: ['unarchive-push-rearchive', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
+const unsaved = aFinding({ actions: ['unarchive-push', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
 const base = aProject('old').project
 
 /**
@@ -28,7 +28,7 @@ function eventsWith(local: Readonly<Partial<LocalClone>>): ScanEvent[] {
  */
 async function openConfirmation(request: ReturnType<typeof scanRequest>) {
   renderApp(request, '/project/old')
-  fireEvent.click(await screen.findByTestId('action-unarchive-push-rearchive'))
+  fireEvent.click(await screen.findByTestId('action-unarchive-push'))
   await screen.findByTestId('unarchive-dialog-body')
   return request
 }

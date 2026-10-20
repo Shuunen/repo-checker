@@ -1,9 +1,12 @@
-import { Button } from '@heroui/react'
 import type { ForkDeletePreview } from '../../shared/action.ts'
 import type { Project } from '../../shared/project.ts'
+import { plural } from '../../shared/text.ts'
 import { slugOf } from '../projects/detail.ts'
-import { DeleteForkDialog } from './delete-fork-dialog.tsx'
-import { usePreviewedDialog } from './use-previewed-dialog.ts'
+import { ActionTrigger } from './action-trigger.tsx'
+import { ConfirmDialog } from './confirm-dialog.tsx'
+import { IgnoredFiles } from './ignored-files.tsx'
+import { PreviewBody } from './preview-body.tsx'
+import { useActionDialog } from './use-action-dialog.ts'
 
 /**
  * The Delete fork action: the button opens a confirmation that first asks the server to prove again, from GitHub, that the fork is pristine and that the token may delete, and the delete only runs when it is confirmed. The scan runs again after it worked
@@ -12,24 +15,24 @@ import { usePreviewedDialog } from './use-previewed-dialog.ts'
  * @returns the button and its dialog
  */
 export function DeleteForkButton({ project }: Readonly<{ project: Project }>) {
-  const dialog = usePreviewedDialog<ForkDeletePreview>(project.name, 'delete-fork')
+  const dialog = useActionDialog<ForkDeletePreview>(project.name, 'delete-fork')
+  const slug = slugOf(project)
   return (
     <>
-      <Button data-testid="action-delete-fork" onPress={dialog.handleOpen} size="sm" variant="outline">
+      <ActionTrigger onPress={dialog.handleOpen} testId="action-delete-fork">
         Delete fork
-      </Button>
-      <DeleteForkDialog
-        error={dialog.error}
-        isLoading={dialog.isLoading}
-        isOpen={dialog.isOpen}
-        isPending={dialog.isPending}
-        onCancel={dialog.handleClose}
-        onConfirm={dialog.handleConfirm}
-        onOpenChange={dialog.handleOpenChange}
-        preview={dialog.preview}
-        previewError={dialog.previewError}
-        slug={slugOf(project)}
-      />
+      </ActionTrigger>
+      <ConfirmDialog confirmLabel="Delete the fork" dialog={dialog} heading={`Delete the fork ${slug}?`} isDanger prefix="fork">
+        <PreviewBody checking="Checking again, comparing every branch with the parent, the open pull requests and your gh token…" dialog={dialog} prefix="fork">
+          {({ branches, clone, parent }) => (
+            <>
+              <p>{`This deletes the fork ${slug} on GitHub for good, it cannot be undone. ${plural(branches, 'branch')} compared with ${parent}: none has a commit that ${parent} does not have, and no pull request is open.`}</p>
+              {clone !== undefined && <p data-testid="fork-clone">{`Its clean local clone ${clone.path} is deleted too, with the files git ignores in it:`}</p>}
+              {clone !== undefined && <IgnoredFiles files={clone.ignoredFiles} />}
+            </>
+          )}
+        </PreviewBody>
+      </ConfirmDialog>
     </>
   )
 }

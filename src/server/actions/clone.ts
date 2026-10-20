@@ -1,8 +1,8 @@
 import path from 'node:path'
-import type { ActionResult } from '../../shared/action.ts'
+import { type ActionResult, attempt } from '../../shared/action.ts'
 import { type GhRunner, getRepo } from '../inventory/github.ts'
-import type { ShellResult } from '../inventory/shell.ts'
-import { checkFolderOfProjects, exists, isRepoName } from './guards.ts'
+import { type GitRunner, realRunGit } from './action-options.ts'
+import { checkFolderOfProjects, exists } from './guards.ts'
 
 /** What a clone needs */
 interface CloneOptions {
@@ -10,8 +10,8 @@ interface CloneOptions {
   gh: GhRunner
   /** The repo name, as asked by the page */
   name: string
-  /** Runs git, in the folder of projects */
-  runGit: (args: readonly string[]) => Promise<ShellResult>
+  /** Runs git in a folder, the real git when omitted */
+  runGit?: GitRunner | undefined
   /** The GitHub owner the scan compares with */
   owner: string
   /** The folder of projects the clone goes in */
@@ -58,7 +58,6 @@ async function checkRepo(gh: GhRunner, slug: string) {
  * @throws {Error} when gh fails for a reason other than a 404
  */
 async function refusal({ gh, name, owner, target }: Readonly<CloneOptions>) {
-  if (!isRepoName(name)) return `${name} is not a repo name`
   return (await checkFolders(target, path.join(target, name))) ?? (await checkRepo(gh, `${owner}/${name}`))
 }
 
@@ -72,15 +71,13 @@ async function refusal({ gh, name, owner, target }: Readonly<CloneOptions>) {
  * @returns the result, refused with the reason when the proof fails
  * @example const result = await cloneRepo({ gh: ghCli, name: 'finga', owner: 'Shuunen', target: '/home/me/projects' })
  */
-export async function cloneRepo(options: Readonly<CloneOptions>): Promise<ActionResult> {
-  const { name, owner, runGit, target } = options
-  try {
+export function cloneRepo(options: Readonly<CloneOptions>): Promise<ActionResult> {
+  const { name, owner, runGit = realRunGit, target } = options
+  return attempt(async () => {
     const reason = await refusal(options)
     if (reason !== undefined) return { ok: false, reason }
     const url = `git@github.com:${owner}/${name}.git`
-    const { ok, stderr } = await runGit(['clone', url, path.join(target, name)])
+    const { ok, stderr } = await runGit(['clone', url, path.join(target, name)], target)
     return ok ? { message: `cloned ${owner}/${name} over SSH into ${path.join(target, name)}`, ok } : { ok, reason: `git clone ${url} failed: ${stderr.trim()}` }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
 }

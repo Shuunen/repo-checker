@@ -1,16 +1,15 @@
-import { readClone, readClones } from '../inventory/git.ts'
+import { invariant } from 'es-toolkit'
+import { type GitReaders, listClones, readClone } from '../inventory/git.ts'
 import type { GhRunner } from '../inventory/github.ts'
-import { run } from '../inventory/shell.ts'
+import { run, type ShellResult } from '../inventory/shell.ts'
 import type { Checker } from './check-script.ts'
+import { isRepoName } from './guards.ts'
 import type { Installer } from './install.ts'
 
-/** How the clones are read, replaced by fakes in tests */
-export interface GitReaders {
-  /** Read one clone, with a `git fetch` when asked */
-  readClone: typeof readClone
-  /** Read every clone of a folder */
-  readClones: typeof readClones
-}
+export type { GitReaders } from '../inventory/git.ts'
+
+/** Runs git with an argument array in a folder, never a shell string */
+export type GitRunner = (args: readonly string[], cwd: string) => Promise<ShellResult>
 
 /** What an action on a project needs */
 export interface ActionOptions {
@@ -22,6 +21,8 @@ export interface ActionOptions {
   git: GitReaders
   /** Installs the dev dependencies a file fix needs, the real package manager when omitted */
   install?: Installer
+  /** Runs git in a folder, the real git when omitted, a fake in tests */
+  runGit?: GitRunner
   /** The repo name, as asked by the page */
   name: string
   /** The GitHub owner the scan compares with */
@@ -31,13 +32,24 @@ export interface ActionOptions {
 }
 
 /** The real git, the default of every action */
-export const realGit: GitReaders = { readClone, readClones }
+export const realGit: GitReaders = { listClones, readClone }
 
 /**
- * Run git with a fixed binary and an argument array, never a shell string
+ * Run git with a fixed binary and an argument array, never a shell string, the default `runGit` of every action
  * @param args the git arguments
+ * @param cwd the folder to run it in
  * @returns the outcome, it never throws
  */
-export function realRunGit(args: readonly string[]) {
-  return run('git', args)
+export const realRunGit: GitRunner = (args, cwd) => run('git', args, cwd)
+
+/**
+ * Check the name the page asked for is a plain repo name before any action uses it, so it can never walk out of the folder of projects. The routes refuse such a name first, this is the last line
+ * @param name the name asked for
+ * @returns the same name
+ * @throws {Error} when it is a path, `.`, `..` or empty
+ * @example const name = repoNameOf('finga')
+ */
+export function repoNameOf(name: string) {
+  invariant(isRepoName(name), `${name} is not a repo name`)
+  return name
 }

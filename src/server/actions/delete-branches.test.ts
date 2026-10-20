@@ -12,7 +12,7 @@ const fakeGh = (repo: Readonly<Record<string, unknown>> | undefined) => vi.fn<Gh
 const aBranch = (fields: Partial<BranchState> = {}): BranchState => ({ ahead: 0, behind: 0, isGone: false, name: 'master', upstream: 'origin/master', ...fields })
 const aClone = (fields: Partial<LocalClone> = {}) =>
   ({ branches: [], changedFiles: [], currentBranch: 'master', fetchFailed: false, folderName: 'finga', localOnlyBranches: [], origin: undefined, path: '/projects/finga', problem: undefined, slug: 'owner/finga', stashes: [], unpushed: [], ...fields }) satisfies LocalClone
-const fakeReaders = (clone: LocalClone, clones = [clone]): GitReaders => ({ readClone: () => Promise.resolve(clone), readClones: () => Promise.resolve(clones) })
+const fakeReaders = (clone: LocalClone, clones = [clone]): GitReaders => ({ listClones: () => Promise.resolve(clones), readClone: () => Promise.resolve(clone) })
 const fakeGit = (failing = '') => vi.fn<(args: readonly string[], cwd: string) => Promise<ShellResult>>(args => Promise.resolve(args.join(' ').includes(failing) && failing !== '' ? { ok: false, stderr: 'boom', stdout: '' } : { ok: true, stderr: '', stdout: '' }))
 const clone = aClone({ branches: [aBranch(), aBranch({ name: 'feature', upstream: undefined }), aBranch({ ahead: 2, name: 'wip', upstream: 'origin/wip' }), aBranch({ name: 'merged', upstream: 'origin/merged' }), aBranch({ name: 'current' })], currentBranch: 'current' })
 

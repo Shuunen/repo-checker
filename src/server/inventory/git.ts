@@ -1,5 +1,6 @@
 import { readdir } from 'node:fs/promises'
 import path from 'node:path'
+import { partition } from 'es-toolkit'
 import type { BranchState, LastTag, LocalClone, RemoteBranch } from '../../shared/project.ts'
 import { mapLimit } from './map-limit.ts'
 import { run } from './shell.ts'
@@ -29,31 +30,44 @@ async function gitLines(folder: string, args: readonly string[]) {
   return stdout.split('\n').filter(line => line.trim() !== '')
 }
 
+/** The fields `parseBranch` and `parseRemoteBranch` read, separated by tabs: the full ref, its short name, the upstream, the track and the date */
+const refFormat = '--format=%(refname)%09%(refname:short)%09%(upstream:short)%09%(upstream:track)%09%(committerdate:iso-strict)'
+
 /**
- * Parse one line of `git for-each-ref` with the name, upstream, track and date fields separated by tabs
- * @param line like `master\torigin/master\t[ahead 1, behind 2]\t2026-01-01T10:00:00+00:00`
- * @param merged the names of the branches merged into the default branch of the remote
+ * Split one line of `git for-each-ref` in the `refFormat`
+ * @param line like `refs/heads/master\tmaster\torigin/master\t[ahead 1]\t2026-01-01T10:00:00+00:00`
+ * @returns the fields
+ */
+function splitRef(line: string) {
+  const [ref = '', name = '', upstream = '', track = '', lastCommitAt = ''] = line.split('\t')
+  return { lastCommitAt, name, ref, track, upstream }
+}
+
+/**
+ * Parse one local branch line of `git for-each-ref` in the `refFormat`
+ * @param line like `refs/heads/master\tmaster\torigin/master\t[ahead 1, behind 2]\t2026-01-01T10:00:00+00:00`
+ * @param merged the full refs merged into the default branch of the remote
  * @returns the branch state
  */
 function parseBranch(line: string, merged: ReadonlySet<string>): BranchState {
-  const [name = '', upstream = '', track = '', lastCommitAt = ''] = line.split('\t')
+  const { lastCommitAt, name, ref, track, upstream } = splitRef(line)
   const ahead = Number(/ahead (?<count>\d+)/u.exec(track)?.groups?.count ?? 0)
   const behind = Number(/behind (?<count>\d+)/u.exec(track)?.groups?.count ?? 0)
-  return { ahead, behind, isGone: track === '[gone]', isMerged: merged.has(name), lastCommitAt, name, upstream: upstream === '' ? undefined : upstream }
+  return { ahead, behind, isGone: track === '[gone]', isMerged: merged.has(ref), lastCommitAt, name, upstream: upstream === '' ? undefined : upstream }
 }
 
 /** The remote name of a clone, the checks only know `origin` */
 const remote = 'origin'
 
 /**
- * Parse one line of `git for-each-ref refs/remotes/origin` with the name and date fields separated by a tab
- * @param line like `origin/feature\t2026-01-01T10:00:00+00:00`
- * @param merged the names of the remote refs merged into the default branch of the remote
+ * Parse one remote branch line of `git for-each-ref` in the `refFormat`
+ * @param line like `refs/remotes/origin/feature\torigin/feature\t\t\t2026-01-01T10:00:00+00:00`
+ * @param merged the full refs merged into the default branch of the remote
  * @returns the remote branch, undefined for the `HEAD` pointer of the remote
  */
 function parseRemoteBranch(line: string, merged: ReadonlySet<string>): RemoteBranch | undefined {
-  const [ref = '', lastCommitAt = ''] = line.split('\t')
-  const name = ref.replace(`${remote}/`, '')
+  const { lastCommitAt, name: short, ref } = splitRef(line)
+  const name = short.replace(`${remote}/`, '')
   return name === remote || name === 'HEAD' ? undefined : { isMerged: merged.has(ref), lastCommitAt, name }
 }
 
@@ -87,19 +101,20 @@ function readUnpushed(folder: string, branches: readonly BranchState[]) {
  * @returns the local state
  */
 async function readState(folder: string) {
-  const [[currentBranch = ''], refs, changedFiles, stashes, mergedLocal, remoteRefs, mergedRemote, lastTag] = await Promise.all([
+  const refs = ['refs/heads', `refs/remotes/${remote}`]
+  const [[currentBranch = ''], lines, changedFiles, stashes, mergedRefs, lastTag] = await Promise.all([
     gitLines(folder, ['branch', '--show-current']),
-    gitLines(folder, ['for-each-ref', '--format=%(refname:short)%09%(upstream:short)%09%(upstream:track)%09%(committerdate:iso-strict)', 'refs/heads']),
+    gitLines(folder, ['for-each-ref', refFormat, ...refs]),
     gitLines(folder, ['status', '--porcelain=v1']),
     gitLines(folder, ['stash', 'list']),
-    gitLines(folder, ['for-each-ref', '--format=%(refname:short)', `--merged=${remote}/HEAD`, 'refs/heads']),
-    gitLines(folder, ['for-each-ref', '--format=%(refname:short)%09%(committerdate:iso-strict)', `refs/remotes/${remote}`]),
-    gitLines(folder, ['for-each-ref', '--format=%(refname:short)', `--merged=${remote}/HEAD`, `refs/remotes/${remote}`]),
+    gitLines(folder, ['for-each-ref', '--format=%(refname)', `--merged=${remote}/HEAD`, ...refs]),
     readLastTag(folder),
   ])
-  const branches = refs.map(line => parseBranch(line, new Set(mergedLocal)))
+  const merged = new Set(mergedRefs)
+  const [localLines, remoteLines] = partition(lines, line => line.startsWith('refs/heads/'))
+  const branches = localLines.map(line => parseBranch(line, merged))
   const localOnlyBranches = branches.filter(branch => branch.upstream === undefined || branch.isGone).map(branch => branch.name)
-  const remoteBranches = remoteRefs.map(line => parseRemoteBranch(line, new Set(mergedRemote))).filter(branch => branch !== undefined)
+  const remoteBranches = remoteLines.map(line => parseRemoteBranch(line, merged)).filter(branch => branch !== undefined)
   return { branches, changedFiles, currentBranch, lastTag, localOnlyBranches, remoteBranches, stashes, unpushed: await readUnpushed(folder, branches) }
 }
 
@@ -113,6 +128,24 @@ async function isGitRoot(folder: string) {
   return ok && path.resolve(stdout.trim()) === path.resolve(folder)
 }
 
+/** Where a clone is and which repo it is, without its git state: what finding one clone among many needs */
+type ClonePointer = Pick<LocalClone, 'folderName' | 'origin' | 'path' | 'problem' | 'slug'>
+
+/**
+ * Point to one local folder: whether it is a usable clone and its origin, two git calls, its git state is not read
+ * @param folder the absolute folder path
+ * @returns where the folder is and which repo it is
+ * @example const pointer = await pointTo('/projects/finga')
+ */
+async function pointTo(folder: string): Promise<ClonePointer> {
+  const base = { folderName: path.basename(folder), origin: undefined, path: folder, slug: undefined }
+  if (!(await isGitRoot(folder))) return { ...base, problem: 'no-git' }
+  const url = await run('git', ['remote', 'get-url', remote], folder)
+  if (!url.ok) return { ...base, problem: 'no-origin' }
+  const origin = url.stdout.trim()
+  return { ...base, origin, problem: undefined, slug: githubSlug(origin) }
+}
+
 /**
  * Read one local folder: whether it is a usable clone, its origin, then its git state after an optional fetch
  * @param folder the absolute folder path
@@ -121,13 +154,25 @@ async function isGitRoot(folder: string) {
  * @returns what the scan knows about the folder
  */
 export async function readClone(folder: string, { shouldFetch }: Readonly<{ shouldFetch: boolean }>): Promise<LocalClone> {
-  const base = { branches: [], changedFiles: [], currentBranch: '', fetchFailed: false, folderName: path.basename(folder), lastTag: undefined, localOnlyBranches: [], origin: undefined, path: folder, remoteBranches: [], slug: undefined, stashes: [], unpushed: [] }
-  if (!(await isGitRoot(folder))) return { ...base, problem: 'no-git' }
-  const url = await run('git', ['remote', 'get-url', remote], folder)
-  if (!url.ok) return { ...base, problem: 'no-origin' }
+  const pointer = await pointTo(folder)
+  const base = { branches: [], changedFiles: [], currentBranch: '', fetchFailed: false, lastTag: undefined, localOnlyBranches: [], remoteBranches: [], stashes: [], unpushed: [], ...pointer }
+  if (pointer.problem !== undefined) return base
   const fetched = shouldFetch ? await run('git', ['fetch', '--prune', '--quiet', remote], folder) : { ok: true }
-  const origin = url.stdout.trim()
-  return { ...base, ...(await readState(folder)), fetchFailed: !fetched.ok, origin, problem: undefined, slug: githubSlug(origin) }
+  return { ...base, ...(await readState(folder)), fetchFailed: !fetched.ok }
+}
+
+/**
+ * The folders a target holds: the target itself when it is a git repo (single project mode), else every visible sub folder (folder mode)
+ * @param target the absolute path of the target folder
+ * @returns the folders, sorted
+ */
+async function foldersOf(target: string) {
+  if (await isGitRoot(target)) return [target]
+  const entries = await readdir(target, { withFileTypes: true })
+  return entries
+    .filter(entry => entry.isDirectory() && !entry.name.startsWith('.'))
+    .map(entry => path.join(target, entry.name))
+    .toSorted()
 }
 
 /**
@@ -138,8 +183,23 @@ export async function readClone(folder: string, { shouldFetch }: Readonly<{ shou
  * @returns the clones, sorted by folder name
  */
 export async function readClones(target: string, options: Readonly<{ shouldFetch: boolean }>) {
-  if (await isGitRoot(target)) return [await readClone(target, options)]
-  const entries = await readdir(target, { withFileTypes: true })
-  const folders = entries.filter(entry => entry.isDirectory() && !entry.name.startsWith('.')).map(entry => path.join(target, entry.name))
-  return mapLimit(folders.toSorted(), parallelClones, folder => readClone(folder, options))
+  return mapLimit(await foldersOf(target), parallelClones, folder => readClone(folder, options))
+}
+
+/**
+ * Point to the clones of a target without reading their git state, the cheap way to find one clone among many: two git calls per folder instead of a dozen
+ * @param target the absolute path of the target folder
+ * @returns where each clone is and which repo it is, sorted by folder name
+ * @example const [match] = (await listClones(target)).filter(clone => clone.slug === 'shuunen/finga')
+ */
+export async function listClones(target: string) {
+  return mapLimit(await foldersOf(target), parallelClones, pointTo)
+}
+
+/** How the clones are read, replaced by fakes in tests */
+export interface GitReaders {
+  /** Point to every clone of a folder, without reading their git state */
+  listClones: typeof listClones
+  /** Read one clone, with a `git fetch` when asked */
+  readClone: typeof readClone
 }

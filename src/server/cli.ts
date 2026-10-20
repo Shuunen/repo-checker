@@ -6,6 +6,7 @@ import { loadRules } from './engine/load-rules.ts'
 import { formatReport } from './report.ts'
 import { scan } from './scan.ts'
 import { defaultPort, startUi, type UiEnvironment } from './ui.ts'
+import { errorMessage } from '../shared/text.ts'
 
 /** The usage, shown by --help and after a wrong option */
 const usage = `Usage: repo-check [ui] [options]
@@ -135,7 +136,7 @@ export async function runCli(argv: readonly string[], environment: Readonly<CliE
     print(usage)
     return 0
   } catch (error) {
-    print(`repo-check failed: ${error instanceof Error ? error.message : String(error)}\n\n${usage}`)
+    print(`repo-check failed: ${errorMessage(error)}\n\n${usage}`)
     return 1
   }
 }

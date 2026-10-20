@@ -41,7 +41,7 @@ export interface ProjectMemory {
  * @param local the clone, undefined for a project that is not cloned
  * @returns the fingerprint, empty without clone
  */
-export function fingerprintClone(local: Readonly<LocalClone> | undefined) {
+export function fingerprintClone(local: Readonly<Pick<LocalClone, 'path'>> | undefined) {
   return local === undefined ? Promise.resolve('') : fingerprintFolder(local.path)
 }
 

@@ -29,7 +29,7 @@ export function actionMeta(action: ProjectAction, project: Readonly<Project>): A
     discard: { icon: Undo2, label: 'Discard the unsaved work' },
     'sync-github-metadata': { icon: ArrowRightToLine, label: 'Sync infos' },
     unarchive: { icon: ArchiveRestore, label: 'Unarchive on GitHub' },
-    'unarchive-push-rearchive': { icon: ArrowUpToLine, label: 'Unarchive, push and archive again' },
+    'unarchive-push': { icon: ArrowUpToLine, label: 'Unarchive, push and archive again' },
     'update-project': { icon: PackageCheck, label: 'Update project' },
   }
   return metas[action]

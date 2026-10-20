@@ -1,16 +1,9 @@
-import { createHash } from 'node:crypto'
-import type { ActionResult, GitFixPreview } from '../../shared/action.ts'
+import { fingerprintOf, staleReason } from './fingerprint.ts'
+import { type ActionResult, attempt, type GitFixPreview, refused } from '../../shared/action.ts'
 import type { GithubRepo, LocalClone } from '../../shared/project.ts'
 import { getRepo } from '../inventory/github.ts'
-import { run, type ShellResult } from '../inventory/shell.ts'
-import type { ActionOptions } from './action-options.ts'
-import { checkFolderOfProjects, isRepoName } from './guards.ts'
-
-/** What the git fixes need */
-interface FixGitOptions extends ActionOptions {
-  /** Runs git in the given folder, the real git by default */
-  runGit?: (args: readonly string[], cwd: string) => Promise<ShellResult>
-}
+import { type ActionOptions, type GitRunner, realRunGit } from './action-options.ts'
+import { checkFolderOfProjects, requireCloneOf } from './guards.ts'
 
 /** What the git fixes would do */
 interface GitPlan {
@@ -35,18 +28,15 @@ interface GitPlan {
  * @returns the repo and the clone, or the reason to refuse
  */
 export async function proveClone({ gh, git, name, owner, target }: Readonly<ActionOptions>): Promise<{ clone: LocalClone; repo: GithubRepo } | { reason: string }> {
-  if (!isRepoName(name)) return { reason: `${name} is not a repo name` }
   const single = await checkFolderOfProjects(target)
   if (single !== undefined) return { reason: single }
   const slug = `${owner}/${name}`
   const repo = await getRepo(gh, slug)
   if (repo === undefined) return { reason: `${slug} does not exist on GitHub any more` }
   if (repo.isArchived) return { reason: `${slug} is archived now, its clone has its own checks` }
-  const listed = await git.readClones(target, { shouldFetch: false })
-  const matches = listed.filter(clone => clone.slug === repo.slug)
-  const [found] = matches
-  if (found === undefined || matches.length > 1) return { reason: `expected one clone of ${repo.slug} in ${target}, found ${matches.length}` }
-  const clone = await git.readClone(found.path, { shouldFetch: true })
+  const found = await requireCloneOf({ git, target }, repo.slug, { shouldFetch: true })
+  if ('reason' in found) return found
+  const { clone } = found
   if (clone.problem !== undefined) return { reason: `the clone of ${repo.slug} cannot be read: ${clone.problem}` }
   return clone.fetchFailed ? { reason: `git fetch failed in the clone of ${repo.slug}, nothing about its remote can be trusted` } : { clone, repo }
 }
@@ -66,56 +56,33 @@ function planOf(clone: Readonly<LocalClone>, repo: Readonly<GithubRepo>): GitPla
 }
 
 /**
- * Fingerprint a plan, so the fix can be refused when it is not the one the user saw
- * @param plan the plan
- * @returns a hash of the plan
- */
-function fingerprintOf(plan: Readonly<GitPlan>) {
-  return createHash('sha256').update(JSON.stringify(plan)).digest('hex')
-}
-
-/**
  * Say what the git fixes would do, read fresh with a fetch: the branches to delete, the stashes to drop and the pull, with the fingerprint of that plan
  * @param options what to fix
  * @returns the plan, or the reason there is nothing to do
  * @example const preview = await previewFixGit({ gh: ghCli, git: realGit, name: 'app', owner: 'Shuunen', target })
  */
-export async function previewFixGit(options: Readonly<ActionOptions>): Promise<GitFixPreview> {
-  try {
+export function previewFixGit(options: Readonly<ActionOptions>): Promise<GitFixPreview> {
+  return attempt(async () => {
     const proof = await proveClone(options)
-    if ('reason' in proof) return { ok: false, reason: proof.reason }
+    if ('reason' in proof) return refused(proof.reason)
     const plan = planOf(proof.clone, proof.repo)
-    if (plan.branches.length === 0 && plan.fastForward.length === 0 && plan.pull === undefined && plan.stashes.length === 0) return { ok: false, reason: 'there is no git issue to fix in this clone' }
+    if (plan.branches.length === 0 && plan.fastForward.length === 0 && plan.pull === undefined && plan.stashes.length === 0) return refused('there is no git issue to fix in this clone')
     return { ...plan, fingerprint: fingerprintOf(plan), ok: true, path: proof.clone.path }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
 }
 
 /**
- * Delete one local branch, forced even when git finds work in it that is not merged: the user confirmed the list
- * @param clone the clone
- * @param branch the branch
- * @param runGit runs git
- * @returns the failure, undefined when it worked
- */
-async function deleteBranch(clone: Readonly<LocalClone>, branch: string, runGit: NonNullable<FixGitOptions['runGit']>) {
-  const { ok, stderr } = await runGit(['branch', '-D', '--', branch], clone.path)
-  return ok ? undefined : `${branch}: ${stderr.trim()}`
-}
-
-/**
- * Delete the branches one after the other, git locks its config
+ * Delete the branches one after the other, git locks its config, forced even when git finds work in them that is not merged: the user confirmed the list
  * @param clone the clone
  * @param branches the branches
  * @param runGit runs git
  * @returns the failures
  */
-async function deleteBranches(clone: Readonly<LocalClone>, branches: readonly string[], runGit: NonNullable<FixGitOptions['runGit']>): Promise<string[]> {
+export async function deleteBranches(clone: Readonly<LocalClone>, branches: readonly string[], runGit: GitRunner): Promise<string[]> {
   const [branch, ...rest] = branches
   if (branch === undefined) return []
-  const failure = await deleteBranch(clone, branch, runGit)
-  return [...(failure === undefined ? [] : [failure]), ...(await deleteBranches(clone, rest, runGit))]
+  const { ok, stderr } = await runGit(['branch', '-D', '--', branch], clone.path)
+  return [...(ok ? [] : [`${branch}: ${stderr.trim()}`]), ...(await deleteBranches(clone, rest, runGit))]
 }
 
 /**
@@ -125,7 +92,7 @@ async function deleteBranches(clone: Readonly<LocalClone>, branches: readonly st
  * @param runGit runs git
  * @returns the failures
  */
-async function fastForwardBranches(clone: Readonly<LocalClone>, branches: readonly string[], runGit: NonNullable<FixGitOptions['runGit']>): Promise<string[]> {
+async function fastForwardBranches(clone: Readonly<LocalClone>, branches: readonly string[], runGit: GitRunner): Promise<string[]> {
   const [branch, ...rest] = clone.branches.filter(item => branches.includes(item.name))
   if (branch === undefined) return []
   const upstream = String(branch.upstream)
@@ -141,7 +108,7 @@ async function fastForwardBranches(clone: Readonly<LocalClone>, branches: readon
  * @param runGit runs git
  * @returns the reason it failed, undefined when everything worked
  */
-async function applyPlan(clone: Readonly<LocalClone>, plan: Readonly<GitPlan>, runGit: NonNullable<FixGitOptions['runGit']>) {
+async function applyPlan(clone: Readonly<LocalClone>, plan: Readonly<GitPlan>, runGit: GitRunner) {
   if (plan.pull !== undefined) {
     const pulled = await runGit(['pull', '--ff-only'], clone.path)
     if (!pulled.ok) return `git pull failed: ${pulled.stderr.trim()}, nothing else was changed`
@@ -162,17 +129,15 @@ async function applyPlan(clone: Readonly<LocalClone>, plan: Readonly<GitPlan>, r
  * @returns the result, refused with the reason when the proof fails
  * @example const result = await fixGit({ fingerprint: preview.fingerprint, gh: ghCli, git: realGit, name: 'app', owner: 'Shuunen', target })
  */
-export async function fixGit({ fingerprint, runGit = (args, cwd) => run('git', args, cwd), ...options }: Readonly<FixGitOptions & { fingerprint: string }>): Promise<ActionResult> {
-  try {
+export function fixGit({ fingerprint, runGit = realRunGit, ...options }: Readonly<ActionOptions & { fingerprint: string }>): Promise<ActionResult> {
+  return attempt(async () => {
     const proof = await proveClone(options)
-    if ('reason' in proof) return { ok: false, reason: proof.reason }
+    if ('reason' in proof) return refused(proof.reason)
     const { clone, repo } = proof
     const plan = planOf(clone, repo)
-    if (fingerprintOf(plan) !== fingerprint) return { ok: false, reason: 'the git issues of the clone are not what the dialog listed any more, nothing was changed, open the dialog again' }
+    if (fingerprintOf(plan) !== fingerprint) return refused(staleReason('the git issues of the clone are', 'changed'))
     const failure = await applyPlan(clone, plan, runGit)
-    if (failure !== undefined) return { ok: false, reason: failure }
+    if (failure !== undefined) return refused(failure)
     return { message: `fixed the git issues of ${clone.path}`, ok: true }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
 }

@@ -2,8 +2,7 @@ import type { SplitRules } from '../check-project.ts'
 import type { ProjectMemory } from '../project-memory.ts'
 import type { ActionOptions } from './action-options.ts'
 import type { Actions } from './actions-contract.ts'
-import { liveProject } from './live.ts'
-import { rescanProject } from './rescan.ts'
+import { liveProject, rescanProject } from './live.ts'
 
 /** What scanning a project alone and watching it need */
 export interface WatchContext {

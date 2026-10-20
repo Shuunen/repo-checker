@@ -4,25 +4,15 @@
  * @module
  */
 import { invariant } from 'es-toolkit'
-import type { Project } from '../../shared/project.ts'
+import type { FixPlan } from '../../shared/action.ts'
 import type { RuleOutcome } from '../../shared/scan-event.ts'
 import { buildContext, type Context } from './context.ts'
-import type { ProjectReport, ProjectRule } from './define-project-rule.ts'
+import type { ProjectContext, ProjectReport, ProjectRule } from './define-project-rule.ts'
 import { type Finding, formatMessage, type Report, type Rule, type RuleMeta } from './define-rule.ts'
 import { type Edit, fixer } from './fixer.ts'
 import type { ProjectFlags } from './flags.ts'
 import { type FileReader, type Io, overlayIo } from './io.ts'
 import { sortJson } from './sort-json.ts'
-
-/** The planned change of one file, what the confirm dialog shows as a diff */
-export interface FilePlan {
-  /** The text once every edit of this file is applied */
-  after: string
-  /** The current text, empty when the file does not exist yet */
-  before: string
-  /** The file path, relative to the project folder */
-  file: string
-}
 
 /**
  * The parts of a rule the runner needs, common to both flavors
@@ -123,7 +113,7 @@ export function checkProject(rules: readonly Rule[], context: Readonly<Context>)
  * @throws {Error} when a rule reports an unknown message id
  * @example const { findings } = await checkProjectRules(projectRules, project)
  */
-export function checkProjectRules(rules: readonly ProjectRule[], project: Readonly<Project>) {
+export function checkProjectRules(rules: readonly ProjectRule[], project: Readonly<ProjectContext['project']>) {
   return runRules(rules, { project }, toProjectFinding)
 }
 
@@ -146,7 +136,7 @@ function applyAll(text: string, edits: readonly Edit[]) {
  * @param edits the edits of that file, in order
  * @returns the plan, `before` is empty when the file does not exist yet
  */
-async function planFile(files: Readonly<FileReader>, file: string, edits: readonly Edit[]): Promise<FilePlan> {
+async function planFile(files: Readonly<FileReader>, file: string, edits: readonly Edit[]): Promise<FixPlan> {
   const before = (await files.readText(file)) ?? ''
   const applied = applyAll(before, edits)
   return { after: applied === before ? applied : sortJson(file, before, applied), before, file }
@@ -231,7 +221,7 @@ export async function planAllFixes(rules: readonly Rule[], io: Readonly<FileRead
 /** The options of `fixProject` */
 interface FixOptions {
   /** Show the plans to the user, nothing is written unless it resolves to true. Not called when there is nothing to fix */
-  confirm: (plans: readonly FilePlan[]) => Promise<boolean>
+  confirm: (plans: readonly FixPlan[]) => Promise<boolean>
   /** The project flags, used to build the context before and after the fixes */
   flags?: ProjectFlags | undefined
   /** The project files, read to check and written to fix */

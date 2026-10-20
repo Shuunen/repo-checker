@@ -11,7 +11,7 @@ const apiRepo = (fields: Readonly<Record<string, unknown>> = {}) => ({ archived:
 const fakeGh = (repo: Readonly<Record<string, unknown>> | undefined) => vi.fn<GhRunner>(() => Promise.resolve(repo === undefined ? { ok: false, stderr: 'HTTP 404: Not Found', stdout: '' } : { ok: true, stderr: '', stdout: JSON.stringify(repo) }))
 const aClone = (fields: Partial<LocalClone> = {}) =>
   ({ branches: [], changedFiles: [], currentBranch: 'feat', fetchFailed: false, folderName: 'finga', localOnlyBranches: [], origin: undefined, path: '/projects/finga', problem: undefined, slug: 'owner/finga', stashes: [], unpushed: [], ...fields }) satisfies LocalClone
-const fakeReaders = (clone: LocalClone): GitReaders => ({ readClone: () => Promise.resolve(clone), readClones: () => Promise.resolve([clone]) })
+const fakeReaders = (clone: LocalClone): GitReaders => ({ listClones: () => Promise.resolve([clone]), readClone: () => Promise.resolve(clone) })
 const fakeGit = (isWorking = true) => vi.fn<(args: readonly string[], cwd: string) => Promise<ShellResult>>(() => Promise.resolve({ ok: isWorking, stderr: isWorking ? '' : 'error: pathspec did not match', stdout: '' }))
 
 /**
@@ -34,7 +34,6 @@ describe(checkoutDefault, () => {
   })
 
   it.each([
-    { clone: aClone(), name: '../finga', reason: 'is not a repo name', repo: apiRepo(), title: 'a name that is not a repo name' },
     { clone: aClone(), name: 'finga', reason: 'does not exist on GitHub any more', repo: undefined, title: 'a repo gone from GitHub' },
     { clone: aClone(), name: 'finga', reason: 'is archived now', repo: apiRepo({ archived: true }), title: 'an archived repo' },
     { clone: aClone({ currentBranch: 'master' }), name: 'finga', reason: 'already on master', repo: apiRepo(), title: 'a clone already on the default branch' },
@@ -82,16 +81,16 @@ describe(checkoutDefault, () => {
 
   it('refuses when no clone of the repo is found', async () => {
     expect.hasAssertions()
-    const git: GitReaders = { readClone: () => Promise.resolve(aClone()), readClones: () => Promise.resolve([]) }
+    const git: GitReaders = { listClones: () => Promise.resolve([]), readClone: () => Promise.resolve(aClone()) }
     const result = await checkoutDefault({ gh: fakeGh(apiRepo()), git, name: 'finga', owner: 'Owner', runGit: fakeGit(), target: await makeTarget() })
-    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('found 0') as string })
+    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('no clone of') as string })
   })
 
   it('refuses when two clones of the repo are found', async () => {
     expect.hasAssertions()
-    const git: GitReaders = { readClone: () => Promise.resolve(aClone()), readClones: () => Promise.resolve([aClone(), aClone()]) }
+    const git: GitReaders = { listClones: () => Promise.resolve([aClone(), aClone()]), readClone: () => Promise.resolve(aClone()) }
     const result = await checkoutDefault({ gh: fakeGh(apiRepo()), git, name: 'finga', owner: 'Owner', runGit: fakeGit(), target: await makeTarget() })
-    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('found 2') as string })
+    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('2 clones of') as string })
   })
 
   it('gives the text of something thrown that is not an error', async () => {

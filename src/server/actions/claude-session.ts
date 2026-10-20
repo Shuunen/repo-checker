@@ -1,4 +1,4 @@
-import type { ActionResult } from '../../shared/action.ts'
+import { type ActionResult, refused } from '../../shared/action.ts'
 import type { ChatEvent } from '../../shared/claude.ts'
 import { parseLine } from './claude-events.ts'
 
@@ -83,7 +83,7 @@ function say(session: Session, text: string) {
  * @returns the result
  */
 function start(sessions: Sessions, spawn: SpawnClaude, { cwd, name }: Readonly<{ cwd: string; name: string }>): ActionResult {
-  if (sessions.get(name)?.isEnded === false) return { ok: false, reason: `Claude is already updating ${name}, close that session first` }
+  if (sessions.get(name)?.isEnded === false) return refused(`Claude is already updating ${name}, close that session first`)
   // the process is started right below, it needs the session for its handlers
   const session = { events: [], isEnded: false, listeners: new Set() } as unknown as Session
   const onLine = (line: string) => {
@@ -104,8 +104,8 @@ function start(sessions: Sessions, spawn: SpawnClaude, { cwd, name }: Readonly<{
  */
 function send(sessions: Sessions, name: string, text: string): ActionResult {
   const session = sessions.get(name)
-  if (session === undefined || session.isEnded) return { ok: false, reason: `there is no running Claude session for ${name}` }
-  if (text.trim() === '') return { ok: false, reason: 'the message is empty' }
+  if (session === undefined || session.isEnded) return refused(`there is no running Claude session for ${name}`)
+  if (text.trim() === '') return refused('the message is empty')
   say(session, text)
   return { message: 'sent', ok: true }
 }

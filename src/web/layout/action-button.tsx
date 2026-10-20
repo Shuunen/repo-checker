@@ -12,7 +12,7 @@ const buttons: Readonly<Record<ActionKind, (props: Readonly<ButtonProps>) => Rea
   ...cloneButtons,
   discard: ({ project }) => <DiscardButton project={project} />,
   'sync-github-metadata': ({ project }) => <SyncGithubMetadataButton project={project} />,
-  'unarchive-push-rearchive': ({ project }) => <UnarchivePushButton project={project} />,
+  'unarchive-push': ({ project }) => <UnarchivePushButton project={project} />,
 }
 
 /**

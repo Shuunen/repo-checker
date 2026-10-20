@@ -5,7 +5,7 @@ import { renderApp } from './render-app.tsx'
 import type { FetchScan } from './scan/scan-query.ts'
 
 const base = aProject('jozzo')
-const unsaved = aFinding({ actions: ['unarchive-push-rearchive', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
+const unsaved = aFinding({ actions: ['unarchive-push', 'discard'], message: 'archived on GitHub, but the clone holds work', messageId: 'unsaved', ruleId: 'archived-with-unsaved-work', scope: 'project', severity: 'error' })
 const noLicense = aFinding({ fixFiles: ['package.json'], message: 'no license field', ruleId: 'license-exists' })
 const jozzo = aProject('jozzo', [noLicense, unsaved], {
   github: { ...base.project.github, isArchived: true } as never,

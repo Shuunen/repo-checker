@@ -70,7 +70,7 @@ async function makeWorkspace(fresh: Readonly<Partial<LocalClone>> = {}): Promise
     unpushed: [{ branch: 'master', subjects: ['unpushed work'] }],
     ...fresh,
   }
-  const readers = { readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)), readClones: vi.fn<GitReaders['readClones']>(() => Promise.resolve([clone])) }
+  const readers = { listClones: vi.fn<GitReaders['listClones']>(() => Promise.resolve([clone])), readClone: vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone)) }
   return { bare, folder, readers, target }
 }
 

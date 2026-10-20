@@ -6,8 +6,8 @@ const unpushed = { unpushed: [{ branch: 'master', subjects: ['wip'] }] }
 
 testProjectRule(archivedWithUnsavedWork, {
   invalid: [
-    { actions: [['unarchive-push-rearchive', 'discard']], errors: ['unsaved'], github: archived, local: unpushed, name: 'an unpushed commit' },
-    { actions: [['unarchive-push-rearchive', 'discard']], errors: ['unsaved'], github: archived, local: { changedFiles: ['?? notes.txt'], localOnlyBranches: ['idea'], stashes: ['stash@{0}: WIP'] }, name: 'a changed file, a stash and a local-only branch' },
+    { actions: [['unarchive-push', 'discard']], errors: ['unsaved'], github: archived, local: unpushed, name: 'an unpushed commit' },
+    { actions: [['unarchive-push', 'discard']], errors: ['unsaved'], github: archived, local: { changedFiles: ['?? notes.txt'], localOnlyBranches: ['idea'], stashes: ['stash@{0}: WIP'] }, name: 'a changed file, a stash and a local-only branch' },
     { errors: ['unsavedNoFetch'], github: archived, local: { ...unpushed, fetchFailed: true }, name: 'unsaved work and a failed fetch, nothing offered' },
   ],
   valid: [

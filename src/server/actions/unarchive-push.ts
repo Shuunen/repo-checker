@@ -1,9 +1,8 @@
-import type { ActionResult } from '../../shared/action.ts'
+import { type ActionResult, attempt, refused } from '../../shared/action.ts'
 import type { LocalClone } from '../../shared/project.ts'
 import { plural } from '../../shared/text.ts'
 import { type GhRunner, getRepo } from '../inventory/github.ts'
-import { run } from '../inventory/shell.ts'
-import type { ActionOptions } from './action-options.ts'
+import { type ActionOptions, realRunGit } from './action-options.ts'
 import { proveArchived } from './archived-proof.ts'
 
 /**
@@ -53,32 +52,26 @@ async function isArchivedOnGitHub(gh: GhRunner, slug: string) {
 }
 
 /**
- * Push the branches to origin in one command, never forced, so what GitHub has is never rewritten
- * @param folder the clone
- * @param branches the branches
- * @returns the outcome of the push
- */
-function pushBranches(folder: string, branches: readonly string[]) {
-  return run('git', ['push', 'origin', ...branches.map(branch => `refs/heads/${branch}:refs/heads/${branch}`)], folder)
-}
-
-/**
  * Unarchive, push, then archive again, always archive again: if the push fails the repo is still archived at the end, and the failure is reported. The repo is read back from GitHub to be sure. If archiving again fails or did nothing, the hand command is given
- * @param gh runs gh
+ * @param options what to act on
+ * @param options.gh runs gh
+ * @param options.name the repo name
+ * @param options.owner the GitHub owner
+ * @param options.runGit runs git, the real git by default
  * @param clone the clone
- * @param slug `owner/name`
  * @returns the result
  */
-async function pushThroughUnarchive(gh: GhRunner, clone: Readonly<LocalClone>, slug: string): Promise<ActionResult> {
+async function pushThroughUnarchive({ gh, name, owner, runGit = realRunGit }: Readonly<ActionOptions>, clone: Readonly<LocalClone>): Promise<ActionResult> {
+  const slug = `${owner}/${name}`
   const branches = branchesToPush(clone)
   const unarchived = await setArchived(gh, slug, false)
-  if (!unarchived.ok) return { ok: false, reason: `could not unarchive ${slug}, nothing was pushed: ${unarchived.stderr.trim()}` }
-  const pushed = await pushBranches(clone.path, branches)
+  if (!unarchived.ok) return refused(`could not unarchive ${slug}, nothing was pushed: ${unarchived.stderr.trim()}`)
+  const pushed = await runGit(['push', 'origin', ...branches.map(branch => `refs/heads/${branch}:refs/heads/${branch}`)], clone.path)
   const archived = await setArchived(gh, slug, true)
   const isClosed = archived.ok && (await isArchivedOnGitHub(gh, slug))
   const outcome = pushed.ok ? `pushed ${plural(branches.length, 'branch')} (${branches.join(', ')})` : `git push failed: ${pushed.stderr.trim()}`
-  if (!isClosed) return { ok: false, reason: `${outcome}, but ${slug} could not be archived again (${archived.ok ? 'GitHub still shows it as not archived' : archived.stderr.trim()}), archive it by hand: gh api --method PATCH repos/${slug} -F archived=true` }
-  return pushed.ok ? { message: `${outcome} to ${slug}, which is archived again`, ok: true } : { ok: false, reason: `${outcome}. ${slug} is archived again, nothing was pushed` }
+  if (!isClosed) return refused(`${outcome}, but ${slug} could not be archived again (${archived.ok ? 'GitHub still shows it as not archived' : archived.stderr.trim()}), archive it by hand: gh api --method PATCH repos/${slug} -F archived=true`)
+  return pushed.ok ? { message: `${outcome} to ${slug}, which is archived again`, ok: true } : refused(`${outcome}. ${slug} is archived again, nothing was pushed`)
 }
 
 /**
@@ -87,13 +80,11 @@ async function pushThroughUnarchive(gh: GhRunner, clone: Readonly<LocalClone>, s
  * @returns the result, refused with the reason when the proof fails
  * @example const result = await unarchivePush({ gh: ghCli, name: 'jozzo', owner: 'Shuunen', target })
  */
-export async function unarchivePush(options: Readonly<ActionOptions>): Promise<ActionResult> {
-  try {
-    const proof = await proveArchived(options, 'unarchive-push-rearchive')
+export function unarchivePush(options: Readonly<ActionOptions>): Promise<ActionResult> {
+  return attempt(async () => {
+    const proof = await proveArchived(options, 'unarchive-push')
     if (!proof.ok) return proof
     const reason = dirtyReason(proof.clone)
-    return reason === undefined ? await pushThroughUnarchive(options.gh, proof.clone, `${options.owner}/${options.name}`) : { ok: false, reason }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+    return reason === undefined ? await pushThroughUnarchive(options, proof.clone) : { ok: false, reason }
+  })
 }

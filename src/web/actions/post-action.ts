@@ -1,7 +1,4 @@
-import type { ActionResult, FixStage } from '../../shared/action.ts'
-
-/** The actions that change something, a route of the server each */
-type PostedAction = 'archive' | 'checkout-default' | 'clone' | 'delete-branches' | 'delete-clone' | 'delete-fork' | 'delete-project' | 'discard' | 'fix-files' | 'fix-git' | 'sync-github-metadata' | 'unarchive' | 'unarchive-push'
+import { type ActionResult, type FixStage, refused, type PostedAction, postedActions } from '../../shared/action.ts'
 
 /** What the page can give to `postAction` */
 interface PostOptions {
@@ -34,9 +31,9 @@ function readLine(line: string, onStage: ((stage: FixStage) => void) | undefined
  * @returns the result
  */
 async function readResult(response: Response, onStage: ((stage: FixStage) => void) | undefined) {
-  if (response.headers.get('content-type') !== 'application/x-ndjson' || response.body === null) return response.json().catch((): ActionResult => ({ ok: false, reason: `the server answered HTTP ${response.status}` })) as Promise<ActionResult>
+  if (response.headers.get('content-type') !== 'application/x-ndjson' || response.body === null) return response.json().catch((): ActionResult => refused(`the server answered HTTP ${response.status}`)) as Promise<ActionResult>
   const decoder = new TextDecoder()
-  let result: ActionResult = { ok: false, reason: 'the server stopped answering before the end of the action' }
+  let result: ActionResult = refused('the server stopped answering before the end of the action')
   let rest = ''
   for await (const chunk of response.body) {
     const text = rest + decoder.decode(chunk, { stream: true })
@@ -77,19 +74,13 @@ export async function postAction(name: string, action: PostedAction, { body, fin
   return result.commitBlocked
 }
 
-/** What the toast says once an action worked, `{name}` being the project */
-export const doneMessages: Record<PostedAction, string> = {
-  archive: 'Archived {name} on GitHub',
-  'checkout-default': 'Checked out the default branch of {name}',
-  clone: 'Cloned {name}',
-  'delete-branches': 'Deleted the local branches of {name}',
-  'delete-clone': 'Deleted the clone of {name}',
-  'delete-fork': 'Deleted the fork of {name}',
-  'delete-project': 'Deleted {name}, its GitHub repo and its clone',
-  discard: 'Discarded the unsaved work of {name}',
-  'fix-files': 'Fixed the files of {name}',
-  'fix-git': 'Fixed the git issues of {name}',
-  'sync-github-metadata': 'Synced the description and homepage of {name} between the project and GitHub',
-  unarchive: 'Unarchived {name} on GitHub',
-  'unarchive-push': 'Unarchived and pushed {name}',
+/**
+ * What the toast says once an action worked
+ * @param action the action
+ * @param name the repo name
+ * @returns the message
+ * @example doneMessage('clone', 'finga') // 'Cloned finga'
+ */
+export function doneMessage(action: PostedAction, name: string) {
+  return postedActions[action].done.replace('{name}', name)
 }

@@ -1,4 +1,4 @@
-import { plural } from './text.ts'
+import { errorMessage, plural } from './text.ts'
 
 describe(plural, () => {
   it.each([
@@ -15,5 +15,13 @@ describe(plural, () => {
   ])('says %i %s as "%s"', (count, noun, text) => {
     expect.hasAssertions()
     expect(plural(count, noun)).toBe(text)
+  })
+})
+
+describe(errorMessage, () => {
+  it('reads the message of an Error, or turns anything else to text', () => {
+    expect.hasAssertions()
+    expect(errorMessage(new Error('boom'))).toBe('boom')
+    expect(errorMessage('plain text')).toBe('plain text')
   })
 })

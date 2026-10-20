@@ -1,13 +1,13 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { applyEdits, modify, parse } from 'jsonc-parser'
-import type { ActionResult, MetadataPreview, MetadataValues } from '../../shared/action.ts'
+import { type ActionResult, attempt, type MetadataPreview, type MetadataValues, refused } from '../../shared/action.ts'
 import type { GithubRepo } from '../../shared/project.ts'
 import type { PackageJson } from '../engine/package-json.ts'
 import { sortJson } from '../engine/sort-json.ts'
 import { type GhRunner, getRepo } from '../inventory/github.ts'
 import type { ActionOptions } from './action-options.ts'
-import { checkFolderOfProjects, isRepoName } from './guards.ts'
+import { checkFolderOfProjects, requireCloneOf } from './guards.ts'
 
 /** The project config file, where the url of the deployed website is kept */
 const configFile = '.repo-checker.json'
@@ -59,10 +59,9 @@ function proposal(repo: Readonly<GithubRepo>, local: Readonly<MetadataValues>): 
  * @returns the package.json, or the reason there is none
  */
 async function readClonePackage({ git, target }: Readonly<ActionOptions>, repo: Readonly<GithubRepo>): Promise<{ config: { webUrl?: unknown }; folder: string; pkg: PackageJson } | { reason: string }> {
-  const clones = await git.readClones(target, { shouldFetch: false })
-  const matches = clones.filter(clone => clone.slug === repo.slug)
-  const [clone] = matches
-  if (clone === undefined || matches.length > 1) return { reason: `expected one clone of ${repo.slug} in ${target}, found ${matches.length}` }
+  const found = await requireCloneOf({ git, target }, repo.slug, { shouldFetch: false })
+  if ('reason' in found) return found
+  const { clone } = found
   const text = await readFile(path.join(clone.path, 'package.json'), 'utf8').catch(() => undefined)
   return text === undefined ? { reason: `the clone of ${repo.slug} has no package.json to copy from` } : { config: parse((await readFile(path.join(clone.path, configFile), 'utf8').catch(() => undefined)) ?? '{}') as { webUrl?: unknown }, folder: clone.path, pkg: parse(text) as PackageJson }
 }
@@ -78,10 +77,10 @@ async function readClonePackage({ git, target }: Readonly<ActionOptions>, repo: 
  */
 async function patchRepo(gh: GhRunner, slug: string, fields: Readonly<Partial<MetadataValues>>): Promise<{ ok: true } | { ok: false; reason: string }> {
   const patched = await gh(['api', '--method', 'PATCH', `repos/${slug}`, ...Object.entries(fields).flatMap(([key, value]) => ['-f', `${key}=${value}`])])
-  if (!patched.ok) return { ok: false, reason: `GitHub refused to change ${slug}: ${patched.stderr.trim()}` }
+  if (!patched.ok) return refused(`GitHub refused to change ${slug}: ${patched.stderr.trim()}`)
   const after = await getRepo(gh, slug)
   const isDone = (fields.description === undefined || (after?.description ?? '') === fields.description) && (fields.homepage === undefined || (after?.homepage ?? '') === fields.homepage)
-  return isDone ? { ok: true } : { ok: false, reason: `GitHub said ok but ${slug} did not change, set it by hand on github.com` }
+  return isDone ? { ok: true } : refused(`GitHub said ok but ${slug} did not change, set it by hand on github.com`)
 }
 
 /**
@@ -91,7 +90,6 @@ async function patchRepo(gh: GhRunner, slug: string, fields: Readonly<Partial<Me
  */
 async function prove(options: Readonly<ActionOptions>): Promise<{ config: { webUrl?: unknown }; folder: string; pkg: PackageJson; repo: GithubRepo } | { reason: string }> {
   const { gh, name, owner, target } = options
-  if (!isRepoName(name)) return { reason: `${name} is not a repo name` }
   const single = await checkFolderOfProjects(target)
   if (single !== undefined) return { reason: single }
   const slug = `${owner}/${name}`
@@ -137,16 +135,14 @@ async function saveLocal(folder: string, description: string, homepage: string) 
  * @returns what the package.json and GitHub have now and the proposed values, refused with the reason when the proof fails
  * @example const preview = await previewSyncGithubMetadata({ gh: ghCli, git: realGit, name: 'finga', owner: 'Shuunen', target })
  */
-export async function previewSyncGithubMetadata(options: Readonly<ActionOptions>): Promise<MetadataPreview> {
-  try {
+export function previewSyncGithubMetadata(options: Readonly<ActionOptions>): Promise<MetadataPreview> {
+  return attempt(async () => {
     const proof = await prove(options)
-    if ('reason' in proof) return { ok: false, reason: proof.reason }
+    if ('reason' in proof) return refused(proof.reason)
     const github = { description: proof.repo.description ?? '', homepage: proof.repo.homepage ?? '' }
     const local = localValues(proof.pkg, proof.config)
     return { github, local, ok: true, proposed: proposal(proof.repo, local) }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+  })
 }
 
 /**
@@ -161,13 +157,13 @@ export async function previewSyncGithubMetadata(options: Readonly<ActionOptions>
  * @returns the result, refused with the reason when the proof fails. The clone is updated too: the description in its package.json and the homepage as `webUrl` in its `.repo-checker.json`, never the `homepage` of the package.json
  * @example const result = await syncGithubMetadata({ gh: ghCli, git: realGit, name: 'finga', owner: 'Shuunen', target }, { description: 'A game', homepage: '' })
  */
-export async function syncGithubMetadata(options: Readonly<ActionOptions>, values: Readonly<MetadataValues>): Promise<ActionResult> {
+export function syncGithubMetadata(options: Readonly<ActionOptions>, values: Readonly<MetadataValues>): Promise<ActionResult> {
   const { gh, name, owner } = options
-  try {
+  return attempt(async () => {
     const proof = await prove(options)
-    if ('reason' in proof) return { ok: false, reason: proof.reason }
+    if ('reason' in proof) return refused(proof.reason)
     const [description, homepage] = [values.description.trim(), values.homepage.trim()]
-    if (homepage !== '' && !isWebAddress(homepage)) return { ok: false, reason: `the homepage ${homepage} is not an http or https address` }
+    if (homepage !== '' && !isWebAddress(homepage)) return refused(`the homepage ${homepage} is not an http or https address`)
     const slug = `${owner}/${name}`
     const fields = {
       ...(description !== (proof.repo.description ?? '') && { description }),
@@ -177,8 +173,6 @@ export async function syncGithubMetadata(options: Readonly<ActionOptions>, value
     if (patch?.ok === false) return patch
     const saved = await saveLocal(proof.folder, description, homepage)
     const done = [...(patch === undefined ? [] : [`set the ${Object.keys(fields).join(' and ')} of ${slug} on GitHub`]), ...saved]
-    return done.length === 0 ? { ok: false, reason: `nothing to set: ${slug} and the project already have this description and homepage` } : { message: done.join(', '), ok: true }
-  } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : String(error) }
-  }
+    return done.length === 0 ? refused(`nothing to set: ${slug} and the project already have this description and homepage`) : { message: done.join(', '), ok: true }
+  })
 }

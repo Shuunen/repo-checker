@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { MetadataPreview, MetadataValues } from '../../shared/action.ts'
-import { usePreviewedDialog } from './use-previewed-dialog.ts'
+import { useActionDialog } from './use-action-dialog.ts'
 
 /** The values before the server answered, nothing shows them */
 const noValues: MetadataValues = { description: '', homepage: '' }
@@ -13,7 +13,7 @@ const noValues: MetadataValues = { description: '', homepage: '' }
  */
 export function useSyncGithubMetadata(name: string) {
   const [edited, setEdited] = useState<MetadataValues | undefined>()
-  const dialog = usePreviewedDialog<MetadataPreview>(name, 'sync-github-metadata', { body: edited })
+  const dialog = useActionDialog<MetadataPreview>(name, 'sync-github-metadata', { body: edited })
   const values = edited ?? (dialog.preview?.ok === true ? dialog.preview.proposed : noValues)
   const handleOpen = () => {
     setEdited(undefined)

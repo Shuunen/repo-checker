@@ -1,24 +1,29 @@
-import { Button } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
 import { slugOf } from '../projects/detail.ts'
-import { ArchiveDialog } from './archive-dialog.tsx'
+import { ActionTrigger } from './action-trigger.tsx'
+import { ConfirmDialog } from './confirm-dialog.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
 /**
- * The Archive or Unarchive action of a project on GitHub: the button opens a confirmation, the change only runs when it is confirmed. The scan runs again after it worked
+ * The Archive or Unarchive action: the button opens a confirmation, the action only runs when it is confirmed. The scan runs again after it worked
  * @param props the props
- * @param props.action archive a project that is not archived, unarchive one that is
- * @param props.project the project
+ * @param props.action archive or unarchive
+ * @param props.project the project whose repo is archived or unarchived
  * @returns the button and its dialog
  */
 export function ArchiveButton({ action, project }: Readonly<{ action: 'archive' | 'unarchive'; project: Project }>) {
   const dialog = useActionDialog(project.name, action)
+  const isArchiving = action === 'archive'
+  const slug = slugOf(project)
   return (
     <>
-      <Button data-testid={`action-${action}`} onPress={dialog.handleOpen} size="sm" variant="outline">
-        {action === 'archive' ? 'Archive on GitHub' : 'Unarchive on GitHub'}
-      </Button>
-      <ArchiveDialog action={action} error={dialog.error} isOpen={dialog.isOpen} isPending={dialog.isPending} onCancel={dialog.handleClose} onConfirm={dialog.handleConfirm} onOpenChange={dialog.handleOpenChange} slug={slugOf(project)} />
+      <ActionTrigger onPress={dialog.handleOpen} testId={`action-${action}`}>
+        {isArchiving ? 'Archive on GitHub' : 'Unarchive on GitHub'}
+      </ActionTrigger>
+      <ConfirmDialog confirmLabel={isArchiving ? 'Archive' : 'Unarchive'} dialog={dialog} heading={`${isArchiving ? 'Archive' : 'Unarchive'} ${slug}?`} prefix={action}>
+        {isArchiving ? `${slug} becomes read-only on GitHub. Nothing is deleted, and it can be unarchived.` : `${slug} becomes writable again on GitHub, it is not archived any more.`}
+        {dialog.error !== undefined && <p data-testid={`${action}-error`}>{dialog.error}</p>}
+      </ConfirmDialog>
     </>
   )
 }

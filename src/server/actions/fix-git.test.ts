@@ -12,7 +12,7 @@ const fakeGh = (repo: Readonly<Record<string, unknown>> | undefined) => vi.fn<Gh
 const aBranch = (fields: Partial<BranchState> = {}): BranchState => ({ ahead: 0, behind: 0, isGone: false, name: 'master', upstream: 'origin/master', ...fields })
 const aClone = (fields: Partial<LocalClone> = {}) =>
   ({ branches: [], changedFiles: [], currentBranch: 'master', fetchFailed: false, folderName: 'finga', localOnlyBranches: [], origin: undefined, path: '/projects/finga', problem: undefined, slug: 'owner/finga', stashes: [], unpushed: [], ...fields }) satisfies LocalClone
-const fakeReaders = (clone: LocalClone, clones = [clone]): GitReaders => ({ readClone: () => Promise.resolve(clone), readClones: () => Promise.resolve(clones) })
+const fakeReaders = (clone: LocalClone, clones = [clone]): GitReaders => ({ listClones: () => Promise.resolve(clones), readClone: () => Promise.resolve(clone) })
 const fakeGit = (failing = '') => vi.fn<(args: readonly string[], cwd: string) => Promise<ShellResult>>(args => Promise.resolve(args.join(' ').includes(failing) && failing !== '' ? { ok: false, stderr: 'boom', stdout: '' } : { ok: true, stderr: '', stdout: '' }))
 const messy = aClone({ branches: [aBranch({ behind: 2 }), aBranch({ isGone: true, name: 'merged', upstream: 'origin/merged' }), aBranch({ name: 'wip', upstream: undefined })], localOnlyBranches: ['merged', 'wip', 'master'], stashes: ['stash@{0}: WIP'] })
 
@@ -95,7 +95,6 @@ describe(previewFixGit, () => {
   })
 
   it.each([
-    { name: '../finga', reason: 'is not a repo name', repo: apiRepo() },
     { name: 'finga', reason: 'does not exist on GitHub any more', repo: undefined },
     { name: 'finga', reason: 'is archived now', repo: apiRepo({ archived: true }) },
   ])('refuses $reason', async ({ name, reason, repo }) => {
@@ -107,7 +106,7 @@ describe(previewFixGit, () => {
   it('refuses when there is not exactly one clone', async () => {
     expect.hasAssertions()
     const preview = await previewFixGit({ gh: fakeGh(apiRepo()), git: fakeReaders(messy, []), name: 'finga', owner: 'Owner', target: await makeTarget() })
-    expect(preview).toMatchObject({ ok: false, reason: expect.stringContaining('found 0') as string })
+    expect(preview).toMatchObject({ ok: false, reason: expect.stringContaining('no clone of') as string })
   })
 
   it('refuses when the folder of projects is not usable', async () => {
