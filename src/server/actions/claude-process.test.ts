@@ -39,7 +39,7 @@ describe(spawnClaude, () => {
     claude.write('hello\n')
     claude.kill()
     await exited
-    expect(lines[0]).toBe('args:--print --input-format stream-json --output-format stream-json --verbose --permission-prompts none')
+    expect(lines[0]).toBe('args:--print --input-format stream-json --output-format stream-json --verbose --permission-prompts none --disallowed-tools AskUserQuestion')
   })
 
   it('says why it stopped, with its code', async () => {
