@@ -22,11 +22,6 @@ interface PreviewBodyProps<Preview extends AnyPreview> {
  * The body of a confirmation that shows what the action would do first: the proof is being redone, the action is refused with its reason, or what it would do, with why it failed once confirmed
  * @template Preview the shape of the preview
  * @param props the props
- * @param props.checking what the body says while the proof is redone
- * @param props.children what the action would do, from the preview that offers it
- * @param props.className the class of the block that holds what the action would do
- * @param props.dialog what the server said
- * @param props.prefix the start of the test ids
  * @returns the body
  */
 export function PreviewBody<Preview extends AnyPreview>({ checking, children, className, dialog, prefix }: Readonly<PreviewBodyProps<Preview>>) {

@@ -4,14 +4,20 @@ import { Eye, EyeOff, Power, RefreshCw, ScanSearch } from 'lucide-react'
 /** The look of an item of the menu, the same as the menu of a row */
 const itemClass = 'data-[focused=true]:bg-background/50! data-[hovered=true]:bg-background/50!'
 
+/** What `HeaderItems` shows and does */
+interface HeaderItemsProps {
+  /** True when the nitpick checks run */
+  isNitpick: boolean
+  /** True while the scan streams, Rescan and the toggle wait for it */
+  isScanning: boolean
+}
+
 /**
  * The items of the Actions menu of the app bar: Rescan and Restart, then Shutdown apart in its own section
  * @param props the props
- * @param props.isNitpick true when the nitpick checks run
- * @param props.isScanning true while the scan streams, Rescan and the toggle wait for it
  * @returns the sections
  */
-export function HeaderItems({ isNitpick, isScanning }: Readonly<{ isNitpick: boolean; isScanning: boolean }>) {
+export function HeaderItems({ isNitpick, isScanning }: Readonly<HeaderItemsProps>) {
   return (
     <>
       <Dropdown.Section>

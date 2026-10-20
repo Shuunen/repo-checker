@@ -9,13 +9,18 @@ import { IgnoredFiles } from './ignored-files.tsx'
 import { PreviewBody } from './preview-body.tsx'
 import { useActionDialog, useOpensAtOnce } from './use-action-dialog.ts'
 
+/** What `DeleteProjectButton` shows and does */
+interface DeleteProjectButtonProps {
+  /** The project to delete */
+  project: Project
+}
+
 /**
  * The Delete project action: the button opens a confirmation that says what is deleted for good, the repo on GitHub and the local clone, and the delete only runs when it is confirmed. Once it worked the page goes back to the list. The scan runs again after it worked
  * @param props the props
- * @param props.project the project to delete
  * @returns the button and its dialog
  */
-export function DeleteProjectButton({ project }: Readonly<{ project: Project }>) {
+export function DeleteProjectButton({ project }: Readonly<DeleteProjectButtonProps>) {
   const [, navigate] = useLocation()
   const dialog = useActionDialog<ProjectDeletePreview>(project.name, 'delete-project', { onDone: () => navigate('/') })
   const isAtOnce = useOpensAtOnce(dialog.handleOpen)

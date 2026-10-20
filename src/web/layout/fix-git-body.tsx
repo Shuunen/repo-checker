@@ -4,13 +4,18 @@ import { GitList } from './git-list.tsx'
 import { PreviewBody } from './preview-body.tsx'
 import type { ActionDialog } from './use-action-dialog.ts'
 
+/** What `FixGitBody` shows and does */
+interface FixGitBodyProps {
+  /** The dialog of the git fixes */
+  dialog: ActionDialog<GitFixPreview>
+}
+
 /**
  * What the git fixes would do: the plan is being redone, it is refused with its reason, or the pull, the branches moved forward, the stashes dropped and the branches deleted
  * @param props the props
- * @param props.dialog the dialog of the git fixes
  * @returns the body
  */
-export function FixGitBody({ dialog }: Readonly<{ dialog: ActionDialog<GitFixPreview> }>) {
+export function FixGitBody({ dialog }: Readonly<FixGitBodyProps>) {
   return (
     <PreviewBody checking="Planning the git fixes again on the clone as it is now…" className="flex flex-col gap-3" dialog={dialog} prefix="fix-git">
       {preview => (

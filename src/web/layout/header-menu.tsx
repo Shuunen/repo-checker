@@ -14,16 +14,23 @@ function triggerLabel(isRestarting: boolean, isStopped: boolean) {
   return isStopped ? 'Stopped' : 'Actions'
 }
 
+/** What `HeaderMenu` shows and does */
+interface HeaderMenuProps {
+  /** True when the nitpick checks run */
+  isNitpick: boolean
+  /** True while the scan streams, Rescan waits for it */
+  isScanning: boolean
+  /** Starts a new scan with the nitpick mode switched */
+  onNitpick: () => void
+  onRescan: () => void
+}
+
 /**
  * The Actions menu of the app bar: Rescan, the Nitpick mode toggle and Restart, then Shutdown apart in its own section. Restart and Shutdown ask the server to start again or to stop, so the trigger says Restarting… or Stopped while the page cannot work
  * @param props the props
- * @param props.isNitpick true when the nitpick checks run
- * @param props.isScanning true while the scan streams, Rescan waits for it
- * @param props.onNitpick starts a new scan with the nitpick mode switched
- * @param props.onRescan starts a new scan
  * @returns the trigger and the menu
  */
-export function HeaderMenu({ isNitpick, isScanning, onNitpick, onRescan }: Readonly<{ isNitpick: boolean; isScanning: boolean; onNitpick: () => void; onRescan: () => void }>) {
+export function HeaderMenu({ isNitpick, isScanning, onNitpick, onRescan }: Readonly<HeaderMenuProps>) {
   const { isRestarting, restart } = useRestart()
   const { isStopped, shutdown } = useShutdown()
   const handleChoice = (key: unknown) => {

@@ -19,10 +19,6 @@ interface ProjectPageProps {
 /**
  * The page of one project, with a link back to the list. Under it the project, watched for changes while it is open, or why it is not there: the scan failed, it is still looking, or the scan has no such project
  * @param props the props
- * @param props.error the request error, when the scan could not start
- * @param props.isScanning true while the scan streams
- * @param props.name the project name from the address
- * @param props.state the scan state
  * @returns the main element
  */
 export function ProjectPage({ error, isScanning, name, state }: Readonly<ProjectPageProps>) {

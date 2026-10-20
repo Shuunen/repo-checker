@@ -4,14 +4,20 @@ import { ActionTrigger } from './action-trigger.tsx'
 import { ConfirmDialog } from './confirm-dialog.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
+/** What `ArchiveButton` shows and does */
+interface ArchiveButtonProps {
+  /** Archive or unarchive */
+  action: 'archive' | 'unarchive'
+  /** The project whose repo is archived or unarchived */
+  project: Project
+}
+
 /**
  * The Archive or Unarchive action: the button opens a confirmation, the action only runs when it is confirmed. The scan runs again after it worked
  * @param props the props
- * @param props.action archive or unarchive
- * @param props.project the project whose repo is archived or unarchived
  * @returns the button and its dialog
  */
-export function ArchiveButton({ action, project }: Readonly<{ action: 'archive' | 'unarchive'; project: Project }>) {
+export function ArchiveButton({ action, project }: Readonly<ArchiveButtonProps>) {
   const dialog = useActionDialog(project.name, action)
   const isArchiving = action === 'archive'
   const slug = slugOf(project)

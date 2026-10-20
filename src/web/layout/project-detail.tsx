@@ -6,16 +6,20 @@ import { FindingsCard } from './findings-card.tsx'
 import { FixFilesCard } from './fix-files-card.tsx'
 import { ProjectIdentity } from './project-identity.tsx'
 
+/** What `ProjectDetail` shows and does */
+interface ProjectDetailProps {
+  /** The project result */
+  result: ScanProject
+  /** The folder of projects */
+  target: string
+}
+
 /**
  * Everything the scan knows about one project: who it is, then its findings next to a rail that holds the fixes, the local and fork state and the actions
  * @param props the props
- * @param props.result the project result
- * @param props.result.findings its findings
- * @param props.result.project the project
- * @param props.target the folder of projects
  * @returns the detail
  */
-export function ProjectDetail({ result: { findings, project }, target }: Readonly<{ result: ScanProject; target: string }>) {
+export function ProjectDetail({ result: { findings, project }, target }: Readonly<ProjectDetailProps>) {
   return (
     <>
       <ProjectIdentity findings={findings} project={project} />

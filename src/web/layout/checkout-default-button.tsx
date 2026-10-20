@@ -4,13 +4,18 @@ import { ActionTrigger } from './action-trigger.tsx'
 import { ConfirmDialog } from './confirm-dialog.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
+/** What `CheckoutDefaultButton` shows and does */
+interface CheckoutDefaultButtonProps {
+  /** The project whose clone is checked out */
+  project: Project
+}
+
 /**
  * The Checkout action: the button opens a confirmation, the checkout only runs when it is confirmed. The scan runs again after it worked
  * @param props the props
- * @param props.project the project whose clone is checked out
  * @returns the button and its dialog
  */
-export function CheckoutDefaultButton({ project }: Readonly<{ project: Project }>) {
+export function CheckoutDefaultButton({ project }: Readonly<CheckoutDefaultButtonProps>) {
   const dialog = useActionDialog(project.name, 'checkout-default')
   const branch = project.github?.defaultBranch ?? 'default'
   const slug = slugOf(project)

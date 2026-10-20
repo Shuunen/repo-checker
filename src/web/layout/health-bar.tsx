@@ -7,16 +7,22 @@ import { HealthFacts } from './health-facts.tsx'
 /** The color of each bucket, on the bar and on its legend dot */
 const bucketColors: Readonly<Record<Bucket, string>> = { error: 'bg-danger', info: 'bg-accent', quiet: 'bg-default', warning: 'bg-warning' }
 
+/** What `HealthBar` shows and does */
+interface HealthBarProps {
+  /** The selected bucket, none when undefined */
+  active: Bucket | undefined
+  /** Called with the bucket clicked, or undefined when the selected one is clicked again */
+  onSelect: (bucket: Bucket | undefined) => void
+  projects: readonly ScanProject[]
+  tiles: ReturnType<typeof summaryTiles>
+}
+
 /**
  * The health of the listed projects in one bar: one segment per bucket (every project counted once, by its worst finding), a legend of buttons that filter the table, and the facts that need action apart from the severity
  * @param props the props
- * @param props.active the selected bucket, none when undefined
- * @param props.onSelect called with the bucket clicked, or undefined when the selected one is clicked again
- * @param props.projects the projects of the filter tab
- * @param props.tiles the facts about every project: at risk, not cloned, pristine forks
  * @returns the bar, or nothing before the first project
  */
-export function HealthBar({ active, onSelect, projects, tiles }: Readonly<{ active: Bucket | undefined; onSelect: (bucket: Bucket | undefined) => void; projects: readonly ScanProject[]; tiles: ReturnType<typeof summaryTiles> }>) {
+export function HealthBar({ active, onSelect, projects, tiles }: Readonly<HealthBarProps>) {
   const counts = bucketCounts(projects)
   const shown = buckets.filter(bucket => counts[bucket] > 0)
   if (shown.length === 0) return undefined

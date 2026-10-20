@@ -19,6 +19,7 @@ The rewrite follows the same tooling and rules as the `snippets` repo, so the re
 - Zod nullish values: `.nullish().transform(x => x ?? undefined)`.
 - Narrow with `invariant(x, "msg")` from es-toolkit, never `x!` and never a silent `if (!x) return`.
 - No class unless there is no other way (an open item from the old README).
+- Web components take a named `<Component>Props` interface, never an inline props type, and each prop is documented once, on that interface. `jsdoc/require-param` has `checkDestructured: false` in `src/web`, so the component JSDoc only has `@param props the props`.
 - Everything in `src/server/engine` has JSDoc: a `@module` comment at the top of each file, then every declaration and every interface property. Public functions get an `@example`. `src/server/engine/jsdoc.test.ts` enforces it, because oxlint can only check existing comments, not require them.
 
 ## Tests

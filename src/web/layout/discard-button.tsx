@@ -7,13 +7,18 @@ import { PreviewBody } from './preview-body.tsx'
 import { UnsavedList } from './unsaved-list.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
+/** What `DiscardButton` shows and does */
+interface DiscardButtonProps {
+  /** The project whose unsaved work is discarded */
+  project: Project
+}
+
 /**
  * The Discard action: the button opens a confirmation that first reads, fresh, exactly what would be thrown away, and the discard only runs when it is confirmed, and only if the clone still holds exactly that. The scan runs again after it worked
  * @param props the props
- * @param props.project the project whose unsaved work is discarded
  * @returns the button and its dialog
  */
-export function DiscardButton({ project }: Readonly<{ project: Project }>) {
+export function DiscardButton({ project }: Readonly<DiscardButtonProps>) {
   const dialog = useActionDialog<DiscardPreview>(project.name, 'discard')
   return (
     <>

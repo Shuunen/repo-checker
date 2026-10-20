@@ -28,12 +28,6 @@ interface ScanBodyProps {
 /**
  * The page body: the failure when the scan stopped, otherwise the health bar and the table of the selected filter
  * @param props the props
- * @param props.error the request error, when the scan could not start
- * @param props.filterId the selected filter
- * @param props.isScanning true while the scan streams
- * @param props.onView changes the view of the list
- * @param props.state the scan state
- * @param props.view the view of the list
  * @returns the body
  */
 export function ScanBody({ error, filterId, isScanning, onView, state, view }: Readonly<ScanBodyProps>) {

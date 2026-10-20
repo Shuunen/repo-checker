@@ -16,10 +16,6 @@ interface UpdateFrameProps {
 /**
  * The frame of the update modal, that only its own buttons close: a click beside it or Escape never ends the session by accident
  * @param props the props
- * @param props.body what the body shows
- * @param props.footer what the footer holds
- * @param props.heading the heading
- * @param props.isOpen true when the modal is shown
  * @returns the modal
  */
 export function UpdateFrame({ body, footer, heading, isOpen }: Readonly<UpdateFrameProps>) {

@@ -3,13 +3,18 @@ import { useEffect, useRef } from 'react'
 import { ChatMessage } from './chat-message.tsx'
 import type { useUpdateChat } from './use-update-chat.ts'
 
+/** What `UpdateTranscript` shows and does */
+interface UpdateTranscriptProps {
+  /** The conversation */
+  chat: ReturnType<typeof useUpdateChat>
+}
+
 /**
  * The conversation with Claude, scrolled to its end whenever it changes
  * @param props the props
- * @param props.chat the conversation
  * @returns the transcript, with what is going on and what went wrong
  */
-export function UpdateTranscript({ chat }: Readonly<{ chat: ReturnType<typeof useUpdateChat> }>) {
+export function UpdateTranscript({ chat }: Readonly<UpdateTranscriptProps>) {
   const transcript = useRef<HTMLDivElement>(null)
   useEffect(() => {
     invariant(transcript.current !== null, 'the effect runs once the transcript is shown')

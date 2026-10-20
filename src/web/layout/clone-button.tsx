@@ -4,14 +4,20 @@ import { ActionTrigger } from './action-trigger.tsx'
 import { ConfirmDialog } from './confirm-dialog.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
+/** What `CloneButton` shows and does */
+interface CloneButtonProps {
+  /** The project to clone */
+  project: Project
+  /** The folder of projects the clone goes in */
+  target: string
+}
+
 /**
  * The Clone action: the button opens a confirmation, the clone only runs when it is confirmed. The scan runs again after it worked
  * @param props the props
- * @param props.project the project to clone
- * @param props.target the folder of projects the clone goes in
  * @returns the button and its dialog
  */
-export function CloneButton({ project, target }: Readonly<{ project: Project; target: string }>) {
+export function CloneButton({ project, target }: Readonly<CloneButtonProps>) {
   const dialog = useActionDialog(project.name, 'clone')
   const slug = slugOf(project)
   return (

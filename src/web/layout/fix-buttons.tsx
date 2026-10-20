@@ -17,11 +17,6 @@ interface FixButtonsProps {
 /**
  * The buttons of the fixes: the one that fixes everything, blue because it is the main one, only when both kinds of issue exist, then the two others
  * @param props the props
- * @param props.hasFiles true when a finding has a file fix
- * @param props.hasGit true when a finding is a git issue
- * @param props.onAll opens the fix of everything
- * @param props.onFiles opens the file fixes
- * @param props.onGit opens the git fixes
  * @returns the buttons
  */
 export function FixButtons({ hasFiles, hasGit, onAll, onFiles, onGit }: Readonly<FixButtonsProps>) {

@@ -13,28 +13,36 @@
     "node": true
   },
   "globals": {
-    "process": "readonly",
-    "__filename": "readonly"
+    "__filename": "readonly",
+    "process": "readonly"
   },
   "overrides": [
     {
       "env": {
         "browser": true
       },
-      "files": ["src/web/**"]
+      "files": ["src/web/**"],
+      "rules": {
+        "jsdoc/require-param": [
+          "error",
+          {
+            "checkDestructured": false
+          }
+        ]
+      }
     },
     {
       "env": {
         "vitest": true
       },
-      "files": ["src/server/engine/rule-tester.ts",  "src/server/actions/discard-fixtures.ts",
-        "src/server/app-fixtures.ts",
-        "src/server/cli-fixtures.ts",
-        "src/server/git-fixtures.ts",
-        "src/web/fixtures.ts", "src/web/render-app.tsx"]
+      "files": ["src/server/engine/rule-tester.ts", "src/server/actions/discard-fixtures.ts", "src/server/app-fixtures.ts", "src/server/cli-fixtures.ts", "src/server/git-fixtures.ts", "src/web/fixtures.ts", "src/web/render-app.tsx"]
     },
     {
+      "env": {
+        "vitest": true
+      },
       "files": ["*.test.ts", "*.test.tsx"],
+      "plugins": ["vitest"],
       "rules": {
         "eslint/max-lines-per-function": "off",
         "max-nested-callbacks": "off",
@@ -46,8 +54,8 @@
             "withinDescribe": "it"
           }
         ],
-        "vitest/prefer-importing-vitest-globals": "off",
         "vitest/prefer-called-times": "off",
+        "vitest/prefer-importing-vitest-globals": "off",
         "vitest/prefer-lowercase-title": "off",
         "vitest/prefer-to-be-falsy": "off",
         "vitest/prefer-to-be-truthy": "off",
@@ -59,10 +67,6 @@
         ],
         "vitest/require-test-timeout": "off",
         "vitest/valid-title": "off"
-      },
-      "plugins": ["vitest"],
-      "env": {
-        "vitest": true
       }
     }
   ],
@@ -96,21 +100,6 @@
     "import/no-relative-parent-imports": "off",
     "import/prefer-default-export": "off",
     "jsdoc/require-param-type": "off",
-    "react/jsx-no-literals": "off",
-    "react/forbid-component-props": "off",
-    "react/jsx-max-depth": [
-      "error",
-      {
-        "max": 5
-      }
-    ],
-    "react/jsx-filename-extension": [
-      "error",
-      {
-        "extensions": [".tsx"]
-      }
-    ],
-    "react/react-in-jsx-scope": "off",
     "jsdoc/require-returns-type": "off",
     "no-async-await": "off",
     "no-continue": "off",
@@ -126,6 +115,21 @@
     "no-ternary": "off",
     "no-void": "off",
     "oxc/no-optional-chaining": "off",
+    "react/forbid-component-props": "off",
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [".tsx"]
+      }
+    ],
+    "react/jsx-max-depth": [
+      "error",
+      {
+        "max": 5
+      }
+    ],
+    "react/jsx-no-literals": "off",
+    "react/react-in-jsx-scope": "off",
     "sort-imports": "off",
     "typescript/explicit-module-boundary-types": "off",
     "unicorn/filename-case": [

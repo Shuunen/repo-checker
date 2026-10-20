@@ -4,14 +4,20 @@ import type { ScanFinding } from '../../shared/scan-event.ts'
 import { describePush, githubUrl, identityBadges } from '../projects/detail.ts'
 import { FindingCounts } from './finding-counts.tsx'
 
+/** What `ProjectIdentity` shows and does */
+interface ProjectIdentityProps {
+  /** The findings of the project */
+  findings: readonly ScanFinding[]
+  /** The project */
+  project: Project
+}
+
 /**
  * Who a project is: its name and badges, the owner, the GitHub link and the last push, and how many findings of each severity it has
  * @param props the props
- * @param props.findings the findings of the project
- * @param props.project the project
  * @returns the header
  */
-export function ProjectIdentity({ findings, project }: Readonly<{ findings: readonly ScanFinding[]; project: Project }>) {
+export function ProjectIdentity({ findings, project }: Readonly<ProjectIdentityProps>) {
   const url = githubUrl(project)
   return (
     <header className="flex items-start justify-between gap-4">

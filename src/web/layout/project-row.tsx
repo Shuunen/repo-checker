@@ -5,14 +5,20 @@ import { ExceptionPill } from './exception-pill.tsx'
 import { PillView } from './pill-view.tsx'
 import { ActionsMenu } from './actions-menu.tsx'
 
+/** What `ProjectRowView` shows and does */
+interface ProjectRowViewProps {
+  /** The row */
+  row: ProjectRow
+  /** The folder of projects, where a clone goes */
+  target: string
+}
+
 /**
  * One project row: its name (a link to the project view), visibility and state pills (only the exceptions, private and archived), health pill (the health hint lists the messages), branch (a pill when not cloned or off the default branch), last push (how long ago, in warning color when a year old or more), an Actions menu with every action it offers, each opens its confirmation right from the row
  * @param props the props
- * @param props.row the row
- * @param props.target the folder of projects, where a clone goes
  * @returns the row
  */
-export function ProjectRowView({ row, target }: Readonly<{ row: ProjectRow; target: string }>) {
+export function ProjectRowView({ row, target }: Readonly<ProjectRowViewProps>) {
   return (
     <Table.Row data-testid={`row-${row.name}`} id={row.id}>
       <Table.Cell className="font-medium">

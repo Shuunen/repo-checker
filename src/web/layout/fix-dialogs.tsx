@@ -20,10 +20,6 @@ interface FixDialogsProps {
 /**
  * The dialogs of the fixes: the file fixes, the git fixes, and both at once. While the dialog of both is open the two others stay closed, it shows their plans itself
  * @param props the props
- * @param props.all the controls of the dialog that fixes everything
- * @param props.files the dialog of the file fixes
- * @param props.git the dialog of the git fixes
- * @param props.slug the `owner/name` of the repo
  * @returns the dialogs
  */
 export function FixDialogs({ all, files, git, slug }: Readonly<FixDialogsProps>) {

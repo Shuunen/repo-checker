@@ -13,13 +13,18 @@ function lostText(count: number) {
   return `${plural(count, 'ignored file')} would be lost${count > maxListed ? `, the first ${maxListed} are listed` : ''}.`
 }
 
+/** What `IgnoredFiles` shows and does */
+interface IgnoredFilesProps {
+  /** The ignored files */
+  files: readonly string[]
+}
+
 /**
  * The files git ignores that a delete of a clone would lose (a `.env`, a local database), the first ones listed and all of them counted
  * @param props the props
- * @param props.files the ignored files
  * @returns the list and the sentence
  */
-export function IgnoredFiles({ files }: Readonly<{ files: readonly string[] }>) {
+export function IgnoredFiles({ files }: Readonly<IgnoredFilesProps>) {
   return (
     <>
       <ul>

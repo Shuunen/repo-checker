@@ -1,12 +1,17 @@
 import type { UnsavedGroup } from '../../shared/unsaved.ts'
 
+/** What `UnsavedList` shows and does */
+interface UnsavedListProps {
+  /** The unsaved items, by kind */
+  groups: readonly UnsavedGroup[]
+}
+
 /**
  * The work a clone holds that exists nowhere else, item by item, so a dialog can show exactly what an action concerns
  * @param props the props
- * @param props.groups the unsaved items, by kind
  * @returns the lists
  */
-export function UnsavedList({ groups }: Readonly<{ groups: readonly UnsavedGroup[] }>) {
+export function UnsavedList({ groups }: Readonly<UnsavedListProps>) {
   return (
     <div data-testid="unsaved-list">
       {groups.map(group => (

@@ -18,9 +18,6 @@ interface SyncGithubMetadataBodyProps {
 /**
  * What the sync would do: the proof is being redone, it is refused with its reason, or a table of what the package.json and GitHub have per field, and an input per field to edit what is synced
  * @param props the props
- * @param props.dialog what the server said
- * @param props.onChange called with the values when the user edits one
- * @param props.values the values in the inputs
  * @returns the body
  */
 export function SyncGithubMetadataBody({ dialog, onChange, values }: Readonly<SyncGithubMetadataBodyProps>) {

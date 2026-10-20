@@ -9,15 +9,22 @@ import { DeleteBranchesButton } from './delete-branches-button.tsx'
 import { DeleteProjectButton } from './delete-project-button.tsx'
 import { UpdateProjectButton } from './update-project-button.tsx'
 
+/** What `ActionsCard` shows and does */
+interface ActionsCardProps {
+  /** The findings */
+  findings: readonly ScanFinding[]
+  /** The project */
+  project: Project
+  /** The folder of projects */
+  target: string
+}
+
 /**
  * The actions the findings offer. Each one asks for a confirmation first. Each one asks you to confirm again
  * @param props the props
- * @param props.findings the findings
- * @param props.project the project
- * @param props.target the folder of projects
  * @returns the card, it always holds the delete of the project
  */
-export function ActionsCard({ findings, project, target }: Readonly<{ findings: readonly ScanFinding[]; project: Project; target: string }>) {
+export function ActionsCard({ findings, project, target }: Readonly<ActionsCardProps>) {
   const actions = offeredActions(findings)
   return (
     <Card data-testid="actions">

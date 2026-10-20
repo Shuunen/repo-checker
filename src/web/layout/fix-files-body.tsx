@@ -13,13 +13,18 @@ const stageMessages: Record<FixStage, string> = {
   writing: 'Writing the fixes…',
 }
 
+/** What `FixFilesBody` shows and does */
+interface FixFilesBodyProps {
+  /** The dialog of the file fixes */
+  dialog: FixFilesDialog
+}
+
 /**
  * What the file fixes would do: the step the fix is in while it runs, the plan is being redone, it is refused with its reason, or a diff per file, the dev dependencies installed after, and the files whose uncommitted changes get the fix merged in
  * @param props the props
- * @param props.dialog the dialog of the file fixes
  * @returns the body
  */
-export function FixFilesBody({ dialog }: Readonly<{ dialog: FixFilesDialog }>) {
+export function FixFilesBody({ dialog }: Readonly<FixFilesBodyProps>) {
   if (dialog.stage !== undefined) return <p data-testid={`fix-stage-${dialog.stage}`}>{stageMessages[dialog.stage]}</p>
   return (
     <PreviewBody checking="Planning the fixes again on the files as they are now…" className="flex flex-col gap-3" dialog={dialog} prefix="fix">

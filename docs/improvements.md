@@ -4,7 +4,7 @@ A review of the `rewrite/projects-dashboard` branch (135 commits, ~15k lines of 
 
 Legend: **Speed** makes something faster, **DRY** removes a repeated thing, **Read** makes the code easier to read.
 
-Status: 13 of the 16 items are done. Items 12, 15 and 16 wait for a decision, see their sections.
+Status: 14 of the 16 items are done, 12 and 16 are won't do. Nothing is left open.
 
 ## 1. Find one clone without reading every clone — Speed, DRY
 
@@ -117,7 +117,7 @@ The actions keep their direct-call contract (they still resolve to a refusal), s
 - `eventSender` lives in [sse.ts](../src/server/sse.ts) and is used by the scan stream and by the Claude session stream.
 - The scan stream moved to [stream-scan.ts](../src/server/stream-scan.ts), which keeps `app.ts` under the import limit.
 
-## 12. Live watch with TanStack Query — Read (needs your input)
+## 12. Live watch with TanStack Query — Read (won't do)
 
 - [ ] Done
 
@@ -130,7 +130,9 @@ The actions keep their direct-call contract (they still resolve to a refusal), s
 - It needs an abort check so an answer that arrives after leaving the page does not touch the cache.
 - The pause while a dialog is open needs app state, and the DOM check covers every dialog today (confirmations, the Claude chat, the commit notice).
 
-The code would come out about the same size, with more risk. **Your call:** keep it as is, or accept "first fetch at once" and "a dialog registers itself as open".
+The code would come out about the same size, with more risk.
+
+**Decision (2026-10-20): won't do.** The hand-written loop stays. It works, it is tested, the DOM check covers every kind of dialog without extra code, and the switch would save almost no code.
 
 ## 13. Fewer git processes per clone — Speed
 
@@ -155,21 +157,26 @@ That makes 6 git processes per clone instead of 8, checked against plain git on 
 - The two copies of `deleteBranches` are now one, in [fix-git.ts](../src/server/actions/fix-git.ts).
 - `ignored-files.ts` still runs git itself, since it only reads.
 
-## 15. Fewer duplicate prop docs — Read (needs your input: lint config)
+## 15. Fewer duplicate prop docs — Read
 
-- [ ] Done
+- [x] Done
 
-**Now.** In the `.tsx` files, every prop is documented on the props interface and again as `@param props.x`. Items 6 and 8 removed many of these lines, but the pattern stays.
+**Decision (2026-10-20):** turn off the duplicate for `src/web` and move inline prop types into documented interfaces.
 
-**Proposal.** Set `checkDestructured: false` on `jsdoc/require-param` for `src/web`, so the interface docs are the only ones. This changes a lint rule, so per `docs/conventions.md` it waits for your go-ahead.
+**Done.**
 
-## 16. Content rules read their file twice — Read (needs your input: engine API)
+- `jsdoc/require-param` has `checkDestructured: false` in the `src/web/**` override of `.oxlintrc.json`.
+- 184 `@param props.*` lines are gone.
+- The 60 components that typed their props inline now take a `<Component>Props` interface, each prop documented once with its former `@param` text.
+- The rule is written down in `docs/conventions.md`.
+
+## 16. Content rules read their file twice — Read (won't do)
 
 - [ ] Done
 
 **Now.** In [file-rules.ts](../src/server/engine/file-rules.ts), `contentApplies` finds the file and `check` finds it again. The reads are cached, so this costs nothing.
 
-**Why it is not done.** Dropping `appliesTo` would turn "skipped" into "passed" for those rules, unless `check` can report "skipped". That changes the rule contract of the engine. **Your call:** keep the passed/skipped split (leave it as is), or let `check` return `'skipped'`.
+**Decision (2026-10-20): won't do.** The reads are cached, the duplicate is about 10 lines in one file, and every other fix changes the rule contract that all rules and the runner rely on. The passed or skipped split stays exact.
 
 ## Found on the way
 

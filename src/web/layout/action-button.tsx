@@ -18,9 +18,6 @@ const buttons: Readonly<Record<ActionKind, (props: Readonly<ButtonProps>) => Rea
 /**
  * One action of a project, the button of its confirmation: each one asks the server to prove again before anything happens
  * @param props the props
- * @param props.action the action
- * @param props.project the project
- * @param props.target the folder of projects
  * @returns the button
  */
 export function ActionButton({ action, project, target }: Readonly<ButtonProps & { action: ActionKind }>) {

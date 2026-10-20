@@ -1,12 +1,17 @@
 import type { summaryTiles } from '../projects/filters.ts'
 
+/** What `HealthFacts` shows and does */
+interface HealthFactsProps {
+  /** The facts */
+  tiles: ReturnType<typeof summaryTiles>
+}
+
 /**
  * The facts about every project that need action apart from the severity: at risk, not cloned, pristine forks
  * @param props the props
- * @param props.tiles the facts
  * @returns the line of facts
  */
-export function HealthFacts({ tiles }: Readonly<{ tiles: ReturnType<typeof summaryTiles> }>) {
+export function HealthFacts({ tiles }: Readonly<HealthFactsProps>) {
   return (
     <p className="ml-auto flex gap-3 text-sm text-muted">
       {tiles

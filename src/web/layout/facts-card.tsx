@@ -4,14 +4,20 @@ import { Fragment } from 'react'
 import { dropQuietFacts } from '../projects/detail.ts'
 import { CopyPathIcon } from './copy-path-icon.tsx'
 
+/** What `FactsCard` shows and does */
+interface FactsCardProps {
+  /** The facts, a label and its value each */
+  facts: readonly { label: string; value: string }[]
+  /** The card title */
+  title: string
+}
+
 /**
  * A titled card of facts, like the git state of the local clone. The empty facts (`none`) are left out, there is nothing to warn about. The path comes with an icon that copies it
  * @param props the props
- * @param props.facts the facts, a label and its value each
- * @param props.title the card title
  * @returns the card
  */
-export function FactsCard({ facts, title }: Readonly<{ facts: readonly { label: string; value: string }[]; title: string }>) {
+export function FactsCard({ facts, title }: Readonly<FactsCardProps>) {
   return (
     <Card data-testid={`facts-${kebabCase(title)}`}>
       <Card.Title>{title}</Card.Title>

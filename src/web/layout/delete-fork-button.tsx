@@ -8,13 +8,18 @@ import { IgnoredFiles } from './ignored-files.tsx'
 import { PreviewBody } from './preview-body.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
+/** What `DeleteForkButton` shows and does */
+interface DeleteForkButtonProps {
+  /** The fork */
+  project: Project
+}
+
 /**
  * The Delete fork action: the button opens a confirmation that first asks the server to prove again, from GitHub, that the fork is pristine and that the token may delete, and the delete only runs when it is confirmed. The scan runs again after it worked
  * @param props the props
- * @param props.project the fork
  * @returns the button and its dialog
  */
-export function DeleteForkButton({ project }: Readonly<{ project: Project }>) {
+export function DeleteForkButton({ project }: Readonly<DeleteForkButtonProps>) {
   const dialog = useActionDialog<ForkDeletePreview>(project.name, 'delete-fork')
   const slug = slugOf(project)
   return (

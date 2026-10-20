@@ -3,13 +3,18 @@ import type { ScanFinding } from '../../shared/scan-event.ts'
 import { findingGroups } from '../projects/detail.ts'
 import { FindingItem } from './finding-item.tsx'
 
+/** What `FindingsCard` shows and does */
+interface FindingsCardProps {
+  /** The findings */
+  findings: readonly ScanFinding[]
+}
+
 /**
  * Every finding of a project, grouped by origin, with what to do about it
  * @param props the props
- * @param props.findings the findings
  * @returns the card
  */
-export function FindingsCard({ findings }: Readonly<{ findings: readonly ScanFinding[] }>) {
+export function FindingsCard({ findings }: Readonly<FindingsCardProps>) {
   const groups = findingGroups(findings)
   return (
     <Card data-testid="findings">

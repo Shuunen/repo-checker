@@ -7,16 +7,24 @@ import { ChosenButton } from './chosen-button.tsx'
 import { ProjectItems } from './project-items.tsx'
 import { useMenuChoice } from './use-menu-choice.ts'
 
+/** What `ActionsMenu` shows and does */
+interface ActionsMenuProps {
+  /** The actions the project offers */
+  actions: readonly ActionKind[]
+  /** True when a major dependency is outdated */
+  isMajorOutdated: boolean
+  /** The project */
+  project: Project
+  /** The folder of projects, where a clone goes */
+  target: string
+}
+
 /**
  * The Actions menu of a row: a trigger that opens a menu next to it: Open project, Open on GitHub, one item per action, Archive on GitHub or Unarchive on GitHub, then Delete project apart in its own section, with its long label and its icon. The confirmation of the chosen action is mounted next to the trigger only once its item is chosen (a table cell is rendered twice by the table, so mounting every dialog of every row made the menu slow), so the dialog survives the menu closing, and it opens at once
  * @param props the props
- * @param props.actions the actions the project offers
- * @param props.isMajorOutdated true when a major dependency is outdated
- * @param props.project the project
- * @param props.target the folder of projects, where a clone goes
  * @returns the trigger, the menu and the dialog of the chosen action
  */
-export function ActionsMenu({ actions, isMajorOutdated, project, target }: Readonly<{ actions: readonly ActionKind[]; isMajorOutdated: boolean; project: Project; target: string }>) {
+export function ActionsMenu({ actions, isMajorOutdated, project, target }: Readonly<ActionsMenuProps>) {
   const { choice, handleChoice } = useMenuChoice(project)
   return (
     <>

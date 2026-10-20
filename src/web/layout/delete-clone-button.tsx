@@ -7,13 +7,18 @@ import { IgnoredFiles } from './ignored-files.tsx'
 import { PreviewBody } from './preview-body.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
+/** What `DeleteCloneButton` shows and does */
+interface DeleteCloneButtonProps {
+  /** The project whose clone is deleted */
+  project: Project
+}
+
 /**
  * The Delete clone action: the button opens a confirmation that first asks the server to prove again, with a fresh git fetch, that nothing would be lost, and lists the ignored files that would be. The delete only runs when it is confirmed. The scan runs again after it worked
  * @param props the props
- * @param props.project the project whose clone is deleted
  * @returns the button and its dialog
  */
-export function DeleteCloneButton({ project }: Readonly<{ project: Project }>) {
+export function DeleteCloneButton({ project }: Readonly<DeleteCloneButtonProps>) {
   const dialog = useActionDialog<DeletePreview>(project.name, 'delete-clone')
   return (
     <>

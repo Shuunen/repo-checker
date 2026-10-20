@@ -8,13 +8,18 @@ import { useFilter } from './use-filter.ts'
 import { useOpenSingleProject } from './use-open-single-project.ts'
 import { useScan } from './use-scan.ts'
 
+/** What `Dashboard` shows and does */
+interface DashboardProps {
+  /** Starts the scan request */
+  request: FetchScan | undefined
+}
+
 /**
  * The app bar and the filter tabs above the current page, the project list or one project, filled in as the scan streams. On a project address only that project is scanned, the scan of every project starts once the list is opened
  * @param props the props
- * @param props.request starts the scan request
  * @returns the dashboard
  */
-export function Dashboard({ request }: Readonly<{ request: FetchScan | undefined }>) {
+export function Dashboard({ request }: Readonly<DashboardProps>) {
   const { isScanning, query, state } = useScan(request)
   const [filterId, selectFilter] = useFilter()
   const [view, setView] = useState(initialListView)

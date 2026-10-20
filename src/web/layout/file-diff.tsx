@@ -8,15 +8,22 @@ const looks: Readonly<Record<LineKind, { classes: string; sign: string }>> = {
   skipped: { classes: 'py-1 text-center italic text-muted', sign: '…' },
 }
 
+/** What `FileDiff` shows and does */
+interface FileDiffProps {
+  /** The text once fixed */
+  after: string
+  /** The text now, empty when the file does not exist yet */
+  before: string
+  /** The file path */
+  file: string
+}
+
 /**
  * The change of one file as a diff: the lines that go are red with a minus, the lines that come are green with a plus, the others are dimmed. Only the changes are shown with 15 lines around them, the rest is one line that counts what was left out. A file that does not exist yet is all green
  * @param props the props
- * @param props.after the text once fixed
- * @param props.before the text now, empty when the file does not exist yet
- * @param props.file the file path
  * @returns the diff
  */
-export function FileDiff({ after, before, file }: Readonly<{ after: string; before: string; file: string }>) {
+export function FileDiff({ after, before, file }: Readonly<FileDiffProps>) {
   return (
     <section data-testid={`diff-${file}`}>
       <h3 className="font-medium">{before === '' ? `${file} (new file)` : file}</h3>

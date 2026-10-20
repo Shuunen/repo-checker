@@ -21,10 +21,6 @@ interface FixAllDialogProps {
 /**
  * The confirmation before fixing everything: the plan of the git fixes, then the plan of the file fixes, with the auto commit toggle. Nothing changes until Fix all is pressed
  * @param props the props
- * @param props.dialog the controls of the dialog
- * @param props.files the dialog of the file fixes
- * @param props.git the dialog of the git fixes
- * @param props.slug the `owner/name` of the repo
  * @returns the dialog
  */
 export function FixAllDialog({ dialog, files, git, slug }: Readonly<FixAllDialogProps>) {

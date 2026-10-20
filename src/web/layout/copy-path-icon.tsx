@@ -5,14 +5,20 @@ import { useState } from 'react'
 /** How long the icon shows the check, in milliseconds */
 const copiedDuration = 2000
 
+/** What `CopyPathIcon` shows and does */
+interface CopyPathIconProps {
+  /** The path to copy, the icon is disabled when it is empty */
+  path: string
+  /** The test id of the button */
+  testId?: string
+}
+
 /**
  * A small icon button that copies a path to the clipboard, the icon turns into a check for a moment and a toast says it was copied
  * @param props the props
- * @param props.path the path to copy, the icon is disabled when it is empty
- * @param props.testId the test id of the button
  * @returns the button
  */
-export function CopyPathIcon({ path, testId = 'copy-path-icon' }: Readonly<{ path: string; testId?: string }>) {
+export function CopyPathIcon({ path, testId = 'copy-path-icon' }: Readonly<CopyPathIconProps>) {
   const [isCopied, setIsCopied] = useState(false)
   const copy = async () => {
     await navigator.clipboard.writeText(path)

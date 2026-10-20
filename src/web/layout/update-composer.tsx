@@ -2,13 +2,18 @@ import { Button, TextArea } from '@heroui/react'
 import { useState } from 'react'
 import type { useUpdateChat } from './use-update-chat.ts'
 
+/** What `UpdateComposer` shows and does */
+interface UpdateComposerProps {
+  /** The conversation, the message is sent to its session */
+  chat: ReturnType<typeof useUpdateChat>
+}
+
 /**
  * The box to answer Claude: Enter sends the message, Shift+Enter adds a line
  * @param props the props
- * @param props.chat the conversation, the message is sent to its session
  * @returns the box and its Send button
  */
-export function UpdateComposer({ chat }: Readonly<{ chat: ReturnType<typeof useUpdateChat> }>) {
+export function UpdateComposer({ chat }: Readonly<UpdateComposerProps>) {
   const [draft, setDraft] = useState('')
   const handleSend = () => {
     if (draft.trim() === '') return

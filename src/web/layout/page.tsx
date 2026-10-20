@@ -22,12 +22,6 @@ interface PageProps {
 /**
  * The main part of the page: the health bar and the table of the selected filter
  * @param props the props
- * @param props.error the request error
- * @param props.filterId the selected filter
- * @param props.isScanning true while the scan streams
- * @param props.onView changes the view of the list
- * @param props.state the scan state
- * @param props.view the view of the list
  * @returns the main element
  */
 export function Page({ error, filterId, isScanning, onView, state, view }: Readonly<PageProps>) {

@@ -8,13 +8,18 @@ import { GitList } from './git-list.tsx'
 import { PreviewBody } from './preview-body.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
+/** What `DeleteBranchesButton` shows and does */
+interface DeleteBranchesButtonProps {
+  /** The project whose local branches are deleted */
+  project: Project
+}
+
 /**
  * The Delete local branches action: the button opens a confirmation that lists, read fresh, the local branches but the default one and the checked out one, and the delete only runs when it is confirmed, and only if the list is still the same. The scan runs again after it worked
  * @param props the props
- * @param props.project the project whose local branches are deleted
  * @returns the button and its dialog
  */
-export function DeleteBranchesButton({ project }: Readonly<{ project: Project }>) {
+export function DeleteBranchesButton({ project }: Readonly<DeleteBranchesButtonProps>) {
   const dialog = useActionDialog<DeleteBranchesPreview>(project.name, 'delete-branches')
   return (
     <>

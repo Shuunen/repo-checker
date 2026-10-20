@@ -32,17 +32,23 @@ function columnHeader(label: string, isCentered: boolean, sortDirection: Sort['d
   )
 }
 
+/** What `ProjectTable` shows and does */
+interface ProjectTableProps {
+  /** True while the scan streams, the empty table then says it is scanning */
+  isScanning: boolean
+  /** Called with the new sort */
+  onSort: (sort: Sort) => void
+  rows: readonly ProjectRow[]
+  sort: Sort
+  target: string
+}
+
 /**
  * The project table, one row per project in the order of the sort, every column but Actions sorts when its header is clicked
  * @param props the props
- * @param props.isScanning true while the scan streams, the empty table then says it is scanning
- * @param props.onSort called with the new sort
- * @param props.rows the rows of the selected filter, already sorted
- * @param props.sort the column and the direction of the sort
- * @param props.target the folder of projects, where a clone goes
  * @returns the table
  */
-export function ProjectTable({ isScanning, onSort, rows, sort, target }: Readonly<{ isScanning: boolean; onSort: (sort: Sort) => void; rows: readonly ProjectRow[]; sort: Sort; target: string }>) {
+export function ProjectTable({ isScanning, onSort, rows, sort, target }: Readonly<ProjectTableProps>) {
   const handleSort = (descriptor: { column: Key; direction: Sort['direction'] }) => onSort({ column: descriptor.column as SortColumn, direction: descriptor.direction })
   return (
     <Table>

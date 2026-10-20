@@ -11,8 +11,6 @@ interface CommitBlockedDialogProps {
 /**
  * Tells that the automatic commit was prevented because the `check` script of the project failed: the fixes stay in the files for the user to look at
  * @param props the props
- * @param props.onClose closes the dialog
- * @param props.output the output of the failing check
  * @returns the dialog
  */
 export function CommitBlockedDialog({ onClose, output }: Readonly<CommitBlockedDialogProps>) {

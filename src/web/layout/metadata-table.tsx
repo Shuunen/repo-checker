@@ -11,14 +11,20 @@ function shown(value: string) {
   return value === '' ? 'none' : value
 }
 
+/** What `MetadataTable` shows and does */
+interface MetadataTableProps {
+  /** The values on GitHub */
+  github: MetadataValues
+  /** The values in the package.json */
+  local: MetadataValues
+}
+
 /**
  * The table of what the project says locally (the description of its package.json, the `webUrl` of its `.repo-checker.json`) and what GitHub has, a row per field
  * @param props the props
- * @param props.github the values on GitHub
- * @param props.local the values in the package.json
  * @returns the table
  */
-export function MetadataTable({ github, local }: Readonly<{ github: MetadataValues; local: MetadataValues }>) {
+export function MetadataTable({ github, local }: Readonly<MetadataTableProps>) {
   return (
     <table className="w-full text-left text-sm">
       <thead className="text-muted">

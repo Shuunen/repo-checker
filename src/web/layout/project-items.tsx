@@ -6,15 +6,22 @@ import { ActionItem } from './action-item.tsx'
 import { ArchiveItem } from './archive-item.tsx'
 import { LinkItem } from './link-item.tsx'
 
+/** What `ProjectItems` shows and does */
+interface ProjectItemsProps {
+  /** The actions the project offers */
+  actions: readonly ActionKind[]
+  /** True when a major dependency is outdated */
+  isMajorOutdated: boolean
+  /** The project */
+  project: Project
+}
+
 /**
  * The first items of the menu: Open project, Open on GitHub, one item per action, Delete local branches, Update project and Archive on GitHub or Unarchive on GitHub
  * @param props the props
- * @param props.actions the actions the project offers
- * @param props.isMajorOutdated true when a major dependency is outdated
- * @param props.project the project
  * @returns the items
  */
-export function ProjectItems({ actions, isMajorOutdated, project }: Readonly<{ actions: readonly ActionKind[]; isMajorOutdated: boolean; project: Project }>) {
+export function ProjectItems({ actions, isMajorOutdated, project }: Readonly<ProjectItemsProps>) {
   return (
     <>
       <LinkItem icon={ArrowRight} id="open-project" label="Open project" />

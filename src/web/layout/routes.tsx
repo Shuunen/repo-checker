@@ -24,12 +24,6 @@ interface RoutesProps {
 /**
  * The two pages: the project of `/project/:name`, and the list everywhere else
  * @param props the props
- * @param props.error the request error
- * @param props.filterId the selected filter of the list
- * @param props.isScanning true while the scan streams
- * @param props.onView changes the view of the list
- * @param props.state the scan state
- * @param props.view the view of the list
  * @returns the page of the current address
  */
 export function Routes({ error, filterId, isScanning, onView, state, view }: Readonly<RoutesProps>) {

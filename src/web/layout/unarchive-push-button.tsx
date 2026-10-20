@@ -7,13 +7,18 @@ import { ConfirmDialog } from './confirm-dialog.tsx'
 import { UnsavedList } from './unsaved-list.tsx'
 import { useActionDialog } from './use-action-dialog.ts'
 
+/** What `UnarchivePushButton` shows and does */
+interface UnarchivePushButtonProps {
+  /** The project, it has a clone */
+  project: Project
+}
+
 /**
  * The Unarchive and push action of an archived repo whose clone holds unsaved work: the button opens a confirmation that says what happens in which order and lists that work, and nothing runs until it is confirmed. The scan runs again after it worked
  * @param props the props
- * @param props.project the project, it has a clone
  * @returns the button and its dialog
  */
-export function UnarchivePushButton({ project }: Readonly<{ project: Project }>) {
+export function UnarchivePushButton({ project }: Readonly<UnarchivePushButtonProps>) {
   const dialog = useActionDialog(project.name, 'unarchive-push')
   invariant(project.local !== undefined, 'the action is only offered for a clone')
   const blocker = unarchiveBlocker(project.local)
