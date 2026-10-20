@@ -10,10 +10,11 @@ import { LinkItem } from './link-item.tsx'
  * The first items of the menu: Open project, Open on GitHub, one item per action, Delete local branches, Update project and Archive on GitHub or Unarchive on GitHub
  * @param props the props
  * @param props.actions the actions the project offers
+ * @param props.isMajorOutdated true when a major dependency is outdated
  * @param props.project the project
  * @returns the items
  */
-export function ProjectItems({ actions, project }: Readonly<{ actions: readonly ActionKind[]; project: Project }>) {
+export function ProjectItems({ actions, isMajorOutdated, project }: Readonly<{ actions: readonly ActionKind[]; isMajorOutdated: boolean; project: Project }>) {
   return (
     <>
       <LinkItem icon={ArrowRight} id="open-project" label="Open project" />
@@ -22,7 +23,7 @@ export function ProjectItems({ actions, project }: Readonly<{ actions: readonly 
         <ActionItem action={action} key={action} project={project} />
       ))}
       {canDeleteBranches(project) && <ActionItem action="delete-branches" project={project} />}
-      {canUpdate(project) && <ActionItem action="update-project" project={project} />}
+      {canUpdate(project, isMajorOutdated) && <ActionItem action="update-project" project={project} />}
       {!actions.includes('archive') && <ArchiveItem project={project} />}
     </>
   )

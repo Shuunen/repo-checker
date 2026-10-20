@@ -1,12 +1,14 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import type { ChatEvent } from '../shared/claude.ts'
 import type { ScanEvent } from '../shared/scan-event.ts'
-import { aProject, scanRequest, sseResponse, stubApi } from './fixtures.ts'
+import { aFinding, aProject, scanRequest, sseResponse, stubApi } from './fixtures.ts'
 import { renderApp } from './render-app.tsx'
 
-const events = (project: Parameters<typeof aProject>[2] = {}): ScanEvent[] => [
+const outdated = aFinding({ ruleId: 'outdated-major-dependency' })
+
+const events = (project: Parameters<typeof aProject>[2] = {}, findings = [outdated]): ScanEvent[] => [
   { isNitpick: false, target: '/projects', type: 'started' },
-  { result: aProject('finga', [], project), type: 'project' },
+  { result: aProject('finga', findings, project), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]
 
@@ -81,6 +83,13 @@ describe('update project', () => {
     expect(item.textContent).toBe('Update project')
     fireEvent.click(item)
     await expect(screen.findByTestId('update-dialog-body')).resolves.toBeInstanceOf(HTMLElement)
+  })
+
+  it('is not offered when no major dependency is outdated', async () => {
+    expect.hasAssertions()
+    renderApp(scanRequest(events({}, [])), '/project/finga')
+    await screen.findByTestId('actions')
+    expect(screen.queryByTestId('action-update-project')).toBeNull()
   })
 
   it('is not offered for a project without usable clone', async () => {

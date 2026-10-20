@@ -13,6 +13,7 @@ describe(toRows, () => {
       actions: ['unarchive-push-rearchive', 'discard'],
       branch: 'master',
       branchPill: undefined,
+      hasMajorUpdate: false,
       health: { color: 'danger', hint: expect.any(String), label: '2 errors' },
       href: '/project/jozzo',
       id: 'jozzo',

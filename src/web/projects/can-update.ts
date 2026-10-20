@@ -1,15 +1,27 @@
 import type { Project } from '../../shared/project.ts'
+import type { ScanFinding } from '../../shared/scan-event.ts'
 
 /**
- * Tell if a project can be updated with Claude: it has a usable clone of the owner, where Claude works
+ * Tell if the findings of a project hold a major dependency update, the only reason to update it with Claude
+ * @param findings the findings
+ * @returns true when a major dependency is outdated
+ * @example hasMajorUpdate(findings) // true
+ */
+export function hasMajorUpdate(findings: readonly ScanFinding[]) {
+  return findings.some(finding => finding.ruleId === 'outdated-major-dependency')
+}
+
+/**
+ * Tell if a project can be updated with Claude: it has a usable clone of the owner, where Claude works, and a major dependency is outdated
  * @param project the project
  * @param project.isOtherOwner true when the clone belongs to someone else
  * @param project.local the clone
+ * @param isMajorOutdated true when a major dependency is outdated, see hasMajorUpdate
  * @returns true when the Update project action is offered
- * @example canUpdate(project) // true
+ * @example canUpdate(project, true) // true
  */
-export function canUpdate({ isOtherOwner, local }: Readonly<Project>) {
-  return local !== undefined && local.problem === undefined && !isOtherOwner
+export function canUpdate({ isOtherOwner, local }: Readonly<Project>, isMajorOutdated: boolean) {
+  return isMajorOutdated && local !== undefined && local.problem === undefined && !isOtherOwner
 }
 
 /**

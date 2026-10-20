@@ -1,7 +1,7 @@
 import { Card } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
 import type { ScanFinding } from '../../shared/scan-event.ts'
-import { canDeleteBranches, canUpdate } from '../projects/can-update.ts'
+import { canDeleteBranches, canUpdate, hasMajorUpdate } from '../projects/can-update.ts'
 import { canArchive, canUnarchive, offeredActions } from '../projects/detail.ts'
 import { ActionButton } from './action-button.tsx'
 import { ArchiveButton } from './archive-button.tsx'
@@ -27,7 +27,7 @@ export function ActionsCard({ findings, project, target }: Readonly<{ findings: 
           <ActionButton action={action} key={action} project={project} target={target} />
         ))}
         {canDeleteBranches(project) && <DeleteBranchesButton project={project} />}
-        {canUpdate(project) && <UpdateProjectButton project={project} />}
+        {canUpdate(project, hasMajorUpdate(findings)) && <UpdateProjectButton project={project} />}
         {canArchive(project) && !actions.includes('archive') && <ArchiveButton action="archive" project={project} />}
         {canUnarchive(project) && <ArchiveButton action="unarchive" project={project} />}
         <DeleteProjectButton isLabelled project={project} />

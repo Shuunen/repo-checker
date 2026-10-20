@@ -36,7 +36,7 @@ export function ProjectRowView({ row, target }: Readonly<{ row: ProjectRow; targ
         </span>
       </Table.Cell>
       <Table.Cell className="text-center focus-visible:shadow-none! data-[focus-visible=true]:shadow-none!">
-        <ActionsMenu actions={row.actions} project={row.project} target={target} />
+        <ActionsMenu actions={row.actions} isMajorOutdated={row.hasMajorUpdate} project={row.project} target={target} />
       </Table.Cell>
     </Table.Row>
   )

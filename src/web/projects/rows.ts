@@ -3,6 +3,7 @@ import type { Project } from '../../shared/project.ts'
 import type { ScanFinding, ScanProject, Severity } from '../../shared/scan-event.ts'
 import { plural } from '../../shared/text.ts'
 import { describeAge } from './age.ts'
+import { hasMajorUpdate } from './can-update.ts'
 
 /** A HeroUI chip color */
 export type PillColor = 'accent' | 'danger' | 'default' | 'success' | 'warning'
@@ -25,6 +26,8 @@ export interface Pill {
 export interface ProjectRow {
   /** Every action the project offers, the Actions menu of the row lists them, empty when there is none */
   actions: ActionKind[]
+  /** True when a major dependency is outdated, the Update project action is offered only then */
+  hasMajorUpdate: boolean
   /** The address of the project view */
   href: string
   /** The row key, the project name */
@@ -132,6 +135,7 @@ function toRow(result: Readonly<ScanProject>, now: Date): ProjectRow {
     actions: [...new Set(findings.flatMap(finding => finding.actions))],
     branch: branch === '' ? '—' : branch,
     branchPill: branchPill(project, branch),
+    hasMajorUpdate: hasMajorUpdate(findings),
     health: healthPill(findings),
     href: projectHref(project.name),
     id: project.name,
