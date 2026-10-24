@@ -7,6 +7,7 @@ import './styles.css'
 import { followSystemTheme } from './theme.ts'
 
 followSystemTheme(document.documentElement, matchMedia('(prefers-color-scheme: dark)'))
+if ('serviceWorker' in navigator) void navigator.serviceWorker.register('/sw.js')
 const root = document.querySelector('#root')
 if (root === null) throw new Error('the page has no #root element')
 createRoot(root).render(

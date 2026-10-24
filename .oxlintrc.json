@@ -18,6 +18,12 @@
   },
   "overrides": [
     {
+      "files": ["src/web/public/sw.js"],
+      "rules": {
+        "import/unambiguous": "off"
+      }
+    },
+    {
       "env": {
         "browser": true
       },
