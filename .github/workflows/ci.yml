@@ -15,8 +15,8 @@ jobs:
         with:
           node-version: 24
 
-      - name: Setup bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
 
       - name: Run check 👀
-        run: bun run check
+        run: pnpm run check
