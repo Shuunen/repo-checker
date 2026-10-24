@@ -80,7 +80,7 @@ Which Node and which package manager the project uses, and how that is pinned.
 
 - ✅ 🔴 `nvmrc-exists`: a `.nvmrc` file exists (`nvmrc.ts`).
 - ✅ 🟡 `nvmrc-recent-node`: `.nvmrc` pins a recent LTS Node version (currently 24.x) (`nvmrc.ts`).
-- ✅ 🟡 `npmrc-exists`: an `.npmrc` file exists (`npmrc.file.ts`).
+- ✅ 🟡 `npmrc-exists`: an `.npmrc` file exists, unless `packageManager` pins pnpm 12 or above (`npmrc.file.ts`).
 - ✅ 🟡 `npmrc-pre-post-scripts`: `.npmrc` has `enable-pre-post-scripts=true`, when the project uses task prefixes (`npmrc.file.ts`).
 - ✅ 🟡 `outdated-package-manager`: the `packageManager` pins a `pnpm`, `npm` or `bun` version that is a major behind the latest on the npm registry, patch and minor updates are not reported. Fixed by pinning the latest (`package-manager.rule.ts`).
 - ✅ 🔴 `multiple-lockfiles`: more than one package manager left a lockfile in the project, `bun.lock` and `bun.lockb` count as one. No fix, which one to keep is for you to say (`lockfiles.rule.ts`).
@@ -114,7 +114,7 @@ The `scripts` section of `package.json`.
 - ✅ 🟡 `scripts-no-npm-test`: no `npm test`, use `pnpm test` or `bun test` (`package.file.ts`).
 - ✅ 🟡 `scripts-watchlist-eager`: a `watchlist` task uses the `-eager --` parameter (`package.file.ts`).
 - ✅ 🔴 `scripts-depcruise`: a `depcruise` usage, when the project uses dependency-cruiser (`package.file.ts`).
-- ✅ 🟡 `scripts-unique-mark`: a `unique-mark` task when there is a `build` task and the project uses shuutils (`package.file.ts`).
+- ✅ 🟡 `scripts-unique-mark`: a `unique-mark` task when there is a `build` task and the project uses shuutils, unless a vite or tsdown config already uses the unique-mark plugin (`package.file.ts`).
 - ✅ 🟡 `scripts-eslint-cache`: eslint runs with `--cache` (`package.file.ts`).
 - ✅ 🟡 `scripts-no-eslint-ignore-path`: eslint runs without `--ignore-path`, so the CLI and VS Code use the same config (`package.file.ts`).
 - ✅ 🟡 `scripts-ts-node-transpile-only`: any `ts-node` call in the project uses `--transpileOnly` (`package.file.ts`).

@@ -3,17 +3,17 @@ import { isPublishable } from '../../engine/package-json.ts'
 import { requireProperty } from '../../engine/require-property.ts'
 import { requireCommand, requireScript } from './scripts.utils.ts'
 
-/** The vite config files, one of them using the unique-mark plugin means the build already marks the files */
-const viteConfigFiles = ['vite.config.mts', 'vite.config.ts', 'vite.config.mjs', 'vite.config.js']
+/** The vite and tsdown config files, one of them using the unique-mark plugin means the build already marks the files */
+const buildConfigFiles = ['vite.config.mts', 'vite.config.ts', 'vite.config.mjs', 'vite.config.js', 'tsdown.config.mts', 'tsdown.config.ts', 'tsdown.config.mjs', 'tsdown.config.js']
 
 /**
- * Tell if a vite config of the project uses the unique-mark plugin
+ * Tell if a vite or tsdown config of the project uses the unique-mark plugin
  * @param files the reader of the project files
  * @returns true when it does
  */
-async function isMarkedByVite(files: FileReader) {
-  const texts = await Promise.all(viteConfigFiles.map(file => files.readText(file)))
-  return texts.some(text => text?.includes('unique-mark') === true)
+async function isMarkedByConfig(files: FileReader) {
+  const texts = await Promise.all(buildConfigFiles.map(file => files.readText(file)))
+  return texts.some(text => text?.includes('unique-mark') === true || text?.includes('uniqueMark') === true)
 }
 
 export const requiredScriptRules = [
@@ -35,6 +35,6 @@ export const requiredScriptRules = [
     message: 'no unique-mark task, like "mark": "unique-mark public/my-file && echo mark success"',
     pattern: /\bunique-mark\b/u,
     severity: 'warning',
-    when: async ({ files, flags, pkg }) => flags.isUsingShuutils === true && pkg?.scripts?.build !== undefined && !(await isMarkedByVite(files)),
+    when: async ({ files, flags, pkg }) => flags.isUsingShuutils === true && pkg?.scripts?.build !== undefined && !(await isMarkedByConfig(files)),
   }),
 ]

@@ -54,6 +54,7 @@ testRule(byId('scripts-unique-mark'), {
   valid: [
     { name: 'a mark task', pkg: { dependencies: { shuutils: '^11.0.0' }, scripts: { build: 'vite build', mark: 'unique-mark dist/index.js' } } },
     { files: { 'vite.config.ts': "import uniqueMark from 'unique-mark/vite'" }, name: 'a vite config using unique-mark', pkg: { dependencies: { shuutils: '^11.0.0' }, scripts: { build: 'vite build' } } },
+    { files: { 'tsdown.config.ts': 'plugins: [uniqueMark()]' }, name: 'a tsdown config using uniqueMark', pkg: { dependencies: { shuutils: '^11.0.0' }, scripts: { build: 'tsdown' } } },
     { name: 'shuutils without build', pkg: { dependencies: { shuutils: '^11.0.0' }, scripts: {} } },
   ],
 })
