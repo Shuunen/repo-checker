@@ -38,5 +38,5 @@ export const readmeTodos = defineRule({
     invariant(readme !== undefined, 'appliesTo guarantees a README')
     for (const match of readme.text.matchAll(/^- \[ \] (?<todo>.+)$/gmu)) report({ data: { todo: String(match.groups?.todo) }, messageId: 'todo' })
   },
-  meta: { id: 'readme-todos', messages: { todo: 'TODO: {{todo}}' }, severity: 'info' },
+  meta: { id: 'readme-todos', messages: { todo: 'TODO: {{todo}}' }, nitpick: true, severity: 'info' },
 })
