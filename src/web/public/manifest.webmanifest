@@ -1,0 +1,16 @@
+{
+  "background_color": "#024eb8",
+  "description": "Repo maintenance made easy",
+  "display": "standalone",
+  "icons": [
+    { "purpose": "any", "sizes": "192x192", "src": "/icon-192.png", "type": "image/png" },
+    { "purpose": "any", "sizes": "512x512", "src": "/icon-512.png", "type": "image/png" },
+    { "purpose": "maskable", "sizes": "512x512", "src": "/icon-maskable-512.png", "type": "image/png" }
+  ],
+  "id": "/",
+  "name": "repo-checker",
+  "scope": "/",
+  "short_name": "repo-checker",
+  "start_url": "/",
+  "theme_color": "#024eb8"
+}

@@ -8,7 +8,11 @@
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
     "lib": [
+      "DOM",
+      "DOM.AsyncIterable",
+      "DOM.Iterable",
       "ESNext"
     ],
     "module": "ESNext",
@@ -29,6 +33,7 @@
     "target": "ESNext",
     "types": [
       "node",
+      "vite/client",
       "vitest/globals"
     ],
     "verbatimModuleSyntax": true

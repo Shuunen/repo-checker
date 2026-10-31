@@ -1,0 +1,64 @@
+import type { ScanProject } from '../../shared/scan-event.ts'
+import type { FilterId } from './filters.ts'
+import { type Bucket, worstBucket } from './health.ts'
+import { initialSort, type Sort } from './sort.ts'
+
+/** What the user picked to look at the list, on top of the filter tab */
+export interface ListView {
+  /** Only the projects of this health bucket, every project when undefined */
+  bucket: Bucket | undefined
+  /** True when the archived projects are listed, they are folded in one row otherwise */
+  isArchivedShown: boolean
+  /** The text typed in the search field, projects whose name holds it are kept, case ignored */
+  search: string
+  /** The column and the direction that order the rows */
+  sort: Sort
+}
+
+/** The view when the page opens: every project, the archived ones folded */
+export const initialListView: ListView = { bucket: undefined, isArchivedShown: false, search: '', sort: initialSort }
+
+/**
+ * Tell if a project is archived, the kind of row that is folded
+ * @param result the project result
+ * @returns true when archived
+ */
+function isArchived(result: Readonly<ScanProject>) {
+  return result.project.github?.isArchived === true
+}
+
+/**
+ * Tell if the archived projects can be folded: not in the Archived filter nor in the "all good" bucket, where the user asks for them
+ * @param filterId the selected filter tab
+ * @param view the view
+ * @returns true when they can be folded
+ */
+function isFoldable(filterId: FilterId, view: Readonly<ListView>) {
+  return filterId !== 'archived' && view.bucket !== 'quiet'
+}
+
+/**
+ * How many archived projects are folded or could be folded, zero when the filter asks for them
+ * @param results the project results of the filter tab
+ * @param filterId the selected filter tab
+ * @param view the view
+ * @returns the count
+ * @example foldableCount(inFilter, 'overview', view) // 32
+ */
+export function foldableCount(results: readonly ScanProject[], filterId: FilterId, view: Readonly<ListView>) {
+  return isFoldable(filterId, view) ? results.filter(result => isArchived(result)).length : 0
+}
+
+/**
+ * Keep the projects of a view: the ones of its bucket, whose name holds the search, without the folded archived ones
+ * @param results the project results, already filtered by the filter tab
+ * @param filterId the selected filter tab
+ * @param view the view
+ * @returns the projects to list
+ * @example applyView(state.projects, 'overview', initialListView)
+ */
+export function applyView(results: readonly ScanProject[], filterId: FilterId, view: Readonly<ListView>) {
+  const isFolding = isFoldable(filterId, view) && !view.isArchivedShown
+  const search = view.search.trim().toLowerCase()
+  return results.filter(result => (view.bucket === undefined || worstBucket(result.findings) === view.bucket) && !(isFolding && isArchived(result)) && result.project.name.toLowerCase().includes(search))
+}
