@@ -6,6 +6,8 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   build: { emptyOutDir: true, outDir: '../../dist/web', reportCompressedSize: false },
   plugins: [react(), tailwindcss()],
+  // dedicated ports, so apps never collide when running together
+  preview: { port: 4109, strictPort: true },
   root: 'src/web',
-  server: { proxy: { '/api': `http://127.0.0.1:${process.env.REPO_CHECK_PORT ?? '4747'}` } },
+  server: { port: 5109, proxy: { '/api': `http://127.0.0.1:${process.env.REPO_CHECK_PORT ?? '4747'}` }, strictPort: true },
 })
