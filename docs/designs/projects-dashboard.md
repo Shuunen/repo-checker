@@ -24,7 +24,7 @@ Today `repo-check` inspects the files inside one repo (README, biome, workflows)
 - Single package, one `package.json`. Code lives in `src/server`, `src/shared`, `src/web`.
 - GitHub access goes through the `gh` CLI. The tool never reads or stores a token.
 - The server listens on `127.0.0.1` only, because it can delete things.
-- TypeScript, oxlint + oxfmt, vitest (same as the `snippets` repo). bun in development, Node 24 for users.
+- TypeScript, oxlint + oxfmt, vitest (same as the `snippets` repo). bun in development, Node 26 for users.
 
 ## Premises
 
@@ -103,7 +103,7 @@ None blocking. Anything new that comes up while scaffolding is added here.
 
 ## Dependencies
 
-- `gh` CLI, `git`, Node 24.
+- `gh` CLI, `git`, Node 26.
 - HeroUI 3.x, React 19, Tailwind 4, Vite, Hono, `@hono/node-server`, TanStack Query, wouter (all confirmed and used).
 
 ## Next Steps

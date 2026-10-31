@@ -41,7 +41,7 @@ function usesModernPnpm({ pkg }: Readonly<Context>) {
 
 export const nodeVersionRules = [
   requireFile({ content: ({ flags }) => `${flags.nodeVersion ?? fallbackNodeVersion}\n`, files: ['.nvmrc'], id: 'nvmrc-exists', message: 'no {{file}} file to pin the Node version', severity: 'error', when: isNode }),
-  requireInFile({ files: ['.nvmrc'], id: 'nvmrc-recent-node', message: '{{file}} does not pin a recent LTS Node version, like 24.11.0', pattern: /\b24\.\d+\.\d+/u, severity: 'warning' }),
+  requireInFile({ files: ['.nvmrc'], id: 'nvmrc-recent-node', message: '{{file}} does not pin a recent LTS Node version, like 26.13.0', pattern: /\b26\.\d+\.\d+/u, severity: 'warning' }),
 ]
 
 export const npmrcRules = [

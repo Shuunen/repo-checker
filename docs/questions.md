@@ -48,7 +48,7 @@ None so far.
 
 Added fixers (all tested, `bun run check` passes with 100% coverage). Created files are filled with this repo's own content, nothing is committed by the fix itself:
 
-- `nvmrc-exists` creates `.nvmrc` with `24.21.0` (this repo's version, hardcoded in `node.rule.ts`).
+- `nvmrc-exists` creates `.nvmrc` with `26.13.0` (this repo's version, hardcoded in `node.rule.ts`).
 - `editorconfig-exists` creates `.editorconfig` (same content as this repo's).
 - `gitignore-exists` creates `.gitignore` with `node_modules`; `gitignore-node-modules` appends it.
 - `renovate-config-exists` creates `renovate.json` (this repo's); `renovate-no-config-base` swaps `config:base` for `config:semverAllMonthly`.
@@ -58,7 +58,7 @@ Added fixers (all tested, `bun run check` passes with 100% coverage). Created fi
 
 Questions, findings left without a fixer on purpose:
 
-1. **`.nvmrc` version**: hardcoding `24.21.0` will age. Should the fixer read the current LTS, or the Node of the machine running repo-check?
+1. **`.nvmrc` version**: hardcoding `26.13.0` will age. Should the fixer read the current LTS, or the Node of the machine running repo-check?
 2. **`npmrc-exists`**: which content should a new `.npmrc` get? Only `enable-pre-post-scripts=true` (this repo's), or nothing useful to add (an empty file would only silence the check)?
 3. **`repo-checker-config`** (14 projects): creating `{}` silences the check without saying anything. Should the fixer guess `maxSizeKo`, or stay unfixable?
 4. **`license-file-exists` / `missing-license` / `package-license`**: needs a license choice and author. Always MIT with the git user as author, or ask per project in the UI?
@@ -73,7 +73,7 @@ Questions, findings left without a fixer on purpose:
 
 ### Decisions from the review of 2026-10-15 (built, see below)
 
-1. **`.nvmrc`**: fetch the latest LTS from nodejs.org, fall back to the hardcoded `24.21.0` when the call fails.
+1. **`.nvmrc`**: fetch the latest LTS from nodejs.org, fall back to the hardcoded `26.13.0` when the call fails.
 2. **`.npmrc`**: create with `enable-pre-post-scripts=true`.
 3. **`.repo-checker.json`**: the fixer creates `{ "$schema": ... }` pointing to a JSON schema shipped in the npm package (`node_modules/...`), for IDE autocompletion. The schema itself is to be built and published.
 4. **License**: MIT by default, author from `git config user.name`, current year, per-project override in `.repo-checker.json`. Fixes `license-file-exists` and `package-license`.
@@ -93,9 +93,9 @@ Questions, findings left without a fixer on purpose:
 
 All of it is in `bun run check` green with 100% coverage, one commit per theme on `rewrite/projects-dashboard`. **Nothing was run on your real clones or repos**: only a read-only dry run of every fixer on `~/Projects/github` (no crash, nothing written). Try the install and the GitHub action on a throwaway repo first.
 
-1. **Facts for fixers** (`src/server/facts.ts`): the git user (`git config --global`), the Node LTS (nodejs.org, 3 s timeout, fallback `24.21.0`) and what GitHub says of the repo are given to the rules as flags, so the rules stay pure. The tests block the internet with `src/server/vitest.setup.ts` (fetch is stubbed except for 127.0.0.1).
+1. **Facts for fixers** (`src/server/facts.ts`): the git user (`git config --global`), the Node LTS (nodejs.org, 3 s timeout, fallback `26.13.0`) and what GitHub says of the repo are given to the rules as flags, so the rules stay pure. The tests block the internet with `src/server/vitest.setup.ts` (fetch is stubbed except for 127.0.0.1).
 2. **Two config exceptions to review** (you said never to bend a rule without asking): `.dependency-cruiser.js` got `vitest.setup.ts` in the `not-to-dev-dep` exception (the config comment says to do that for dev-only files) and in the orphan list. No oxlint rule was disabled.
-3. **`.nvmrc`**: the version is whatever the latest LTS is, even if it is not a 24.x: `nvmrc-recent-node` still hardcodes `24.x` and would then complain. Change that pattern when Node 26 becomes the LTS.
+3. **`.nvmrc`**: the version is whatever the latest LTS is, even if it is not a 26.x: `nvmrc-recent-node` hardcodes `26.x` and would then complain. The pattern now expects `26.x`, change it when the next LTS arrives.
 4. **`.repo-checker.json`**: created with a `$schema` pointing to `./node_modules/repo-check/schema.json`, the schema is `schema.json` at the root, shipped in `files`. Your own `.repo-checker.json` now points to `./schema.json`. The schema lists every option from `ProjectFlags` that a project can set.
 5. **License file**: only written when the declared license is MIT or absent and the git user is known, with the git user name and the current year. `package-license` uses `.repo-checker.json`'s `license`, MIT otherwise.
 6. **`package.json` fields**: `author` (name and mail of the git user), `bugs` (`<repo>/issues`), `homepage` (the repo url, since the homepage of a `package.json` is the one of the source code, not of the deployed website; this was first the GitHub homepage, which was wrong), `description` (GitHub), `repository` (`git+https://github.com/owner/name.git`), `license`. Each is only fixed when the fact is known.

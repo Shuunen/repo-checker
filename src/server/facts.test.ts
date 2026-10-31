@@ -19,12 +19,12 @@ describe(createFacts, () => {
       Promise.resolve(
         JSON.stringify([
           { lts: false, version: 'v25.1.0' },
-          { lts: 'Krypton', version: 'v24.11.0' },
+          { lts: 'Krypton', version: 'v26.13.0' },
         ]),
       ),
     )
     const { globalFacts } = createFacts(fakeDeps(fetchText, { 'user.email': 'me@mail.com', 'user.name': 'Me' }))
-    await expect(globalFacts()).resolves.toStrictEqual({ gitAuthor: { email: 'me@mail.com', name: 'Me' }, nodeVersion: '24.11.0' })
+    await expect(globalFacts()).resolves.toStrictEqual({ gitAuthor: { email: 'me@mail.com', name: 'Me' }, nodeVersion: '26.13.0' })
     await globalFacts()
     expect(fetchText).toHaveBeenCalledOnce()
   })
@@ -32,9 +32,9 @@ describe(createFacts, () => {
   it('has no author when the git user is not set, and no mail when only the name is', async () => {
     expect.hasAssertions()
     const none = createFacts(fakeDeps(() => Promise.reject(new Error('offline'))))
-    await expect(none.globalFacts()).resolves.toStrictEqual({ gitAuthor: undefined, nodeVersion: '24.21.0' })
+    await expect(none.globalFacts()).resolves.toStrictEqual({ gitAuthor: undefined, nodeVersion: '26.13.0' })
     const nameOnly = createFacts(fakeDeps(() => Promise.resolve('[]'), { 'user.name': 'Me' }))
-    await expect(nameOnly.globalFacts()).resolves.toStrictEqual({ gitAuthor: { email: undefined, name: 'Me' }, nodeVersion: '24.21.0' })
+    await expect(nameOnly.globalFacts()).resolves.toStrictEqual({ gitAuthor: { email: undefined, name: 'Me' }, nodeVersion: '26.13.0' })
   })
 })
 
@@ -50,7 +50,7 @@ describe(externalFlags, () => {
   it('merges the global facts and the GitHub flags, with no network in tests', async () => {
     expect.hasAssertions()
     const flags = await externalFlags(undefined)
-    expect(flags.nodeVersion).toBe('24.21.0')
+    expect(flags.nodeVersion).toBe('26.13.0')
     expect(flags.isPrivate).toBe(false)
   })
 })

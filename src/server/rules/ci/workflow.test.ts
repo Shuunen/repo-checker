@@ -15,9 +15,9 @@ function byId(id: string) {
 
 const ci = (text: string) => ({ '.github/workflows/ci.yml': text })
 const pnpmCi = ci(
-  'on:\n  push:\n    branches:\n      - master\njobs:\n  check:\n    steps:\n      - uses: actions/checkout@v7\n      - uses: pnpm/action-setup@v6.1.0\n        with:\n          version: 12\n      - uses: actions/setup-node@v6\n        with:\n          node-version: 24\n      - run: pnpm install\n',
+  'on:\n  push:\n    branches:\n      - master\njobs:\n  check:\n    steps:\n      - uses: actions/checkout@v7\n      - uses: pnpm/action-setup@v6.1.0\n        with:\n          version: 12\n      - uses: actions/setup-node@v6\n        with:\n          node-version: 26\n      - run: pnpm install\n',
 )
-const bunCi = ci('jobs:\n  check:\n    steps:\n      - uses: actions/checkout@v7\n      - uses: oven-sh/setup-bun@v2\n      - uses: actions/setup-node@v6\n        with:\n          node-version: 24\n      - run: bun run check\n')
+const bunCi = ci('jobs:\n  check:\n    steps:\n      - uses: actions/checkout@v7\n      - uses: oven-sh/setup-bun@v2\n      - uses: actions/setup-node@v6\n        with:\n          node-version: 26\n      - run: bun run check\n')
 const bunPkg = { packageManager: 'bun@1.4.2' }
 const pnpmPkg = { devDependencies: { bun: '^1.4.2' }, packageManager: 'pnpm@12.8.1' }
 
@@ -34,8 +34,8 @@ testRule(byId('ci-node-step'), { invalid: [{ errors: ['missing'], files: ci('job
 testRule(byId('ci-node-version'), {
   invalid: [{ errors: ['missing'], files: ci('node-version: 20\n'), name: 'node 20' }],
   valid: [
-    { files: pnpmCi, name: 'node 24' },
-    { files: ci('node: [24]\n'), name: 'node 24 in a matrix' },
+    { files: pnpmCi, name: 'node 26' },
+    { files: ci('node: [26]\n'), name: 'node 26 in a matrix' },
   ],
 })
 testRule(byId('ci-no-main-branch'), { invalid: [{ errors: ['found'], files: ci('branches:\n  - main\n'), name: 'a main branch' }], valid: [{ files: pnpmCi, name: 'master only' }] })

@@ -79,7 +79,7 @@ What the project depends on, and how current and safe that is.
 Which Node and which package manager the project uses, and how that is pinned.
 
 - ✅ 🔴 `nvmrc-exists`: a `.nvmrc` file exists (`nvmrc.ts`).
-- ✅ 🟡 `nvmrc-recent-node`: `.nvmrc` pins a recent LTS Node version (currently 24.x) (`nvmrc.ts`).
+- ✅ 🟡 `nvmrc-recent-node`: `.nvmrc` pins a recent LTS Node version (currently 26.x) (`nvmrc.ts`).
 - ✅ 🟡 `npmrc-exists`: an `.npmrc` file exists, unless `packageManager` pins pnpm 12 or above (`npmrc.file.ts`).
 - ✅ 🟡 `npmrc-pre-post-scripts`: `.npmrc` has `enable-pre-post-scripts=true`, when the project uses task prefixes (`npmrc.file.ts`).
 - ✅ 🟡 `outdated-package-manager`: the `packageManager` pins a `pnpm`, `npm` or `bun` version that is a major behind the latest on the npm registry, patch and minor updates are not reported. Fixed by pinning the latest (`package-manager.rule.ts`).
@@ -191,7 +191,7 @@ Linting, formatting, typing and architecture config files.
 - ✅ 🔴 `ci-checkout-step`: `.github/workflows/ci.yml` has a checkout step (`gh-workflow.ts`).
 - ✅ 🔴 `ci-checkout-version`: the checkout action is a recent version, v5 to v7 (`gh-workflow.ts`).
 - ✅ 🔴 `ci-node-step`: a `setup-node` step (`gh-workflow.ts`).
-- ✅ 🟡 `ci-node-version`: a recent Node version, currently 24 (`gh-workflow.ts`).
+- ✅ 🟡 `ci-node-version`: a recent Node version, currently 26 (`gh-workflow.ts`).
 - ✅ 🟡 `ci-no-main-branch`: no `- main` branch reference (`gh-workflow.ts`).
 - ✅ 🟡 `ci-pnpm-step`: a `pnpm/action-setup` step, when the project uses pnpm (`gh-workflow.ts`).
 - ✅ 🟡 `ci-pnpm-version`: the pnpm action pins version 12 (`gh-workflow.ts`).

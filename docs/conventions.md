@@ -4,8 +4,8 @@ The rewrite follows the same tooling and rules as the `snippets` repo, so the re
 
 ## Tooling
 
-- pnpm for development: it is the package manager, and Node 24 runs the TypeScript sources directly (`pnpm scan`, `pnpm ui`, `pnpm check`).
-- Node 24 (`.nvmrc`) for users: the published package is plain JavaScript built by `tsdown`, so `npx repo-check` only needs Node, not pnpm.
+- pnpm for development: it is the package manager, and Node 26 runs the TypeScript sources directly (`pnpm scan`, `pnpm ui`, `pnpm check`).
+- Node 26 (`.nvmrc`) for users: the published package is plain JavaScript built by `tsdown`, so `npx repo-check` only needs Node, not pnpm.
 - oxlint to lint, oxfmt to format (`.oxfmtrc.json`, migrated from the old biome config: 300 columns, single quotes, no semicolons). Biome is gone. Long tables stay one item per line without any ignore comment.
 - vitest for tests, Testing Library for the web.
 - Vite builds `src/web`, `pnpm dev` serves it with `/api` proxied to `pnpm ui`. Its packages are devDependencies, since Vite bundles them.

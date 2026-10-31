@@ -8,7 +8,7 @@ One package, one `package.json`, three folders.
 
 ```
 src/
-  server/   Node 24 + TypeScript: scanning, git and gh calls, Hono HTTP server, CLI entry
+  server/   Node 26 + TypeScript: scanning, git and gh calls, Hono HTTP server, CLI entry
   shared/   Types and pure helpers used by both sides (Project, ActionKind, plural...)
   web/      React 19 + TypeScript + Tailwind 4 + HeroUI, built by Vite
 ```
@@ -188,7 +188,7 @@ The scan is split by what costs something. The **local side** of a project (its 
 
 ## Build
 
-During development Node 24 runs the TypeScript sources directly. For the npm package, Vite builds `src/web` and `tsdown` builds `src/server` to plain JavaScript, because Node does not strip types inside `node_modules`: users only need Node 24, not a package manager. Both outputs ship in the npm package.
+During development Node 26 runs the TypeScript sources directly. For the npm package, Vite builds `src/web` and `tsdown` builds `src/server` to plain JavaScript, because Node does not strip types inside `node_modules`: users only need Node 26, not a package manager. Both outputs ship in the npm package.
 
 ## Distribution
 

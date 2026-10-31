@@ -28,7 +28,7 @@ export const workflowRules = [
   requireInFile({ files, id: 'ci-checkout-step', message: '{{file}} has no checkout step, like uses: actions/checkout@v7', pattern: /actions\/checkout/u, severity: 'error' }),
   requireInFile({ files, id: 'ci-checkout-version', message: '{{file}} uses an old checkout action, use actions/checkout@v7', onlyIf: /actions\/checkout/u, pattern: /uses: actions\/checkout@v(?:[5-9]|\d{2,})\b/u, severity: 'error' }),
   requireInFile({ files, id: 'ci-node-step', message: '{{file}} has no setup-node step, like uses: actions/setup-node@v6', pattern: /actions\/setup-node/u, severity: 'error' }),
-  requireInFile({ files, id: 'ci-node-version', message: '{{file}} does not run a recent Node version, like node-version: 24', pattern: /node: \[24\]|node-version: 24/u, severity: 'warning' }),
+  requireInFile({ files, id: 'ci-node-version', message: '{{file}} does not run a recent Node version, like node-version: 26', pattern: /node: \[26\]|node-version: 26/u, severity: 'warning' }),
   forbidInFile({ files, id: 'ci-no-main-branch', message: '{{file}} references a main branch, use master', pattern: /- main\b/u, severity: 'warning' }),
   requireInFile({ files, id: 'ci-pnpm-step', message: '{{file}} has no pnpm setup step, like uses: pnpm/action-setup@v5', pattern: /pnpm\/action-setup/u, severity: 'warning', when: context => !usesBun(context) }),
   requireInFile({

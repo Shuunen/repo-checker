@@ -89,7 +89,7 @@ export interface ProjectFlags {
 }
 
 /** The Node version used when the LTS cannot be read from nodejs.org */
-export const fallbackNodeVersion = '24.21.0'
+export const fallbackNodeVersion = '26.13.0'
 
 /**
  * The GitHub url of the project, from the `origin` of its git config

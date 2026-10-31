@@ -15,12 +15,12 @@ function byId(id: string) {
 
 testRule(byId('nvmrc-exists'), {
   invalid: [
-    { errors: ['missing'], flags: { isNotNode: false }, name: 'no .nvmrc', output: '24.21.0\n' },
+    { errors: ['missing'], flags: { isNotNode: false }, name: 'no .nvmrc', output: '26.13.0\n' },
     { errors: ['missing'], flags: { isNotNode: false, nodeVersion: '24.99.1' }, name: 'no .nvmrc, the latest LTS', output: '24.99.1\n' },
   ],
-  valid: [{ files: { '.nvmrc': '24.11.0' }, name: 'a .nvmrc' }, { name: 'not a Node project' }],
+  valid: [{ files: { '.nvmrc': '26.13.0' }, name: 'a .nvmrc' }, { name: 'not a Node project' }],
 })
-testRule(byId('nvmrc-recent-node'), { invalid: [{ errors: ['missing'], files: { '.nvmrc': '20.1.0' }, name: 'node 20' }], valid: [{ files: { '.nvmrc': '24.11.0\n' }, name: 'node 24' }] })
+testRule(byId('nvmrc-recent-node'), { invalid: [{ errors: ['missing'], files: { '.nvmrc': '20.1.0' }, name: 'node 20' }], valid: [{ files: { '.nvmrc': '26.13.0\n' }, name: 'node 26' }] })
 testRule(byId('npmrc-exists'), {
   invalid: [{ errors: ['missing'], flags: { isNotNode: false }, name: 'no .npmrc', output: 'enable-pre-post-scripts=true\n', pkg: { name: 'foo' } }],
   valid: [

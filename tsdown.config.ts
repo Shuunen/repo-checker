@@ -4,11 +4,11 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   clean: true,
   entry: ['src/server/bin.ts', 'src/server/rules/**/*.rule.ts'],
-  format: 'esm',
   fixedExtension: false,
+  format: 'esm',
   outDir: 'dist',
   platform: 'node',
   root: 'src',
-  target: 'node24',
+  target: 'node26',
   unbundle: true,
 })
