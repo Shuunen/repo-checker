@@ -127,6 +127,8 @@ interface ProjectCase {
   github?: Partial<GithubRepo>
   /** True when the clone belongs to another owner */
   isOtherOwner?: boolean
+  /** True when GitHub could not be read */
+  isOffline?: boolean
   /** The local clone fields to change, leave it out for a project that is not cloned */
   local?: Partial<LocalClone>
   /** The test name */
@@ -166,7 +168,7 @@ function toProject(testCase: Readonly<ProjectCase>): Project {
     topics: ['tool'],
     ...testCase.github,
   }
-  return { github: testCase.github === undefined ? undefined : github, isOtherOwner: testCase.isOtherOwner ?? false, local: testCase.local === undefined ? undefined : local, name: 'app' }
+  return { github: testCase.github === undefined ? undefined : github, isOtherOwner: testCase.isOtherOwner ?? false, ...(testCase.isOffline === true && { isOffline: true }), local: testCase.local === undefined ? undefined : local, name: 'app' }
 }
 
 /**

@@ -11,5 +11,6 @@ testProjectRule(brokenClone, {
     { github: {}, local: {}, name: 'a clone of a repo' },
     { isOtherOwner: true, local: { origin: 'git@github.com:someone/lib.git', slug: 'someone/lib' }, name: 'a clone of another owner' },
     { github: {}, name: 'not cloned' },
+    { isOffline: true, local: {}, name: 'a clone whose repo could not be looked up, gh being unavailable' },
   ],
 })

@@ -116,6 +116,21 @@ describe(scan, () => {
     ])
   })
 
+  it('runs the local checks without gh, and skips the ones that need GitHub', async () => {
+    expect.hasAssertions()
+    const gh = fakeGh({})
+    const target = await makeWorkspace()
+    const { owner, projects } = await scan({ gh, owner: undefined, rules, shouldFetch: false, target }, {})
+    expect(owner).toBe('no GitHub')
+    expect(projects.map(({ findings, project }) => [project.name, findings.map(item => item.ruleId)])).toStrictEqual([
+      ['app', []],
+      ['gone', []],
+      ['lib', []],
+      ['plain', ['broken-clone']],
+    ])
+    expect(gh).toHaveBeenCalledOnce()
+  })
+
   it('checks the other projects while the forks are compared', async () => {
     expect.hasAssertions()
     const { promise: released, resolve: release } = Promise.withResolvers<undefined>()

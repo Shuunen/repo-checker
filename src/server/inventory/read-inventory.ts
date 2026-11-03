@@ -79,16 +79,19 @@ async function readRepos(gh: GhRunner, { clones, login, onProgress, owner, singl
  * @param options.onProgress receives progress lines
  * @param options.owner the GitHub owner, detected when undefined
  * @param options.target the folder to read
- * @returns the clones, the repos, the owner, and whether the target is a single project
- * @throws {Error} when gh fails
+ * @returns the clones, the repos, the owner (undefined when GitHub could not be read and none was given), whether the target is a single project, and whether GitHub was read. Without a working gh there is no repo and no GitHub-based check, the local ones still run
  */
 export async function readInventory(gh: GhRunner, options: Readonly<{ onProgress: Progress; owner: string | undefined; target: string }>) {
   const { onProgress } = options
   const target = path.resolve(options.target)
   onProgress(`reading the local clones in ${target}`)
-  const [login, clones] = await Promise.all([getLogin(gh), readClones(target, { shouldFetch: false })])
+  const [login, clones] = await Promise.all([getLogin(gh).catch(() => undefined), readClones(target, { shouldFetch: false })])
   const single = clones.length === 1 && clones[0]?.path === target ? clones[0] : undefined
+  if (login === undefined) {
+    onProgress('gh is missing or not logged in, the checks that need GitHub are skipped')
+    return { clones, isOffline: true, isSingle: single !== undefined, owner: options.owner ?? single?.slug?.split('/')[0], repos: [] }
+  }
   const owner = options.owner ?? single?.slug?.split('/')[0] ?? login
   const repos = await readRepos(gh, { clones, login, onProgress, owner, single })
-  return { clones, isSingle: single !== undefined, owner, repos }
+  return { clones, isOffline: false, isSingle: single !== undefined, owner, repos }
 }

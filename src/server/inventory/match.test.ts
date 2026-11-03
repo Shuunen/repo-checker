@@ -75,6 +75,11 @@ describe('project matching', () => {
     expect(matchProjects([gitlab], [], 'Shuunen')).toMatchObject([{ github: undefined, isOtherOwner: true, name: 'lab' }])
   })
 
+  it("counts every clone as the owner's when there is no owner", () => {
+    expect.hasAssertions()
+    expect(matchProjects([clone('lib', 'someone/lib')], [], undefined)).toMatchObject([{ github: undefined, isOtherOwner: false, name: 'lib' }])
+  })
+
   it('keeps a folder that is not a usable clone, under its folder name', () => {
     expect.hasAssertions()
     expect(matchProjects([clone('migrate-to-base', undefined)], [], 'Shuunen')).toMatchObject([{ github: undefined, isOtherOwner: false, name: 'migrate-to-base' }])

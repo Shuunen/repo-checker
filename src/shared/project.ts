@@ -163,6 +163,8 @@ export interface Project {
   github: GithubRepo | undefined
   /** True when the clone's origin belongs to another owner, such projects are left out of every Sync check */
   isOtherOwner: boolean
+  /** True when GitHub could not be read (gh missing or not logged in): the project has no repo because nothing was asked, not because it does not exist */
+  isOffline?: boolean
   /** The local clone, undefined when the repo is not cloned */
   local: LocalClone | undefined
   /** The repo name, or the folder name when there is no repo */

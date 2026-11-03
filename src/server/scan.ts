@@ -43,13 +43,13 @@ export interface ScanHooks {
  * @param hooks.onProject called as soon as each project is checked, for live output
  * @param hooks.onProgress receives a short line about what the scan is doing
  * @returns the owner compared with, whether the target is a single project, and one result per project sorted by name
- * @throws {Error} when gh fails, for example when it is not logged in
+ * @throws {Error} when gh fails after it answered who is logged in. Without gh, or logged out, the scan still runs on the local checks
  * @example const { projects } = await scan({ gh: ghCli, owner: undefined, rules, shouldFetch: true, target: process.cwd() })
  */
 export async function scan(options: Readonly<ScanOptions>, { onProject = () => undefined, onProgress = () => undefined }: Readonly<ScanHooks> = {}) {
-  const { clones, isSingle, owner, repos } = await readInventory(options.gh, { ...options, onProgress })
+  const { clones, isOffline, isSingle, owner, repos } = await readInventory(options.gh, { ...options, onProgress })
   const refresh = options.shouldFetch ? (local: LocalClone) => readClone(local.path, { shouldFetch: true }) : undefined
-  const matched = matchProjects(clones, repos, owner)
+  const matched = matchProjects(clones, repos, owner).map(project => (isOffline ? Object.assign(project, { isOffline }) : project))
   const projects = await checkProjects(matched, { gh: options.gh, memory: options.memory, onProgress, onProject, refresh, rules: splitRules(activeRules(options.rules, options.isNitpick === true)), shouldReuse: options.shouldReuse })
-  return { isSingle, owner, projects }
+  return { isSingle, owner: owner ?? 'no GitHub', projects }
 }

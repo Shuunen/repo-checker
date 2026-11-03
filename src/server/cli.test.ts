@@ -87,20 +87,23 @@ describe(cli, () => {
     expect(output).toContain('repo-check failed: the target /missing/projects is not a folder')
   })
 
-  it('reports a gh failure', async () => {
+  it('goes on with the local checks when gh is not logged in', async () => {
     expect.hasAssertions()
     const gh = vi.fn<GhRunner>(() => Promise.resolve({ ok: false, stderr: 'gh: To get started with GitHub CLI, please run: gh auth login', stdout: '' }))
-    const { code, output } = await cli([], { cwd: await makeEmptyFolder(), gh })
-    expect(code).toBe(1)
-    expect(output).toContain('repo-check failed: gh api user failed: gh: To get started with GitHub CLI, please run: gh auth login')
+    const folder = await makeEmptyFolder()
+    const { code, output, progress } = await cli([], { cwd: folder, gh })
+    expect(code).toBe(0)
+    expect(output).toContain(`repo-check · ${folder} · no GitHub · 0 projects`)
+    expect(progress).toContain('gh is missing or not logged in, the checks that need GitHub are skipped')
+    expect(gh).toHaveBeenCalledOnce()
   })
 
-  it('reports a failure that is not an Error', async () => {
+  it('goes on with the local checks when gh is not installed', async () => {
     expect.hasAssertions()
     const gh = vi.fn<GhRunner>(() => Promise.reject(new Error('spawn gh ENOENT').message))
-    const { code, output } = await cli([], { cwd: await makeEmptyFolder(), gh })
-    expect(code).toBe(1)
-    expect(output).toContain('repo-check failed: spawn gh ENOENT')
+    const { code, output } = await cli(['--owner=someone'], { cwd: await makeEmptyFolder(), gh })
+    expect(code).toBe(0)
+    expect(output).toContain('· someone · 0 projects')
   })
 })
 
