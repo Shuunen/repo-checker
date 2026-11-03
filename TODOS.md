@@ -21,7 +21,7 @@ Every check of `docs/checks.md` is built. What is left on them:
 
 - Bulk actions: `pull --ff-only`, prune merged branches, clone all missing repos, archive on GitHub.
 - ✅ Update project: an action that opens a chat modal where Claude runs `/update-project` in the clone, see `docs/features.md`. A CLI command for it is still to do.
-- CLI fixes with a single-key `y/N` prompt, sharing the UI's safety checks. The CLI is report-only.
+- CLI `--fix` only applies the file fixes, without a prompt. The git fixes and the Sync actions (clone, archive...) stay in the UI, and a `y/N` prompt per project could come later.
 - `archived-with-unsaved-work` extras: export unsaved commits as a patch file, per-category discard with checkboxes.
 - Offer "git init and create GitHub repo" for local folders that have no git.
 

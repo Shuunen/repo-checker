@@ -19,6 +19,8 @@ interface ReportOptions {
   hasColors: boolean
   /** How long the scan took, in milliseconds */
   durationMs: number
+  /** What `--fix` did, one line per project, shown under the header */
+  fixed?: readonly string[]
   /** Also list every passed and skipped check, per project */
   isVerbose: boolean
   /** The owner compared with */
@@ -90,11 +92,14 @@ function summaryLine(results: readonly ProjectResult[]) {
  * @example const { hasErrors, text } = formatReport(projects, { durationMs: 1200, hasColors: false, owner: 'Shuunen', target: '/projects' })
  */
 export function formatReport(results: readonly ProjectResult[], options: Readonly<ReportOptions>) {
-  const { durationMs, hasColors, isVerbose, owner, target } = options
+  const { durationMs, fixed = [], hasColors, isVerbose, owner, target } = options
   const header = paint('bold', `repo-check · ${target} · ${owner} · ${results.length} project${results.length === 1 ? '' : 's'} in ${(durationMs / msPerSecond).toFixed(1)}s`, hasColors)
+  const fixes = fixed.length === 0 ? [] : ['', paint('green', `🔧 fixed (${fixed.length})`, hasColors), ...fixed.map(line => `  ${line}`)]
   const verbose = isVerbose ? [...outcomeLines(results, 'passed', hasColors), ...outcomeLines(results, 'skipped', hasColors)] : []
   const lines = groups.flatMap(group => groupLines(results, group, hasColors))
   const hasErrors = results.some(result => result.findings.some(finding => finding.severity === 'error'))
-  const footer = lines.length === 0 ? [paint('green', '✔ all good', hasColors)] : ['Run repo-check ui to fix them.']
-  return { hasErrors, text: [header, ...verbose, ...lines, '', summaryLine(results), ...footer].join('\n') }
+  const isFixable = results.some(result => result.findings.some(finding => finding.edits.length > 0))
+  const hint = isFixable ? ['Run repo-check --fix to apply the file fixes, or repo-check ui to review each diff first.'] : []
+  const footer = lines.length === 0 ? [paint('green', '✔ all good', hasColors)] : hint
+  return { hasErrors, text: [header, ...fixes, ...verbose, ...lines, '', summaryLine(results), ...footer].join('\n') }
 }

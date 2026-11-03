@@ -4,7 +4,7 @@ This file holds the exact behavior of the **Sync** checks (local vs GitHub), the
 
 ## Modes
 
-One rule for both the CLI and the UI, based on the folder you run it in. The CLI (`repo-check`) prints the findings grouped by severity, then a summary line (checks run and skipped, counts per severity), then one green line when all is well or a hint to run `repo-check ui` to fix things. It exits with an error code when a finding is 🔴, never prompts and changes nothing. The fixes live in the UI (`repo-check ui`).
+One rule for both the CLI and the UI, based on the folder you run it in. The CLI (`repo-check`) prints the findings grouped by severity, then a summary line (checks run and skipped, counts per severity), then one green line when all is well or, when a finding has a file fix, a hint to run `repo-check --fix` or `repo-check ui`. It exits with an error code when a finding is 🔴 and never prompts. It changes nothing unless `--fix` is given: then it applies the same file fixes as the UI (a file with uncommitted changes gets the fix merged into them, nothing is committed), scans again and reports what was fixed above the findings. The UI (`repo-check ui`) shows a diff per file and asks first.
 
 - **Single project** (the folder is a git repo): check that project. The UI opens on its detail view.
 - **Folder of projects** (the folder contains git repos): check them all. The UI opens on the project list, a click opens the same detail view.
@@ -70,7 +70,7 @@ A finding of a file check can come with a fix (an edit of one or more files). Th
 
 These are requirements, each one gets a test.
 
-1. Nothing changes without an explicit confirmation, a confirm dialog in the UI with a clearly labeled action button. The CLI is report-only and never changes anything. The file fixes never overwrite a file with uncommitted changes.
+1. Nothing changes without an explicit confirmation, a confirm dialog in the UI with a clearly labeled action button. The CLI is report-only unless `--fix` is given, which is the confirmation. A file fix is made on the file as it is, so a file with uncommitted changes gets the fix merged into those changes, and it stays out of the commit.
 2. A local clone delete is offered only when the clone is clean (and the server proves it again, with a fresh fetch, before it shows the dialog and again before it deletes): no uncommitted or untracked files, nothing unpushed, no stash, no local-only branch. Otherwise the tool says why it will not offer the delete. Gitignored files (`.env`, local databases...) do not block the delete, but the confirm dialog lists every one that will be lost, ignoring rebuildable folders such as `node_modules` and `dist`.
 3. A fork delete is offered only when the strict `pristine-fork` rule is proved, including the clean-clone rule for its local clone when one exists. A failed comparison is never read as "nothing to lose".
 4. The server binds to `127.0.0.1` only, and refuses any request whose `Host` is not `127.0.0.1` or `localhost`, so a web page on another domain cannot reach it through DNS rebinding. Any request that changes something must also carry the `x-repo-check: 1` header, which a web page of another site cannot add, so it cannot post an action.

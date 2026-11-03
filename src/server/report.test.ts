@@ -47,7 +47,24 @@ describe('report', () => {
       '  finga  not-cloned      not-cloned message',
       '',
       '4 checks run, 1 skipped · 1 error · 0 warnings · 2 info',
-      'Run repo-check ui to fix them.',
+    ])
+  })
+
+  it('points to --fix and the ui when a finding has a fix, and lists what a fix run did', () => {
+    expect.hasAssertions()
+    const app = result('app', [{ ...finding('old-text', 'warning'), edits: [{ apply: text => text, file: 'a.txt' }] }])
+    const { text } = formatReport([app], { ...options, fixed: ['app: fixed 1 file (a.txt)'] })
+    expect(text.split('\n')).toStrictEqual([
+      'repo-check · /projects · owner · 1 project in 1.2s',
+      '',
+      '🔧 fixed (1)',
+      '  app: fixed 1 file (a.txt)',
+      '',
+      '🟡 warnings (1)',
+      '  app  old-text  old-text message',
+      '',
+      '1 check run, 0 skipped · 0 errors · 1 warning · 0 info',
+      'Run repo-check --fix to apply the file fixes, or repo-check ui to review each diff first.',
     ])
   })
 

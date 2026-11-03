@@ -2,7 +2,8 @@ import { stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import { parseArgs } from 'node:util'
-import { loadRules } from './engine/load-rules.ts'
+import { activeRules, loadRules, splitRules } from './engine/load-rules.ts'
+import { fixProjects } from './fix-projects.ts'
 import { formatReport } from './report.ts'
 import { scan } from './scan.ts'
 import { defaultPort, startUi, type UiEnvironment } from './ui.ts'
@@ -11,7 +12,7 @@ import { errorMessage } from '../shared/text.ts'
 /** The usage, shown by --help and after a wrong option */
 const usage = `Usage: repo-check [ui] [options]
 
-Checks the projects of a folder against GitHub, or a single project when run inside one. Report only, it changes nothing.
+Checks the projects of a folder against GitHub, or a single project when run inside one. Report only, it changes nothing, unless --fix is given.
 
 Commands:
   ui              start the local server on 127.0.0.1 instead, it streams the scan to the dashboard
@@ -20,6 +21,7 @@ Options:
   --target=path   folder to scan, the current one by default
   --owner=name    GitHub account to compare with, the gh login by default (in a single project, the owner of its origin)
   --no-fetch      skip git fetch, faster but unpushed work is measured against stale remote refs
+  --fix           apply the file fixes, the same as in the ui: a file you already changed gets the fix merged into your changes, and nothing is committed
   --nitpick       also run the nitpick checks, the small details (the ui has a toggle for it)
   --verbose       also list every passed and skipped check, per project
   --port=number   port of the ui server, ${defaultPort} by default
@@ -47,7 +49,17 @@ function parseOptions(argv: readonly string[]) {
     allowNegative: true,
     allowPositionals: true,
     args: [...argv],
-    options: { fetch: { default: true, type: 'boolean' }, help: { short: 'h', type: 'boolean' }, nitpick: { type: 'boolean' }, open: { default: true, type: 'boolean' }, owner: { type: 'string' }, port: { type: 'string' }, target: { type: 'string' }, verbose: { type: 'boolean' } },
+    options: {
+      fetch: { default: true, type: 'boolean' },
+      fix: { type: 'boolean' },
+      help: { short: 'h', type: 'boolean' },
+      nitpick: { type: 'boolean' },
+      open: { default: true, type: 'boolean' },
+      owner: { type: 'string' },
+      port: { type: 'string' },
+      target: { type: 'string' },
+      verbose: { type: 'boolean' },
+    },
   })
   const command = positionals.join(' ')
   if (command !== '' && command !== 'ui') throw new TypeError(`Unknown command '${command}'`)
@@ -115,8 +127,11 @@ async function scanAndReport(options: Readonly<ReturnType<typeof parseOptions>>,
   const started = Date.now()
   const target = await resolveTarget(cwd, options.target)
   const rules = await loadRules(rulesFolder)
-  const { owner, projects } = await scan({ gh, isNitpick: options.nitpick === true, owner: options.owner, rules, shouldFetch: options.fetch, target }, { onProgress: printProgress })
-  const { hasErrors, text } = formatReport(projects, { durationMs: Date.now() - started, hasColors, isVerbose: options.verbose === true, owner, target })
+  const scanOptions = { gh, isNitpick: options.nitpick === true, owner: options.owner, rules, shouldFetch: options.fetch, target }
+  const first = await scan(scanOptions, { onProgress: printProgress })
+  const fixed = options.fix === true ? await fixProjects(first.projects, { gh, rules: splitRules(activeRules(rules, options.nitpick === true)) }) : []
+  const { owner, projects } = fixed.length === 0 ? first : await scan(scanOptions, { onProgress: printProgress })
+  const { hasErrors, text } = formatReport(projects, { durationMs: Date.now() - started, fixed, hasColors, isVerbose: options.verbose === true, owner, target })
   print(text)
   return hasErrors ? 1 : 0
 }
