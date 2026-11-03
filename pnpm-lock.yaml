@@ -169,6 +169,9 @@ importers:
       '@hono/node-server':
         specifier: ~2.1.5
         version: 2.1.5(hono@4.13.13)
+      cac:
+        specifier: ~7.1.0
+        version: 7.1.0
       es-toolkit:
         specifier: ~1.52.0
         version: 1.52.0

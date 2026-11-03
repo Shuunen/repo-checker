@@ -1,7 +1,7 @@
 import { stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import path from 'node:path'
-import { parseArgs } from 'node:util'
+import { cac } from 'cac'
 import { activeRules, loadRules, splitRules } from './engine/load-rules.ts'
 import { fixProjects } from './fix-projects.ts'
 import { formatReport } from './report.ts'
@@ -38,32 +38,71 @@ export interface CliEnvironment extends UiEnvironment {
   printProgress: (line: string) => void
 }
 
+/** What cac reads from the command line: the words after the options, and the options by name */
+interface Parsed {
+  /** The words that are not options: the command */
+  words: string[]
+  /** The options, a number when the value looks like one */
+  options: Record<string, unknown>
+}
+
 /**
- * Parse the command line
+ * Turn an option value into the text that was typed, cac reads `--port=8080` as a number
+ * @param value the value cac gave
+ * @returns the text, undefined when the option was not given
+ */
+function asText(value: unknown) {
+  return value === undefined ? undefined : String(value)
+}
+
+/**
+ * Declare the command line to cac: one command that takes words, and the options
+ * @param parsed receives the words and the options once cac ran the command
+ * @returns the cac instance
+ */
+function declareCli(parsed: Parsed) {
+  const cli = cac('repo-check')
+  cli
+    .command('[...words]')
+    .option('--target <path>', 'folder to scan')
+    .option('--owner <name>', 'GitHub account to compare with')
+    .option('--no-fetch', 'skip git fetch')
+    .option('--fix', 'apply the file fixes')
+    .option('--nitpick', 'also run the nitpick checks')
+    .option('--verbose', 'also list every passed and skipped check')
+    .option('--port <number>', 'port of the ui server')
+    .option('--no-open', 'do not open the browser')
+    .option('-h, --help', 'show the help')
+    .action((words: string[], options: Record<string, unknown>) => Object.assign(parsed, { options, words }))
+  return cli
+}
+
+/**
+ * Parse the command line with cac
  * @param argv the arguments, without node and the script
  * @returns the options, and the command: `ui` or undefined for the report
- * @throws {TypeError} on an unknown option, a missing value or an unknown command
+ * @throws {Error} on an unknown option, a missing value or an unknown command
  */
 function parseOptions(argv: readonly string[]) {
-  const { positionals, values } = parseArgs({
-    allowNegative: true,
-    allowPositionals: true,
-    args: [...argv],
-    options: {
-      fetch: { default: true, type: 'boolean' },
-      fix: { type: 'boolean' },
-      help: { short: 'h', type: 'boolean' },
-      nitpick: { type: 'boolean' },
-      open: { default: true, type: 'boolean' },
-      owner: { type: 'string' },
-      port: { type: 'string' },
-      target: { type: 'string' },
-      verbose: { type: 'boolean' },
-    },
-  })
-  const command = positionals.join(' ')
+  const parsed: Parsed = { options: {}, words: [] }
+  const cli = declareCli(parsed)
+  cli.parse(['node', 'repo-check', ...argv], { run: false })
+  cli.runMatchedCommand()
+  const { options, words } = parsed
+  const command = words.join(' ')
   if (command !== '' && command !== 'ui') throw new TypeError(`Unknown command '${command}'`)
-  return { ...values, isUi: command === 'ui' }
+  return {
+    fetch: options.fetch !== false,
+    fix: options.fix === true,
+    help: options.help === true,
+    isUi: command === 'ui',
+    nitpick: options.nitpick === true,
+    open: options.open !== false,
+    owner: asText(options.owner),
+    port: asText(options.port),
+    target: asText(options.target),
+    verbose: options.verbose === true,
+  }
 }
 
 /**

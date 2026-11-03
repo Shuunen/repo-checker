@@ -17,7 +17,7 @@ describe(cli, () => {
     expect.hasAssertions()
     const { code, output } = await cli(['--nope'])
     expect(code).toBe(1)
-    expect(output).toMatch(/^repo-check failed: Unknown option '--nope'/u)
+    expect(output).toMatch(/^repo-check failed: Unknown option `--nope`/u)
     expect(output).toContain('Usage:')
   })
 
