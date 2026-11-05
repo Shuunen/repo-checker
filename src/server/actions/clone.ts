@@ -1,0 +1,83 @@
+import path from 'node:path'
+import { type ActionResult, attempt } from '../../shared/action.ts'
+import { type GhRunner, getRepo } from '../inventory/github.ts'
+import { type GitRunner, realRunGit } from './action-options.ts'
+import { checkFolderOfProjects, exists } from './guards.ts'
+
+/** What a clone needs */
+interface CloneOptions {
+  /** Runs gh */
+  gh: GhRunner
+  /** The repo name, as asked by the page */
+  name: string
+  /** Runs git in a folder, the real git when omitted */
+  runGit?: GitRunner | undefined
+  /** The GitHub owner the scan compares with */
+  owner: string
+  /** The folder of projects the clone goes in */
+  target: string
+}
+
+/**
+ * Prove nothing is in the way: a folder of projects, no folder of that name yet
+ * @param target the folder of projects
+ * @param folder the folder the clone would create
+ * @returns the reason to refuse, undefined when the way is free
+ */
+async function checkFolders(target: string, folder: string) {
+  const reason = await checkFolderOfProjects(target)
+  if (reason !== undefined) return reason
+  if (await exists(folder)) return `a folder named ${path.basename(folder)} already exists in ${target}`
+  return undefined
+}
+
+/**
+ * Prove the repo is still one the scan offers to clone: on GitHub, under the owner, not archived, not a fork
+ * @param gh runs gh
+ * @param slug `owner/name`
+ * @returns the reason to refuse, undefined when the repo is still cloneable
+ * @throws {Error} when gh fails for a reason other than a 404
+ */
+async function checkRepo(gh: GhRunner, slug: string) {
+  const repo = await getRepo(gh, slug)
+  if (repo === undefined) return `${slug} does not exist on GitHub any more`
+  if (repo.slug !== slug.toLowerCase()) return `${slug} was renamed or moved to ${repo.slug}, scan again`
+  if (repo.isArchived) return `${slug} is archived now, it is not offered for cloning`
+  return repo.isFork ? `${slug} is a fork, it is not offered for cloning` : undefined
+}
+
+/**
+ * Prove the clone is still right, name first, then the folders, then GitHub
+ * @param options what to clone and where
+ * @param options.gh runs gh
+ * @param options.name the repo name
+ * @param options.runGit runs git
+ * @param options.owner the GitHub owner
+ * @param options.target the folder of projects
+ * @returns the reason to refuse, undefined when everything holds
+ * @throws {Error} when gh fails for a reason other than a 404
+ */
+async function refusal({ gh, name, owner, target }: Readonly<CloneOptions>) {
+  return (await checkFolders(target, path.join(target, name))) ?? (await checkRepo(gh, `${owner}/${name}`))
+}
+
+/**
+ * Clone a repo of the owner into the folder of projects, after proving again that the scan was right: the repo is still on GitHub, not archived, not a fork, and no folder is in the way.  The clone is made by `git clone` over SSH (`git@github.com:owner/name.git`), always, like the other clones: it needs an SSH key known to GitHub, and the tool never sees a token
+ * @param options what to clone and where
+ * @param options.gh runs gh
+ * @param options.name the repo name
+ * @param options.owner the GitHub owner
+ * @param options.target the folder of projects
+ * @returns the result, refused with the reason when the proof fails
+ * @example const result = await cloneRepo({ gh: ghCli, name: 'finga', owner: 'Shuunen', target: '/home/me/projects' })
+ */
+export function cloneRepo(options: Readonly<CloneOptions>): Promise<ActionResult> {
+  const { name, owner, runGit = realRunGit, target } = options
+  return attempt(async () => {
+    const reason = await refusal(options)
+    if (reason !== undefined) return { ok: false, reason }
+    const url = `git@github.com:${owner}/${name}.git`
+    const { ok, stderr } = await runGit(['clone', url, path.join(target, name)], target)
+    return ok ? { message: `cloned ${owner}/${name} over SSH into ${path.join(target, name)}`, ok } : { ok, reason: `git clone ${url} failed: ${stderr.trim()}` }
+  })
+}
