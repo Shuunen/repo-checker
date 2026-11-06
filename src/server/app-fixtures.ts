@@ -1,0 +1,45 @@
+import type { Actions } from './actions/actions-contract.ts'
+import { createApp } from './app.ts'
+import type { ScanRunner } from './stream-scan.ts'
+
+export const worksFine: Actions = {
+  archive: () => Promise.resolve({ message: 'archived', ok: true }),
+  checkoutDefault: () => Promise.resolve({ message: 'checked out', ok: true }),
+  clone: () => Promise.resolve({ message: 'cloned', ok: true }),
+  closeUpdateProject: () => Promise.resolve({ message: 'closed', ok: true }),
+  deleteBranches: () => Promise.resolve({ message: 'deleted the branches', ok: true }),
+  deleteClone: () => Promise.resolve({ message: 'deleted', ok: true }),
+  deleteFork: () => Promise.resolve({ message: 'deleted the fork', ok: true }),
+  deleteProject: () => Promise.resolve({ message: 'deleted the project', ok: true }),
+  discard: () => Promise.resolve({ message: 'discarded', ok: true }),
+  fixFiles: () => Promise.resolve({ message: 'fixed', ok: true }),
+  fixGit: () => Promise.resolve({ message: 'fixed', ok: true }),
+  live: () => Promise.resolve({ changed: false, fingerprint: 'abc', ok: true, remote: 'fresh' }),
+  previewDeleteBranches: () => Promise.resolve({ branches: ['old'], fingerprint: 'ghi', ok: true, path: '/projects/app' }),
+  previewDeleteClone: () => Promise.resolve({ ignoredFiles: ['.env'], ok: true, path: '/projects/old' }),
+  previewDeleteFork: () => Promise.resolve({ branches: 1, clone: undefined, ok: true, parent: 'them/lib' }),
+  previewDeleteProject: () => Promise.resolve({ clone: { ignoredFiles: [], path: '/projects/old', unsaved: [] }, ok: true, repo: 'owner/old' }),
+  previewDiscard: () => Promise.resolve({ fingerprint: 'abc', groups: [{ items: ['master: fix'], title: 'Unpushed commits' }], ok: true, path: '/projects/old' }),
+  previewFixFiles: () => Promise.resolve({ fingerprint: 'abc', installs: [], merged: [], ok: true, path: '/projects/app', plans: [{ after: 'b', before: 'a', file: 'package.json' }] }),
+  previewFixGit: () => Promise.resolve({ branches: ['old'], fastForward: [], fingerprint: 'def', ok: true, path: '/projects/app', pull: 'master', stashes: ['stash@{0}: WIP'] }),
+  previewSyncGithubMetadata: () => Promise.resolve({ github: { description: '', homepage: '' }, local: { description: 'A game', homepage: '' }, ok: true, proposed: { description: 'A game', homepage: '' } }),
+  rescan: () => Promise.resolve({ ok: true, project: undefined, target: '/projects' }),
+  sendUpdateMessage: () => Promise.resolve({ message: 'sent', ok: true }),
+  startUpdateProject: () => Promise.resolve({ message: 'started', ok: true }),
+  stopSessions: () => undefined,
+  syncGithubMetadata: () => Promise.resolve({ message: 'synced', ok: true }),
+  unarchive: () => Promise.resolve({ message: 'unarchived', ok: true }),
+  unarchivePush: () => Promise.resolve({ message: 'pushed', ok: true }),
+  watchUpdateProject: () => undefined,
+}
+
+/**
+ * Create the app on the /projects target, serving the given web folder
+ * @param runScan runs the scan
+ * @param webFolder the built web app, this folder by default
+ * @param actions the actions, a clone that works by default
+ * @returns the app
+ */
+export function app(runScan: ScanRunner, webFolder = import.meta.dirname, actions = worksFine) {
+  return createApp(runScan, { actions, isNitpick: () => false, restart: () => undefined, shutdown: () => undefined, target: '/projects', webFolder })
+}

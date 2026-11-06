@@ -1,7 +1,5 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignore": [
-    "src/mocks/**",
-    "templates/**"
-  ]
+  "entry": ["src/server/rules/**/*.rule.ts"],
+  "ignore": ["demo/**", "src/web/public/**"]
 }
