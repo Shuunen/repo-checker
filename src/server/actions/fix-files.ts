@@ -168,7 +168,7 @@ export function fixFiles(options: Readonly<ApplyOptions>): Promise<ActionResult>
   return attempt(async () => {
     const plan = await planOf(options)
     if ('reason' in plan) return refused(plan.reason)
-    if (plan.fixable.length === 0 || planFingerprint(plan.fixable, plan.installs) !== options.fingerprint) return refused(staleReason('the fixes are', 'written'))
+    if (planFingerprint(plan.fixable, plan.installs) !== options.fingerprint) return refused(staleReason('the fixes are', 'written'))
     const applied = await applyRounds({ applied: { files: [], installs: [] }, left: maxFollowUps, onStage, options, plan })
     if ('reason' in applied) return refused(applied.reason)
     const { files, installs } = applied
@@ -177,7 +177,7 @@ export function fixFiles(options: Readonly<ApplyOptions>): Promise<ActionResult>
     const { findings } = await checkProject(options.rules.fileRules, await buildContext(diskIo(plan.clone.path), plan.flags))
     const left = findings.filter(finding => finding.edits.length > 0).length
     return {
-      message: `fixed ${plural(files.length, 'file')} (${files.join(', ')})${installs.length === 0 ? '' : `, installed ${installs.join(', ')}`}, ${left === 0 ? 'no fix left' : `${plural(left, 'finding')} left with a fix`}, ${commitSummary(options.commit === true, commitBlocked)}${mergedSummary(plan.merged, options.commit === true)}`,
+      message: `fixed ${files.length === 0 ? 'no file' : `${plural(files.length, 'file')} (${files.join(', ')})`}${installs.length === 0 ? '' : `, installed ${installs.join(', ')}`}, ${left === 0 ? 'no fix left' : `${plural(left, 'finding')} left with a fix`}, ${commitSummary(options.commit === true, commitBlocked)}${mergedSummary(plan.merged, options.commit === true)}`,
       ok: true,
       ...(commitBlocked === undefined ? {} : { commitBlocked }),
     }

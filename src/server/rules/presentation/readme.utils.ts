@@ -253,13 +253,13 @@ export function thanksLine({ description, label, link }: Readonly<Thanks>) {
 }
 
 /**
- * Tell if the README thanks a tool, by its linked label, ignoring the case
+ * Tell if the README thanks a tool with a list entry of its linked label, ignoring the case. A link to the tool elsewhere in the README is not a thanks
  * @param text the README text
  * @param thanks the tool
  * @returns true when thanked
  */
 export function hasThanks(text: string, thanks: Readonly<Thanks>) {
-  return new RegExp(`\\[${escapeRegExp(thanks.label)}\\]`, 'iu').test(text)
+  return new RegExp(`^[ \\t]*[-*] \\[${escapeRegExp(thanks.label)}\\]`, 'imu').test(text)
 }
 
 const headingAndBlankLine = 2
@@ -296,5 +296,5 @@ export function addThanksLine(text: string, thanks: Readonly<Thanks>) {
  * @returns the README text without the entry line
  */
 export function removeThanksLine(text: string, thanks: Readonly<Thanks>) {
-  return text.replace(new RegExp(`^- \\[${escapeRegExp(thanks.label)}\\].*\\n?`, 'imu'), '')
+  return text.replace(new RegExp(`^[ \\t]*[-*] \\[${escapeRegExp(thanks.label)}\\].*\\n?`, 'imu'), '')
 }

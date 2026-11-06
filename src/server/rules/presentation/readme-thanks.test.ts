@@ -43,6 +43,7 @@ testRule(readmeThanksEntries, {
       output: `# app\n\n## Thanks\n\n${github}\n`,
       pkg: { name: 'app' },
     },
+    { errors: ['unused'], files: { 'README.md': '# app\n\n## Thanks\n\n  * [Zod](https://zod.dev) : validation\n' }, name: 'a thanked tool no longer used, with a star bullet, removed', output: '# app\n\n## Thanks\n\n', pkg: { name: 'app' } },
     { errors: ['unused'], files: { 'README.md': '# app\n\n## Thanks\n\n- [Zod](https://zod.dev) : validation\n' }, name: 'a thanked tool no longer used, removed', output: '# app\n\n## Thanks\n\n', pkg: { name: 'app' } },
   ],
   valid: [
@@ -50,6 +51,7 @@ testRule(readmeThanksEntries, {
     { files: { 'README.md': `# app\n\n## Thanks\n\n${github}\n- [Repo-checker](https://github.com/Shuunen/repo-checker) : itself\n` }, name: 'repo-checker thanking itself', pkg: { name: 'repo-check' } },
     { files: { 'README.md': '# app\n\n## Thanks\n\n- [Bun](https://bun.sh) : runtime\n' }, flags: { isUsingBun: true }, name: 'a tool detected by flag' },
     { files: { 'README.md': `# app\n\n## Thanks\n\n${github}\n- [Knip](https://github.com/webpro/knip) : super tool to find & fix problems\n` }, name: 'knip thanked while the dependency-tool-choice fix will install it', pkg: { name: 'app' } },
+    { files: { 'README.md': '# app\n\nNeeds [Bun](https://bun.sh) to run the scripts\n\n## Thanks\n\n' }, name: 'a link to an unused tool outside the thanks list is not a thanks', pkg: { name: 'app' } },
     { files: { 'README.md': '# app\n' }, name: 'no thanks section, readme-thanks-section reports it' },
   ],
 })

@@ -114,3 +114,24 @@ describe('installs', () => {
     expect(install).not.toHaveBeenCalled()
   })
 })
+
+describe('installs without file changes', () => {
+  it('still installs the dependency when a previous run wrote the files and its install failed', async () => {
+    expect.hasAssertions()
+    const alreadyWritten = defineRule({
+      check({ report }) {
+        report({ fix: fixer => fixer.text('a.txt', current => current), installs: ['knip'], messageId: 'missing' })
+      },
+      meta: { fixable: true, id: 'already-written', messages: { missing: 'no tool' }, severity: 'warning' },
+    })
+    const { options } = await makeWorkspace()
+    const installOnly = { ...options, rules: splitRules([alreadyWritten]) }
+    const preview = await previewFixFiles(installOnly)
+    expect(preview).toMatchObject({ installs: ['knip'], ok: true, plans: [] })
+    invariant(preview.ok, 'the preview is fine')
+    const install = vi.fn<Installer>(() => Promise.resolve(fine))
+    const result = await fixFiles({ ...installOnly, fingerprint: preview.fingerprint, install })
+    expect(install).toHaveBeenCalledWith(expect.any(String), ['knip'])
+    expect(result).toMatchObject({ message: expect.stringContaining('fixed no file, installed knip'), ok: true })
+  })
+})

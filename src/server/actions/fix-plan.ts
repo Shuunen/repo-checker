@@ -87,10 +87,11 @@ export async function planOf(options: Readonly<FixOptions>): Promise<Plan | { re
   const io = diskIo(found.clone.path)
   const flags = await repoFlags(options.gh, `${options.owner}/${options.name}`, io)
   const { findings, plans } = await planAllFixes(options.rules.fileRules, io, flags)
-  if (plans.length === 0) return { reason: `no file of ${options.owner}/${options.name} has a fix to apply` }
+  const installs = [...new Set(findings.flatMap(finding => finding.installs))].toSorted()
+  // a fix whose files are already written (a previous install failed) still has its dependencies to install
+  if (plans.length === 0 && installs.length === 0) return { reason: `no file of ${options.owner}/${options.name} has a fix to apply` }
   const changed = changedPaths(found.clone.changedFiles)
-  const installs = findings.flatMap(finding => finding.installs)
-  return { clone: found.clone, fixable: plans, flags, installs: [...new Set(installs)].toSorted(), io, merged: plans.filter(plan => changed.has(plan.file)).map(plan => plan.file) }
+  return { clone: found.clone, fixable: plans, flags, installs, io, merged: plans.filter(plan => changed.has(plan.file)).map(plan => plan.file) }
 }
 
 /**

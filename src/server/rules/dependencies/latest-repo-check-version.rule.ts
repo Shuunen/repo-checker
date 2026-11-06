@@ -7,8 +7,16 @@ const name = 'repo-check'
 const [major, minor] = packageJson.version.split('.')
 const latest = `${major}.${minor}`
 
+/**
+ * Tell if a version is a stable release, a prerelease like 2.0.0-rc.1 cannot be installed with a range like ^2.0
+ * @param version the version to check
+ * @returns true when the version has no prerelease part
+ * @example isStable('2.0.0-rc.1') // false
+ */
+export const isStable = (version: string) => !version.includes('-')
+
 export const latestRepoCheckVersion = defineRule({
-  appliesTo: ({ flags, pkg }) => flags.repoId !== 'repo-checker' && hasDependency(pkg, name),
+  appliesTo: ({ flags, pkg }) => isStable(packageJson.version) && flags.repoId !== 'repo-checker' && hasDependency(pkg, name),
   check({ pkg, report }) {
     const version = dependencyVersion(pkg, name)
     invariant(version !== undefined, 'appliesTo guarantees the dependency')
