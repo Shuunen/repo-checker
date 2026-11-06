@@ -129,7 +129,9 @@ export async function startUi({ fetch, isNitpick, owner, port, rules, shouldOpen
   const server = await startServer(app.fetch, listenOn)
   started.resolve(server)
   const { url } = server
-  print(`repo-check ui · ${target}\nopen ${url} in your browser\npress Ctrl+C to stop`)
+  // under `--watch` the page to open is the one of the web dev server, not this API
+  const isWatched = process.env.REPO_CHECK_PARENT !== undefined
+  print(`repo-check ui · ${target}\n${isWatched ? '' : `open ${url} in your browser\n`}press Ctrl+C to stop`)
   if (shouldOpen !== false) openBrowser(url)
   return 0
 }

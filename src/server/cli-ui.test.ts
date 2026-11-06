@@ -10,6 +10,16 @@ describe('cli ui', () => {
     expect(startServer).toHaveBeenCalledWith(expect.any(Function), 4747)
   })
 
+  it('does not tell to open the server under the dev watcher, the page is the one of the web dev server', async () => {
+    expect.hasAssertions()
+    vi.stubEnv('REPO_CHECK_PARENT', '1234')
+    onTestFinished(() => {
+      vi.unstubAllEnvs()
+    })
+    const { folder, output } = await ui()
+    expect(output).toBe(`repo-check ui · ${folder}\npress Ctrl+C to stop`)
+  })
+
   it('stops the process when the page asks for a shutdown', async () => {
     expect.hasAssertions()
     vi.useFakeTimers()
