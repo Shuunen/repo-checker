@@ -1,14 +1,9 @@
 import { Card } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
 import type { ScanFinding } from '../../shared/scan-event.ts'
-import { canDeleteBranches, canUpdate, hasMajorUpdate } from '../projects/can-update.ts'
-import { canArchive, canUnarchive, offeredActions } from '../projects/detail.ts'
+import { offeredActions } from '../projects/detail.ts'
 import { ActionButton } from './action-button.tsx'
-import { ArchiveButton } from './archive-button.tsx'
-import { DeleteBranchesButton } from './delete-branches-button.tsx'
-import { DeleteProjectButton } from './delete-project-button.tsx'
-import { OpenVscodeButton } from './open-vscode-button.tsx'
-import { UpdateProjectButton } from './update-project-button.tsx'
+import { ProjectButtons } from './project-buttons.tsx'
 
 /** What `ActionsCard` shows and does */
 interface ActionsCardProps {
@@ -34,12 +29,7 @@ export function ActionsCard({ findings, project, target }: Readonly<ActionsCardP
         {actions.map(action => (
           <ActionButton action={action} key={action} project={project} target={target} />
         ))}
-        {canDeleteBranches(project) && <DeleteBranchesButton project={project} />}
-        {canUpdate(project, hasMajorUpdate(findings)) && <UpdateProjectButton project={project} />}
-        {canArchive(project) && !actions.includes('archive') && <ArchiveButton action="archive" project={project} />}
-        {canUnarchive(project) && <ArchiveButton action="unarchive" project={project} />}
-        <OpenVscodeButton project={project} />
-        <DeleteProjectButton project={project} />
+        <ProjectButtons actions={actions} findings={findings} project={project} />
       </span>
     </Card>
   )

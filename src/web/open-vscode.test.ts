@@ -1,6 +1,6 @@
-import { vscodeUrl } from './layout/open-vscode-button.tsx'
+import { vscodeUrl } from './layout/vscode-url.ts'
 
-describe('vscodeUrl', () => {
+describe('the VS Code link', () => {
   it('turns a Windows path into a file link that opens a new window', () => {
     expect.hasAssertions()
     expect(vscodeUrl(String.raw`C:\Users\me\app`)).toBe('vscode://file/C:/Users/me/app?windowId=_blank')

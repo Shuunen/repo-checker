@@ -1,21 +1,11 @@
 import { Button } from '@heroui/react'
 import type { Project } from '../../shared/project.ts'
+import { vscodeUrl } from './vscode-url.ts'
 
 /** What `OpenVscodeButton` shows and does */
 interface OpenVscodeButtonProps {
   /** The project, it needs a local clone */
   project: Project
-}
-
-/**
- * The `vscode://` link that opens a folder in a new VS Code window (`windowId=_blank`), instead of reusing the last active one
- * @param path the absolute path of the folder
- * @returns the link
- * @example vscodeUrl('C:\\code\\app') // 'vscode://file/C:/code/app?windowId=_blank'
- */
-export function vscodeUrl(path: string) {
-  const slashed = path.replaceAll('\\', '/')
-  return `vscode://file/${slashed.startsWith('/') ? slashed.slice(1) : slashed}?windowId=_blank`
 }
 
 /**
@@ -30,7 +20,7 @@ export function OpenVscodeButton({ project }: Readonly<OpenVscodeButtonProps>) {
     <Button
       data-testid="action-open-vscode"
       onPress={() => {
-        window.location.href = vscodeUrl(path)
+        globalThis.location.href = vscodeUrl(path)
       }}
       size="sm"
       variant="outline"
