@@ -10,21 +10,21 @@
   },
   "dependencies": {
     "arg": "~5.0.2",
-    "shuutils": "~11.0.0",
+    "shuutils": "~12.0.0",
     "sort-json": "~2.0.1"
   },
   "description": "Repo maintenance made easy",
   "devDependencies": {
-    "@biomejs/biome": "~2.5.14",
+    "@biomejs/biome": "~2.6.0",
     "@types/node": "~26.6.3",
     "@types/sort-json": "~2.0.3",
-    "@vitest/coverage-v8": "~5.0.2",
-    "dependency-cruiser": "~18.4.0",
-    "knip": "~6.38.0",
-    "oxlint": "~1.86.0",
-    "tsup": "~8.5.1",
-    "typescript": "~6.0.3",
-    "vitest": "~5.0.2",
+    "@vitest/coverage-v8": "~5.1.0",
+    "dependency-cruiser": "~18.7.0",
+    "knip": "~6.44.0",
+    "oxlint": "~1.92.0",
+    "tsup": "~9.0.0",
+    "typescript": "~7.0.0",
+    "vitest": "~5.1.0",
     "watchlist": "~0.3.1"
   },
   "exports": {
