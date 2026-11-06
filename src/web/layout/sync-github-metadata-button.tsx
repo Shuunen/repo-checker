@@ -1,5 +1,5 @@
 import type { Project } from '../../shared/project.ts'
-import { slugOf } from '../projects/detail.ts'
+import { githubUrl, slugOf } from '../projects/detail.ts'
 import { ActionTrigger } from './action-trigger.tsx'
 import { ConfirmDialog } from './confirm-dialog.tsx'
 import { SyncGithubMetadataBody } from './sync-github-metadata-body.tsx'
@@ -17,7 +17,7 @@ interface SyncGithubMetadataButtonProps {
  * @returns the button and its dialog
  */
 export function SyncGithubMetadataButton({ project }: Readonly<SyncGithubMetadataButtonProps>) {
-  const sync = useSyncGithubMetadata(project.name)
+  const sync = useSyncGithubMetadata(project.name, githubUrl(project))
   const { preview, values } = sync
   const isChanged = preview?.ok === true && [preview.github, preview.local].some(current => values.description.trim() !== current.description || values.homepage.trim() !== current.homepage)
   return (

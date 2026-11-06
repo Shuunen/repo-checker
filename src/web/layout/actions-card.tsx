@@ -7,6 +7,7 @@ import { ActionButton } from './action-button.tsx'
 import { ArchiveButton } from './archive-button.tsx'
 import { DeleteBranchesButton } from './delete-branches-button.tsx'
 import { DeleteProjectButton } from './delete-project-button.tsx'
+import { OpenVscodeButton } from './open-vscode-button.tsx'
 import { UpdateProjectButton } from './update-project-button.tsx'
 
 /** What `ActionsCard` shows and does */
@@ -37,6 +38,7 @@ export function ActionsCard({ findings, project, target }: Readonly<ActionsCardP
         {canUpdate(project, hasMajorUpdate(findings)) && <UpdateProjectButton project={project} />}
         {canArchive(project) && !actions.includes('archive') && <ArchiveButton action="archive" project={project} />}
         {canUnarchive(project) && <ArchiveButton action="unarchive" project={project} />}
+        <OpenVscodeButton project={project} />
         <DeleteProjectButton project={project} />
       </span>
     </Card>

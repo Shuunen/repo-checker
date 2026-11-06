@@ -40,7 +40,7 @@ describe('sync github metadata', () => {
 
   it('cannot sync when the inputs say what both already have', async () => {
     expect.hasAssertions()
-    const preview: MetadataPreview = { github: { description: 'Mine', homepage: '' }, local: { description: 'Mine', homepage: '' }, ok: true, proposed: { description: 'Mine', homepage: '' } }
+    const preview: MetadataPreview = { github: { description: 'Mine', homepage: 'https://finga.app' }, local: { description: 'Mine', homepage: 'https://finga.app' }, ok: true, proposed: { description: 'Mine', homepage: 'https://finga.app' } }
     stubApi({ preview: Response.json(preview) })
     renderApp(scanRequest(events), '/project/finga')
     fireEvent.click(await screen.findByTestId('action-sync-github-metadata'))
@@ -48,6 +48,29 @@ describe('sync github metadata', () => {
     expect(screen.getByTestId('sync-github-metadata-github-description').textContent).toBe('Mine')
     expect(screen.getByTestId('sync-github-metadata-compare-description').textContent).toBe('Equal')
     expect((screen.getByTestId('sync-github-metadata-confirm') as HTMLButtonElement).disabled).toBe(true)
+  })
+
+  it('prefills an empty homepage with the GitHub project url', async () => {
+    expect.hasAssertions()
+    const preview: MetadataPreview = { github: { description: 'Mine', homepage: '' }, local: { description: 'Mine', homepage: '' }, ok: true, proposed: { description: 'Mine', homepage: '' } }
+    stubApi({ preview: Response.json(preview) })
+    renderApp(scanRequest(events), '/project/finga')
+    fireEvent.click(await screen.findByTestId('action-sync-github-metadata'))
+    const homepage = await screen.findByTestId('sync-github-metadata-homepage')
+    expect((homepage as HTMLInputElement).value).toBe('https://github.com/owner/finga')
+    expect((screen.getByTestId('sync-github-metadata-confirm') as HTMLButtonElement).disabled).toBe(false)
+  })
+
+  it('sends the prefilled values when the user edited nothing', async () => {
+    expect.hasAssertions()
+    const preview: MetadataPreview = { github: { description: 'Mine', homepage: '' }, local: { description: 'Mine', homepage: '' }, ok: true, proposed: { description: 'Mine', homepage: '' } }
+    const fetchMock = stubApi({ action: Response.json({ message: 'set the homepage', ok: true }), preview: Response.json(preview) })
+    renderApp(scanRequest(events), '/project/finga')
+    fireEvent.click(await screen.findByTestId('action-sync-github-metadata'))
+    await screen.findByTestId('sync-github-metadata-preview')
+    fireEvent.click(screen.getByTestId('sync-github-metadata-confirm'))
+    const body = JSON.stringify({ description: 'Mine', homepage: 'https://github.com/owner/finga' })
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/projects/finga/sync-github-metadata', { body, headers: { 'x-repo-check': '1' }, method: 'POST' }))
   })
 
   it('can sync when only the package.json differs', async () => {

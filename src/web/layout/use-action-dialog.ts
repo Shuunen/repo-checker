@@ -46,8 +46,8 @@ export interface ActionDialog<Preview extends AnyPreview = AnyPreview> extends D
 
 /** The optional parts of the dialog of an action */
 interface DialogOptions {
-  /** What the user edited, sent as JSON with the confirmation, for the actions that take values */
-  body?: object | undefined
+  /** What the user edited, sent as JSON with the confirmation, for the actions that take values. A function is called when the confirmation is sent, for values that depend on the preview */
+  body?: object | (() => object | undefined) | undefined
   /** True to ask the server to commit what the action wrote */
   isCommit?: boolean
   /** Called with each step the server enters, for the actions that stream their steps */
@@ -80,7 +80,7 @@ function fingerprintOf(preview: Readonly<AnyPreview> | undefined) {
 function useRun(name: string, action: PostedAction, { body, fingerprint, isCommit = false, onDone, onStage }: Readonly<DialogOptions & { fingerprint: string | undefined }>) {
   const client = useQueryClient()
   return useMutation({
-    mutationFn: () => postAction(name, action, { body, fingerprint, isCommit, onStage }),
+    mutationFn: () => postAction(name, action, { body: typeof body === 'function' ? body() : body, fingerprint, isCommit, onStage }),
     onSuccess: blocked => {
       if (blocked === undefined) toast.success(doneMessage(action, name))
       onDone?.(blocked)
