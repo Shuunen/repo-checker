@@ -1,0 +1,5 @@
+{
+  "strays": {
+    "allow": ["schema.json"]
+  }
+}
