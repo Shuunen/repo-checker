@@ -8,9 +8,8 @@
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": [
-      "ESNext"
-    ],
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.AsyncIterable", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
@@ -27,19 +26,8 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
-    "types": [
-      "node",
-      "vitest/globals"
-    ],
+    "types": ["node", "vite/client", "vitest/globals"],
     "verbatimModuleSyntax": true
   },
-  "include": [
-    "src",
-    "tests",
-    "*.ts",
-    "*.js",
-    ".*.js",
-    "*.cjs",
-    "*.mts"
-  ]
+  "include": ["src", "tests", "*.ts", "*.js", ".*.js", "*.cjs", "*.mts"]
 }

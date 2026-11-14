@@ -1,24 +1,8 @@
 {
   "[javascript][javascriptreact][typescript][typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "cSpell.words": [
-    "automerge",
-    "bclean",
-    "bettercodehub",
-    "colorette",
-    "fillcolor",
-    "Knip",
-    "nvrmc",
-    "nycrc",
-    "penwidth",
-    "repo",
-    "simplegit",
-    "sonarjs",
-    "starchart",
-    "vitepress",
-    "websitecounterfree"
-  ],
+  "cSpell.words": ["automerge", "bclean", "bettercodehub", "colorette", "fillcolor", "Knip", "nvrmc", "nycrc", "penwidth", "repo", "simplegit", "sonarjs", "starchart", "vitepress", "websitecounterfree"],
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit",
     "source.organizeImports": "explicit"
@@ -26,8 +10,17 @@
   "editor.formatOnSave": true,
   "oxc.enable": true,
   "workbench.colorCustomizations": {
-    "activityBar.background": "#232F3A",
-    "titleBar.activeBackground": "#304251",
-    "titleBar.activeForeground": "#F9FAFB"
+    "activityBar.background": "#012c67",
+    "activityBar.foreground": "#f9fafb",
+    "activityBarBadge.background": "#024eb8",
+    "activityBarBadge.foreground": "#f9fafb",
+    "statusBar.background": "#012c67",
+    "statusBar.foreground": "#f9fafbcc",
+    "statusBar.inactiveBackground": "#011d43",
+    "tab.activeBorderTop": "#024eb8",
+    "titleBar.activeBackground": "#024eb8",
+    "titleBar.activeForeground": "#f9fafb",
+    "titleBar.inactiveBackground": "#012c67",
+    "titleBar.inactiveForeground": "#f9fafbaa"
   }
 }

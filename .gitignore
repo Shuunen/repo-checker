@@ -1,8 +1,8 @@
 .cache
 .DS_Store
 .env
-.eslintcache
 .nyc_output
+.turbo
 *.log
 *.tgz
 coverage

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "tasks": {
+    "build:tsdown": {
+      "dependsOn": ["lint:install"],
+      "outputs": ["dist/**"]
+    },
+    "build:vite": {
+      "dependsOn": ["lint:install"],
+      "outputs": ["dist/**"]
+    },
+    "lint:cli": {
+      "dependsOn": ["lint:install", "build:tsdown", "build:vite"]
+    },
+    "lint:format": {
+      "dependsOn": ["lint:install"]
+    },
+    "lint:install": {
+      "inputs": ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml"]
+    },
+    "lint:issues": {
+      "dependsOn": ["lint:install"]
+    },
+    "lint:knip": {
+      "dependsOn": ["lint:install"]
+    },
+    "lint:types": {
+      "dependsOn": ["lint:install"]
+    },
+    "test:unit": {
+      "dependsOn": ["lint:install"],
+      "outputs": ["coverage/**"]
+    }
+  }
+}
