@@ -46,6 +46,16 @@ function resultOf(clone: LocalClone, hasEdit: boolean): ProjectResult {
   return { findings: [{ actions: [], edits, installs: [], message: 'a.txt says old', messageId: 'old', ruleId: 'rewrite-old', scope: 'file', severity: 'warning' }], outcomes: [], project: { github: undefined, isOtherOwner: false, local: clone, name: 'app' } }
 }
 
+/**
+ * Fake git readers that find each clone by its path
+ * @param clones the clones
+ * @returns the readers
+ */
+function readersOf(...clones: readonly LocalClone[]): GitReaders {
+  const at = (folder: string) => clones.find(clone => clone.path === folder) ?? (clones.at(-1) as LocalClone)
+  return { listClones: vi.fn<GitReaders['listClones']>(folder => Promise.resolve([at(folder)])), readClone: vi.fn<GitReaders['readClone']>(folder => Promise.resolve(at(folder))) }
+}
+
 describe(fixProjects, () => {
   it('fixes the file of a project that has a fix, even when gh cannot be read', async () => {
     expect.hasAssertions()
@@ -86,10 +96,7 @@ describe(fixProjects, () => {
     const broken = await makeClone()
     await writeFile(path.join(broken.clone.path, 'a.txt'), 'already fine')
     const good = await makeClone({ folderName: 'web', origin: 'git@github.com:owner/web.git', slug: 'owner/web' })
-    const git: GitReaders = {
-      listClones: vi.fn<GitReaders['listClones']>(folder => Promise.resolve([folder === broken.clone.path ? broken.clone : good.clone])),
-      readClone: vi.fn<GitReaders['readClone']>(folder => Promise.resolve(folder === broken.clone.path ? broken.clone : good.clone)),
-    }
+    const git = readersOf(broken.clone, good.clone)
     const results = [resultOf(broken.clone, true), { ...resultOf(good.clone, true), project: { github: undefined, isOtherOwner: false, local: good.clone, name: 'web' } }]
     const lines = await fixProjects(results, { gh, git, rules })
     expect(lines).toStrictEqual(['app: not fixed, no file of owner/app has a fix to apply', 'web: fixed 1 file (a.txt), no fix left, check git diff'])
