@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { run } from '../inventory/shell.ts'
@@ -66,6 +66,30 @@ describe('disk io', () => {
     expect.hasAssertions()
     const folder = await makeFolder()
     await expect(diskIo(folder).writeText(file, 'x')).rejects.toThrow('is outside the project folder, it is not written')
+  })
+
+  // Value: protects=a fix never writes outside the project through a symbolic link, to a folder or to a file; fails_when=writeInside stops resolving links; why_new=only `..` paths were refused; seam=none; no_claim=Windows junctions
+  it.each([
+    { file: 'link/x.txt', landing: 'x.txt', link: 'link', linkTarget: '', name: 'a linked folder' },
+    { file: 'link.txt', landing: 'target.txt', link: 'link.txt', linkTarget: 'target.txt', name: 'a linked file' },
+    { file: 'link/deep/x.txt', landing: 'deep/x.txt', link: 'link', linkTarget: '', name: 'a new folder under a linked folder' },
+  ])('refuses to write through $name that points outside the project', async ({ file, landing, link, linkTarget }) => {
+    expect.hasAssertions()
+    const folder = await makeFolder()
+    const outside = await makeFolder()
+    await writeFile(path.join(outside, 'target.txt'), 'kept')
+    await symlink(path.join(outside, linkTarget), path.join(folder, link))
+    await expect(diskIo(folder).writeText(file, 'x')).rejects.toThrow('is outside the project folder, it is not written')
+    await expect(readFile(path.join(outside, landing), 'utf8').catch(() => 'missing')).resolves.not.toBe('x')
+  })
+
+  it('writes through a linked folder that stays inside the project', async () => {
+    expect.hasAssertions()
+    const folder = await makeFolder()
+    await mkdir(path.join(folder, 'real'))
+    await symlink(path.join(folder, 'real'), path.join(folder, 'link'))
+    await diskIo(folder).writeText('link/x.txt', 'hello')
+    await expect(readFile(path.join(folder, 'real', 'x.txt'), 'utf8')).resolves.toBe('hello')
   })
 
   it('searches the files by content, skipping node_modules', async () => {

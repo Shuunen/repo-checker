@@ -3,7 +3,7 @@
  * @module
  */
 import { Buffer } from 'node:buffer'
-import { glob, mkdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { glob, lstat, mkdir, readFile, realpath, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { Result } from 'shuutils'
 import { run } from '../inventory/shell.ts'
@@ -154,7 +154,28 @@ export function overlayIo(base: Readonly<FileReader>): Io {
 }
 
 /**
- * Write a file inside a project folder, creating the folders it needs. A path that leaves the project folder is refused: a fix only ever changes the project it is fixing
+ * Tell if a path is strictly inside a folder
+ * @param folder the folder
+ * @param full the path
+ * @returns true when the path is in the folder, at any depth
+ */
+function isInside(folder: string, full: string) {
+  const relative = path.relative(folder, full)
+  return relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative)
+}
+
+/**
+ * Find the deepest folder of a path that exists, and where it really is once its symbolic links are followed
+ * @param directory the folder the file goes in, it may not exist yet
+ * @returns the real path of its deepest existing folder
+ */
+async function realExisting(directory: string): Promise<string> {
+  const real = await Result.trySafe(realpath(directory))
+  return real.ok ? real.value : realExisting(path.dirname(directory))
+}
+
+/**
+ * Write a file inside a project folder, creating the folders it needs. A path that leaves the project folder is refused, through `..` or through a symbolic link that points outside: a fix only ever changes the project it is fixing
  * @param folder the absolute path of the project folder
  * @param file the path, relative to the project folder
  * @param text the new content
@@ -162,8 +183,13 @@ export function overlayIo(base: Readonly<FileReader>): Io {
  */
 async function writeInside(folder: string, file: string, text: string) {
   const full = path.join(folder, file)
-  const relative = path.relative(folder, full)
-  if (relative === '' || relative.startsWith('..') || path.isAbsolute(relative)) throw new Error(`${file} is outside the project folder, it is not written`)
+  const outside = new Error(`${file} is outside the project folder, it is not written`)
+  if (!isInside(folder, full)) throw outside
+  const root = await realpath(folder)
+  const parent = await realExisting(path.dirname(full))
+  if (parent !== root && !isInside(root, parent)) throw outside
+  const existing = await Result.trySafe(lstat(full))
+  if (existing.ok && existing.value.isSymbolicLink()) throw outside
   await mkdir(path.dirname(full), { recursive: true })
   await writeFile(full, text)
 }
