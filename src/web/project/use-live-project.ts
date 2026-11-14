@@ -26,15 +26,23 @@ interface Watch {
 const openDialog = '[role="dialog"], [role="alertdialog"]'
 
 /**
- * Ask the server about the project, unless the tab is hidden or a dialog is open
+ * Tell if the page must not change now: the tab is hidden or a dialog is open
+ * @returns true when nothing may be asked or replaced
+ */
+function isBusy() {
+  return document.hidden || document.querySelector(openDialog) !== null
+}
+
+/**
+ * Ask the server about the project, unless the tab is hidden or a dialog is open, before the call and again once it answered: a dialog opened while the server was reading is never swapped under the user, the answer is dropped and asked again on the next tick
  * @param name the project name
  * @param since the fingerprint of the last answer
- * @returns the answer, undefined when nothing was asked or the server refused
+ * @returns the answer, undefined when nothing was asked, the server refused, or the page got busy meanwhile
  */
 async function askOnce(name: string, since: string): Promise<Extract<LiveResult, { ok: true }> | undefined> {
-  if (document.hidden || document.querySelector(openDialog) !== null) return undefined
+  if (isBusy()) return undefined
   const answer = await getLive(name, since)
-  return answer.ok ? answer : undefined
+  return answer.ok && !isBusy() ? answer : undefined
 }
 
 /**

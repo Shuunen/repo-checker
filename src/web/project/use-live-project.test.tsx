@@ -75,6 +75,21 @@ describe('watching the open project', () => {
     expect(liveCalls(fetchMock)).toHaveLength(before)
   })
 
+  // Value: protects=an answer that arrives after a dialog opened never swaps the project under that dialog; fails_when=the busy check after the call is removed; why_new=only the check before the call was tested; seam=none; no_claim=real network timing
+  it('drops an answer that arrives once a dialog is open', async () => {
+    expect.hasAssertions()
+    const fetchMock = stubApi()
+    const slow = Promise.withResolvers<Response>()
+    fetchMock.mockReturnValue(slow.promise)
+    renderApp(scanRequest(events), '/project/finga')
+    await waitFor(() => expect(liveCalls(fetchMock)).toHaveLength(1))
+    fireEvent.click(await screen.findByTestId('action-clone'))
+    await screen.findByTestId('clone-confirm')
+    slow.resolve(changed())
+    await sleep(100)
+    expect(screen.queryByTestId('fact-branch')).toBeNull()
+  })
+
   it('asks nothing while the tab is hidden', async () => {
     expect.hasAssertions()
     Object.defineProperty(document, 'hidden', { configurable: true, value: true })
