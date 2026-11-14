@@ -6,27 +6,17 @@ import { run } from '../../inventory/shell.ts'
 const rebuildable = new Set(['.cache', '.turbo', 'coverage', 'dist', 'node_modules'])
 
 /**
- * Tell if one of the folders holds a file, one folder at a time so a huge tree never opens thousands of folders at once
- * @param directories the folders
- * @returns true at the first file found
+ * Tell if one of the folders holds a file that a build would not recreate, at any depth. Git collapses a folder that holds only ignored content into one entry, so `packages/` can hold nothing but `packages/a/node_modules/`. The folders are read one at a time and the walk stops at the first file found, so a big ignored tree like `.venv/` is neither walked in full nor opened all at once
+ * @param directories the folders still to read
+ * @returns true when a file outside the rebuildable folders exists in one of them
  */
-async function anyHoldsFile(directories: readonly string[]): Promise<boolean> {
+async function holdsLosableFile(directories: readonly string[]): Promise<boolean> {
   const [directory, ...rest] = directories
   if (directory === undefined) return false
-  // oxlint-disable-next-line no-use-before-define -- the two walk each other
-  return (await hasLosableFile(directory)) || anyHoldsFile(rest)
-}
-
-/**
- * Tell if a folder holds a file that a build would not recreate. Git collapses a folder that holds only ignored content into one entry, so `packages/` can hold nothing but `packages/a/node_modules/`. It stops at the first file found, a big ignored tree like `.venv/` is not walked in full
- * @param directory the folder
- * @returns true when a file outside the rebuildable folders exists in it, at any depth
- */
-async function hasLosableFile(directory: string): Promise<boolean> {
   const all = await readdir(directory, { withFileTypes: true })
   const entries = all.filter(entry => !rebuildable.has(entry.name))
   if (entries.some(entry => !entry.isDirectory())) return true
-  return anyHoldsFile(entries.map(entry => path.join(directory, entry.name)))
+  return holdsLosableFile([...entries.map(entry => path.join(directory, entry.name)), ...rest])
 }
 
 /**
@@ -40,6 +30,6 @@ export async function listIgnoredFiles(folder: string) {
   const { ok, stderr, stdout } = await run('git', ['ls-files', '--others', '--ignored', '--exclude-standard', '--directory'], folder)
   if (!ok) throw new Error(`git ls-files failed in ${folder}: ${stderr.trim()}`)
   const entries = stdout.split('\n').filter(line => line !== '' && !line.split('/').some(segment => rebuildable.has(segment)))
-  const losable = await Promise.all(entries.map(async entry => !entry.endsWith('/') || (await hasLosableFile(path.join(folder, entry)))))
+  const losable = await Promise.all(entries.map(async entry => !entry.endsWith('/') || (await holdsLosableFile([path.join(folder, entry)]))))
   return entries.filter((_entry, index) => losable[index]).toSorted()
 }
