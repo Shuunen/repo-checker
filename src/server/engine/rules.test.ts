@@ -1,0 +1,122 @@
+import { readFileSync } from 'node:fs'
+import { glob } from 'node:fs/promises'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { isProjectRule } from './define-project-rule.ts'
+import { isRule, loadRules, splitRules } from './load-rules.ts'
+
+const folder = path.join(import.meta.dirname, '..', 'rules')
+const checksDoc = readFileSync(path.join(import.meta.dirname, '../../../docs/checks.md'), 'utf8')
+const rules = await loadRules(folder)
+const ids = rules.map(rule => rule.meta.id)
+const builtLines = [...checksDoc.matchAll(/^- (?<status>✅|☑️) (?<severity>\S+?)(?<nitpick>❔)? `(?<id>[a-z0-9-]+)`:/gmu)].map(match => ({ id: String(match.groups?.id), isFixable: match.groups?.status === '✅', isNitpick: match.groups?.nitpick !== undefined }))
+const builtIds = builtLines.map(line => line.id)
+/** What docs/checks.md says of each built check next to what its rule says, a project rule has no fix flag, its actions are not known without a scan */
+const marks = builtLines.flatMap(line => {
+  const rule = rules.find(item => item.meta.id === line.id)
+  return rule === undefined ? [] : [{ ...line, ruleIsFixable: isProjectRule(rule) ? undefined : rule.meta.fixable === true, ruleIsNitpick: rule.meta.nitpick === true }]
+})
+const entries = await Array.fromAsync(glob('**/*', { cwd: folder, withFileTypes: true }))
+const files = entries.filter(entry => entry.isFile()).map(entry => path.relative(folder, path.join(entry.parentPath, entry.name)))
+
+/**
+ * Tell if a file of the rules folder follows the layout: inside a group folder, named *.rule.ts, *.utils.ts or *.test.ts
+ * @param file the path relative to the rules folder
+ * @returns true if the file is well placed and named
+ */
+function isWellPlaced(file: string) {
+  return file.includes(path.sep) && /\.(?:rule|utils|test)\.ts$/u.test(file)
+}
+
+/**
+ * Tell if a file exports a rule, alone or in an array
+ * @param file the path relative to the rules folder
+ * @returns true if one of its exports is a rule
+ */
+async function exportsRule(file: string) {
+  const exports = (await import(pathToFileURL(path.join(folder, file)).href)) as Record<string, unknown>
+  return Object.values(exports)
+    .flat()
+    .some(value => isRule(value))
+}
+
+describe('rules folder', () => {
+  it('finds the rules', () => {
+    expect.hasAssertions()
+    expect(ids).toContain('scripts-no-npm-run')
+  })
+
+  it('has project rules in sync, in the clone state of git-hygiene in the GitHub metadata of presentation and in github-health, and file rules everywhere else', () => {
+    expect.hasAssertions()
+    const { projectRules } = splitRules(rules)
+    expect(projectRules.map(rule => rule.meta.id).toSorted()).toStrictEqual([
+      'archive-candidate',
+      'archived-clone',
+      'archived-with-unsaved-work',
+      'behind-remote',
+      'branch-without-upstream',
+      'broken-clone',
+      'ci-failing',
+      'forgotten-stash',
+      'missing-description',
+      'missing-homepage',
+      'missing-license',
+      'missing-topics',
+      'not-cloned',
+      'not-on-default-branch',
+      'open-issues',
+      'open-pull-requests',
+      'pristine-fork',
+      'renovate-only-zombie',
+      'repo-delete-branch-on-merge',
+      'repo-no-merge-commit',
+      'repo-secret-scanning',
+      'stale-last-tag',
+      'stale-local-branch',
+      'stale-remote-branch',
+      'stale-uncloned-repo',
+      'tag-prefix-v',
+      'uncommitted-files',
+      'unpushed-commits',
+      'version-not-tagged',
+      'vite-unique-ports',
+    ])
+  })
+
+  it.each(builtIds)('%s, marked built in docs/checks.md, has a rule', id => {
+    expect.hasAssertions()
+    expect(ids).toContain(id)
+  })
+
+  it.each(marks)('$id has the nitpick mark of its rule in docs/checks.md', ({ isNitpick, ruleIsNitpick }) => {
+    expect.hasAssertions()
+    expect(isNitpick).toBe(ruleIsNitpick)
+  })
+
+  it.each(marks.filter(mark => mark.ruleIsFixable !== undefined))('$id has the fix mark of its rule in docs/checks.md', ({ isFixable, ruleIsFixable }) => {
+    expect.hasAssertions()
+    expect(isFixable).toBe(ruleIsFixable)
+  })
+
+  it('has unique ids', () => {
+    expect.hasAssertions()
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it.each(ids)('%s is marked built (✅ or ☑️) in docs/checks.md', id => {
+    expect.hasAssertions()
+    expect(builtIds).toContain(id)
+  })
+
+  it('only has *.rule.ts, *.utils.ts and *.test.ts files, inside group folders', () => {
+    expect.hasAssertions()
+    expect(files.filter(file => !isWellPlaced(file))).toStrictEqual([])
+  })
+
+  it('has no rule exported by a *.utils.ts file, the loader would skip it', async () => {
+    expect.hasAssertions()
+    const utilsFiles = files.filter(file => file.endsWith('.utils.ts'))
+    const hasRules = await Promise.all(utilsFiles.map(file => exportsRule(file)))
+    expect(utilsFiles.filter((_file, index) => hasRules[index])).toStrictEqual([])
+  })
+})

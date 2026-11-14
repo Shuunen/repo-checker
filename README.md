@@ -4,6 +4,7 @@
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/Shuunen/repo-checker?style=flat)](https://codeclimate.com/github/Shuunen/repo-checker)
 [![npm version](https://img.shields.io/npm/v/repo-check.svg?color=informational)](https://www.npmjs.com/package/repo-check)
 [![npm monthly downloads](https://img.shields.io/npm/dm/repo-check.svg?color=informational)](https://www.npmjs.com/package/repo-check)
+[![Visitors](https://hits.sh/github.com/Shuunen/repo-checker.svg?label=visitors&color=informational)](https://hits.sh/github.com/Shuunen/repo-checker/)
 
 [![Package Quality](https://npm.packagequality.com/shield/repo-check.svg)](https://packagequality.com/#?package=repo-check)
 [![Publish size](https://img.shields.io/bundlephobia/min/repo-check?label=publish%20size)](https://bundlephobia.com/package/repo-check)
@@ -12,91 +13,87 @@
 ![logo](docs/banner.svg)
 
 - [Repo Checker](#repo-checker)
-  - [Demo](#demo)
+  - [Cli mode](#cli-mode)
+  - [UI mode](#ui-mode)
   - [Usage](#usage)
-  - [Parameters](#parameters)
-    - [target](#target)
-    - [fix](#fix)
-    - [init](#init)
-    - [quiet](#quiet)
-  - [Todo](#todo)
+  - [Options](#options)
+  - [Configuration](#configuration)
   - [Thanks](#thanks)
-  - [Page views](#page-views)
 
-## Demo
+## Cli mode
 
-![demo](docs/demo-1.42.jpg)
+Run `repo-check` :
+
+![demo](docs/demo-cli.svg)
+
+## UI mode
+
+Run `repo-check ui` :
+
+![demo-ui](docs/demo-ui.svg)
 
 ## Usage
 
-Choose your favorite method :
+Run it in a folder of projects to check them all against your GitHub account, or inside one project to check only that one. It needs `git` and an authenticated [GitHub CLI](https://cli.github.com) (`gh auth login`), and the report changes nothing unless you add `--fix`, which applies the file fixes (a file you already changed gets the fix merged into your changes, and nothing is committed, `git diff` shows it). `repo-check ui` can fix things too, always after a confirmation that says what will happen.
 
-1. Via npx : `npx repo-check`
-2. Via npm locally : `pnpm install repo-check` then run `npx repo-check` or use it in your `package.json` scripts
-3. Via local installation : clone this repository, cd into the folder and use `pnpm start`, `pnpm start --target=../my-other-project` for single run or `pnpm dev`, `pnpm dev --target=../my-other-project`
+```bash
+npx repo-check
+```
 
-Pro tip : [init](#init) repo-checker before [fixing](#fix) files.
+From a clone of this repository: `pnpm install` then `pnpm start --target=~/Projects`. To look at the dashboard without your own repos, `pnpm run build` then `pnpm demo` starts it on a fake account (see [demo/README.md](demo/README.md)).
 
-## Parameters
+`npx repo-check ui` (or `pnpm start:ui` from a clone) starts a local server on `127.0.0.1:4747` instead. Open the printed URL: the project list fills in as the scan streams, with filters, summary tiles and a Rescan button, and a click on a project opens its findings and git state. Run inside one project, it opens straight on that project. It can clone a repo you do not have yet, and delete the local clone of an archived repo that holds nothing that is not on GitHub, each after a confirmation. It can fix the files the checks complain about (a diff per file to confirm, and a file you have already changed gets the fix merged into your changes and stays out of the commit). It can also save the unpushed work of an archived repo (unarchive, push, archive again), always after a confirmation that lists what is pushed. It can discard the unsaved work of an archived clone, after a dialog that lists every item, and delete a fork that is provably pristine (it needs the `delete_repo` scope: `gh auth refresh -s delete_repo`).
 
-### target
+The report groups the findings by severity (errors, warnings, info) and ends with a summary line. It exits with an error code when a finding is an error. Every check is listed in [docs/checks.md](docs/checks.md).
 
-`--target=path/to/folder` tells repo-checker which directory it should scan.
-If no target is specified, repo-checker will scan current directory.
-Target can be a relative or absolute path, can contain one project or more.
+## Options
 
-### fix
+- `--target=path` folder to scan, the current one by default
+- `--owner=name` GitHub account to compare with, the `gh` login by default
+- `--nitpick` also run the nitpick checks (small details like `outdated-minor-dependency` and `lighthouse-budget`), the ui has a `Nitpick mode` toggle in its Actions menu
+- `--no-fetch` skip `git fetch` and the automatic fast forward that follows it, faster but unpushed work is measured against stale remote refs
+- `--verbose` also list every passed and skipped check, per project
+- `--port=number` port of the `ui` server, 4747 by default
+- `--no-open` do not open the browser (`ui` only)
 
-`--fix` kindly ask repo-checker to try to create missing files or update problematic ones.
-For example, repo-checker will check for a `README.md`, if it does not exists, the file will be created and filled with data accordingly to the README.md template (`templates/README.md`).
-Repo-checker will try to grab as much info as possible from the project folder to create this file.
-If it's not enough, you'll be prompt to [init](#init).
-If you want to fix already existing files, use `--force` to overwrite it.
+## Configuration
 
-### init
+A `.repo-checker.json` file in a project tells repo-check what it cannot detect, for example:
 
-`--init` ask repo-checker to initialize a data config file in the current directory.
-If file already exists, use `--force` to overwrite it.
+```json
+{
+  "license": "MIT",
+  "maxSizeKo": 100,
+  "webUrl": "https://my-website.com"
+}
+```
 
-### quiet
+`webUrl` is the url of the **deployed website or web app**. It is not the `homepage` of the `package.json`: that one is the homepage of the **source code**, so it must be the url of the GitHub repo (the `package-homepage` check fills it that way). The homepage shown on the GitHub repo is the deployed website, and the "Sync infos" action of the UI keeps it in line with `webUrl`: it shows what the project and GitHub say side by side, lets you edit the description and the homepage, then writes the description in the `package.json` (and on GitHub) and the homepage as `webUrl` (and on GitHub). The `homepage` of the `package.json` is never changed by it.
 
-`--quiet` repo-checker will works silently without output-ing to console, will only output to log file.
+`themeColor` is the color of the project, like `"#024eb8"`. Without it, repo-check reads it from the web manifest, then the `theme-color` meta tag of a page, then the VS Code title bar, and never invents one. It then checks that the manifest `theme_color`, the meta tag and the VS Code colors follow it, with a darker shade for the manifest `background_color` and the VS Code activity bar.
 
-## Todo
+For autocompletion in your editor, point it to the schema shipped with the package:
 
-- [ ] if website : check static folder : should have "_headers" & "favicon.ico" and "manifest.json" files inside
-- [ ] compute build/dist/folder/public size for maxSize compliance
-- [ ] check `rel="noopener"` or `rel="noreferrer"` to any `<a` external links to improve performance and prevent security vulnerabilities
-- [ ] check `width` and `height` attributes to any `<img` or `<video` to ensures that the browser can allocate the correct amount of space in the document
-- [ ] add nbFixes to the report
-- [ ] check last tag, suggest to tag if last one is old
-- [ ] extends unit tests to src/files (remove `c8 ignore start` temporary exclusions)
-- [ ] prepare a json schema for .repo-checker.json
-- [ ] try to avoid using class in this project and remove `eslint-disable-next-line no-restricted-syntax`
-- [ ] check if lint/performance/useTopLevelRegex worth fixing everywhere
-- [ ] use [cosmic config](https://github.com/davidtheclark/cosmiconfig) which is pretty huge, or [lil config](https://github.com/antonk52/lilconfig/) instead or nothing at all ^^
-- [ ] suggest lighthouse budget like [3f052df](https://github.com/Shuunen/stuff-finder/commit/3f052df076b23503d3692883319c618c2d045a99) & [1c4c2f3](https://github.com/Shuunen/stuff-finder/commit/1c4c2f365bc53ba158d7e4eeda596094cad8accb) add appropriate thanks to [lighthouse-ci-action](https://github.com/treosh/lighthouse-ci-action) & lighthouse
-- [ ] enhance readme headers via snippets/banner or [socialify.git.ci](https://socialify.git.ci/Shuunen/repo-checker?font=Inter&language=1&owner=1&pattern=Circuit%20Board&stargazers=1&theme=Light) or [satori](https://github.com/vercel/satori)
+```json
+{
+  "$schema": "./node_modules/repo-check/schema.json"
+}
+```
 
 ## Thanks
 
-- [Arg](https://github.com/vercel/arg) : un-opinionated, no-frills CLI argument parser
-- [Biome](https://biomejs.dev) : super fast linter & formatter
 - [Boxy Svg](https://boxy-svg.com) : simple & effective svg editor
 - [Bun](https://bun.sh) : super fast runtime for JavaScript and TypeScript
-- [Dependency-cruiser](https://github.com/sverweij/dependency-cruiser) : handy tool to validate and visualize dependencies
+- [pnpm](https://pnpm.io) : fast, disk space efficient package manager
 - [Github](https://github.com) : for all their great work year after year, pushing OSS forward
 - [Knip](https://github.com/webpro/knip) : super tool to find & fix problems
 - [Oxc](https://oxc.rs) : a lovely super-fast collection of JavaScript tools written in Rust
+- [React](https://react.dev) : great library for web and native user interfaces
 - [Repo-checker](https://github.com/Shuunen/repo-checker) : eslint cover /src code and this tool the rest ^^
 - [Shields.io](https://shields.io) : for the nice badges on top of this readme
 - [Shuutils](https://github.com/Shuunen/shuutils) : collection of pure JS utils
 - [Svg Omg](https://jakearchibald.github.io/svgomg) : the great king of svg file size reduction
-- [Tsup](https://github.com/egoist/tsup) : super fast js/ts bundler with no config, powered by esbuild <3
+- [TailwindCss](https://tailwindcss.com) : awesome lib to produce maintainable style
 - [V8](https://github.com/demurgos/v8-coverage) : simple & effective cli for code coverage
+- [Vite](https://github.com/vitejs/vite) : super fast frontend tooling
 - [Vitest](https://github.com/vitest-dev/vitest) : super fast vite-native testing framework
-- [Watchlist](https://github.com/lukeed/watchlist) : recursively watch a list of directories & run a command on any file system
-
-## Page views
-
-![Views Counter](https://views-counter.vercel.app/badge?pageId=Shuunen%2Frepo-checker&leftColor=5c5c5c&rightColor=07a62f&type=total&label=Visitors&style=none)
