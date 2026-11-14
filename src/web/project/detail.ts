@@ -48,7 +48,7 @@ interface FindingGroup {
 }
 
 /** Why a folder cannot be compared with GitHub */
-const problemTexts: Readonly<Record<NonNullable<LocalClone['problem']>, string>> = { 'no-git': 'not a git repository', 'no-origin': 'no origin remote' }
+const problemTexts: Readonly<Record<NonNullable<LocalClone['problem']>, string>> = { 'no-git': 'not a git repository', 'no-origin': 'no origin remote', unreadable: 'git cannot read its state' }
 
 /**
  * The link to the repo on GitHub

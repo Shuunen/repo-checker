@@ -1,4 +1,5 @@
 import { type ActionResult, attempt, refused } from '../../../shared/action.ts'
+import { detachedHead } from '../../inventory/git.ts'
 import { getRepo } from '../../inventory/github.ts'
 import { type ActionOptions, realRunGit } from '../action-options.ts'
 import { checkFolderOfProjects, requireCloneOf } from '../guards.ts'
@@ -29,6 +30,7 @@ export function checkoutDefault({ gh, git, name, owner, runGit = realRunGit, tar
     if (clone.problem !== undefined) return refused(`the clone of ${repo.slug} cannot be read: ${clone.problem}`)
     if (clone.currentBranch === repo.defaultBranch) return refused(`the clone is already on ${repo.defaultBranch}`)
     if (clone.changedFiles.length > 0) return refused(`the clone has ${clone.changedFiles.length} uncommitted file(s), commit or discard them by hand first`)
+    if (clone.unpushed.some(item => item.branch === detachedHead)) return refused('the detached HEAD holds commits that are on no branch, they would be lost: create a branch for them by hand first')
     if (repo.defaultBranch.startsWith('-')) return refused(`${repo.defaultBranch} is not a branch name`)
     const { ok, stderr } = await runGit(['checkout', repo.defaultBranch], clone.path)
     return ok ? { message: `checked out ${repo.defaultBranch} in ${clone.path}`, ok } : { ok, reason: `git checkout ${repo.defaultBranch} failed: ${stderr.trim()}` }

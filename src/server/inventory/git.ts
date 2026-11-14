@@ -1,7 +1,9 @@
 import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { partition } from 'es-toolkit'
+import { Result } from 'shuutils'
 import type { BranchState, LastTag, LocalClone, RemoteBranch } from '../../shared/project.ts'
+import { errorMessage } from '../../shared/text.ts'
 import { readCloneFiles } from './clone-files.ts'
 import { mapLimit } from './map-limit.ts'
 import { run } from './shell.ts'
@@ -31,17 +33,33 @@ async function gitLines(folder: string, args: readonly string[]) {
   return stdout.split('\n').filter(line => line.trim() !== '')
 }
 
-/** The fields `parseBranch` and `parseRemoteBranch` read, separated by tabs: the full ref, its short name, the upstream, the track and the date */
-const refFormat = '--format=%(refname)%09%(refname:short)%09%(upstream:short)%09%(upstream:track)%09%(committerdate:iso-strict)'
+/**
+ * Run git in a folder and split its output in lines, for what the safety checks rely on: a failure must never read as a clean clone
+ * @param folder the folder
+ * @param args the git arguments
+ * @returns the non empty output lines
+ * @throws {Error} when the command failed
+ */
+async function strictGitLines(folder: string, args: readonly string[]) {
+  const { ok, stderr, stdout } = await run('git', args, folder)
+  if (!ok) throw new Error(`git ${args.join(' ')} failed: ${stderr.trim()}`)
+  return stdout.split('\n').filter(line => line.trim() !== '')
+}
+
+/** The name an unpushed entry gets for the commits of a detached HEAD that are on no branch, git never allows a branch with this name */
+export const detachedHead = 'HEAD'
+
+/** The fields `parseBranch` and `parseRemoteBranch` read, separated by tabs: the full ref, its short name, the upstream, the track, the date and the commit it points to */
+const refFormat = '--format=%(refname)%09%(refname:short)%09%(upstream:short)%09%(upstream:track)%09%(committerdate:iso-strict)%09%(objectname)'
 
 /**
  * Split one line of `git for-each-ref` in the `refFormat`
- * @param line like `refs/heads/master\tmaster\torigin/master\t[ahead 1]\t2026-01-01T10:00:00+00:00`
+ * @param line like `refs/heads/master\tmaster\torigin/master\t[ahead 1]\t2026-01-01T10:00:00+00:00\t0a1b2c…`
  * @returns the fields
  */
 function splitRef(line: string) {
-  const [ref = '', name = '', upstream = '', track = '', lastCommitAt = ''] = line.split('\t')
-  return { lastCommitAt, name, ref, track, upstream }
+  const [ref = '', name = '', upstream = '', track = '', lastCommitAt = '', tip = ''] = line.split('\t')
+  return { lastCommitAt, name, ref, tip, track, upstream }
 }
 
 /**
@@ -51,10 +69,10 @@ function splitRef(line: string) {
  * @returns the branch state
  */
 function parseBranch(line: string, merged: ReadonlySet<string>): BranchState {
-  const { lastCommitAt, name, ref, track, upstream } = splitRef(line)
+  const { lastCommitAt, name, ref, tip, track, upstream } = splitRef(line)
   const ahead = Number(/ahead (?<count>\d+)/u.exec(track)?.groups?.count ?? 0)
   const behind = Number(/behind (?<count>\d+)/u.exec(track)?.groups?.count ?? 0)
-  return { ahead, behind, isGone: track === '[gone]', isMerged: merged.has(ref), lastCommitAt, name, upstream: upstream === '' ? undefined : upstream }
+  return { ahead, behind, isGone: track === '[gone]', isMerged: merged.has(ref), lastCommitAt, name, tip, upstream: upstream === '' ? undefined : upstream }
 }
 
 /** The remote name of a clone, the checks only know `origin` */
@@ -93,21 +111,34 @@ async function readLastTag(folder: string): Promise<LastTag | undefined> {
  */
 function readUnpushed(folder: string, branches: readonly BranchState[]) {
   const ahead = branches.filter(branch => branch.ahead > 0 && branch.upstream !== undefined)
-  return Promise.all(ahead.map(async branch => ({ branch: branch.name, subjects: await gitLines(folder, ['log', '--format=%s', `${branch.upstream}..${branch.name}`]) })))
+  return Promise.all(ahead.map(async branch => ({ branch: branch.name, subjects: await strictGitLines(folder, ['log', '--format=%s', `${branch.upstream}..${branch.name}`]) })))
+}
+
+/**
+ * List the commits of a detached HEAD that are on no branch, local or remote: they are lost as soon as HEAD moves
+ * @param folder the clone folder
+ * @param currentBranch the checked out branch, empty when the HEAD is detached
+ * @returns one unpushed entry named `HEAD` when there are such commits, none otherwise
+ */
+async function readDetached(folder: string, currentBranch: string) {
+  if (currentBranch !== '') return []
+  const subjects = await strictGitLines(folder, ['log', '--format=%s', 'HEAD', '--not', '--branches', '--remotes'])
+  return subjects.length > 0 ? [{ branch: detachedHead, subjects }] : []
 }
 
 /**
  * Read the local state of a usable clone: branches, changes, stash and unpushed commits
  * @param folder the clone folder
  * @returns the local state
+ * @throws {Error} when git cannot read what the safety checks rely on
  */
 async function readState(folder: string) {
   const refs = ['refs/heads', `refs/remotes/${remote}`]
   const [[currentBranch = ''], lines, changedFiles, stashes, mergedRefs, lastTag] = await Promise.all([
-    gitLines(folder, ['branch', '--show-current']),
-    gitLines(folder, ['for-each-ref', refFormat, ...refs]),
-    gitLines(folder, ['status', '--porcelain=v1']),
-    gitLines(folder, ['stash', 'list']),
+    strictGitLines(folder, ['branch', '--show-current']),
+    strictGitLines(folder, ['for-each-ref', refFormat, ...refs]),
+    strictGitLines(folder, ['status', '--porcelain=v1']),
+    strictGitLines(folder, ['stash', 'list']),
     gitLines(folder, ['for-each-ref', '--format=%(refname)', `--merged=${remote}/HEAD`, ...refs]),
     readLastTag(folder),
   ])
@@ -116,7 +147,18 @@ async function readState(folder: string) {
   const branches = localLines.map(line => parseBranch(line, merged))
   const localOnlyBranches = branches.filter(branch => branch.upstream === undefined || branch.isGone).map(branch => branch.name)
   const remoteBranches = remoteLines.map(line => parseRemoteBranch(line, merged)).filter(branch => branch !== undefined)
-  return { branches, changedFiles, currentBranch, lastTag, localOnlyBranches, remoteBranches, stashes, unpushed: await readUnpushed(folder, branches) }
+  const [unpushed, detached] = await Promise.all([readUnpushed(folder, branches), readDetached(folder, currentBranch)])
+  return { branches, changedFiles, currentBranch, lastTag, localOnlyBranches, remoteBranches, stashes, unpushed: [...unpushed, ...detached] }
+}
+
+/**
+ * Read the local state of a usable clone and its files, see `readState`
+ * @param folder the clone folder
+ * @returns the local state, or the reason it could not be read
+ */
+async function tryReadState(folder: string) {
+  const read = await Result.trySafe(Promise.all([readState(folder), readCloneFiles(folder)]))
+  return read.ok ? { ...read.value[0], ...read.value[1] } : { unreadable: errorMessage(read.error) }
 }
 
 /**
@@ -176,8 +218,10 @@ export async function readClone(folder: string, { shouldFetch, shouldPull = fals
   const base = { branches: [], changedFiles: [], currentBranch: '', fetchFailed: false, lastTag: undefined, localOnlyBranches: [], remoteBranches: [], stashes: [], unpushed: [], ...pointer }
   if (pointer.problem !== undefined) return base
   const fetched = shouldFetch ? await run('git', ['fetch', '--prune', '--quiet', remote], folder) : { ok: true }
-  const state = { ...(await readState(folder)), ...(await readCloneFiles(folder)) }
-  if (shouldPull && fetched.ok && (await fastForward(folder, state))) return { ...base, ...state, ...(await readState(folder)), fetchFailed: false }
+  const state = await tryReadState(folder)
+  if ('unreadable' in state) return { ...base, problem: 'unreadable', unreadable: state.unreadable }
+  // once the branch moved forward, the clone is read again as it is now, the fetch it needed is done
+  if (shouldPull && fetched.ok && (await fastForward(folder, state))) return readClone(folder, { shouldFetch: false })
   return { ...base, ...state, fetchFailed: !fetched.ok }
 }
 

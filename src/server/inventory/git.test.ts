@@ -44,7 +44,7 @@ describe('git inventory', () => {
     const { app, workspace } = await makeWorkspace()
     const clone = await readClone(app, fetch)
     expect(clone).toMatchObject({ changedFiles: [], currentBranch: 'main', fetchFailed: false, folderName: 'app', localOnlyBranches: [], origin: path.join(workspace, 'origin.git').split(path.sep).join('/'), problem: undefined, slug: undefined, stashes: [], unpushed: [] })
-    expect(clone.branches).toStrictEqual([{ ahead: 0, behind: 0, isGone: false, isMerged: true, lastCommitAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/u) as string, name: 'main', upstream: 'origin/main' }])
+    expect(clone.branches).toStrictEqual([{ ahead: 0, behind: 0, isGone: false, isMerged: true, lastCommitAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/u) as string, name: 'main', tip: expect.stringMatching(/^[\da-f]{40}$/u) as string, upstream: 'origin/main' }])
   })
 
   it('tells which branches are merged and how old their last commit is, locally and on the remote', async () => {
@@ -155,6 +155,25 @@ describe('git inventory', () => {
     expect(clone.currentBranch).toBe('local')
     expect(clone.localOnlyBranches).toStrictEqual(['gone', 'local'])
     expect(clone.branches.find(branch => branch.name === 'gone')?.isGone).toBe(true)
+  })
+
+  // Value: protects=commits of a detached HEAD that are on no branch count as unpushed work; fails_when=readDetached is dropped or skips the HEAD; why_new=a detached clone read as clean; seam=none; no_claim=none beyond protects
+  it('lists the commits of a detached HEAD that are on no branch, and none when HEAD sits on a known commit', async () => {
+    expect.hasAssertions()
+    const { app } = await makeWorkspace()
+    await git(app, 'switch', '--quiet', '--detach')
+    await expect(readClone(app, fetch)).resolves.toMatchObject({ currentBranch: '', unpushed: [] })
+    await git(app, 'commit', '--quiet', '--allow-empty', '-m', 'lost work')
+    await expect(readClone(app, fetch)).resolves.toMatchObject({ currentBranch: '', unpushed: [{ branch: 'HEAD', subjects: ['lost work'] }] })
+  })
+
+  // Value: protects=a clone git cannot read is flagged unreadable, never read as clean; fails_when=git failures are swallowed into empty lists again; why_new=gitLines turned any failure into []; seam=none; no_claim=other kinds of corruption
+  it('flags a clone whose state git cannot read', async () => {
+    expect.hasAssertions()
+    const { app } = await makeWorkspace()
+    await writeFile(path.join(app, '.git', 'index'), 'not an index')
+    const clone = await readClone(app, fetch)
+    expect(clone).toMatchObject({ changedFiles: [], problem: 'unreadable', unreadable: expect.stringContaining('git status') as string })
   })
 
   it('flags a failed fetch', async () => {

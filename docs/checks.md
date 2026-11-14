@@ -26,7 +26,7 @@ The old tool also knew whether `--fix` could repair a rule. That is not repeated
 Comparison between your repos on GitHub and your clones on disk.
 
 - ✅ 🔵 `not-cloned`: a repo on GitHub, not archived, not a fork, with no clone in the folder. Fix: clone it.
-- ☑️ 🟡 `broken-clone`: a local folder that is not a git repo, has no `origin`, or whose `origin` returns 404 on GitHub. Reported with the reason and the path, no fix.
+- ☑️ 🟡 `broken-clone`: a local folder that is not a git repo, has no `origin`, whose `origin` returns 404 on GitHub, or whose state git cannot read (a corrupt index, a failed `git status`). Reported with the reason and the path, no fix. Nothing is offered on an unreadable clone: a git failure never reads as a clean clone.
 - ✅ 🔴 `archived-with-unsaved-work`: the repo is archived on GitHub and its clone holds unpushed commits, uncommitted files, a stash or local-only branches. Fixes: unarchive, push, re-archive; or discard.
 - ✅ 🔵 `archived-clone`: the repo is archived on GitHub and its clone is provably safe to delete. Fix: delete the clone.
 - ✅ 🔵 `pristine-fork`: a fork where every branch has zero commits ahead of its parent, there is no open PR, and any local clone is clean. Fix: delete the fork repo and its local clone. Forks that cannot be verified are listed and never offered.

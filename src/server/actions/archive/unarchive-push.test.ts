@@ -142,6 +142,36 @@ describe(unarchivePush, () => {
     await expect(git(bare, 'branch', '--list')).resolves.not.toContain('wip')
   })
 
+  // Value: protects=a branch is pushed to its upstream branch, not to a new branch of its own name; fails_when=the refspec uses the local name again; why_new=fix tracking origin/hotfix went to origin/fix; seam=none; no_claim=other remotes than origin
+  it('pushes a branch to its upstream when the names differ', async () => {
+    expect.hasAssertions()
+    const { bare, readers, target } = await makeWorkspace({ branches: [{ ahead: 1, behind: 0, isGone: false, name: 'master', upstream: 'origin/main' }], localOnlyBranches: [] })
+    const result = await unarchivePush({ gh: fakeGh(), git: readers, name: 'old', owner: 'Owner', target })
+    expect(result).toMatchObject({ ok: true })
+    await expect(git(bare, 'log', '--format=%s', 'main')).resolves.toContain('unpushed work')
+  })
+
+  // Value: protects=a push that fails for one branch pushes none, so 'nothing was pushed' is true; fails_when=--atomic is dropped; why_new=a partial push was reported as none; seam=none; no_claim=servers without atomic push support
+  it('pushes no branch when one of them is rejected', async () => {
+    expect.hasAssertions()
+    const { bare, folder, readers, target } = await makeWorkspace()
+    await git(folder, 'switch', '--quiet', '-c', 'side', 'HEAD~1')
+    await git(folder, 'commit', '--quiet', '--allow-empty', '-m', 'side work')
+    await git(folder, 'push', '--quiet', 'origin', 'side:wip')
+    await git(folder, 'switch', '--quiet', 'master')
+    const result = await unarchivePush({ gh: fakeGh(), git: readers, name: 'old', owner: 'Owner', target })
+    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('nothing was pushed') })
+    await expect(git(bare, 'log', '--format=%s', 'master')).resolves.not.toContain('unpushed work')
+  })
+
+  it('refuses the commits of a detached HEAD, they are on no branch to push', async () => {
+    expect.hasAssertions()
+    const { readers, target } = await makeWorkspace({ currentBranch: '', localOnlyBranches: [], unpushed: [{ branch: 'HEAD', subjects: ['lost'] }] })
+    const gh = fakeGh()
+    await expect(unarchivePush({ gh, git: readers, name: 'old', owner: 'Owner', target })).resolves.toMatchObject({ ok: false, reason: expect.stringContaining('on no branch') })
+    expect(patched(gh)).toStrictEqual([])
+  })
+
   it('pushes nothing when the repo cannot be unarchived', async () => {
     expect.hasAssertions()
     const { bare, readers, target } = await makeWorkspace()

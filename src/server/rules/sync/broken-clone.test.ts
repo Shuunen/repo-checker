@@ -5,6 +5,7 @@ testProjectRule(brokenClone, {
   invalid: [
     { errors: ['noGit'], local: { origin: undefined, problem: 'no-git', slug: undefined }, name: 'not a git repo' },
     { errors: ['noOrigin'], local: { origin: undefined, problem: 'no-origin', slug: undefined }, name: 'no origin' },
+    { errors: ['unreadable'], github: {}, local: { problem: 'unreadable', unreadable: 'git status failed' }, name: 'a clone git cannot read' },
     { errors: ['originNotFound'], local: {}, name: 'an origin of the owner that matches no repo' },
   ],
   valid: [

@@ -34,6 +34,16 @@ function describeBranch(clone: Readonly<LocalClone>, name: string) {
 }
 
 /**
+ * Fingerprint the branches the dialog lists: their names, the note each one shows and the commit it points to, so a branch that gets a new commit after the preview is never deleted unseen
+ * @param clone the clone
+ * @param branches the branch names
+ * @returns the fingerprint
+ */
+function fingerprintBranches(clone: Readonly<LocalClone>, branches: readonly string[]) {
+  return fingerprintOf(branches.map(name => [describeBranch(clone, name), clone.branches.find(item => item.name === name)?.tip]))
+}
+
+/**
  * Say which local branches would be deleted, read fresh with a fetch: all but the default and the checked out one, each with a note when it holds work that is not on GitHub
  * @param options what to delete
  * @returns the list with its fingerprint, or the reason there is nothing to do
@@ -45,7 +55,7 @@ export function previewDeleteBranches(options: Readonly<ActionOptions>): Promise
     if ('reason' in proof) return refused(proof.reason)
     const branches = deletableOf(proof.clone, proof.repo.defaultBranch)
     if (branches.length === 0) return refused(`there is no local branch but ${proof.repo.defaultBranch} and the checked out one`)
-    return { branches: branches.map(name => describeBranch(proof.clone, name)), fingerprint: fingerprintOf(branches), ok: true, path: proof.clone.path }
+    return { branches: branches.map(name => describeBranch(proof.clone, name)), fingerprint: fingerprintBranches(proof.clone, branches), ok: true, path: proof.clone.path }
   })
 }
 
@@ -62,7 +72,7 @@ export function deleteLocalBranches({ fingerprint, runGit = realRunGit, ...optio
     const proof = await proveClone(options)
     if ('reason' in proof) return refused(proof.reason)
     const branches = deletableOf(proof.clone, proof.repo.defaultBranch)
-    if (fingerprintOf(branches) !== fingerprint) return refused(staleReason('the local branches of the clone are', 'deleted'))
+    if (fingerprintBranches(proof.clone, branches) !== fingerprint) return refused(staleReason('the local branches of the clone are', 'deleted'))
     const failures = await deleteBranches(proof.clone, branches, runGit)
     if (failures.length > 0) return refused(`these branches could not be deleted: ${failures.join(' | ')}`)
     return { message: `deleted ${plural(branches.length, 'local branch')} of ${proof.clone.path}`, ok: true }

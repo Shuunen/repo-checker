@@ -1,6 +1,7 @@
 import { type ActionResult, attempt, refused } from '../../../shared/action.ts'
 import type { LocalClone } from '../../../shared/project.ts'
 import { plural } from '../../../shared/text.ts'
+import { detachedHead } from '../../inventory/git.ts'
 import { type GhRunner, getRepo } from '../../inventory/github.ts'
 import { type ActionOptions, realRunGit } from '../action-options.ts'
 import { proveArchived } from './archived-proof.ts'
@@ -10,23 +11,32 @@ import { proveArchived } from './archived-proof.ts'
  * @param clone the clone
  * @param clone.changedFiles the uncommitted files
  * @param clone.stashes the stash entries
+ * @param clone.unpushed the unpushed commits per branch, a detached HEAD included
  * @returns the reason to refuse, undefined when the clone holds only commits and branches
  */
-function dirtyReason({ changedFiles, stashes }: Readonly<LocalClone>) {
+function dirtyReason({ changedFiles, stashes, unpushed }: Readonly<LocalClone>) {
   if (changedFiles.length > 0) return `the clone has ${plural(changedFiles.length, 'uncommitted file')}, this action only pushes and never creates a commit: commit or discard them by hand first`
   if (stashes.length > 0) return `the clone has ${plural(stashes.length, 'stash')}, this action only pushes: apply or drop them by hand first`
+  const detached = unpushed.find(item => item.branch === detachedHead)
+  if (detached !== undefined) return `the detached HEAD of the clone holds ${plural(detached.subjects.length, 'commit')} on no branch, this action only pushes branches: create a branch for them by hand first`
   return undefined
 }
 
 /**
- * The branches to push: every branch with unpushed commits and every local-only branch
+ * The refspecs to push: every branch with unpushed commits to its upstream branch, and every local-only branch to a branch of the same name
  * @param clone the clone
+ * @param clone.branches the local branches
  * @param clone.localOnlyBranches the branches with no upstream
  * @param clone.unpushed the unpushed commits per branch
- * @returns the branch names, once each
+ * @returns the branch names and their refspecs, once each
  */
-function branchesToPush({ localOnlyBranches, unpushed }: Readonly<LocalClone>) {
-  return [...new Set([...unpushed.map(item => item.branch), ...localOnlyBranches])]
+function branchesToPush({ branches, localOnlyBranches, unpushed }: Readonly<LocalClone>) {
+  const names = [...new Set([...unpushed.map(item => item.branch), ...localOnlyBranches])]
+  return names.map(name => {
+    const upstream = branches.find(branch => branch.name === name && !branch.isGone)?.upstream
+    const destination = upstream?.startsWith('origin/') === true ? upstream.slice('origin/'.length) : name
+    return { name, refspec: `refs/heads/${name}:refs/heads/${destination}` }
+  })
 }
 
 /**
@@ -66,10 +76,10 @@ async function pushThroughUnarchive({ gh, name, owner, runGit = realRunGit }: Re
   const branches = branchesToPush(clone)
   const unarchived = await setArchived(gh, slug, false)
   if (!unarchived.ok) return refused(`could not unarchive ${slug}, nothing was pushed: ${unarchived.stderr.trim()}`)
-  const pushed = await runGit(['push', 'origin', ...branches.map(branch => `refs/heads/${branch}:refs/heads/${branch}`)], clone.path)
+  const pushed = await runGit(['push', '--atomic', 'origin', ...branches.map(branch => branch.refspec)], clone.path)
   const archived = await setArchived(gh, slug, true)
   const isClosed = archived.ok && (await isArchivedOnGitHub(gh, slug))
-  const outcome = pushed.ok ? `pushed ${plural(branches.length, 'branch')} (${branches.join(', ')})` : `git push failed: ${pushed.stderr.trim()}`
+  const outcome = pushed.ok ? `pushed ${plural(branches.length, 'branch')} (${branches.map(branch => branch.name).join(', ')})` : `git push failed: ${pushed.stderr.trim()}`
   if (!isClosed) return refused(`${outcome}, but ${slug} could not be archived again (${archived.ok ? 'GitHub still shows it as not archived' : archived.stderr.trim()}), archive it by hand: gh api --method PATCH repos/${slug} -F archived=true`)
   return pushed.ok ? { message: `${outcome} to ${slug}, which is archived again`, ok: true } : refused(`${outcome}. ${slug} is archived again, nothing was pushed`)
 }

@@ -56,6 +56,16 @@ function planOf(clone: Readonly<LocalClone>, repo: Readonly<GithubRepo>): GitPla
 }
 
 /**
+ * Fingerprint a plan with the commit each branch to delete points to, so a branch that gets a new commit after the preview is never deleted unseen
+ * @param clone the clone
+ * @param plan the plan
+ * @returns the fingerprint
+ */
+function fingerprintPlan(clone: Readonly<LocalClone>, plan: Readonly<GitPlan>) {
+  return fingerprintOf({ ...plan, tips: plan.branches.map(name => clone.branches.find(item => item.name === name)?.tip) })
+}
+
+/**
  * Say what the git fixes would do, read fresh with a fetch: the branches to delete, the stashes to drop and the pull, with the fingerprint of that plan
  * @param options what to fix
  * @returns the plan, or the reason there is nothing to do
@@ -67,7 +77,7 @@ export function previewFixGit(options: Readonly<ActionOptions>): Promise<GitFixP
     if ('reason' in proof) return refused(proof.reason)
     const plan = planOf(proof.clone, proof.repo)
     if (plan.branches.length === 0 && plan.fastForward.length === 0 && plan.pull === undefined && plan.stashes.length === 0) return refused('there is no git issue to fix in this clone')
-    return { ...plan, fingerprint: fingerprintOf(plan), ok: true, path: proof.clone.path }
+    return { ...plan, fingerprint: fingerprintPlan(proof.clone, plan), ok: true, path: proof.clone.path }
   })
 }
 
@@ -135,7 +145,7 @@ export function fixGit({ fingerprint, runGit = realRunGit, ...options }: Readonl
     if ('reason' in proof) return refused(proof.reason)
     const { clone, repo } = proof
     const plan = planOf(clone, repo)
-    if (fingerprintOf(plan) !== fingerprint) return refused(staleReason('the git issues of the clone are', 'changed'))
+    if (fingerprintPlan(clone, plan) !== fingerprint) return refused(staleReason('the git issues of the clone are', 'changed'))
     const failure = await applyPlan(clone, plan, runGit)
     if (failure !== undefined) return refused(failure)
     return { message: `fixed the git issues of ${clone.path}`, ok: true }

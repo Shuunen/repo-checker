@@ -18,6 +18,8 @@ export interface BranchState {
   lastCommitAt?: string
   /** The branch name, like `master` */
   name: string
+  /** The commit the branch points to, undefined when it was not read */
+  tip?: string
   /** The upstream, like `origin/master`, undefined when the branch has none */
   upstream: string | undefined
 }
@@ -50,8 +52,8 @@ interface UnpushedCommits {
   subjects: string[]
 }
 
-/** Why a local folder cannot be compared with GitHub */
-type CloneProblem = 'no-git' | 'no-origin'
+/** Why a local folder cannot be compared with GitHub: not a git repo, no origin remote, or git failed to read its state */
+type CloneProblem = 'no-git' | 'no-origin' | 'unreadable'
 
 /** What a scan knows about one local folder */
 export interface LocalClone {
@@ -85,7 +87,9 @@ export interface LocalClone {
   slug: string | undefined
   /** The stash entries, newest first */
   stashes: string[]
-  /** The unpushed commits, per branch */
+  /** Why git could not read the state of the clone, set with the `unreadable` problem */
+  unreadable?: string
+  /** The unpushed commits, per branch, plus a `HEAD` entry for the commits of a detached HEAD that are on no branch */
   unpushed: UnpushedCommits[]
   /** The dev and preview ports of the vite config, undefined when the clone has no vite config or when it was not read */
   vitePorts?: VitePorts | undefined

@@ -8,11 +8,12 @@ export const brokenClone = defineProjectRule({
     invariant(local !== undefined, 'appliesTo guarantees a local folder')
     if (local.problem === 'no-git') report({ data: { path: local.path }, messageId: 'noGit' })
     else if (local.problem === 'no-origin') report({ data: { path: local.path }, messageId: 'noOrigin' })
+    else if (local.problem === 'unreadable') report({ data: { path: local.path, reason: String(local.unreadable) }, messageId: 'unreadable' })
     else if (github === undefined && project.isOffline !== true) report({ data: { origin: String(local.origin) }, messageId: 'originNotFound' })
   },
   meta: {
     id: 'broken-clone',
-    messages: { noGit: '{{path}} is not a git repository', noOrigin: '{{path}} has no origin remote', originNotFound: 'the origin {{origin}} does not exist on GitHub, the repo was renamed or deleted' },
+    messages: { noGit: '{{path}} is not a git repository', noOrigin: '{{path}} has no origin remote', originNotFound: 'the origin {{origin}} does not exist on GitHub, the repo was renamed or deleted', unreadable: 'git cannot read the state of {{path}}, nothing is offered on it: {{reason}}' },
     severity: 'warning',
   },
 })

@@ -39,6 +39,8 @@ describe(checkoutDefault, () => {
     { clone: aClone({ currentBranch: 'master' }), name: 'finga', reason: 'already on master', repo: apiRepo(), title: 'a clone already on the default branch' },
     { clone: aClone({ changedFiles: [' M a.ts'] }), name: 'finga', reason: '1 uncommitted file(s)', repo: apiRepo(), title: 'a clone with uncommitted files' },
     { clone: aClone({ problem: 'no-origin' }), name: 'finga', reason: 'cannot be read', repo: apiRepo(), title: 'a broken clone' },
+    // Value: protects=checkout never orphans the commits of a detached HEAD; fails_when=the detached guard is removed; why_new=detached commits were invisible; seam=none; no_claim=real git
+    { clone: aClone({ currentBranch: '', unpushed: [{ branch: 'HEAD', subjects: ['lost'] }] }), name: 'finga', reason: 'on no branch', repo: apiRepo(), title: 'a detached HEAD with commits on no branch' },
     { clone: aClone(), name: 'finga', reason: 'is not a branch name', repo: apiRepo({ default_branch: '--orphan' }), title: 'a default branch named like a flag' },
   ])('refuses $title', async ({ clone, name, reason, repo }) => {
     expect.hasAssertions()
