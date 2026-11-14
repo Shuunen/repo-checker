@@ -260,15 +260,15 @@ describe('delete project', () => {
     expect.hasAssertions()
     const response = await app(vi.fn<ScanRunner>()).request('http://127.0.0.1/api/projects/old/delete-project')
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toStrictEqual({ clone: { ignoredFiles: [], path: '/projects/old', unsaved: [] }, ok: true, repo: 'owner/old' })
+    await expect(response.json()).resolves.toStrictEqual({ clone: { ignoredFiles: [], path: '/projects/old', unsaved: [] }, fingerprint: 'jkl', ok: true, repo: 'owner/old' })
   })
 
   it('deletes the project and answers its result', async () => {
     expect.hasAssertions()
     const deleteProject = vi.fn<Actions['deleteProject']>(() => Promise.resolve({ message: 'deleted the project', ok: true }))
-    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, deleteProject }).request('http://127.0.0.1/api/projects/old/delete-project', post)
+    const response = await app(vi.fn<ScanRunner>(), import.meta.dirname, { ...worksFine, deleteProject }).request('http://127.0.0.1/api/projects/old/delete-project?fingerprint=jkl', post)
     expect(response.status).toBe(200)
-    expect(deleteProject).toHaveBeenCalledWith('old')
+    expect(deleteProject).toHaveBeenCalledWith('old', 'jkl')
   })
 })
 

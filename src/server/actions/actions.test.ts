@@ -18,7 +18,7 @@ describe(createPreviewedActions, () => {
       actions.deleteBranches(repo, 'f'),
       actions.deleteClone(repo),
       actions.deleteFork(repo),
-      actions.deleteProject(repo),
+      actions.deleteProject(repo, 'f'),
       actions.discard(repo, 'f'),
       actions.fixFiles(repo, 'f'),
       actions.fixGit(repo, 'f'),

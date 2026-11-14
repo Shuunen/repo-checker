@@ -51,7 +51,7 @@ export const postedActions = {
   'delete-branches': { done: 'Deleted the local branches of {name}', hasFingerprint: true, hasPreview: true },
   'delete-clone': { done: 'Deleted the clone of {name}', hasPreview: true },
   'delete-fork': { done: 'Deleted the fork of {name}', hasPreview: true },
-  'delete-project': { done: 'Deleted {name}, its GitHub repo and its clone', hasPreview: true },
+  'delete-project': { done: 'Deleted {name}, its GitHub repo and its clone', hasFingerprint: true, hasPreview: true },
   discard: { done: 'Discarded the unsaved work of {name}', hasFingerprint: true, hasPreview: true },
   'fix-files': { done: 'Fixed the files of {name}', hasFingerprint: true, hasPreview: true },
   'fix-git': { done: 'Fixed the git issues of {name}', hasFingerprint: true, hasPreview: true },
@@ -132,8 +132,8 @@ export type DiscardPreview = Refusable<{ fingerprint: string; groups: UnsavedGro
 /** What deleting a fork would remove, shown before it is confirmed: the fork on GitHub, and its clean local clone with the files git ignores in it */
 export type ForkDeletePreview = Refusable<{ branches: number; clone: { ignoredFiles: string[]; path: string } | undefined; parent: string }>
 
-/** What deleting a whole project would remove, shown before it is confirmed: its repo on GitHub, and its local clone with the unsaved work and the files git ignores, all lost for good */
-export type ProjectDeletePreview = Refusable<{ clone: { ignoredFiles: string[]; path: string; unsaved: string[] } | undefined; repo: string | undefined }>
+/** What deleting a whole project would remove, shown before it is confirmed: its repo on GitHub, and its local clone with the unsaved work and the files git ignores, all lost for good. The fingerprint of that list is sent back with the confirmation, and the delete is refused when it is not the same any more */
+export type ProjectDeletePreview = Refusable<{ clone: { ignoredFiles: string[]; path: string; unsaved: string[] } | undefined; fingerprint: string; repo: string | undefined }>
 
 /** The planned change of one file, what the confirmation shows as a diff: `before` is empty when the file does not exist yet */
 export interface FixPlan {

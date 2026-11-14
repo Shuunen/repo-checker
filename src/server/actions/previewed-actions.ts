@@ -24,7 +24,7 @@ export function createPreviewedActions(options: (name: string) => Promise<Action
     deleteBranches: async (name, fingerprint) => deleteLocalBranches({ ...(await options(name)), fingerprint }),
     deleteClone: async name => deleteClone(await options(name)),
     deleteFork: async name => deleteFork(await options(name)),
-    deleteProject: async name => deleteProject(await options(name)),
+    deleteProject: async (name, fingerprint) => deleteProject({ ...(await options(name)), fingerprint }),
     discard: async (name, fingerprint) => discardClone({ ...(await options(name)), fingerprint }),
     fixFiles: async (name, fingerprint, run = {}) => fixFiles({ ...(await options(name)), ...run, fingerprint, rules, withRemote: true }),
     fixGit: async (name, fingerprint) => fixGit({ ...(await options(name)), fingerprint }),

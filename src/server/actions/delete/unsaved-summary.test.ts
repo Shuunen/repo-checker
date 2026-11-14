@@ -37,8 +37,17 @@ describe(lostWith, () => {
     await expect(lostWith(aClone({ ...fields, path: folder }))).resolves.toMatchObject({ unsaved })
   })
 
-  it('does not look for ignored files in a folder that is not a git repo', async () => {
+  it.each(['no-git', 'unreadable'] as const)('does not look for ignored files in a %s folder, and says everything in it is lost', async problem => {
     expect.hasAssertions()
-    await expect(lostWith(aClone({ problem: 'no-origin' }))).resolves.toMatchObject({ ignoredFiles: [] })
+    const lost = await lostWith(aClone({ problem }))
+    expect(lost.ignoredFiles).toStrictEqual([])
+    expect(lost.unsaved).toHaveLength(1)
+  })
+
+  // Value: protects=a repo with no origin lists its ignored files and says its whole history is lost; fails_when=lostWith treats no-origin as clean again; why_new=the old test only checked the ignored files were skipped; seam=none; no_claim=none beyond protects
+  it('lists the ignored files of a repo with no origin and says its history is lost', async () => {
+    expect.hasAssertions()
+    const folder = await makeRepo()
+    await expect(lostWith(aClone({ path: folder, problem: 'no-origin' }))).resolves.toStrictEqual({ ignoredFiles: [], path: folder, unsaved: ['its whole git history, the repo has no origin remote'] })
   })
 })

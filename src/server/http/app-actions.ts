@@ -1,7 +1,8 @@
 import { type Context, Hono, type MiddlewareHandler } from 'hono'
 import { streamSSE } from 'hono/streaming'
-import { type ActionResult, type FingerprintedAction, type FixStage, type MetadataValues, type PostedAction, type PreviewedAction, refused } from '../../shared/action.ts'
+import { type ActionResult, attempt, type FingerprintedAction, type FixStage, type MetadataValues, type PostedAction, type PreviewedAction, refused } from '../../shared/action.ts'
 import type { ChatEvent } from '../../shared/claude.ts'
+import { errorMessage } from '../../shared/text.ts'
 import type { Actions } from '../actions/actions-contract.ts'
 import { isRepoName } from '../actions/guards.ts'
 import { eventSender } from './sse.ts'
@@ -33,7 +34,7 @@ function stream(run: (onStage: (stage: FixStage) => void) => Promise<ActionResul
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
       const send = (line: object) => controller.enqueue(encoder.encode(`${JSON.stringify(line)}\n`))
-      send({ result: await run(stage => send({ stage })) })
+      send({ result: await attempt(() => run(stage => send({ stage }))) })
       controller.close()
     },
   })
@@ -106,14 +107,13 @@ function byRoute(actions: Actions) {
     'fix-git': actions.previewFixGit,
     'sync-github-metadata': actions.previewSyncGithubMetadata,
   }
-  const fingerprinted: Record<Exclude<FingerprintedAction, CustomAction>, ByFingerprint> = { 'delete-branches': actions.deleteBranches, discard: actions.discard, 'fix-git': actions.fixGit }
+  const fingerprinted: Record<Exclude<FingerprintedAction, CustomAction>, ByFingerprint> = { 'delete-branches': actions.deleteBranches, 'delete-project': actions.deleteProject, discard: actions.discard, 'fix-git': actions.fixGit }
   const named: Record<Exclude<PostedAction, CustomAction | FingerprintedAction>, ByName> = {
     archive: actions.archive,
     'checkout-default': actions.checkoutDefault,
     clone: actions.clone,
     'delete-clone': actions.deleteClone,
     'delete-fork': actions.deleteFork,
-    'delete-project': actions.deleteProject,
     'fix-github-settings': actions.fixGithubSettings,
     unarchive: actions.unarchive,
     'unarchive-push': actions.unarchivePush,
@@ -142,6 +142,8 @@ const refuseOtherNames: MiddlewareHandler<object, '/api/projects/:name/*'> = asy
  */
 export function actionRoutes(actions: Actions) {
   const app = new Hono().use('/api/projects/:name/*', refuseOtherNames)
+  // an action that throws before it could answer, like a failed read of the gh login, is a refusal with its reason, not a 500
+  app.onError((thrown, context) => reply(context, refused(errorMessage(thrown))))
   const { fingerprinted, named, previews } = byRoute(actions)
   for (const [route, preview] of previews) app.get(`/api/projects/:name/${route}`, async context => reply(context, await preview(context.req.param('name'), context.req.query('rule'))))
   for (const [route, run] of fingerprinted) app.post(`/api/projects/:name/${route}`, async context => reply(context, await run(context.req.param('name'), context.req.query('fingerprint') ?? '')))

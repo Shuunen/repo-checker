@@ -36,8 +36,8 @@ export interface Actions {
   previewDeleteBranches: (name: string) => Promise<DeleteBranchesPreview>
   /** Delete a pristine fork on GitHub, and its clean local clone if it has one */
   deleteFork: (name: string) => Promise<ActionResult>
-  /** Delete a project for good: its repo on GitHub and its local clone, whatever they hold */
-  deleteProject: (name: string) => Promise<ActionResult>
+  /** Delete a project for good: its repo on GitHub and its local clone, whatever they hold, refused unless they hold what the fingerprint stands for */
+  deleteProject: (name: string, fingerprint: string) => Promise<ActionResult>
   /** Say what deleting the project would remove, the unsaved work of its clone included */
   previewDeleteProject: (name: string) => Promise<ProjectDeletePreview>
   /** Write the file fixes the checks plan, refused unless the plan is the one the fingerprint stands for, and never over a file with uncommitted changes. The written files are committed and pushed when asked */

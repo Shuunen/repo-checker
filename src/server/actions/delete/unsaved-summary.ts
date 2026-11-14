@@ -17,11 +17,20 @@ function unsavedOf(clone: Readonly<LocalClone>) {
   ].filter(Boolean)
 }
 
+/** What a folder that cannot be compared with GitHub loses as a whole, the scan read none of its git state */
+const problemLosses = {
+  'no-git': 'every file in it, the folder is not a git repo',
+  'no-origin': 'its whole git history, the repo has no origin remote',
+  unreadable: 'what it holds is unknown, git cannot read its state',
+} as const
+
 /**
- * Say what a delete of the clone loses for good: the files git ignores and the unsaved work
+ * Say what a delete of the clone loses for good: the files git ignores and the unsaved work. A folder that cannot be compared with GitHub loses everything it holds, the preview says so
  * @param clone the clone
- * @returns the path, the ignored files (none to list for a folder that is not a git repo) and the unsaved work
+ * @returns the path, the ignored files (none to list when git cannot list them) and the unsaved work
  */
 export async function lostWith(clone: Readonly<LocalClone>) {
-  return { ignoredFiles: clone.problem === undefined ? await listIgnoredFiles(clone.path) : [], path: clone.path, unsaved: unsavedOf(clone) }
+  const canList = clone.problem === undefined || clone.problem === 'no-origin'
+  const unsaved = clone.problem === undefined ? unsavedOf(clone) : [problemLosses[clone.problem]]
+  return { ignoredFiles: canList ? await listIgnoredFiles(clone.path) : [], path: clone.path, unsaved }
 }

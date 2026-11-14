@@ -9,7 +9,7 @@ const events: ScanEvent[] = [
   { result: aProject('old', []), type: 'project' },
   { durationMs: 1000, isSingle: false, owner: 'owner', type: 'done' },
 ]
-const preview: ProjectDeletePreview = { clone: { ignoredFiles: ['.env'], path: '/projects/old', unsaved: ['1 stash entry'] }, ok: true, repo: 'owner/old' }
+const preview: ProjectDeletePreview = { clone: { ignoredFiles: ['.env'], path: '/projects/old', unsaved: ['1 stash entry'] }, fingerprint: 'abc', ok: true, repo: 'owner/old' }
 
 describe('delete project', () => {
   it('opens from the Actions menu of the row and says what is lost for good', async () => {
@@ -46,7 +46,7 @@ describe('delete project', () => {
 
   it('says only what exists: a repo that is not cloned, a clone that is not on GitHub', async () => {
     expect.hasAssertions()
-    stubApi({ preview: Response.json({ clone: undefined, ok: true, repo: 'owner/old' }) })
+    stubApi({ preview: Response.json({ clone: undefined, fingerprint: 'abc', ok: true, repo: 'owner/old' }) })
     renderApp(scanRequest(events), '/')
     fireEvent.click(await screen.findByTestId('actions-old'))
     fireEvent.click(await screen.findByTestId('menu-delete-project'))

@@ -199,7 +199,8 @@ describe(deleteFork, () => {
     await expect(exists(folder)).resolves.toBe(true)
   })
 
-  it('refuses to remove a clone that is not a direct child of the folder of projects, after the fork is gone', async () => {
+  // Value: protects=a misplaced clone stops the fork delete before GitHub is touched; fails_when=the path check moves after the DELETE; why_new=the fork used to be deleted first; seam=none; no_claim=symlinks
+  it('refuses a clone that is not a direct child of the folder of projects, before the fork is deleted', async () => {
     expect.hasAssertions()
     const { git, target } = await makeWorkspace()
     vi.spyOn(git, 'readClone').mockResolvedValue({
@@ -216,8 +217,10 @@ describe(deleteFork, () => {
       stashes: [],
       unpushed: [],
     })
-    const result = await deleteFork({ gh: fakeGh(), git, name: 'lib', owner: 'Owner', target })
-    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('a clone is a direct child of the folder of projects') })
+    const gh = fakeGh()
+    const result = await deleteFork({ gh, git, name: 'lib', owner: 'Owner', target })
+    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining(`is not directly in ${target}`) })
+    expect(gh.mock.calls.some(([args]) => args.includes('DELETE'))).toBe(false)
   })
 
   it.each([

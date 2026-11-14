@@ -1,10 +1,8 @@
-import { rm } from 'node:fs/promises'
-import path from 'node:path'
-import { invariant } from 'es-toolkit'
 import { type ActionResult, attempt, type DeletePreview } from '../../../shared/action.ts'
 import type { ActionOptions } from '../action-options.ts'
 import { proveArchived } from '../archive/archived-proof.ts'
 import { listIgnoredFiles } from './ignored-files.ts'
+import { removeClone } from './remove-clone.ts'
 
 /**
  * Say what a delete of the clone would remove, after proving it is still safe. The files git ignores (a `.env`, a local database) are the only thing that would be lost, the rest is on GitHub
@@ -29,8 +27,7 @@ export function deleteClone(options: Readonly<ActionOptions>): Promise<ActionRes
   return attempt(async () => {
     const proof = await proveArchived(options, 'delete-clone')
     if (!proof.ok) return proof
-    invariant(path.dirname(proof.clone.path) === options.target, 'a clone is a direct child of the folder of projects')
-    await rm(proof.clone.path, { force: true, recursive: true })
+    await removeClone(proof.clone.path, options.target)
     return { message: `deleted the clone ${proof.clone.path}`, ok: true }
   })
 }
