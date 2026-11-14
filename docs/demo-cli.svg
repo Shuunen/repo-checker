@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 581" width="800" height="581" role="img" aria-label="repo-check scanning a folder of projects, listing errors, warnings and info, then fixing files with --fix">
+<title>repo-check demo</title>
+<style>
+text{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace;font-size:14px;white-space:pre}
+@keyframes a1{0%,2.000%{opacity:0}2.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes ty1{0%,2.000%{transform:scaleX(0)}8.000%,97.000%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+@keyframes a2{0%,10.000%{opacity:0}10.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a3{0%,13.000%{opacity:0}13.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a4{0%,14.500%{opacity:0}14.900%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a5{0%,17.500%{opacity:0}17.900%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a6{0%,19.000%{opacity:0}19.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a7{0%,20.500%{opacity:0}20.900%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a8{0%,23.500%{opacity:0}23.900%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a9{0%,25.000%{opacity:0}25.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a10{0%,26.500%{opacity:0}26.900%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a11{0%,28.000%{opacity:0}28.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a12{0%,31.500%{opacity:0}31.900%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a13{0%,33.000%{opacity:0}33.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a14{0%,37.000%{opacity:0}37.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes ty14{0%,37.000%{transform:scaleX(0)}44.000%,97.000%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+@keyframes a15{0%,43.000%{opacity:0}43.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a16{0%,44.500%{opacity:0}44.900%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a17{0%,46.000%{opacity:0}46.400%,97.000%{opacity:1}100%{opacity:0}}
+@keyframes a18{0%,50.000%{opacity:0}50.400%,97.000%{opacity:1}100%{opacity:0}}
+</style>
+<rect width="800" height="581" rx="10" fill="#0e1117"/>
+<rect width="800" height="34" rx="10" fill="#161b22"/><rect y="24" width="800" height="10" fill="#161b22"/>
+<circle cx="20" cy="17" r="6" fill="#ff5f56"/><circle cx="40" cy="17" r="6" fill="#ffbd2e"/><circle cx="60" cy="17" r="6" fill="#27c93f"/>
+<text x="400" y="22" fill="#7d8590" text-anchor="middle" style="font-size:12px">repo-check</text>
+<clipPath id="c1"><rect x="46" y="63" width="120.02" height="20" style="transform-box:fill-box;transform-origin:left;animation:ty1 20s steps(14,end) infinite"/></clipPath>
+<g style="animation:a1 20s linear infinite;opacity:0"><text x="28" y="78" fill="#3fb950">❯</text><text x="46" y="78" fill="#e6edf3" clip-path="url(#c1)">npx repo-check</text></g>
+<text x="28" y="99" xml:space="preserve" style="animation:a2 20s linear infinite;opacity:0;font-weight:700"><tspan fill="#e6edf3">repo-check · ~/Projects · Shuunen · 6 projects in 4.2s</tspan></text>
+<text x="28" y="141" xml:space="preserve" style="animation:a3 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#ff7b72">🔴 errors (1)</tspan></text>
+<text x="28" y="162" xml:space="preserve" style="animation:a4 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#e6edf3">  api-server  </tspan><tspan fill="#7d8590">archived-with-unsaved-work  </tspan><tspan fill="#e6edf3">2 unpushed commits on an archived repo</tspan></text>
+<text x="28" y="204" xml:space="preserve" style="animation:a5 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#e3b341">🟡 warnings (2)</tspan></text>
+<text x="28" y="225" xml:space="preserve" style="animation:a6 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#e6edf3">  website     </tspan><tspan fill="#7d8590">behind-remote              </tspan><tspan fill="#e6edf3">3 commits behind origin/master</tspan></text>
+<text x="28" y="246" xml:space="preserve" style="animation:a7 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#e6edf3">  cli-tools   </tspan><tspan fill="#7d8590">uncommitted-files          </tspan><tspan fill="#e6edf3">4 files not committed</tspan></text>
+<text x="28" y="288" xml:space="preserve" style="animation:a8 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#58a6ff">🔵 info (3)</tspan></text>
+<text x="28" y="309" xml:space="preserve" style="animation:a9 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#e6edf3">  dotfiles    </tspan><tspan fill="#7d8590">not-cloned                 </tspan><tspan fill="#e6edf3">on GitHub, no clone in this folder</tspan></text>
+<text x="28" y="330" xml:space="preserve" style="animation:a10 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#e6edf3">  old-fork    </tspan><tspan fill="#7d8590">pristine-fork              </tspan><tspan fill="#e6edf3">0 commits ahead of its parent</tspan></text>
+<text x="28" y="351" xml:space="preserve" style="animation:a11 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#e6edf3">  website     </tspan><tspan fill="#7d8590">readme-thanks-entries      </tspan><tspan fill="#e6edf3">2 tools are not thanked</tspan></text>
+<text x="28" y="393" xml:space="preserve" style="animation:a12 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#e6edf3">58 checks run, 4 skipped · 1 error · 2 warnings · 3 info</tspan></text>
+<text x="28" y="414" xml:space="preserve" style="animation:a13 20s linear infinite;opacity:0;font-weight:400"><tspan fill="#7d8590">Run repo-check --fix to apply the file fixes, or repo-check ui to review each diff first.</tspan></text>
+<clipPath id="c14"><rect x="46" y="420" width="170.6" height="20" style="transform-box:fill-box;transform-origin:left;animation:ty14 20s steps(20,end) infinite"/></clipPath>
+<g style="animation:a14 20s linear infinite;opacity:0"><text x="28" y="435" fill="#3fb950">❯</text><text x="46" y="435" fill="#e6edf3" clip-path="url(#c14)">npx repo-check --fix</text></g>
+<text x="28" y="456" xml:space="preserve" style="animation:a15 20s linear infinite;opacity:0"><tspan fill="#3fb950">🔧 fixed (2)</tspan></text>
+<text x="28" y="477" xml:space="preserve" style="animation:a16 20s linear infinite;opacity:0"><tspan fill="#e6edf3">  website   README.md  thanks list updated, sorted</tspan></text>
+<text x="28" y="498" xml:space="preserve" style="animation:a17 20s linear infinite;opacity:0"><tspan fill="#e6edf3">  cli-tools .oxfmtrc.json  schema added, keys sorted</tspan></text>
+<text x="28" y="540" xml:space="preserve" style="animation:a18 20s linear infinite;opacity:0"><tspan fill="#e6edf3">58 checks run, 4 skipped · 1 error · 0 warnings · 3 info</tspan></text>
+</svg>
