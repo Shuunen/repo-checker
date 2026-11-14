@@ -26,6 +26,10 @@ testProjectRule(archivedClone, {
   ],
   valid: [
     { github: archived, local: unpushed, name: 'unsaved work, left to archived-with-unsaved-work' },
+    // Value: protects=delete-clone is never offered while any one kind of unsaved work is in the clone; fails_when=archivedClone checks only unpushed commits; why_new=only the unpushed kind was a row; seam=none; no_claim=git reading
+    { github: archived, local: { changedFiles: ['?? notes.txt'] }, name: 'only a changed file, never offered for delete' },
+    { github: archived, local: { stashes: ['stash@{0}: WIP'] }, name: 'only a stash, never offered for delete' },
+    { github: archived, local: { localOnlyBranches: ['idea'] }, name: 'only a local-only branch, never offered for delete' },
     { github: {}, local: {}, name: 'not archived' },
   ],
 })

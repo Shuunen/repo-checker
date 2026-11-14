@@ -25,6 +25,10 @@ testProjectRule(pristineFork, {
     { errors: ['kept'], github: fork({ ...pristine, openPullRequests: 2 }), name: 'two open pull requests' },
     { errors: ['kept'], github: fork(), local: { unpushed: [{ branch: 'master', subjects: ['wip'] }] }, name: 'a clone with unsaved work' },
     { errors: ['kept'], github: fork(), local: { fetchFailed: true }, name: 'a clone whose fetch failed' },
+    // Value: protects=delete-fork, which also removes the clone, is never offered while the clone holds any kind of unsaved work; fails_when=forkBlockers reads only unpushed; why_new=only unpushed was a row; seam=none; no_claim=GitHub compare
+    { errors: ['kept'], github: fork(), local: { changedFiles: [' M a.txt'] }, name: 'a clone with only a changed file' },
+    { errors: ['kept'], github: fork(), local: { stashes: ['stash@{0}: WIP'] }, name: 'a clone with only a stash' },
+    { errors: ['kept'], github: fork(), local: { localOnlyBranches: ['idea'] }, name: 'a clone with only a local-only branch' },
     { errors: ['cannotVerify'], github: fork({ ...pristine, failures: ['repos/them/lib/compare/main...me:master: no common ancestor'] }), name: 'a failed comparison' },
     { errors: ['notChecked'], github: { forkStatus: undefined, isFork: true }, name: 'not compared yet' },
   ],

@@ -162,6 +162,36 @@ describe(deleteProject, () => {
     await expect(deleteProject({ gh, git, name: 'lib', owner: 'Owner', target })).resolves.toStrictEqual({ ok: false, reason: 'GitHub refused to delete owner/lib: HTTP 500' })
   })
 
+  // Value: protects=delete-project never removes a folder that is not a direct child of the folder of projects; fails_when=the dirname invariant in removeClone is dropped; why_new=only clone and fork deletes test it; seam=none; no_claim=symlinks
+  it('refuses to remove a clone that is not a direct child of the folder of projects, and keeps that folder', async () => {
+    expect.hasAssertions()
+    const { git, target } = await makeWorkspace()
+    const nested = path.join(target, 'deep', 'lib')
+    await mkdir(nested, { recursive: true })
+    const [clone] = await git.listClones(target)
+    vi.mocked(git.readClone).mockResolvedValue({ ...(clone as LocalClone), path: nested })
+    const result = await deleteProject({ gh: fakeGh({ hasRepo: false }), git, name: 'lib', owner: 'Owner', target })
+    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('a clone is a direct child of the folder of projects') as string })
+    await expect(exists(nested)).resolves.toBe(true)
+  })
+
+  // Value: protects=a refused delete-project (renamed repo, two clones) calls no DELETE on GitHub and keeps the clone; fails_when=findProject refusals move after deleteRepo; why_new=the refusal tests only check ok:false; seam=none; no_claim=preview
+  it.each([
+    ['the repo was renamed', () => vi.fn<GhRunner>(() => Promise.resolve({ ok: true, stderr: '', stdout: JSON.stringify({ ...repo, name: 'other' }) })), false],
+    ['there are two clones', () => fakeGh(), true],
+  ])('calls no DELETE and keeps the clone when %s', async (_name, makeGh, isTwice) => {
+    expect.hasAssertions()
+    const { folder, git, target } = await makeWorkspace()
+    if (isTwice) {
+      const [clone] = await git.listClones(target)
+      git.listClones = () => Promise.resolve([clone, clone] as LocalClone[])
+    }
+    const gh = makeGh()
+    await expect(deleteProject({ gh, git, name: 'lib', owner: 'Owner', target })).resolves.toMatchObject({ ok: false })
+    expect(gh.mock.calls.some(([args]) => args.includes('DELETE'))).toBe(false)
+    await expect(exists(folder)).resolves.toBe(true)
+  })
+
   it('keeps the clone when GitHub refuses, and gives the command for a missing scope', async () => {
     expect.hasAssertions()
     const { folder, git, target } = await makeWorkspace()
