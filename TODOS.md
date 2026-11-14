@@ -7,7 +7,7 @@
 - [ ] `media-dimensions` fix: for a local image, add `width` and `height` read from the file itself (remote images and videos stay manual)
 - [ ] `security-advisory` reads the lowest version of a range, not the lockfile: a `^` range can resolve to a newer, fixed version
 - [ ] Clone all missing repos in one action
-- [ ] CLI `--fix` applies the file fixes, then asks `y/N` for each fix that needs a manual acceptance
+- [ ] CLI `--fix` asks `y/N` for each fix that needs a manual acceptance (it already applies the file fixes)
 - [ ] Offer "git init and create GitHub repo" for local folders that have no git
 - [ ] `--json` output for scripts and for Claude
 - [ ] Offline mode that skips GitHub and the npm registry

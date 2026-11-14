@@ -6,7 +6,8 @@ Full rewrite: the file template based tool is replaced by a rules engine, a loca
 
 ### Added in 2.0.0
 
-- Projects dashboard (`repo-check ui`), installable as a PWA: list, filters, sorting, project page with findings, facts and actions.
+- Projects dashboard (`repo-check ui`), installable as a PWA: list, filters, sorting, project page with findings, facts and actions. The open project is watched and refreshed live when its clone changes.
+- `themeColor` in `.repo-checker.json`, the color of a project: the web manifest, the `theme-color` meta tag and the VS Code colors are checked against it.
 - Rules engine with project rules and file rules, each with an id, a severity and, when possible, a fix.
 - Checks on CI, code tooling, dependencies, git hygiene, GitHub health, package, presentation, publishing, runtime, scripts, sync, testing and website, listed in `docs/checks.md`.
 - Actions from the dashboard: clone, archive, unarchive and push, delete clone, fork, branches or project, discard, checkout the default branch, fix files, fix git, sync GitHub metadata, open in VS Code, update a project with Claude.
@@ -36,5 +37,6 @@ Full rewrite: the file template based tool is replaced by a rules engine, a loca
 ### Removed in 2.0.0
 
 - The old file template based tool and its `bun`, `biome` and `tsup` setup.
+- The `--init`, `--force` and `--quiet` options and the log file. `--fix` now applies the fixes of the checks, merged into your uncommitted changes, instead of writing template files.
 - The `open-renovate-pr` check, Renovate pull requests are counted by `open-pull-requests`.
 - The `scripts-unique-mark` task check, replaced by `unique-mark-plugin`.

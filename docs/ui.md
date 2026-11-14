@@ -1,6 +1,6 @@
 # UI
 
-Status: the project list and the project view are built. Every action works behind a confirmation dialog: Clone, Delete clone, Unarchive & push, Discard and Delete fork, the file fixes, and the trash icon of a row that deletes a whole project (its GitHub repo and its clone, whatever they hold; the dialog lists the unsaved work and ignored files lost).
+Status: the project list and the project view are built, and the open project is refreshed live. Every action works behind a confirmation dialog: Clone, Checkout the default branch, Archive, Unarchive, Unarchive & push, Discard, Delete clone, Delete branches, Delete fork, Fix the files, Fix git, Fix the GitHub settings, Sync infos, Update with Claude, and the trash icon of a row that deletes a whole project (its GitHub repo and its clone, whatever they hold; the dialog lists the unsaved work and ignored files lost, and the delete is refused if they changed since). Open in VS Code and Ignore for 24h need no confirmation.
 
 ## Library and theme
 
@@ -27,12 +27,12 @@ Light: ![light](ui/mockup-light.png)
 - Summary tiles (built): at risk (Sync errors), with file errors, not cloned, pristine forks.
 - Table, one row per project: name, status pills, branch, last push, one primary action.
 - Rows arrive live while the scan runs, and the table says "Scanning…" until the first one. After an action only the project it changed is scanned again and replaced in place.
-- Sidebar filters with counts: overview, needs attention, not cloned, forks, archived.
+- Filter tabs with counts: overview, needs attention, not cloned, forks, archived.
 - Clicking a project name opens the project view, and the action button of a row opens its confirmation right there.
 
 ### Project view (single-project mode opens here directly)
 
-Built: identity, findings grouped by origin with the files a fix would change, the local and fork fact cards, and a button per offered action, each opening its confirmation dialog (the list has the first action of each project in its row). A Fixes card applies the file fixes after a diff per file, never over a file with uncommitted changes.
+Built: identity, findings grouped by origin with the files a fix would change, the local and fork fact cards, and a button per offered action, each opening its confirmation dialog (the list has the first action of each project in its row). A Fixes card applies the file fixes after a diff per file, a file with uncommitted changes gets the fix merged into them and stays out of the optional commit.
 
 - Identity: name, GitHub link, owner, archived and fork badges, last push.
 - Group A findings for this project, each with its explanation in plain words.

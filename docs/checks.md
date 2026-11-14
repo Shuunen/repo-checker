@@ -242,7 +242,7 @@ Linting, formatting, typing and architecture config files.
 - ✅ 🟡 `oxfmt-style`: `trailingComma: "all"`, `quoteProps: "as-needed"`, `bracketSameLine: false`, `objectWrap: "preserve"`, `singleAttributePerLine: false`, `sortImports: { ignoreCase: true, newlinesBetween: false }`, and a `printWidth` above 80 (240 in most projects, 300 here) (`oxfmt.rule.ts`).
 - ✅ 🟡 `oxfmt-tailwind`: `sortTailwindcss` is set when the project uses Tailwind, its details are left to the project (`oxfmt.rule.ts`).
 - ✅ 🟡 `oxfmt-ignore-redundant`: an `ignorePatterns` entry that `.gitignore` already covers is useless, oxfmt follows `.gitignore` (`oxfmt-ignore.rule.ts`).
-- ✅ ⚪ `oxfmt-ignore-generated`: tracked files that look generated (`__snapshots__`, `__generated__`, `generated`, `mocks`, `vendor`, `*.generated.*`, `*.min.js`, `*.min.css`) and are not in `ignorePatterns`. The fix adds the pattern (`oxfmt-ignore.rule.ts`).
+- ✅ 🔵 `oxfmt-ignore-generated`: tracked files that look generated (`__snapshots__`, `__generated__`, `generated`, `mocks`, `vendor`, `*.generated.*`, `*.min.js`, `*.min.css`) and are not in `ignorePatterns`. The fix adds the pattern (`oxfmt-ignore.rule.ts`).
 - ✅ 🔴 `oxlint-config-exists`: an `.oxlintrc.json` or `.oxlintrc.jsonc` file exists, when the project uses oxlint. The fix creates it with the schema, the categories and the plugins (`oxlint.rule.ts`).
 - ✅ 🟡 `oxlint-schema`: the config has a `$schema` pointing to `./node_modules/oxlint/configuration_schema.json` (`oxlint.rule.ts`).
 - ✅ 🟡 `oxlint-categories`: `correctness` is `error`, `nursery`, `pedantic`, `perf`, `restriction`, `style` and `suspicious` are `warn` (`oxlint.rule.ts`).
