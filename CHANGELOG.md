@@ -8,6 +8,19 @@
 - The `.gitignore` fixes (`gitignore-node-modules`, `gitignore-turbo`) insert the line alphabetically, and sort a plain list. A file with comments, blank lines or `!` negations only gets the line at the end.
 - `oxlint-config-exists`, `oxlint-schema`, `oxlint-categories`, `oxlint-plugins`, `oxlint-type-aware`, `oxlint-house-rules`, `oxlint-test-override`, `lint-toolchain`, `oxfmt-style`, `oxfmt-tailwind`, `oxfmt-ignore-redundant`, `oxfmt-ignore-generated` and `knip-schema` checks.
 
+### Fixed in Unreleased
+
+- Delete project only runs when the repo and the clone still hold what its dialog listed, and checks the clone path before anything is deleted on GitHub. Delete fork checks the path first too.
+- A folder with no origin, no git or a state git cannot read now says, in the delete dialog, that everything in it is lost. A clone of someone else's repo is never picked by its folder name.
+- A git failure while reading a clone flags it unreadable (`broken-clone`) instead of reading it as clean, so nothing is offered on it.
+- Commits of a detached HEAD count as unsaved work: no delete is offered, checkout and unarchive-push refuse until a branch holds them.
+- Deleting branches and the git fixes refuse when a branch got a new commit after the dialog opened.
+- Unarchive-push pushes all branches or none (`--atomic`), each to its own upstream branch.
+- A file fix never writes through a symbolic link that leaves the project.
+- The project page never replaces the project under a dialog opened while a refresh was on its way.
+- The delete previews stop walking an ignored folder at its first file, a big `.venv/` no longer slows them down.
+- An action that throws answers with its reason instead of a server error, and the fix stream always ends with a result.
+
 ## [2.0.0] - 2026-11-08
 
 Full rewrite: the file template based tool is replaced by a rules engine, a local projects dashboard and a CLI.
