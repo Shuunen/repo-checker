@@ -1,0 +1,201 @@
+import { stat } from 'node:fs/promises'
+import { homedir } from 'node:os'
+import path from 'node:path'
+import { cac } from 'cac'
+import { Result } from 'shuutils'
+import { activeRules, loadRules, splitRules } from '../engine/load-rules.ts'
+import { defaultPort, startUi, type UiEnvironment } from '../http/ui.ts'
+import { scan } from '../inventory/scan.ts'
+import { fixProjects } from './fix-projects.ts'
+import { failureText, formatReport } from './report.ts'
+
+/** The usage, shown by --help and after a wrong option */
+const usage = `Usage: repo-check [ui] [options]
+
+Checks the projects of a folder against GitHub, or a single project when run inside one. Report only, it changes nothing, unless --fix is given.
+
+Commands:
+  ui              start the local server on 127.0.0.1 instead, it streams the scan to the dashboard
+
+Options:
+  --target=path   folder to scan, the current one by default
+  --owner=name    GitHub account to compare with, the gh login by default (in a single project, the owner of its origin)
+  --no-fetch      skip git fetch, faster but unpushed work is measured against stale remote refs
+  --fix           apply the file fixes, the same as in the ui: a file you already changed gets the fix merged into your changes, and nothing is committed
+  --nitpick       also run the nitpick checks, the small details (the ui has a toggle for it)
+  --verbose       also list every passed and skipped check, per project
+  --port=number   port of the ui server, ${defaultPort} by default
+  --no-open       do not open the browser (ui only)
+  -h, --help      show this help`
+
+/** What the CLI needs from its environment, so tests can run it without a terminal: what `repo-check ui` needs (gh, the browser, the output, the server), and the report's own */
+export interface CliEnvironment extends UiEnvironment {
+  /** The current folder, the default target */
+  cwd: string
+  /** Color the output */
+  hasColors: boolean
+  /** Print a progress line, on stderr so it never mixes with the report */
+  printProgress: (line: string) => void
+}
+
+/** What cac reads from the command line: the words after the options, and the options by name */
+interface Parsed {
+  /** The words that are not options: the command */
+  words: string[]
+  /** The options, a number when the value looks like one */
+  options: Record<string, unknown>
+}
+
+/**
+ * Turn an option value into the text that was typed, cac reads `--port=8080` as a number
+ * @param value the value cac gave
+ * @returns the text, undefined when the option was not given
+ */
+function asText(value: unknown) {
+  return value === undefined ? undefined : String(value as number | string)
+}
+
+/**
+ * Declare the command line to cac: one command that takes words, and the options
+ * @param parsed receives the words and the options once cac ran the command
+ * @returns the cac instance
+ */
+function declareCli(parsed: Parsed) {
+  const cli = cac('repo-check')
+  cli
+    .command('[...words]')
+    .option('--target <path>', 'folder to scan')
+    .option('--owner <name>', 'GitHub account to compare with')
+    .option('--no-fetch', 'skip git fetch')
+    .option('--fix', 'apply the file fixes')
+    .option('--nitpick', 'also run the nitpick checks')
+    .option('--verbose', 'also list every passed and skipped check')
+    .option('--port <number>', 'port of the ui server')
+    .option('--no-open', 'do not open the browser')
+    .option('-h, --help', 'show the help')
+    .action((words: string[], options: Record<string, unknown>) => Object.assign(parsed, { options, words }))
+  return cli
+}
+
+/**
+ * Parse the command line with cac
+ * @param argv the arguments, without node and the script
+ * @returns the options, and the command: `ui` or undefined for the report
+ * @throws {Error} on an unknown option, a missing value or an unknown command
+ */
+function parseOptions(argv: readonly string[]) {
+  const parsed: Parsed = { options: {}, words: [] }
+  const cli = declareCli(parsed)
+  cli.parse(['node', 'repo-check', ...argv], { run: false })
+  cli.runMatchedCommand()
+  const { options, words } = parsed
+  const command = words.join(' ')
+  if (command !== '' && command !== 'ui') throw new TypeError(`Unknown command '${command}'`)
+  return {
+    fetch: options.fetch !== false,
+    fix: options.fix === true,
+    help: options.help === true,
+    isUi: command === 'ui',
+    nitpick: options.nitpick === true,
+    open: options.open !== false,
+    owner: asText(options.owner),
+    port: asText(options.port),
+    target: asText(options.target),
+    verbose: options.verbose === true,
+  }
+}
+
+/**
+ * Expand a leading `~` to the home folder, the shell does not do it after `--target=`
+ * @param value the target as typed
+ * @param home the home folder
+ * @returns the target with `~` expanded
+ * @example expandHome('~/Projects', '/home/me') // '/home/me/Projects'
+ */
+export function expandHome(value: string, home: string) {
+  return value === '~' || value.startsWith('~/') ? home + value.slice(1) : value
+}
+
+/**
+ * Resolve the target folder
+ * @param cwd the current folder
+ * @param value the target as typed, the current folder when undefined
+ * @returns the absolute target path
+ * @throws {Error} when the target is not an existing folder
+ */
+async function resolveTarget(cwd: string, value = '.') {
+  const target = path.resolve(cwd, expandHome(value, homedir()))
+  const stats = await stat(target).catch(() => undefined)
+  if (stats?.isDirectory() !== true) throw new Error(`the target ${target} is not a folder`)
+  return target
+}
+
+/** Where the rules are, next to this file in the sources and in the build */
+const rulesFolder = path.join(import.meta.dirname, '..', 'rules')
+
+/**
+ * Resolve the target and the rules, then start the ui server on it
+ * @param options the parsed options
+ * @param environment the environment
+ * @param environment.cwd the current folder
+ * @param environment.exit stops the process
+ * @param environment.gh runs gh
+ * @param environment.openBrowser open the dashboard in the browser
+ * @param environment.print print a block of text
+ * @param environment.restart start a new server in place of this one
+ * @param environment.startServer start the HTTP server
+ * @returns 0, the server keeps the process alive
+ */
+async function runUi(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, exit, gh, openBrowser, print, restart, startServer }: Readonly<CliEnvironment>) {
+  const target = await resolveTarget(cwd, options.target)
+  return startUi({ fetch: options.fetch, isNitpick: options.nitpick, owner: options.owner, port: options.port, rules: await loadRules(rulesFolder), shouldOpen: options.open, target }, { exit, gh, openBrowser, print, restart, startServer })
+}
+
+/**
+ * Scan the target and print the report
+ * @param options the parsed options
+ * @param environment the environment
+ * @param environment.cwd the current folder
+ * @param environment.gh runs gh
+ * @param environment.hasColors color the output
+ * @param environment.print print a block of text
+ * @param environment.printProgress print a progress line
+ * @returns the exit code: 1 when a finding is an error, 0 otherwise
+ */
+async function scanAndReport(options: Readonly<ReturnType<typeof parseOptions>>, { cwd, gh, hasColors, print, printProgress }: Readonly<CliEnvironment>) {
+  const started = Date.now()
+  const target = await resolveTarget(cwd, options.target)
+  const rules = await loadRules(rulesFolder)
+  const scanOptions = { gh, isNitpick: options.nitpick, owner: options.owner, rules, shouldFetch: options.fetch, target }
+  const first = await scan(scanOptions, { onProgress: printProgress })
+  const fixed = options.fix ? await fixProjects(first.projects, { gh, rules: splitRules(activeRules(rules, options.nitpick)) }) : []
+  const { owner, projects } = fixed.length === 0 ? first : await scan(scanOptions, { onProgress: printProgress })
+  const { hasErrors, text } = formatReport(projects, { durationMs: Date.now() - started, fixed, hasColors, isVerbose: options.verbose, owner, target })
+  print(text)
+  return hasErrors ? 1 : 0
+}
+
+/**
+ * Run the CLI: scan, print the report grouped by severity, and give the exit code. With the `ui` command, start the server instead
+ * @param argv the arguments, without node and the script
+ * @param environment the environment
+ * @returns the exit code: 0 when no finding is an error or when the server started, 1 otherwise or when the scan failed
+ * @example process.exitCode = await runCli(process.argv.slice(2), { cwd: process.cwd(), gh: ghCli, hasColors: true, print: console.log })
+ */
+export async function runCli(argv: readonly string[], environment: Readonly<CliEnvironment>) {
+  const { print } = environment
+  const parsed = Result.trySafe(() => parseOptions(argv))
+  if (!parsed.ok) {
+    print(failureText(parsed.error, usage))
+    return 1
+  }
+  const options = parsed.value
+  if (options.help) {
+    print(usage)
+    return 0
+  }
+  const done = await Result.trySafe(options.isUi ? runUi(options, environment) : scanAndReport(options, environment))
+  if (done.ok) return done.value
+  print(failureText(done.error, usage))
+  return 1
+}
