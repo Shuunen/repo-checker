@@ -1,5 +1,5 @@
 {
   "strays": {
-    "allow": ["schema.json"]
+    "allow": ["schema.json", "pnpm-workspace.yaml", "turbo.json"]
   }
 }
