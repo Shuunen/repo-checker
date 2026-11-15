@@ -80,7 +80,7 @@
     "lint:issues:fix": "oxlint --fix --fix-suggestions --fix-dangerously --type-aware --deny-warnings --report-unused-disable-directives && echo lint:issues:fix completed successfully",
     "lint:knip": "knip && echo lint:knip completed successfully",
     "lint:types": "tsc -p tsconfig.json && echo lint:types completed successfully",
-    "postversion": "git push && git push --tags && pnpm run build && npm publish",
+    "postversion": "git tag --delete v$npm_package_version && git push",
     "preversion": "pnpm check",
     "start": "bun src/cli.ts",
     "start:ui": "bun src/cli.ts ui",
@@ -89,7 +89,8 @@
     "test:unit": "vitest run --coverage && echo test:unit completed successfully",
     "test:update": "vitest run --update && echo test:update completed successfully",
     "test:watch": "vitest --coverage",
-    "up:deps": "pnpm update --recursive --latest && echo up:deps completed successfully"
+    "up:deps": "pnpm update --recursive --latest && echo up:deps completed successfully",
+    "version": "bun -p \"require('./package.json').version\" > VERSION && git add VERSION"
   },
   "type": "module",
   "version": "2.0.0"
