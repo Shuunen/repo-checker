@@ -58,7 +58,7 @@
   ],
   "license": "GPL-3.0",
   "name": "repo-check",
-  "packageManager": "pnpm@12.16.1",
+  "packageManager": "pnpm@12.21.0",
   "private": false,
   "repository": {
     "type": "git",
