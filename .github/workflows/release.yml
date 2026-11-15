@@ -1,0 +1,87 @@
+name: release
+
+# runs on every push to master, and releases only when the package.json version has no tag yet
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  # pushes the version tag
+  contents: write
+  # lets npm trusted publishing exchange a github oidc token, no npm token secret needed, provenance is attached automatically
+  id-token: write
+
+# two pushes in a row must not release the same version twice
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  # gstack-shortcut(dec-8a9c6878): install and check share this job with the publish tokens, upgrade when a devDependency is compromised or a second maintainer joins
+  release:
+    # a manual dispatch from another branch must not publish it
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Detect an untagged version
+        id: version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          test "$version" = "$(cat VERSION)" || { echo "VERSION file does not match package.json version $version" && exit 1; }
+          # a prerelease would need npm publish --tag, so only stable versions are released here
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "package.json version $version is not a stable semver version" && exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null; then
+            echo "v$version is already tagged, nothing to release"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "v$version is not tagged yet, releasing it"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup pnpm
+        if: steps.version.outputs.release == 'true'
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      # no pnpm cache here, ci runs on every branch and could write a cache this publishing job would restore
+      - name: Setup Node 26
+        if: steps.version.outputs.release == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        if: steps.version.outputs.release == 'true'
+        run: pnpm install --frozen-lockfile && echo install dependencies ok ✅
+
+      - name: Run Check
+        if: steps.version.outputs.release == 'true'
+        run: pnpm run check
+
+      # skipped when a previous run published but failed to tag, so a re-run only adds the missing tag
+      - name: Publish with provenance
+        if: steps.version.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if npm view "repo-check@$VERSION" version > /dev/null 2>&1; then
+            echo "repo-check@$VERSION is already on npm, skipping publish"
+          else
+            npm publish
+          fi
+
+      - name: Tag the release
+        if: steps.version.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
