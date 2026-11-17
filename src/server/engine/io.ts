@@ -189,6 +189,8 @@ async function writeInside(folder: string, file: string, text: string) {
   const parent = await realExisting(path.dirname(full))
   if (parent !== root && !isInside(root, parent)) throw outside
   const existing = await Result.trySafe(lstat(full))
+  // a link to a file can only be tested where symbolic links are allowed, Windows needs the developer mode for it
+  /* v8 ignore next */
   if (existing.ok && existing.value.isSymbolicLink()) throw outside
   await mkdir(path.dirname(full), { recursive: true })
   await writeFile(full, text)

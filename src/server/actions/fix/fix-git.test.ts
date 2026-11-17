@@ -109,6 +109,22 @@ describe(previewFixGit, () => {
     expect(preview).toMatchObject({ ok: false, reason: expect.stringContaining('no clone of') as string })
   })
 
+  it('refuses when the repo is cloned more than once', async () => {
+    expect.hasAssertions()
+    const preview = await previewFixGit({ gh: fakeGh(apiRepo()), git: fakeReaders(messy, [messy, { ...messy, path: '/projects/finga-bis' }]), name: 'finga', owner: 'Owner', target: await makeTarget() })
+    expect(preview).toMatchObject({ ok: false, reason: expect.stringContaining('2 clones of owner/finga') as string })
+  })
+
+  it('reads the clone only once when it is the folder named like the repo', async () => {
+    expect.hasAssertions()
+    const target = await makeTarget()
+    const clone = aClone({ path: path.join(target, 'finga'), stashes: ['stash@{0}: WIP'] })
+    const readClone = vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone))
+    const preview = await previewFixGit({ gh: fakeGh(apiRepo()), git: { listClones: () => Promise.resolve([clone]), readClone }, name: 'finga', owner: 'Owner', target })
+    expect(preview).toMatchObject({ ok: true, stashes: ['stash@{0}: WIP'] })
+    expect(readClone).toHaveBeenCalledOnce()
+  })
+
   it('refuses when the folder of projects is not usable', async () => {
     expect.hasAssertions()
     const target = await makeTarget()
@@ -132,6 +148,45 @@ describe(previewFixGit, () => {
 })
 
 describe(fixGit, () => {
+  it('drops a stash alone without asking GitHub nor fetching, when that is the whole plan the user saw', async () => {
+    expect.hasAssertions()
+    const clone = aClone({ stashes: ['stash@{0}: WIP'] })
+    const fingerprint = await fingerprintOf(clone)
+    const gh = fakeGh(apiRepo())
+    const runGit = fakeGit()
+    const readClone = vi.fn<GitReaders['readClone']>(() => Promise.resolve(clone))
+    const result = await fixGit({ fingerprint, gh, git: { listClones: () => Promise.resolve([clone]), readClone }, name: 'finga', owner: 'Owner', runGit, target: await makeTarget() })
+    expect(result).toStrictEqual({ message: 'fixed the git issues of /projects/finga', ok: true })
+    expect(gh).not.toHaveBeenCalled()
+    expect(readClone).toHaveBeenCalledExactlyOnceWith(expect.any(String), { shouldFetch: false })
+    expect(runGit.mock.calls.map(([args]) => args.join(' '))).toStrictEqual(['stash clear'])
+  })
+
+  it('tells why a stash alone could not be dropped', async () => {
+    expect.hasAssertions()
+    const clone = aClone({ stashes: ['stash@{0}: WIP'] })
+    await expect(fixOf(clone, fakeGit('stash clear'))).resolves.toStrictEqual({ ok: false, reason: 'git stash clear failed: boom' })
+  })
+
+  it('refuses a single project, the stash only way is for a folder of projects too', async () => {
+    expect.hasAssertions()
+    const clone = aClone({ stashes: ['stash@{0}: WIP'] })
+    const fingerprint = await fingerprintOf(clone)
+    const target = await makeTarget()
+    await mkdir(path.join(target, '.git'))
+    const runGit = fakeGit()
+    const result = await fixGit({ fingerprint, gh: fakeGh(apiRepo()), git: fakeReaders(clone), name: 'finga', owner: 'Owner', runGit, target })
+    expect(result).toMatchObject({ ok: false, reason: expect.stringContaining('single project') as string })
+    expect(runGit).not.toHaveBeenCalled()
+  })
+
+  it('does not take the stash only way when the plan the user saw held more than the stashes', async () => {
+    expect.hasAssertions()
+    const runGit = fakeGit()
+    await fixOf(messy, runGit)
+    expect(runGit.mock.calls.map(([args]) => args.join(' '))).toContain('pull --ff-only')
+  })
+
   it('pulls, drops the stashes and deletes the branches, forcing only the ones whose upstream is gone', async () => {
     expect.hasAssertions()
     const runGit = fakeGit()

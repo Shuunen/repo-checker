@@ -1,9 +1,10 @@
+import path from 'node:path'
 import { type ActionResult, attempt, type GitFixPreview, refused } from '../../../shared/action.ts'
 import type { GithubRepo, LocalClone } from '../../../shared/project.ts'
 import { getRepo } from '../../inventory/github.ts'
 import { type ActionOptions, type GitRunner, realRunGit } from '../action-options.ts'
 import { fingerprintOf, staleReason } from '../dialog-fingerprint.ts'
-import { checkFolderOfProjects, requireCloneOf } from '../guards.ts'
+import { checkFolderOfProjects } from '../guards.ts'
 
 /** What the git fixes would do */
 interface GitPlan {
@@ -31,12 +32,17 @@ export async function proveClone({ gh, git, name, owner, target }: Readonly<Acti
   const single = await checkFolderOfProjects(target)
   if (single !== undefined) return { reason: single }
   const slug = `${owner}/${name}`
-  const repo = await getRepo(gh, slug)
+  // the GitHub call and the clone read do not depend on each other, so they run together, the clone is read again only when GitHub names the repo differently
+  // the clone is most often the folder named like the repo: it is read and fetched while the other clones are listed to be sure it is the only one, instead of one after the other
+  const direct = path.join(target, name)
+  const [repo, guessed, clones] = await Promise.all([getRepo(gh, slug), git.readClone(direct, { shouldFetch: true }), git.listClones(target)])
   if (repo === undefined) return { reason: `${slug} does not exist on GitHub any more` }
   if (repo.isArchived) return { reason: `${slug} is archived now, its clone has its own checks` }
-  const found = await requireCloneOf({ git, target }, repo.slug, { shouldFetch: true })
-  if ('reason' in found) return found
-  const { clone } = found
+  const matches = clones.filter(item => item.slug === repo.slug)
+  if (matches.length > 1) return { reason: `${matches.length} clones of ${repo.slug} in ${target}, delete the extra ones by hand` }
+  const [match] = matches
+  if (match === undefined) return { reason: `no clone of ${repo.slug} in ${target}` }
+  const clone = match.path === direct && guessed.slug === repo.slug ? guessed : await git.readClone(match.path, { shouldFetch: true })
   if (clone.problem !== undefined) return { reason: `the clone of ${repo.slug} cannot be read: ${clone.problem}` }
   return clone.fetchFailed ? { reason: `git fetch failed in the clone of ${repo.slug}, nothing about its remote can be trusted` } : { clone, repo }
 }
@@ -132,6 +138,27 @@ async function applyPlan(clone: Readonly<LocalClone>, plan: Readonly<GitPlan>, r
 }
 
 /**
+ * Drop the stashes without any network call when that is all the user confirmed: the clone is read as it is on disk, and only a plan made of the stashes alone, exactly the one the user saw, is applied. A stash is local, no GitHub nor fetch can change what dropping it does
+ * @param options what to fix, with the fingerprint of the plan the user confirmed
+ * @param options.fingerprint the fingerprint of the plan the user confirmed
+ * @param options.git how the clones are read
+ * @param options.name the repo name
+ * @param options.owner the GitHub owner
+ * @param options.runGit runs git
+ * @param options.target the folder of projects
+ * @returns the result, undefined when this is not a stash only plan, the full proof then decides
+ */
+async function fixStashesOnly({ fingerprint, git, name, owner, runGit, target }: Readonly<ActionOptions & { fingerprint: string; runGit: GitRunner }>): Promise<ActionResult | undefined> {
+  if ((await checkFolderOfProjects(target)) !== undefined) return undefined
+  const clone = await git.readClone(path.join(target, name), { shouldFetch: false })
+  if (clone.problem !== undefined || clone.slug !== `${owner}/${name}`.toLowerCase() || clone.stashes.length === 0) return undefined
+  const plan: GitPlan = { branches: [], fastForward: [], pull: undefined, stashes: clone.stashes }
+  if (fingerprintPlan(clone, plan) !== fingerprint) return undefined
+  const cleared = await runGit(['stash', 'clear'], clone.path)
+  return cleared.ok ? { message: `fixed the git issues of ${clone.path}`, ok: true } : refused(`git stash clear failed: ${cleared.stderr.trim()}`)
+}
+
+/**
  * Apply the git fixes of a clone, after proving everything again from scratch: it is refused unless the plan is exactly the one the user saw. The stashes are dropped, the branches deleted (forced, even the ones that hold unmerged work), then the default branch is pulled fast forward only
  * @param options what to fix, with the fingerprint of the plan the user confirmed
  * @param options.fingerprint the fingerprint of the plan the user confirmed
@@ -141,6 +168,8 @@ async function applyPlan(clone: Readonly<LocalClone>, plan: Readonly<GitPlan>, r
  */
 export function fixGit({ fingerprint, runGit = realRunGit, ...options }: Readonly<ActionOptions & { fingerprint: string }>): Promise<ActionResult> {
   return attempt(async () => {
+    const quick = await fixStashesOnly({ ...options, fingerprint, runGit })
+    if (quick !== undefined) return quick
     const proof = await proveClone(options)
     if ('reason' in proof) return refused(proof.reason)
     const { clone, repo } = proof

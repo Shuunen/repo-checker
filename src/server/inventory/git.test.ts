@@ -26,7 +26,8 @@ async function git(folder: string, ...args: readonly string[]) {
  */
 async function makeWorkspace() {
   const workspace = await mkdtemp(path.join(tmpdir(), 'repo-check-git-'))
-  onTestFinished(() => rm(workspace, { force: true, recursive: true }))
+  // on Windows an antivirus or a git process can still hold a folder for a moment, so the removal is retried
+  onTestFinished(() => rm(workspace, { force: true, maxRetries: 10, recursive: true, retryDelay: 200 }))
   await git(workspace, 'init', '--quiet', '--bare', '--initial-branch=main', 'origin.git')
   await git(workspace, 'clone', '--quiet', 'origin.git', 'seed')
   const seed = path.join(workspace, 'seed')

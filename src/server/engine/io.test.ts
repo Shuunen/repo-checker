@@ -1,8 +1,28 @@
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync } from 'node:fs'
 import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { run } from '../inventory/shell.ts'
 import { diskIo, memoryIo, overlayIo } from './io.ts'
+
+/**
+ * Tell if symbolic links can be created here: Windows refuses them (EPERM) unless the developer mode is on or the shell runs as administrator
+ * @returns true when a link can be created
+ */
+function canLink() {
+  const folder = mkdtempSync(path.join(tmpdir(), 'repo-check-link-'))
+  try {
+    mkdirSync(path.join(folder, 'real'))
+    symlinkSync(path.join(folder, 'real'), path.join(folder, 'link'))
+    return true
+  } catch {
+    return false
+  } finally {
+    rmSync(folder, { force: true, recursive: true })
+  }
+}
+
+const hasLinks = canLink()
 
 /**
  * Create a throwaway project folder with a 3Ko file, removed when the test ends
@@ -68,26 +88,37 @@ describe('disk io', () => {
     await expect(diskIo(folder).writeText(file, 'x')).rejects.toThrow('is outside the project folder, it is not written')
   })
 
-  // Value: protects=a fix never writes outside the project through a symbolic link, to a folder or to a file; fails_when=writeInside stops resolving links; why_new=only `..` paths were refused; seam=none; no_claim=Windows junctions
+  // Value: protects=a fix never writes outside the project through a link, to a folder or to a file; fails_when=writeInside stops resolving links; why_new=only `..` paths were refused; seam=none; no_claim=none, the folders are linked with junctions so Windows runs them without elevated rights
   it.each([
-    { file: 'link/x.txt', landing: 'x.txt', link: 'link', linkTarget: '', name: 'a linked folder' },
-    { file: 'link.txt', landing: 'target.txt', link: 'link.txt', linkTarget: 'target.txt', name: 'a linked file' },
-    { file: 'link/deep/x.txt', landing: 'deep/x.txt', link: 'link', linkTarget: '', name: 'a new folder under a linked folder' },
-  ])('refuses to write through $name that points outside the project', async ({ file, landing, link, linkTarget }) => {
+    { file: 'link/x.txt', landing: 'x.txt', name: 'a linked folder' },
+    { file: 'link/deep/x.txt', landing: 'deep/x.txt', name: 'a new folder under a linked folder' },
+  ])('refuses to write through $name that points outside the project', async ({ file, landing }) => {
     expect.hasAssertions()
     const folder = await makeFolder()
     const outside = await makeFolder()
-    await writeFile(path.join(outside, 'target.txt'), 'kept')
-    await symlink(path.join(outside, linkTarget), path.join(folder, link))
+    await symlink(outside, path.join(folder, 'link'), 'junction')
     await expect(diskIo(folder).writeText(file, 'x')).rejects.toThrow('is outside the project folder, it is not written')
     await expect(readFile(path.join(outside, landing), 'utf8').catch(() => 'missing')).resolves.not.toBe('x')
+  })
+
+  // a link to a file needs the right to create symbolic links, Windows only gives it in developer mode
+  describe.skipIf(!hasLinks)('linked file', () => {
+    it('refuses to write through a linked file that points outside the project', async () => {
+      expect.hasAssertions()
+      const folder = await makeFolder()
+      const outside = await makeFolder()
+      await writeFile(path.join(outside, 'target.txt'), 'kept')
+      await symlink(path.join(outside, 'target.txt'), path.join(folder, 'link.txt'))
+      await expect(diskIo(folder).writeText('link.txt', 'x')).rejects.toThrow('is outside the project folder, it is not written')
+      await expect(readFile(path.join(outside, 'target.txt'), 'utf8')).resolves.toBe('kept')
+    })
   })
 
   it('writes through a linked folder that stays inside the project', async () => {
     expect.hasAssertions()
     const folder = await makeFolder()
     await mkdir(path.join(folder, 'real'))
-    await symlink(path.join(folder, 'real'), path.join(folder, 'link'))
+    await symlink(path.join(folder, 'real'), path.join(folder, 'link'), 'junction')
     await diskIo(folder).writeText('link/x.txt', 'hello')
     await expect(readFile(path.join(folder, 'real', 'x.txt'), 'utf8')).resolves.toBe('hello')
   })
