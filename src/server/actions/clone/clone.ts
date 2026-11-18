@@ -32,7 +32,7 @@ async function checkFolders(target: string, folder: string) {
 }
 
 /**
- * Prove the repo is still one the scan offers to clone: on GitHub, under the owner, not archived, not a fork
+ * Prove the repo is still one the scan offers to clone: on GitHub, under the owner, not archived, a fork is fine
  * @param gh runs gh
  * @param slug `owner/name`
  * @returns the reason to refuse, undefined when the repo is still cloneable
@@ -42,8 +42,7 @@ async function checkRepo(gh: GhRunner, slug: string) {
   const repo = await getRepo(gh, slug)
   if (repo === undefined) return `${slug} does not exist on GitHub any more`
   if (repo.slug !== slug.toLowerCase()) return `${slug} was renamed or moved to ${repo.slug}, scan again`
-  if (repo.isArchived) return `${slug} is archived now, it is not offered for cloning`
-  return repo.isFork ? `${slug} is a fork, it is not offered for cloning` : undefined
+  return repo.isArchived ? `${slug} is archived now, it is not offered for cloning` : undefined
 }
 
 /**
@@ -62,7 +61,7 @@ async function refusal({ gh, name, owner, target }: Readonly<CloneOptions>) {
 }
 
 /**
- * Clone a repo of the owner into the folder of projects, after proving again that the scan was right: the repo is still on GitHub, not archived, not a fork, and no folder is in the way.  The clone is made by `git clone` over SSH (`git@github.com:owner/name.git`), always, like the other clones: it needs an SSH key known to GitHub, and the tool never sees a token
+ * Clone a repo of the owner into the folder of projects, after proving again that the scan was right: the repo is still on GitHub, not archived, and no folder is in the way.  The clone is made by `git clone` over SSH (`git@github.com:owner/name.git`), always, like the other clones: it needs an SSH key known to GitHub, and the tool never sees a token
  * @param options what to clone and where
  * @param options.gh runs gh
  * @param options.name the repo name

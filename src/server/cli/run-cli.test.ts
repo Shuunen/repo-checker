@@ -42,7 +42,7 @@ describe(cli, () => {
 
   it('checks the forks too, an info finding exits with 0', async () => {
     expect.hasAssertions()
-    const { code, output, progress } = await cli([], { cwd: await makeEmptyFolder(), gh: fakeAccount([apiRepo('lib', true)]) })
+    const { code, output, progress } = await cli(['--nitpick'], { cwd: await makeEmptyFolder(), gh: fakeAccount([apiRepo('lib', true)]) })
     expect(code).toBe(0)
     expect(output).toContain('pristine-fork')
     expect(progress).toContain('comparing 1 fork with their parent')

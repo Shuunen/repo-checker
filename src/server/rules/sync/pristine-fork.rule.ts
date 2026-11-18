@@ -36,6 +36,7 @@ export const pristineFork = defineProjectRule({
       pristine: 'a pristine fork of {{parent}}: every branch is in the parent and no pull request is open',
       pristineWithClone: 'a pristine fork of {{parent}}: every branch is in the parent and no pull request is open, its clean local clone is deleted with it',
     },
+    nitpick: true,
     severity: 'info',
   },
 })

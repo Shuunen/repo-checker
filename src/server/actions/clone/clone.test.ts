@@ -45,6 +45,14 @@ describe(cloneRepo, () => {
     expect(runGit).toHaveBeenCalledWith(['clone', 'git@github.com:Owner/finga.git', path.join(target, 'finga')], target)
   })
 
+  it('clones a fork too', async () => {
+    expect.hasAssertions()
+    const target = await makeTarget()
+    const runGit = fakeGit()
+    const result = await cloneRepo({ gh: fakeGh(apiRepo({ fork: true })), name: 'finga', owner: 'Owner', runGit, target })
+    expect(result).toStrictEqual({ message: `cloned Owner/finga over SSH into ${path.join(target, 'finga')}`, ok: true })
+  })
+
   it('refuses when the target is a single project', async () => {
     expect.hasAssertions()
     const target = await makeTarget()
@@ -67,7 +75,6 @@ describe(cloneRepo, () => {
     ['is gone from GitHub', 'gh: Not Found (HTTP 404)', 'Owner/finga does not exist on GitHub any more'],
     ['was renamed', apiRepo({ name: 'finga-2' }), 'Owner/finga was renamed or moved to owner/finga-2, scan again'],
     ['is archived now', apiRepo({ archived: true }), 'Owner/finga is archived now, it is not offered for cloning'],
-    ['is a fork', apiRepo({ fork: true }), 'Owner/finga is a fork, it is not offered for cloning'],
   ])('refuses a repo that %s', async (_name, repo, reason) => {
     expect.hasAssertions()
     const gh = fakeGh(repo)
