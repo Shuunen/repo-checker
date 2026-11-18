@@ -48,8 +48,8 @@ describe(createFacts, () => {
 describe(githubFlags, () => {
   it('reads what GitHub says, nothing when it cannot say', () => {
     expect.hasAssertions()
-    expect(githubFlags(undefined)).toStrictEqual({ githubDescription: undefined, githubTopics: undefined, isPrivate: false })
-    expect(githubFlags({ description: 'A', homepage: 'https://a.b', isPrivate: true, topics: ['x'] } as never)).toStrictEqual({ githubDescription: 'A', githubTopics: ['x'], isPrivate: true })
+    expect(githubFlags(undefined)).toStrictEqual({ githubDescription: undefined, githubTopics: undefined, isFork: false, isPrivate: false })
+    expect(githubFlags({ description: 'A', homepage: 'https://a.b', isPrivate: true, topics: ['x'] } as never)).toStrictEqual({ githubDescription: 'A', githubTopics: ['x'], isFork: false, isPrivate: true })
   })
 })
 

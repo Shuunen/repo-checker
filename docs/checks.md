@@ -361,7 +361,7 @@ How the project introduces itself, on GitHub and in the repo.
 - ✅ 🟡 `package-bugs`: a `bugs` property (`package.file.ts`).
 - ✅ 🟡 `package-keywords`: a `keywords` property, filled with the topics of the GitHub repo when it has some (`package.file.ts`).
 - ✅ 🟡 `package-repository`: a `repository` property. When the git origin is known it must be `{ "type": "git", "url": "git+https://github.com/<owner>/<name>.git" }` (a shorthand or another repo is fixed), otherwise its url must start with `git+https` (`package-presentation.rule.ts`).
-- ✅ 🟡 `package-author-value`: `author` is the git user, `Name <mail>`, when there is one. Fix: write it (`package-values.rule.ts`).
+- ✅ 🟡 `package-author-value`: `author` is the git user, `Name <mail>`, when there is one. Skipped for forks, which keep the original author. Fix: write it (`package-values.rule.ts`).
 - ✅ 🟡 `package-homepage-value`: `homepage` is the url of the GitHub repo, derived from the git origin, without a `#readme` suffix and never the deployed website. Fix: write it (`package-values.rule.ts`).
 - ✅ 🟡 `package-bugs-value`: `bugs` is `<repo url>/issues`, derived from the git origin. Fix: write it (`package-values.rule.ts`).
 - ✅ 🔴 `readme-exists`: a `README.md` or `readme.md` file exists (`readme.ts`).

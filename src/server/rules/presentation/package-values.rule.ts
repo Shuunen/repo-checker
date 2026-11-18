@@ -48,7 +48,7 @@ function authorOf({ gitAuthor }: Readonly<Context['flags']>) {
 }
 
 export const packageValueRules = [
-  requireValue({ expected: ({ flags }) => authorOf(flags), id: 'package-author-value', key: 'author' }),
+  requireValue({ expected: ({ flags }) => (flags.isFork === true ? undefined : authorOf(flags)), id: 'package-author-value', key: 'author' }),
   requireValue({ expected: ({ flags }) => (repoUrl(flags) === undefined ? undefined : `${repoUrl(flags)}/issues`), id: 'package-bugs-value', key: 'bugs' }),
   requireValue({ expected: ({ flags }) => repoUrl(flags), id: 'package-homepage-value', key: 'homepage' }),
 ]

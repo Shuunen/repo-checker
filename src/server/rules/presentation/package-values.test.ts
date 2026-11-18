@@ -24,6 +24,7 @@ testRule(byId('package-author-value'), {
     { flags: known, name: 'the git user', pkg: { author: 'Me <me@mail.com>' } },
     { flags: known, name: 'no author, package-author reports it', pkg: {} },
     { name: 'no git user to compare with', pkg: { author: 'Someone' } },
+    { flags: { ...known, isFork: true }, name: 'a fork keeps the original author', pkg: { author: 'Someone <someone@mail.com>' } },
     { flags: known, name: 'no package.json' },
   ],
 })

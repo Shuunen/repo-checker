@@ -110,7 +110,7 @@ const { globalFacts } = createFacts(realDeps)
  * @returns the flags
  */
 export function githubFlags(repo: Readonly<GithubRepo> | undefined): ProjectFlags {
-  return { githubDescription: repo?.description, githubTopics: repo?.topics, isPrivate: repo?.isPrivate === true }
+  return { githubDescription: repo?.description, githubTopics: repo?.topics, isFork: repo?.isFork === true, isPrivate: repo?.isPrivate === true }
 }
 
 /** What the facts about a project itself need: its files */
