@@ -237,7 +237,7 @@ export const thanksList: readonly Thanks[] = [
   { description: 'great front-end framework', isUsed: depends('vue', 'nuxt', 'vitepress'), label: 'Vue', link: 'https://vuejs.org' },
   { description: 'recursively watch a list of directories & run a command on any file system', isUsed: depends('watchlist'), label: 'Watchlist', link: 'https://github.com/lukeed/watchlist' },
   { description: 'super tool to find & fix problems', isUsed: depends('xo'), label: 'Xo', link: 'https://github.com/xojs/xo' },
-  { description: 'typeScript-first schema validation', isUsed: depends('zod'), label: 'Zod', link: 'https://github.com/colinhacks/zod' },
+  { description: 'typeScript-first schema validation', isUsed: depends('zod', '@zod/mini'), label: 'Zod', link: 'https://github.com/colinhacks/zod' },
 ]
 
 /**

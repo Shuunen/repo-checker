@@ -79,14 +79,15 @@ export function dependencyVersion(pkg: Readonly<PackageJson> | undefined, name: 
 }
 
 /**
- * Tell if the project depends on a package, in dependencies or devDependencies
+ * Tell if the project depends on a package, in dependencies or devDependencies, under its own name or through an npm alias
  * @param pkg the package.json, undefined when the project has none
  * @param name the dependency name
  * @returns true when it is a dependency
  * @example hasDependency({ dependencies: { zod: '^4.0.0' } }, 'zod') // true
+ * @example hasDependency({ dependencies: { zod3: 'npm:zod@^3.24.3' } }, 'zod') // true
  */
 export function hasDependency(pkg: Readonly<PackageJson> | undefined, name: string) {
-  return dependencyVersion(pkg, name) !== undefined
+  return dependencyVersion(pkg, name) !== undefined || Object.values({ ...pkg?.devDependencies, ...pkg?.dependencies }).some(version => version.startsWith(`npm:${name}@`))
 }
 
 /**

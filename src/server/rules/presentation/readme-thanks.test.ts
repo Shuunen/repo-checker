@@ -47,6 +47,8 @@ testRule(readmeThanksEntries, {
     { errors: ['unused'], files: { 'README.md': '# app\n\n## Thanks\n\n- [Zod](https://zod.dev) : validation\n' }, name: 'a thanked tool no longer used, removed', output: '# app\n\n## Thanks\n\n', pkg: { name: 'app' } },
   ],
   valid: [
+    { files: { 'README.md': '# app\n\n## Thanks\n\n- [Zod](https://zod.dev) : validation\n' }, name: 'a tool used through an npm alias', pkg: { devDependencies: { zod3: 'npm:zod@^3.24.3' } } },
+    { files: { 'README.md': '# app\n\n## Thanks\n\n- [Zod](https://zod.dev) : validation\n' }, name: 'a tool used through its mini package', pkg: { dependencies: { '@zod/mini': '4.0.0' } } },
     { files: { 'README.md': '# app\n\n## Thanks\n\n- [vitest](https://vitest.dev) : tests\n' }, name: 'a used tool thanked, any case', pkg: { devDependencies: { vitest: '^4.0.0' } } },
     { files: { 'README.md': `# app\n\n## Thanks\n\n${github}\n- [Repo-checker](https://github.com/Shuunen/repo-checker) : itself\n` }, name: 'repo-checker thanking itself', pkg: { name: 'repo-check' } },
     { files: { 'README.md': '# app\n\n## Thanks\n\n- [Bun](https://bun.sh) : runtime\n' }, flags: { isUsingBun: true }, name: 'a tool detected by flag' },
