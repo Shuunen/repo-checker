@@ -1,5 +1,6 @@
 # TODOS
 
+- [ ] enforce `"noUpdateNotifier": true` in turbo.json
 - [ ] `media-dimensions` fix: for a local image, add `width` and `height` read from the file itself (remote images and videos stay manual)
 - [ ] `security-advisory` reads the lowest version of a range, not the lockfile: a `^` range can resolve to a newer, fixed version
 - [ ] CLI `--fix` asks `y/N` for each fix that needs a manual acceptance (it already applies the file fixes)
