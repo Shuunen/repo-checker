@@ -88,6 +88,7 @@ export const licenseFileContent = defineRule({
 
 /** The copyright line of an MIT license */
 const copyrightLine = /^Copyright \(c\) (?<years>[\d\s,-]+) (?<holder>.+)$/mu
+const copyrightLines = new RegExp(copyrightLine.source, 'gmu')
 
 export const licenseCopyrightHolder = defineRule({
   async appliesTo(context) {
@@ -97,8 +98,9 @@ export const licenseCopyrightHolder = defineRule({
     const { gitAuthor } = context.flags
     invariant(gitAuthor !== undefined, 'appliesTo guarantees a git user')
     const author = gitAuthor.name
-    const { holder } = (copyrightLine.exec(String(await context.files.readText('LICENSE'))) as unknown as { groups: { holder: string } }).groups
-    if (holder !== author) context.report({ data: { author, holder }, fix: fixer => fixer.text('LICENSE', text => text.replace(copyrightLine, (_line, years: string) => `Copyright (c) ${years} ${author}`)), messageId: 'wrong' })
+    const holders = [...String(await context.files.readText('LICENSE')).matchAll(copyrightLines)].map(match => (match.groups as { holder: string }).holder)
+    // A LICENSE can credit several holders: it is fine as soon as the git user is one of them
+    if (!holders.includes(author)) context.report({ data: { author, holder: holders[0] as string }, fix: fixer => fixer.text('LICENSE', text => text.replace(copyrightLine, (_line, years: string) => `Copyright (c) ${years} ${author}`)), messageId: 'wrong' })
   },
   meta: { fixable: true, id: 'license-copyright-holder', messages: { wrong: 'the LICENSE copyright holder is "{{holder}}", the git user is "{{author}}"' }, severity: 'warning' },
 })

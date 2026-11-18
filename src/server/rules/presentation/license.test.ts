@@ -14,6 +14,7 @@ testRule(licenseFileExists, {
     { errors: ['missing'], name: 'no LICENSE, no author, no fix' },
   ],
   valid: [
+    { files: { LICENSE: 'MIT License\n\nCopyright (c) 2025 Jordan Boyer\nCopyright (c) 2025 Romain Racamier-Lafon\n' }, flags: { gitAuthor: { name: 'Romain Racamier-Lafon' } }, name: 'the git user is one of several holders', pkg: { license: 'MIT' } },
     { files: { LICENSE: gpl }, name: 'a LICENSE' },
     { flags: { isPrivate: true }, name: 'no LICENSE, private repo' },
   ],
