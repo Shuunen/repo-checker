@@ -159,7 +159,7 @@ The `scripts` section of `package.json`.
 - ☑️ 🟡 `scripts-no-npm-test`: no `npm test`, use `pnpm test` or `bun test` (`package.file.ts`).
 - ☑️ 🟡 `scripts-watchlist-eager`: a `watchlist` task uses the `-eager --` parameter (`package.file.ts`).
 - ☑️ 🔴 `scripts-depcruise`: a `depcruise` usage, when the project uses dependency-cruiser (`package.file.ts`).
-- ✅ 🟡 `unique-mark-plugin`: a vite or tsdown config uses the `uniqueMark()` plugin of `shuutils/plugins`, when there is a `build` task and the project uses shuutils. Fixed by adding the import and the plugin to the first config found (`unique-mark.rule.ts`).
+- ✅ 🟡 `unique-mark-plugin`: a vite or tsdown config uses the `uniqueMark()` plugin of `shuutils/plugins`, when there is a `build` task, the project uses shuutils and has a vite or tsdown config. Fixed by adding the import and the plugin to the first config found (`unique-mark.rule.ts`).
 - ☑️ 🟡 `unique-mark-no-binary`: no script runs the `unique-mark` binary when a vite or tsdown config already uses the `uniqueMark()` plugin, it marks the build twice otherwise (`unique-mark.rule.ts`). Fix: delete the `mark` script and the `pnpm mark &&` call in `build`, the plugin already marks the build.
 - ✅ 🟡 `scripts-eslint-cache`: eslint runs with `--cache` (`package.file.ts`).
 - ☑️ 🟡 `scripts-no-eslint-ignore-path`: eslint runs without `--ignore-path`, so the CLI and VS Code use the same config (`package.file.ts`).

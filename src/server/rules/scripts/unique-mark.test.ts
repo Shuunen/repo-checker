@@ -45,9 +45,9 @@ testRule(uniqueMarkPlugin, {
     { errors: ['missing'], files: { 'vite.config.ts': 'export default defineConfig({ plugins: [react()\n' }, name: 'an unclosed plugins array, a new one is added', output: `${importLine}\nexport default defineConfig({\n  plugins: [uniqueMark()], plugins: [react()\n`, pkg },
     { errors: ['missing'], files: { 'vite.config.ts': 'export default defineConfig({ plugins: [] })\n' }, name: 'a config without import', output: `${importLine}\nexport default defineConfig({ plugins: [uniqueMark()] })\n`, pkg },
     { errors: ['missing'], files: { 'vite.config.ts': 'export default {}\n' }, name: 'a config it cannot edit, left as is', pkg },
-    { errors: ['missing'], name: 'no config at all, no fix', pkg },
   ],
   valid: [
+    { name: 'no vite nor tsdown config', pkg },
     { files: { 'vite.config.ts': "import { uniqueMark } from 'shuutils/plugins'\nexport default defineConfig({ plugins: [uniqueMark()] })" }, name: 'a vite config using uniqueMark', pkg },
     { files: { 'tsdown.config.ts': 'plugins: [uniqueMark()]' }, name: 'a tsdown config using uniqueMark', pkg },
     { name: 'shuutils without build', pkg: { dependencies: { shuutils: '^12.0.0' }, scripts: {} } },

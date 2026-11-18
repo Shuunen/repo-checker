@@ -80,8 +80,7 @@ export const uniqueMarkPlugin = defineRule({
     const texts = await readConfigs(files)
     if (isMarked(texts)) return
     const config = buildConfigFiles.find((_file, index) => texts[index] !== undefined)
-    if (config === undefined) report({ messageId: 'missing' })
-    else report({ fix: fixer => fixer.text(config, addUniqueMark), messageId: 'missing' })
+    if (config !== undefined) report({ fix: fixer => fixer.text(config, addUniqueMark), messageId: 'missing' })
   },
   meta: { fixable: true, id: 'unique-mark-plugin', messages: { missing: 'no uniqueMark plugin in the vite or tsdown config, like plugins: [uniqueMark()] from shuutils/plugins' }, severity: 'warning' },
 })
