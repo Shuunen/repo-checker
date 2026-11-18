@@ -60,6 +60,7 @@ testRule(byId('scripts-bun-no-node'), {
     { name: 'bun running a script', pkg: { ...bun, scripts: { start: 'bun dist/cli.js' } } },
     { name: 'node watching a folder', pkg: { ...bun, scripts: { dev: 'node --watch-path=src src/cli.ts' } } },
     { name: 'node_modules path', pkg: { ...bun, scripts: { lint: 'bun node_modules/.bin/tool' } } },
+    { name: 'task name containing node', pkg: { ...bun, scripts: { 'dev:node': 'node dist/cli.js' } } },
     { name: 'node when bun is not used', pkg: { scripts: { start: 'node dist/cli.js' } } },
   ],
 })

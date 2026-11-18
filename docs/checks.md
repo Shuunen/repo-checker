@@ -167,7 +167,7 @@ The `scripts` section of `package.json`.
 - ☑️ 🔴 `scripts-bun-no-misleading-test`: with Bun, no `bun test` inside the `check` task, use `bun run test` (`package.file.ts`).
 - ☑️ 🔴 `scripts-bun-no-misleading-build`: with Bun, no `bun build` inside the `check` or `postversion` tasks, use `bun run build` (`package.file.ts`).
 - ☑️ 🔴 `scripts-bun-install`: with Bun, no `bun i`, use `bun install` (`package.file.ts`).
-- ☑️ 🟡 `scripts-bun-no-node`: with Bun, no `node` to run a js or ts file, use `bun`. `node` stays allowed with `--watch-path`, because bun's `--watch` only follows imported files and cannot watch a folder (`package.file.ts`).
+- ☑️ 🟡 `scripts-bun-no-node`: with Bun, no `node` to run a js or ts file, use `bun`. `node` stays allowed with `--watch-path`, because bun's `--watch` only follows imported files and cannot watch a folder. Tasks whose name contains `node` are skipped (`package.file.ts`).
 
 ## Publishing
 

@@ -92,6 +92,7 @@ export function forbidScript({ id, message, name, severity }: Readonly<ScriptRul
  * @param options.message the message
  * @param options.pattern the pattern, without the `g` flag
  * @param options.severity the severity
+ * @param options.skipNamed skip the scripts whose name matches this pattern
  * @param options.when only check when it returns true
  * @returns the rule
  */
@@ -113,14 +114,17 @@ export function requireCommand({ id, message, pattern, severity, when }: Readonl
  * @param options.names only look at these scripts, every script when omitted
  * @param options.pattern the pattern, without the `g` flag
  * @param options.severity the severity
+ * @param options.skipNamed skip the scripts whose name matches this pattern
  * @param options.when only check when it returns true
  * @returns the rule
  */
-export function forbidCommand({ id, message, names, pattern, severity, when = () => true }: Readonly<ScriptRuleOptions & { names?: string[]; pattern: RegExp }>) {
+export function forbidCommand({ id, message, names, pattern, severity, skipNamed, when = () => true }: Readonly<ScriptRuleOptions & { names?: string[]; pattern: RegExp; skipNamed?: RegExp }>) {
   return defineRule({
     appliesTo: when,
     check({ pkg, report }) {
-      const found = scriptsMatching(pkg, pattern).filter(([name]) => names === undefined || names.includes(name))
+      const found = scriptsMatching(pkg, pattern)
+        .filter(([name]) => names === undefined || names.includes(name))
+        .filter(([name]) => skipNamed === undefined || !skipNamed.test(name))
       for (const [name] of found) report({ data: { name }, messageId: 'found' })
     },
     meta: { id, messages: { found: message }, severity },
