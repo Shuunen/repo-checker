@@ -46,7 +46,6 @@ State of each clone and of its git history.
 - ☑️ 🔵❔ `stale-last-tag`: the last git tag is 12 months old or more and commits came since, suggest tagging a release. No fix, a release is for you to cut. From the old README todo list (`stale.rule.ts`). A nitpick check.
 - ☑️ 🔵 `tag-prefix-v`: the last git tag starts with a digit, the tags of the projects are `vX.Y.Z`. No fix, renaming a tag on GitHub is for you to do. Fix: for each tag, create a lightweight `v` tag on the same commit (`git tag v2.0.1 2.0.1^{commit}`, not an annotated one, repo-check orders tags of one commit by name and the old name would win), push them, then delete the old tags on the remote and locally (`git push origin :refs/tags/2.0.1`, `git tag -d 2.0.1`). Note the old SHAs first, the check stays red until the old tags are gone (`stale.rule.ts`).
 - ☑️ 🔵 `version-not-tagged`: the last git tag is the `version` of `package.json`, with or without the `v`. Skipped without a tag or a version, or when the checked out branch is not the default one. No fix, a release is tagged by you, or the tag was not fetched (`stale.rule.ts`).
-- ☑️ 🟡 `avoid-main-branch`: avoid the `main` branch name, use `master` (`git.ts`).
 - ✅ 🔴 `gitignore-exists`: a `.gitignore` file exists (`git.ts`).
 - ✅ 🟡 `gitignore-node-modules`: `.gitignore` lists `node_modules` (`git.ts`).
 - ✅ 🟡 `gitignore-keeps-pnpm-lock`: `.gitignore` does not exclude `pnpm-lock.yaml` (`pnpm-lock.yaml`, `/pnpm-lock.yaml`, `**/pnpm-lock.yaml`), a comment or a negation is fine. Fix: delete the line (`git.ts`).

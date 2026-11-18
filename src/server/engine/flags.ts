@@ -38,8 +38,6 @@ export interface WebStatus {
 export interface ProjectFlags {
   /** Renovate may merge dependency updates on its own, true unless `.repo-checker.json` says false */
   canAutoMergeDeps?: boolean
-  /** The git config has a `main` branch */
-  hasMainBranch?: boolean
   /** A CLI, meant to be run in a terminal */
   isCli?: boolean
   /** An ESM package, `"type": "module"` */
@@ -143,14 +141,14 @@ function detectFromPackageJson(text: string): ProjectFlags {
 }
 
 /**
- * Detect the owner and the repository name from the `origin` url of a git config, and whether it has a `main` branch
+ * Detect the owner and the repository name from the `origin` url of a git config
  * @param text the `.git/config` text, empty when there is none
- * @returns `hasMainBranch`, plus `owner` and `repoId` when an origin url was found
+ * @returns `owner` and `repoId` when an origin url was found
  */
 function detectFromGitConfig(text: string): ProjectFlags {
   const groups = /url = .*[/:](?<owner>[\w-]+)\/(?<repoId>[\w.-]+?)(?:\.git)?$/mu.exec(text)?.groups
   const origin = isNil(groups?.owner) || isNil(groups.repoId) ? {} : { owner: groups.owner, repoId: groups.repoId }
-  return { ...origin, hasMainBranch: text.includes('[branch "main"]') }
+  return origin
 }
 
 /** The files that tell a project runs on Node, or in a browser with a build */

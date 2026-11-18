@@ -6,7 +6,6 @@ describe('flags detection', () => {
     expect.hasAssertions()
     await expect(detectFlags(memoryIo())).resolves.toStrictEqual({
       canAutoMergeDeps: true,
-      hasMainBranch: false,
       isCli: false,
       isModule: false,
       isNotNode: true,

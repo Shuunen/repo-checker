@@ -1,6 +1,6 @@
 import { invariant } from 'es-toolkit'
 import { testRule } from '../../test/rule-tester.ts'
-import { avoidMainBranch, gitignoreRules } from './git.rule.ts'
+import { gitignoreRules } from './git.rule.ts'
 
 /**
  * Get a rule of the table
@@ -12,11 +12,6 @@ function byId(id: string) {
   invariant(rule !== undefined, `no rule ${id} in the table`)
   return rule
 }
-
-testRule(avoidMainBranch, {
-  invalid: [{ errors: ['found'], files: { '.git/config': '[branch "main"]\n\tremote = origin\n' }, name: 'a main branch' }],
-  valid: [{ files: { '.git/config': '[branch "master"]\n\tremote = origin\n' }, name: 'a master branch' }],
-})
 
 testRule(byId('gitignore-exists'), { invalid: [{ errors: ['missing'], name: 'no .gitignore', output: 'node_modules\n' }], valid: [{ files: { '.gitignore': 'node_modules' }, name: 'a .gitignore' }] })
 testRule(byId('gitignore-node-modules'), {

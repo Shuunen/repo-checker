@@ -1,13 +1,5 @@
-import { defineRule } from '../../engine/define-rule.ts'
 import { forbidInFile, requireFile, requireInFile } from '../../engine/file-rules.ts'
 import { addIgnoreLine, removeIgnoreLines } from '../../engine/gitignore.ts'
-
-export const avoidMainBranch = defineRule({
-  check({ flags, report }) {
-    if (flags.hasMainBranch === true) report({ messageId: 'found' })
-  },
-  meta: { id: 'avoid-main-branch', messages: { found: 'the repo has a "main" branch, use "master" instead and clean the old branch with git bclean' }, severity: 'warning' },
-})
 
 /** A .gitignore line that excludes the pnpm lock file, a negation or a comment is not one */
 const pnpmLockLine = /^\s*\/?(?:\*\*\/)?pnpm-lock\.yaml\s*$/u
