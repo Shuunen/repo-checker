@@ -75,14 +75,14 @@ function carriedTasks(scripts: Readonly<Record<string, string>>, command: string
 }
 
 /**
- * Get the tasks `check` or `lint` must run through turbo: the agreed ones the project has, the steps it ran before (`check` also runs the steps of `lint`), and for `check` its build tasks
+ * Get the tasks `check` or `lint` must run through turbo: the agreed ones the project has, the steps it ran before (`check` also runs the steps of `lint`), and for `check` its build tasks but `build:assets`, which makes the icons from a source image
  * @param task `check` or `lint`
  * @param scripts the scripts
  * @returns the task names
  */
 function wantedTasks(task: 'check' | 'lint', scripts: Readonly<Record<string, string>>) {
   const agreed = (task === 'check' ? checkTasks : lintTasks).filter(name => scripts[name] !== undefined)
-  const builds = task === 'check' ? Object.keys(scripts).filter(name => name.startsWith('build:')) : []
+  const builds = task === 'check' ? Object.keys(scripts).filter(name => name.startsWith('build:') && name !== 'build:assets') : []
   const carried = [scripts[task], ...(task === 'check' ? [scripts.lint] : [])].flatMap(script => (script === undefined ? [] : carriedTasks(scripts, parseTask(script).command)))
   return [...new Set([...agreed, ...builds, ...carried])]
 }

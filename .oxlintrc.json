@@ -39,7 +39,7 @@
       }
     },
     {
-      "files": ["src/web/public/sw.js"],
+      "files": ["src/web/sw.js"],
       "rules": {
         "import/unambiguous": "off",
         "typescript/no-unsafe-assignment": "off",

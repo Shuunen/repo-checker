@@ -1,5 +1,6 @@
 import { testRule } from '../../test/rule-tester.ts'
-import { manifestColors, manifestIcons, manifestLinked, manifestRequiredFields } from './manifest.rule.ts'
+import { manifestColors, manifestIcons, manifestImagesExist, manifestLinked, manifestRequiredFields } from './manifest.rule.ts'
+import { pwaIcons } from './pwa-icons.utils.ts'
 
 const full = { background_color: '#012c67', display: 'standalone', name: 'a', short_name: 'a', start_url: '/', theme_color: '#024eb8' }
 const json = (value: unknown) => `${JSON.stringify(value, undefined, 2)}\n`
@@ -57,10 +58,27 @@ testRule(manifestColors, {
   ],
 })
 
+testRule(manifestImagesExist, {
+  invalid: [
+    { errors: ['missing', 'missing', 'missing', 'missing'], files: { 'public/manifest.json': json({ ...full, icons: pwaIcons }) }, name: 'no icon file' },
+    { errors: ['missing'], files: { 'public/manifest.json': json({ ...full, icons: [{ src: '/a.png' }] }) }, name: 'one missing icon' },
+    { errors: ['missing', 'missing'], files: { 'public/manifest.json': json({ ...full, screenshots: [{ src: 'shot.png' }], shortcuts: [{ icons: [{ src: '/s.png' }], name: 's' }] }) }, name: 'screenshots and shortcut icons' },
+  ],
+  valid: [
+    { files: { 'public/a.png': 'x', 'public/manifest.json': json({ ...full, icons: [{ src: '/a.png' }] }) }, name: 'next to the manifest' },
+    { files: { 'a.png': 'x', 'manifest.webmanifest': json({ ...full, icons: [{ src: './a.png?v=2' }] }) }, name: 'a relative path with a query' },
+    { files: { 'public/a.png': 'x', 'src/manifest.json': json({ ...full, icons: [{ src: '/a.png' }] }) }, name: 'in the public folder' },
+    { files: { 'public/manifest.json': json({ ...full, icons: [{ src: 'https://a.b/c.png' }, {}], shortcuts: [{}, 'x'] }) }, name: 'remote images and odd entries' },
+    { files: { 'public/manifest.json': json(full) }, name: 'no images' },
+    { name: 'no manifest' },
+  ],
+})
+
 testRule(manifestIcons, {
   invalid: [
-    { errors: ['missing'], files: { 'public/manifest.json': json(full) }, name: 'no icons' },
-    { errors: ['missing'], files: { 'public/manifest.json': json({ ...full, icons: [] }) }, name: 'empty icons' },
+    { errors: ['different'], files: { 'public/manifest.json': json(full) }, name: 'no icons', output: json({ background_color: full.background_color, display: full.display, icons: pwaIcons, name: full.name, short_name: full.short_name, start_url: full.start_url, theme_color: full.theme_color }) },
+    { errors: ['different'], files: { 'public/manifest.json': json({ ...full, icons: [] }) }, name: 'empty icons', output: json({ ...full, icons: pwaIcons }) },
+    { errors: ['different'], files: { 'public/manifest.json': json({ ...full, icons: [{ src: '/a.png' }] }) }, name: 'other icons', output: json({ ...full, icons: pwaIcons }) },
   ],
-  valid: [{ files: { 'public/manifest.json': json({ ...full, icons: [{ src: '/a.png' }] }) }, name: 'icons' }, { name: 'no manifest' }],
+  valid: [{ files: { 'public/manifest.json': json({ ...full, icons: pwaIcons }) }, name: 'the icons' }, { name: 'no manifest' }],
 })

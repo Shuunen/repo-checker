@@ -26,6 +26,7 @@
     "@types/node": "~26.6.6",
     "@types/react": "~19.3.0",
     "@types/react-dom": "~19.3.0",
+    "@vite-pwa/assets-generator": "^2.0.0",
     "@vitejs/plugin-react": "~6.3.0",
     "@vitest/coverage-v8": "~5.1.0",
     "bun": "~1.4.2",
@@ -42,6 +43,7 @@
     "turbo": "~2.11.10",
     "typescript": "~7.0.2",
     "vite": "~8.3.5",
+    "vite-plugin-pwa": "^2.0.0",
     "vitest": "~5.1.0",
     "wouter": "~3.13.0"
   },
@@ -66,6 +68,7 @@
   },
   "scripts": {
     "build": "turbo run build:tsdown build:vite && echo build completed successfully",
+    "build:assets": "pwa-assets-generator --preset minimal-2023 src/web/public/logo.svg && echo build:assets completed successfully",
     "build:tsdown": "tsdown && echo build:tsdown completed successfully",
     "build:vite": "vite build && echo build:vite completed successfully",
     "check": "turbo run --output-logs=errors-only lint:install lint:knip lint:format lint:cli lint:types lint:issues test:unit build:tsdown build:vite && echo check completed successfully",

@@ -17,6 +17,7 @@ export interface ParsedTask {
 /** The tasks that end with `&& echo <task> completed successfully`, the others keep running (watch, ui, dev) or only start something */
 export const echoTasks: ReadonlySet<string> = new Set([
   'build',
+  'build:assets',
   'build:tsc',
   'build:tsdown',
   'build:vite',

@@ -48,13 +48,13 @@ export const defaultInputs = '$TURBO_DEFAULT$'
 export const outputTasks = ['build:vite', 'test:unit']
 
 /**
- * List the build tasks the `lint:repo` task of a project must depend on: every `build:*` script, because repo-check looks at the build output. The `build` script is left out, it often runs `turbo run` itself
+ * List the build tasks the `lint:repo` task of a project must depend on: every `build:*` script but `build:assets` (it makes the icons from a source image, not part of the build), because repo-check looks at the build output. The `build` script is left out, it often runs `turbo run` itself
  * @param pkg the package.json
  * @returns the task names
  * @example repoBuildTasks({ scripts: { 'build:tsc': 'tsc -b', 'build:vite': 'vite build', dev: 'vite' } }) // ['build:tsc', 'build:vite']
  */
 export function repoBuildTasks(pkg: Readonly<PackageJson> | undefined) {
-  return Object.keys(pkg?.scripts ?? {}).filter(name => name.startsWith('build:'))
+  return Object.keys(pkg?.scripts ?? {}).filter(name => name.startsWith('build:') && name !== 'build:assets')
 }
 
 /**
