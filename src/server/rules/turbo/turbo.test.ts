@@ -9,7 +9,7 @@ const compact = (value: unknown) => collapseArrays(`${JSON.stringify(value, unde
 const json = (value: unknown) => `${JSON.stringify(value, undefined, 2)}\n`
 const all = ['$TURBO_DEFAULT$']
 const installFiles = ['package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml']
-const complete = { $schema: schema, tasks: { 'lint:types': { inputs: all }, 'test:unit': { inputs: all, outputs: ['coverage/**'] } } }
+const complete = { $schema: schema, noUpdateNotifier: true, tasks: { 'lint:types': { inputs: all }, 'test:unit': { inputs: all, outputs: ['coverage/**'] } } }
 
 testRule(turboInstalled, {
   invalid: [
@@ -17,23 +17,23 @@ testRule(turboInstalled, {
       errors: ['dependency', 'file'],
       installs: ['turbo'],
       name: 'nothing',
-      output: [compact({ $schema: schema, tasks: { 'lint:types': {}, 'test:unit': { outputs: ['coverage/**'] } } })],
+      output: [compact({ $schema: schema, noUpdateNotifier: true, tasks: { 'lint:types': {}, 'test:unit': { outputs: ['coverage/**'] } } })],
       pkg: { scripts: check },
       remaining: 1,
     },
     {
       errors: ['file'],
       name: 'no turbo.json, lint:repo waits for the builds',
-      output: compact({ $schema: schema, tasks: { 'build:tsdown': { outputs: ['dist/**'] }, 'lint:repo': { dependsOn: ['build:tsdown'], inputs: ['$TURBO_DEFAULT$', 'dist/**'] } } }),
+      output: compact({ $schema: schema, noUpdateNotifier: true, tasks: { 'build:tsdown': { outputs: ['dist/**'] }, 'lint:repo': { dependsOn: ['build:tsdown'], inputs: ['$TURBO_DEFAULT$', 'dist/**'] } } }),
       pkg: { ...turbo, scripts: { 'build:tsdown': 'tsdown', lint: 'turbo run lint:repo' } },
     },
     {
       errors: ['file'],
       name: 'no turbo.json, lint:types waits for the install',
-      output: compact({ $schema: schema, tasks: { 'lint:install': { inputs: installFiles }, 'lint:types': { dependsOn: ['lint:install'] } } }),
+      output: compact({ $schema: schema, noUpdateNotifier: true, tasks: { 'lint:install': { inputs: installFiles }, 'lint:types': { dependsOn: ['lint:install'] } } }),
       pkg: { ...turbo, scripts: { lint: 'turbo run lint:types', 'lint:install': 'pnpm install' } },
     },
-    { errors: ['file'], name: 'no turbo.json, no task to run', output: compact({ $schema: schema, tasks: {} }), pkg: turbo },
+    { errors: ['file'], name: 'no turbo.json, no task to run', output: compact({ $schema: schema, noUpdateNotifier: true, tasks: {} }), pkg: turbo },
     { errors: ['dependency'], files: { 'turbo.json': '{}' }, installs: ['turbo'], name: 'no dependency', output: [], pkg: { name: 'foo' }, remaining: 1 },
   ],
   valid: [{ files: { 'turbo.json': '{}' }, name: 'both', pkg: turbo }, { files: { 'turbo.json': '' }, name: 'an empty turbo.json', pkg: turbo }, { name: 'no package.json' }],
@@ -84,18 +84,19 @@ testRule(turboConfig, {
       pkg: { scripts: { lint: 'turbo run lint:types' } },
     },
     {
-      errors: ['schema'],
+      errors: ['schema', 'notifier'],
       files: { 'turbo.json': json({ tasks: {} }) },
       name: 'no schema',
-      output: compact({ $schema: schema, tasks: {} }),
+      output: compact({ $schema: schema, noUpdateNotifier: true, tasks: {} }),
       pkg: { name: 'foo' },
     },
     {
-      errors: ['schema', 'outputs', 'outputs'],
+      errors: ['schema', 'notifier', 'outputs', 'outputs'],
       files: { 'turbo.json': json({ tasks: { 'build:vite': {}, 'lint:types': {}, 'test:unit': {} } }) },
       name: 'a bare turbo.json',
       output: compact({
         $schema: schema,
+        noUpdateNotifier: true,
         tasks: {
           'build:vite': { outputs: ['dist/**'] },
           'lint:types': {},
@@ -103,6 +104,13 @@ testRule(turboConfig, {
         },
       }),
       pkg: { scripts: { check: 'turbo run build:vite lint:types test:unit' } },
+    },
+    {
+      errors: ['notifier'],
+      files: { 'turbo.json': json({ $schema: schema, tasks: {} }) },
+      name: 'the update notifier is not off',
+      output: compact({ $schema: schema, noUpdateNotifier: true, tasks: {} }),
+      pkg: { name: 'foo' },
     },
   ],
   valid: [
@@ -144,9 +152,9 @@ testRule(turboTasksDeclared, {
     },
     {
       errors: ['missing', 'missing'],
-      files: { 'turbo.json': json({ $schema: schema, tasks: { 'lint:types': { inputs: all } } }) },
+      files: { 'turbo.json': json({ $schema: schema, noUpdateNotifier: true, tasks: { 'lint:types': { inputs: all } } }) },
       name: 'two tasks are not declared',
-      output: compact({ $schema: schema, tasks: { 'lint:custom': {}, 'lint:types': { inputs: all }, 'test:unit': { outputs: ['coverage/**'] } } }),
+      output: compact({ $schema: schema, noUpdateNotifier: true, tasks: { 'lint:custom': {}, 'lint:types': { inputs: all }, 'test:unit': { outputs: ['coverage/**'] } } }),
       pkg: { scripts: { check: 'turbo run lint:types lint:custom --concurrency 1', test: 'turbo run test:unit && echo test completed successfully' } },
     },
   ],

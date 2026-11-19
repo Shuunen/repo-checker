@@ -29,6 +29,7 @@ export const turboConfig = defineRule({
     invariant(turbo !== undefined, 'appliesTo guarantees a turbo.json')
     const prefix = rootPrefix(turbo.tasks)
     if (turbo.$schema !== turboSchema) report({ fix: fixer => [fixer.json('turbo.json').set(['$schema'], turboSchema, { isFirst: true }), fixer.text('turbo.json', collapseArrays)], messageId: 'schema' })
+    if (turbo.noUpdateNotifier !== true) report({ fix: fixer => [fixer.json('turbo.json').set(['noUpdateNotifier'], true), fixer.text('turbo.json', collapseArrays)], messageId: 'notifier' })
     for (const name of turboTasks(pkg)) {
       const found = findTask(turbo.tasks, name)
       if (found === undefined) continue
@@ -57,6 +58,7 @@ export const turboConfig = defineRule({
     messages: {
       dependsOn: 'turbo.json task "{{task}}" does not depend on {{missing}}: every task needs the install first, and repo-check looks at the build output, like "dependsOn": {{example}}',
       inputs: 'turbo.json task "{{task}}" has inputs that miss files, without "inputs" turbo hashes every tracked file ("$TURBO_DEFAULT$"), a hand-written list must start from it and the install and repo-check tasks need their own, like "inputs": {{example}}',
+      notifier: 'turbo.json should set "noUpdateNotifier": true, the update notice is noise in the logs and the CI',
       outputs: 'turbo.json task "{{task}}" has no outputs, so a cache hit does not restore its files, like "outputs": {{example}}',
       schema: `turbo.json should declare the "$schema": "${turboSchema}"`,
     },

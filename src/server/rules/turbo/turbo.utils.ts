@@ -21,6 +21,8 @@ export interface TurboTask {
 interface TurboJson {
   /** The json schema url */
   $schema?: string
+  /** Whether turbo skips its update notice */
+  noUpdateNotifier?: boolean
   /** The tasks by name */
   tasks?: Record<string, TurboTask>
 }
@@ -125,7 +127,7 @@ export function collapseArrays(text: string) {
  */
 export function buildTurboJson(names: readonly string[], pkg?: Readonly<PackageJson>) {
   const tasks = Object.fromEntries(names.map(name => [name, defaultTask(name, pkg)]))
-  return collapseArrays(`${JSON.stringify({ $schema: turboSchema, tasks }, undefined, jsonIndent)}\n`)
+  return collapseArrays(`${JSON.stringify({ $schema: turboSchema, noUpdateNotifier: true, tasks }, undefined, jsonIndent)}\n`)
 }
 
 /**
