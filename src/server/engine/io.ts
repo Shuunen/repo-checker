@@ -5,6 +5,7 @@
 import { Buffer } from 'node:buffer'
 import { glob, lstat, mkdir, readFile, realpath, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { imageSize } from 'image-size'
 import { Result } from 'shuutils'
 import { run } from '../inventory/shell.ts'
 
@@ -14,8 +15,18 @@ const bytesPerKo = 1024
 /** Folders `search` never looks into: dependencies, git internals and build outputs */
 const ignoredFolders = new Set(['.git', 'coverage', 'dist', 'node_modules'])
 
+/** The size of an image in pixels */
+export interface ImageSize {
+  /** The height in pixels */
+  height: number
+  /** The width in pixels */
+  width: number
+}
+
 /** Read-only access to the files of one project, the only way rules see the disk */
 export interface FileReader {
+  /** Read the width and height of an image file (png, jpg, gif, webp, svg...), undefined when the file does not exist or is not an image */
+  imageSize: (file: string) => Promise<ImageSize | undefined>
   /** Read a file as utf8 text, undefined when it does not exist */
   readText: (file: string) => Promise<string | undefined>
   /** Find the files whose text matches a pattern, under a folder (the whole project when omitted), skipping `ignoredFolders`. Returns sorted paths */
@@ -28,6 +39,16 @@ export interface FileReader {
 export interface Io extends FileReader {
   /** Write a file as utf8 text, creating or replacing it */
   writeText: (file: string, text: string) => Promise<void>
+}
+
+/**
+ * Read the size of an image from its bytes
+ * @param bytes the content of the file
+ * @returns the size, undefined when the bytes are not an image
+ */
+function sizeOfBytes(bytes: Uint8Array) {
+  const found = Result.trySafe(() => imageSize(bytes))
+  return found.ok && found.value.width > 0 && found.value.height > 0 ? { height: found.value.height, width: found.value.width } : undefined
 }
 
 /**
@@ -122,7 +143,7 @@ function withCache(io: Readonly<Io>): Io {
     await io.writeText(file, text)
     cache.set(file, Promise.resolve(text))
   }
-  return { readText, search: io.search, sizeKo: io.sizeKo, writeText }
+  return { imageSize: io.imageSize, readText, search: io.search, sizeKo: io.sizeKo, writeText }
 }
 
 /**
@@ -135,6 +156,10 @@ export function overlayIo(base: Readonly<FileReader>): Io {
   const changes = new Map<string, string>()
   const readText = async (file: string) => changes.get(file) ?? (await base.readText(file))
   return {
+    imageSize(file) {
+      const text = changes.get(file)
+      return text === undefined ? base.imageSize(file) : Promise.resolve(sizeOfBytes(Buffer.from(text, 'latin1')))
+    },
     readText,
     async search(pattern, folder = '') {
       const found = await base.search(pattern, folder)
@@ -209,6 +234,10 @@ export function diskIo(folder: string) {
     return read.ok ? read.value : undefined
   }
   return withCache({
+    imageSize: async file => {
+      const read = await Result.trySafe(readFile(fullPath(file)))
+      return read.ok ? sizeOfBytes(read.value) : undefined
+    },
     readText,
     search: async (pattern, subFolder = '') => searchIn((await listGitFiles(folder, subFolder)) ?? (await listFiles(folder, subFolder)), readText, pattern),
     sizeKo: file => sizeOnDisk(fullPath(file)),
@@ -237,6 +266,7 @@ function filesUnder(files: Readonly<Record<string, string>>, folder: string) {
 export function memoryIo(files: Record<string, string> = {}): Io {
   const readText = (file: string) => Promise.resolve(files[file])
   return {
+    imageSize: file => Promise.resolve(files[file] === undefined ? undefined : sizeOfBytes(Buffer.from(files[file], 'latin1'))),
     readText,
     search: (pattern, folder = '') => searchIn(filesUnder(files, folder), readText, pattern),
     sizeKo(file) {

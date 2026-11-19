@@ -101,7 +101,7 @@ What the project depends on, and how current and safe that is.
 `turbo.json` and the tasks it caches, see [scripts-turbo.md](scripts-turbo.md).
 
 - ✅ 🟡 `turbo-installed`: `turbo` is a dependency and there is a `turbo.json`. Fix: add the dependency, write a `turbo.json` for the tasks run by `turbo run`.
-- ✅ 🟡 `turbo-config`: `turbo.json` has the `$schema` and, on each task run by `turbo run`, `inputs` that start from `$TURBO_DEFAULT$` (a hand-written list gets it put in front), `outputs` on `build:vite` and `test:unit`, every other task depends on `lint:install` when the project has it, and `lint:repo` also on every `build:*` task the project has.
+- ✅ 🟡 `turbo-config`: `turbo.json` has the `$schema`, `"noUpdateNotifier": true` and, on each task run by `turbo run`, `inputs` that start from `$TURBO_DEFAULT$` (a hand-written list gets it put in front), `outputs` on `build:vite` and `test:unit`, every other task depends on `lint:install` when the project has it, and `lint:repo` also on every `build:*` task the project has.
 - ✅ 🟡 `turbo-tasks-declared`: every task run by `turbo run` in `check`, `lint` or `test` is declared in `turbo.json`. Fix: declare it with its inputs.
 
 ## Runtime and package manager
@@ -339,7 +339,7 @@ For projects that are deployed as a website.
 - ☑️ 🔵 `headers-csp`: the `_headers` file sets a `Content-Security-Policy`. No fix, the policy goes with the nonce plugin of the project, like `script-src 'self' 'strict-dynamic' 'nonce-...'; object-src 'none'; base-uri 'self'` (`headers.rule.ts`).
 - ✅ 🟡 `headers-sw-no-cache`: when the project uses `vite-plugin-pwa`, the `_headers` file has a `/sw.js` section with `Cache-Control: no-cache`, so a browser never keeps an old service worker. Fix: add the section (`headers.rule.ts`).
 - ✅ 🟡 `external-link-rel`: external `<a>` links, in `.html`, `.vue`, `.svelte`, `.astro`, `.jsx` and `.tsx` files, should carry `rel="noopener"` or `rel="noreferrer"`. Fixed by adding `rel="noopener noreferrer"`. From the old README todo list (`website-html.rule.ts`).
-- ☑️ 🟡 `media-dimensions`: `<img>` and `<video>` should have `width` and `height`. No fix, the real size is for you to say. From the old README todo list (`website-html.rule.ts`).
+- ✅ 🟡 `media-dimensions`: `<img>` and `<video>` should have `width` and `height`. Fix: for a local image (a plain `src` found next to the file, or in `public`, `src` or the root for a `/` path), the size is read from the image file itself. A remote image or a video stays manual. From the old README todo list (`website-html.rule.ts`).
 - ☑️ 🟡 `build-size`: the build output (`dist`, `build`, `out` or `.output/public`) is no bigger than `maxBuildSizeKo` of `.repo-checker.json`, skipped without it or when the site is not built. No fix, what to remove is for you to say. From the old README todo list (`build-size.rule.ts`).
 - ✅ 🔵❔ `lighthouse-budget`: a website should declare a Lighthouse budget, `budget.json` or a `lighthouserc`. Fixed by creating a first `budget.json` to tune. From the old README todo list (`website-files.rule.ts`). A nitpick check.
 

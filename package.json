@@ -10,6 +10,7 @@
     "cac": "~7.1.0",
     "es-toolkit": "~1.53.1",
     "hono": "~4.13.16",
+    "image-size": "^2.1.0",
     "jsonc-parser": "~3.3.1",
     "lucide-react": "^1.68.0",
     "magicast": "~0.5.5",

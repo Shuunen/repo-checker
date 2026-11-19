@@ -35,7 +35,20 @@ async function makeFolder() {
   return folder
 }
 
+/** A 3x2 gif, the smallest image to read a size from */
+const gif = 'R0lGODlhAwACAIAAAAAAAP///yH5BAEAAAAALAAAAAADAAIAAAIDhI9YADs='
+
 describe('disk io', () => {
+  it('reads the size of an image, undefined for a missing file or a text', async () => {
+    expect.hasAssertions()
+    const folder = await makeFolder()
+    await writeFile(path.join(folder, 'a.gif'), Buffer.from(gif, 'base64'))
+    const io = diskIo(folder)
+    await expect(io.imageSize('a.gif')).resolves.toStrictEqual({ height: 2, width: 3 })
+    await expect(io.imageSize('big.txt')).resolves.toBeUndefined()
+    await expect(io.imageSize('nope.gif')).resolves.toBeUndefined()
+  })
+
   it('reads a file', async () => {
     expect.hasAssertions()
     await expect(diskIo(await makeFolder()).readText('big.txt')).resolves.toHaveLength(3000)
@@ -165,6 +178,14 @@ describe('disk io', () => {
 })
 
 describe('memory io', () => {
+  it('reads the size of an image', async () => {
+    expect.hasAssertions()
+    const io = memoryIo({ 'a.gif': Buffer.from(gif, 'base64').toString('latin1'), 'b.txt': 'hello' })
+    await expect(io.imageSize('a.gif')).resolves.toStrictEqual({ height: 2, width: 3 })
+    await expect(io.imageSize('b.txt')).resolves.toBeUndefined()
+    await expect(io.imageSize('c.gif')).resolves.toBeUndefined()
+  })
+
   it('reads, sizes and writes in the given object', async () => {
     expect.hasAssertions()
     const files: Record<string, string> = { 'a.txt': 'x'.repeat(1024) }
@@ -189,6 +210,15 @@ describe('memory io', () => {
 })
 
 describe('overlay io', () => {
+  it('reads the size of an image from the changes first, then the base', async () => {
+    expect.hasAssertions()
+    const bytes = Buffer.from(gif, 'base64').toString('latin1')
+    const io = overlayIo(memoryIo({ 'a.gif': bytes }))
+    await io.writeText('b.gif', bytes)
+    await expect(io.imageSize('a.gif')).resolves.toStrictEqual({ height: 2, width: 3 })
+    await expect(io.imageSize('b.gif')).resolves.toStrictEqual({ height: 2, width: 3 })
+  })
+
   it('holds the writes in memory and leaves the base alone', async () => {
     expect.hasAssertions()
     const files: Record<string, string> = { 'a.txt': 'x'.repeat(1024) }
